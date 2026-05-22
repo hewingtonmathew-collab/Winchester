@@ -36,7 +36,8 @@ export default function ServiceIcon({ name, size = 20, className }: Props) {
     <Icon
       size={size}
       className={className ?? "text-[#C9A84C]"}
-      strokeWidth={1.5}
+      strokeWidth={1.25}
+      aria-hidden="true"
     />
   );
 }

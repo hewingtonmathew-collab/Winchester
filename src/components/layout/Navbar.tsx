@@ -43,9 +43,9 @@ export default function Navbar() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[68px] flex items-center justify-between">
         <Link href="/" aria-label="Winchester Consultancy — Home">
-          <ShieldLogo size={32} />
+          <ShieldLogo size={34} />
         </Link>
 
         <ul className="hidden md:flex items-center gap-7">
