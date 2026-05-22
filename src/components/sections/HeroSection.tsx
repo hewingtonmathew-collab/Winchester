@@ -3,7 +3,7 @@ import ButtonSecondary from "@/components/ui/ButtonSecondary";
 import GlassCard from "@/components/ui/GlassCard";
 import ShieldLogo from "@/components/ui/ShieldLogo";
 import HeroBuildingBg from "@/components/ui/HeroBuildingBg";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function HeroSection() {
@@ -113,7 +113,6 @@ export default function HeroSection() {
               href="/services"
               className="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg border border-[#2A3340] hover:border-[rgba(201,168,76,0.5)] font-inter text-sm text-[#A7B1BE] hover:text-white transition-all duration-200 group"
             >
-              <FileText size={13} className="text-[#C9A84C] flex-shrink-0" aria-hidden="true" />
               Explore Our Services
               <ArrowRight
                 size={13}
