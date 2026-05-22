@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function AboutPreview() {
-  const coreServices = services.slice(0, 4);
+  const coreServices = services.slice(0, 5);
 
   return (
     <section className="py-24 bg-[#0B1118]" aria-labelledby="about-heading">
@@ -201,7 +201,7 @@ export default function AboutPreview() {
               {coreServices.map((service, i) => (
                 <div
                   key={service.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] hover:border-[rgba(201,168,76,0.35)] transition-colors duration-200 group reveal reveal-delay-${i + 1 as 1 | 2 | 3 | 4}`}
+                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] hover:border-[rgba(201,168,76,0.35)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
                 >
                   <div
                     className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center"

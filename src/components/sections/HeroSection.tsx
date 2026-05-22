@@ -35,6 +35,7 @@ export default function HeroSection() {
               animationDelay: "0.2s",
               animationFillMode: "both",
               lineHeight: 1.0,
+              textShadow: "0 2px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.60)",
             }}
           >
             Intelligence That
