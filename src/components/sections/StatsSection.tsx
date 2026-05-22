@@ -6,7 +6,7 @@ export default function StatsSection() {
   return (
     <>
       <SectionDivider />
-      <section className="py-20 bg-[#111A23]" aria-labelledby="stats-heading">
+      <section className="py-16 bg-[#111A23]" aria-labelledby="stats-heading">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <div className="text-center mb-14">

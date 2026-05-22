@@ -9,7 +9,7 @@ export default function AboutPreview() {
   const coreServices = services.slice(0, 5);
 
   return (
-    <section className="py-24 bg-[#0B1118]" aria-labelledby="about-heading">
+    <section className="py-20 bg-[#0B1118]" aria-labelledby="about-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT — Image placeholder with professional SVG scene */}
