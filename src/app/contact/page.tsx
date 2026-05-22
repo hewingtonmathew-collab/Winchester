@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ContactForm from "@/components/forms/ContactForm";
 import { Mail, Phone, MapPin } from "lucide-react";
+import JsonLd from "@/components/seo/JsonLd";
+import { localBusinessSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Contact | Winchester Consultancy",
@@ -33,6 +35,7 @@ const contactDetails = [
 export default function ContactPage() {
   return (
     <>
+      <JsonLd data={localBusinessSchema()} />
       <section className="pt-36 pb-20 bg-[#0B1118]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="eyebrow mb-4">Get in Touch</p>

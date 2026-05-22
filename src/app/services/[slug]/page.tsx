@@ -8,6 +8,8 @@ import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ContactCTA from "@/components/sections/ContactCTA";
 import { CheckCircle, ArrowRight } from "lucide-react";
+import JsonLd from "@/components/seo/JsonLd";
+import { serviceSchema, breadcrumbSchema } from "@/lib/schema";
 
 type Params = { slug: string };
 
@@ -21,6 +23,11 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   return {
     title: `${service.title} | Winchester Consultancy`,
     description: service.detail.intro.slice(0, 160),
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.title} | Winchester Consultancy`,
+      description: service.detail.intro.slice(0, 160),
+    },
   };
 }
 
@@ -32,6 +39,16 @@ export default function ServiceDetailPage({ params }: { params: Params }) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          serviceSchema(service),
+          breadcrumbSchema([
+            { name: "Home", href: "/" },
+            { name: "Services", href: "/services" },
+            { name: service.title, href: service.href },
+          ]),
+        ]}
+      />
       {/* Hero */}
       <section className="pt-36 pb-20 bg-[#0B1118] relative overflow-hidden">
         {/* Dot grid */}

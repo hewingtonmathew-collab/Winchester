@@ -3,6 +3,8 @@ import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import JsonLd from "@/components/seo/JsonLd";
+import { organizationSchema, webSiteSchema } from "@/lib/schema";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -47,6 +49,7 @@ export default function RootLayout({
     <html lang="en" className={`${cinzel.variable} ${inter.variable}`}>
       <body className="bg-[#0B1118] text-[#E6E9ED] font-inter antialiased">
         <Navbar />
+        <JsonLd data={[organizationSchema(), webSiteSchema()]} />
         <main>{children}</main>
         <Footer />
       </body>

@@ -6,10 +6,13 @@ import StatsSection from "@/components/sections/StatsSection";
 import InsightsPreview from "@/components/sections/InsightsPreview";
 import ValuesSection from "@/components/sections/ValuesSection";
 import ContactCTA from "@/components/sections/ContactCTA";
+import JsonLd from "@/components/seo/JsonLd";
+import { breadcrumbSchema } from "@/lib/schema";
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Home", href: "/" }])} />
       <HeroSection />
       <TrustBar />
       <ServicesRow />
