@@ -26,6 +26,7 @@ export default function GlassCard({
       className={cn(
         variantClass[variant],
         "p-6",
+        "[transform:translateZ(0)]",
         hover && [
           "transition-all duration-300 cursor-default",
           "hover:-translate-y-1",

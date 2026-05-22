@@ -23,10 +23,13 @@ export default function ScrollReveal({ children, className, threshold = 0.12 }: 
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
             observer.unobserve(entry.target);
+            setTimeout(() => {
+              (entry.target as HTMLElement).style.willChange = "auto";
+            }, 700); // after transition completes
           }
         });
       },
-      { threshold }
+      { threshold, rootMargin: "0px 0px -50px 0px" }
     );
 
     const targets = container.querySelectorAll<HTMLElement>(".reveal, .reveal-left, .reveal-scale");
