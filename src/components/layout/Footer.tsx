@@ -41,16 +41,9 @@ export default function Footer() {
               Expert compliance intelligence for schools and multi-academy trusts.
               Intelligence That Builds Confidence.
             </p>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2">
-              {values.map((v) => (
-                <li
-                  key={v}
-                  className="font-cinzel text-[0.6rem] text-[#C9A84C] tracking-widest uppercase"
-                >
-                  {v}
-                </li>
-              ))}
-            </ul>
+            <p className="font-cinzel text-[0.6rem] text-[#C9A84C] tracking-widest uppercase leading-relaxed">
+              {values.join(" · ")}
+            </p>
           </div>
 
           {Object.entries(footerLinks).map(([group, links]) => (

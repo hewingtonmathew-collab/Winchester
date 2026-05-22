@@ -38,14 +38,19 @@ export default function AboutPreview() {
                   <stop offset="100%" stopColor="#4a7a9e" />
                 </linearGradient>
                 {/* Glow bloom from windows into room */}
-                <radialGradient id="win-glow" cx="50%" cy="22%" r="55%">
-                  <stop offset="0%" stopColor="#5a9ac0" stopOpacity="0.38" />
-                  <stop offset="55%" stopColor="#4080a8" stopOpacity="0.14" />
+                <radialGradient id="win-glow" cx="50%" cy="18%" r="70%">
+                  <stop offset="0%" stopColor="#5a9ac0" stopOpacity="0.55" />
+                  <stop offset="45%" stopColor="#4080a8" stopOpacity="0.28" />
                   <stop offset="100%" stopColor="#3070a0" stopOpacity="0" />
+                </radialGradient>
+                {/* Mid-room ambient light (window light reaching floor) */}
+                <radialGradient id="mid-light" cx="50%" cy="60%" r="55%">
+                  <stop offset="0%" stopColor="#3a6898" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#1a3860" stopOpacity="0" />
                 </radialGradient>
                 {/* Warm gold desk lamp glow */}
                 <radialGradient id="table-light" cx="50%" cy="72%" r="55%">
-                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.20" />
+                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.25" />
                   <stop offset="100%" stopColor="#c8a840" stopOpacity="0" />
                 </radialGradient>
                 {/* Table surface highlight */}
@@ -105,8 +110,10 @@ export default function AboutPreview() {
               <line x1="397" y1="58" x2="397" y2="237" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
               <line x1="338" y1="148" x2="457" y2="148" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
 
-              {/* Wall below windows — dark with slight blue tint from window light */}
-              <rect x="0" y="240" width="640" height="240" fill="rgba(5,12,20,0.85)" />
+              {/* Wall below windows — medium dark with blue ambient tint */}
+              <rect x="0" y="240" width="640" height="240" fill="rgba(8,18,32,0.75)" />
+              {/* Mid-room ambient glow */}
+              <rect width="640" height="480" fill="url(#mid-light)" />
 
               {/* Floor */}
               <rect x="0" y="400" width="640" height="80" fill="url(#floor-grad)" />
@@ -115,7 +122,7 @@ export default function AboutPreview() {
               <ellipse cx="320" cy="360" rx="220" ry="50" fill="url(#table-surface)" stroke="rgba(50,80,110,0.80)" strokeWidth="2" />
               <rect x="100" y="342" width="440" height="40" fill="url(#table-surface)" stroke="rgba(50,80,110,0.80)" strokeWidth="2" rx="4" />
               {/* Table highlight — window reflection */}
-              <ellipse cx="300" cy="345" rx="90" ry="8" fill="rgba(90,154,190,0.12)" />
+              <ellipse cx="300" cy="345" rx="90" ry="8" fill="rgba(90,154,190,0.25)" />
 
               {/* Table warm glow */}
               <rect width="640" height="480" fill="url(#table-light)" />
