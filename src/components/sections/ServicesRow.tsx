@@ -28,7 +28,7 @@ export default function ServicesRow() {
               <GlassCard
                 key={service.id}
                 hover
-                className={`flex flex-col gap-5 p-6 [border-top-color:rgba(201,168,76,0.55)] reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
+                className={`flex flex-col gap-5 p-5 [border-top-color:rgba(201,168,76,0.55)] reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
               >
                 {/* Icon — larger, more prominent */}
                 <div
