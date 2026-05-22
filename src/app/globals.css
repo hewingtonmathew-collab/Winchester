@@ -71,7 +71,7 @@
   .divider-gold {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
-    opacity: 0.50;
+    opacity: 0.65;
   }
 
   .eyebrow {
@@ -130,9 +130,9 @@
     background: rgba(18, 28, 40, 0.90);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(201, 168, 76, 0.22);
+    border: 1px solid rgba(201, 168, 76, 0.35);
     border-radius: 0.75rem;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 12px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(201,168,76,0.06);
   }
 
   .glass-inset {
