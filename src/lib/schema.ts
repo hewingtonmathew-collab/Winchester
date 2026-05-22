@@ -106,29 +106,6 @@ export function faqSchema(
   };
 }
 
-export function articleSchema(article: {
-  title: string;
-  excerpt: string;
-  date: string;
-  href: string;
-  author: string;
-}): SchemaOrg {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    datePublished: article.date,
-    author: { "@type": "Organization", name: "Winchester Consultancy" },
-    publisher: {
-      "@type": "Organization",
-      name: "Winchester Consultancy",
-      url: "https://winchesterconsultancy.co.uk",
-    },
-    url: `https://winchesterconsultancy.co.uk${article.href}`,
-  };
-}
-
 export function frameworkSchema(): SchemaOrg {
   return {
     "@context": "https://schema.org",
