@@ -31,7 +31,7 @@ const values = ["Assurance", "Compliance", "Intelligence", "Partnership"];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B1118] border-t border-[#2A3340]">
+    <footer className="bg-[#0B1118] border-t border-[rgba(201,168,76,0.25)]">
       <SectionDivider />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-12">
