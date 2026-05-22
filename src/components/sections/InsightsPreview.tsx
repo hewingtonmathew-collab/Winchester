@@ -155,7 +155,7 @@ export default function InsightsPreview() {
                 className={`flex flex-col gap-0 overflow-hidden !p-0 reveal reveal-delay-${i + 1 as 1 | 2 | 3}`}
               >
                 {/* Visual panel */}
-                <div className="relative w-full h-40 overflow-hidden">
+                <div className="relative w-full h-44 overflow-hidden">
                   {(() => { const V = articleVisualComponents[i % articleVisualComponents.length]; return <V />; })()}
                   <div className="absolute top-3 left-3">
                     <span className="badge badge-gold uppercase tracking-widest text-[0.6rem]">

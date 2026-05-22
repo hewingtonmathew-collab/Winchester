@@ -210,7 +210,7 @@ export default function AboutPreview() {
                       border: "1px solid rgba(201,168,76,0.22)",
                     }}
                   >
-                    <ServiceIcon name={service.icon} size={14} />
+                    <ServiceIcon name={service.icon} size={16} />
                   </div>
                   <p className="font-cinzel font-bold text-white text-xs group-hover:text-[#C9A84C] transition-colors duration-200 leading-snug flex-1">
                     {service.title}
