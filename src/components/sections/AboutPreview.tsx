@@ -206,8 +206,9 @@ export default function AboutPreview() {
                   <div
                     className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center"
                     style={{
-                      background: "rgba(11,17,24,0.6)",
-                      border: "1px solid rgba(201,168,76,0.22)",
+                      background: "rgba(11,17,24,0.7)",
+                      border: "1px solid rgba(201,168,76,0.30)",
+                      boxShadow: "0 0 14px rgba(201,168,76,0.08)",
                     }}
                   >
                     <ServiceIcon name={service.icon} size={16} />

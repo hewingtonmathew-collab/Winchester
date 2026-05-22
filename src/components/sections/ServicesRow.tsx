@@ -36,7 +36,7 @@ export default function ServicesRow() {
                   style={{
                     background: "rgba(11,17,24,0.7)",
                     border: "1px solid rgba(201,168,76,0.35)",
-                    boxShadow: "0 0 24px rgba(201,168,76,0.06)",
+                    boxShadow: "0 0 20px rgba(201,168,76,0.12), inset 0 1px 0 rgba(201,168,76,0.06)",
                   }}
                 >
                   <ServiceIcon name={service.icon} size={26} />
