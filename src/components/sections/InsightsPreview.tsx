@@ -10,19 +10,36 @@ function InsightVisual1() {
     <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
       <defs>
         <linearGradient id="ins-bg1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0a1824" /><stop offset="100%" stopColor="#0d2035" />
+          <stop offset="0%" stopColor="#0c1f30" /><stop offset="100%" stopColor="#102540" />
         </linearGradient>
+        <radialGradient id="ins-glow1" cx="50%" cy="50%" r="45%">
+          <stop offset="0%" stopColor="#c9a84c" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#c9a84c" stopOpacity="0" />
+        </radialGradient>
       </defs>
       <rect width="400" height="200" fill="url(#ins-bg1)" />
-      <circle cx="200" cy="100" r="60" fill="none" stroke="rgba(201,168,76,0.15)" strokeWidth="1" />
-      <circle cx="200" cy="100" r="40" fill="none" stroke="rgba(201,168,76,0.25)" strokeWidth="1" />
-      <path d="M200 50 L220 62 L220 88 Q220 105 200 115 Q180 105 180 88 L180 62 Z" fill="none" stroke="rgba(201,168,76,0.6)" strokeWidth="1.5" />
+      <rect width="400" height="200" fill="url(#ins-glow1)" />
+      {/* Outer rings */}
+      <circle cx="200" cy="100" r="75" fill="none" stroke="rgba(201,168,76,0.12)" strokeWidth="1" />
+      <circle cx="200" cy="100" r="55" fill="none" stroke="rgba(201,168,76,0.20)" strokeWidth="1" />
+      <circle cx="200" cy="100" r="35" fill="none" stroke="rgba(201,168,76,0.30)" strokeWidth="1.2" />
+      {/* Shield mark */}
+      <path d="M200 58 L218 68 L218 92 Q218 112 200 122 Q182 112 182 92 L182 68 Z"
+        fill="rgba(201,168,76,0.10)" stroke="rgba(201,168,76,0.75)" strokeWidth="1.8" />
+      {/* Spoke lines */}
       {[0,60,120,180,240,300].map((a, i) => (
-        <line key={i} x1={200 + 40*Math.cos(a*Math.PI/180)} y1={100 + 40*Math.sin(a*Math.PI/180)}
-          x2={200 + 70*Math.cos(a*Math.PI/180)} y2={100 + 70*Math.sin(a*Math.PI/180)}
-          stroke="rgba(201,168,76,0.2)" strokeWidth="1" />
+        <line key={i}
+          x1={200 + 35*Math.cos(a*Math.PI/180)} y1={100 + 35*Math.sin(a*Math.PI/180)}
+          x2={200 + 75*Math.cos(a*Math.PI/180)} y2={100 + 75*Math.sin(a*Math.PI/180)}
+          stroke="rgba(201,168,76,0.18)" strokeWidth="1" />
       ))}
-      <rect width="400" height="200" fill="rgba(5,12,20,0.3)" />
+      {/* Node dots */}
+      {[30,90,150,210,270,330].map((a, i) => (
+        <circle key={i}
+          cx={200 + 55*Math.cos(a*Math.PI/180)} cy={100 + 55*Math.sin(a*Math.PI/180)}
+          r="3" fill="rgba(201,168,76,0.55)" />
+      ))}
+      <rect width="400" height="200" fill="rgba(4,10,18,0.20)" />
     </svg>
   );
 }
@@ -32,45 +49,82 @@ function InsightVisual2() {
     <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
       <defs>
         <linearGradient id="ins-bg2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0d1a28" /><stop offset="100%" stopColor="#0a1520" />
+          <stop offset="0%" stopColor="#0e1e2e" /><stop offset="100%" stopColor="#0b1828" />
         </linearGradient>
+        <radialGradient id="ins-glow2" cx="50%" cy="50%" r="40%">
+          <stop offset="0%" stopColor="#c9a84c" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#c9a84c" stopOpacity="0" />
+        </radialGradient>
       </defs>
       <rect width="400" height="200" fill="url(#ins-bg2)" />
-      <rect x="155" y="70" width="90" height="60" fill="none" stroke="rgba(201,168,76,0.5)" strokeWidth="1.5" rx="4" />
-      {[80,100,120].map((y,i) => (
-        <line key={`l-${i}`} x1="130" y1={y} x2="155" y2={y} stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      <rect width="400" height="200" fill="url(#ins-glow2)" />
+      {/* Central chip */}
+      <rect x="152" y="68" width="96" height="64" fill="rgba(201,168,76,0.08)" stroke="rgba(201,168,76,0.65)" strokeWidth="1.8" rx="5" />
+      {/* Inner chip detail */}
+      <rect x="165" y="80" width="70" height="40" fill="none" stroke="rgba(201,168,76,0.30)" strokeWidth="1" rx="2" />
+      {/* Left pins */}
+      {[82, 96, 110].map((y, i) => (
+        <line key={`l-${i}`} x1="125" y1={y} x2="152" y2={y} stroke="rgba(201,168,76,0.45)" strokeWidth="1.5" />
       ))}
-      {[80,100,120].map((y,i) => (
-        <line key={`r-${i}`} x1="245" y1={y} x2="270" y2={y} stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      {/* Right pins */}
+      {[82, 96, 110].map((y, i) => (
+        <line key={`r-${i}`} x1="248" y1={y} x2="275" y2={y} stroke="rgba(201,168,76,0.45)" strokeWidth="1.5" />
       ))}
-      {[170,200,230].map((x,i) => (
-        <line key={`t-${i}`} x1={x} y1="55" x2={x} y2="70" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      {/* Top pins */}
+      {[175, 200, 225].map((x, i) => (
+        <line key={`t-${i}`} x1={x} y1="50" x2={x} y2="68" stroke="rgba(201,168,76,0.45)" strokeWidth="1.5" />
       ))}
-      {[170,200,230].map((x,i) => (
-        <line key={`b-${i}`} x1={x} y1="130" x2={x} y2="145" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      {/* Bottom pins */}
+      {[175, 200, 225].map((x, i) => (
+        <line key={`b-${i}`} x1={x} y1="132" x2={x} y2="150" stroke="rgba(201,168,76,0.45)" strokeWidth="1.5" />
       ))}
-      <text x="200" y="106" textAnchor="middle" fill="rgba(201,168,76,0.7)" fontSize="16" fontFamily="monospace" fontWeight="bold">AI</text>
-      <rect width="400" height="200" fill="rgba(5,12,20,0.25)" />
+      <text x="200" y="105" textAnchor="middle" fill="rgba(201,168,76,0.85)" fontSize="18" fontFamily="monospace" fontWeight="bold">AI</text>
+      <rect width="400" height="200" fill="rgba(4,10,18,0.18)" />
     </svg>
   );
 }
 
 function InsightVisual3() {
+  // Column widths & heights for a building facade feel
+  const cols = [
+    { x: 136, h: 105, y: 65 },
+    { x: 158, h: 118, y: 52 },
+    { x: 180, h: 128, y: 42 },
+    { x: 202, h: 135, y: 35 },
+    { x: 224, h: 128, y: 42 },
+    { x: 246, h: 118, y: 52 },
+    { x: 268, h: 105, y: 65 },
+  ];
   return (
     <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
       <defs>
         <linearGradient id="ins-bg3" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0c1a28" /><stop offset="100%" stopColor="#091625" />
+          <stop offset="0%" stopColor="#0d1e2e" /><stop offset="100%" stopColor="#0a1925" />
         </linearGradient>
+        <radialGradient id="ins-glow3" cx="50%" cy="60%" r="45%">
+          <stop offset="0%" stopColor="#c9a84c" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#c9a84c" stopOpacity="0" />
+        </radialGradient>
       </defs>
       <rect width="400" height="200" fill="url(#ins-bg3)" />
-      {[140,162,184,206,228,250].map((x,i) => (
-        <rect key={i} x={x} y={70 + (i===0||i===5?15:i===1||i===4?8:0)} width="14" height={100-(i===0||i===5?15:i===1||i===4?8:0)} fill="none" stroke="rgba(201,168,76,0.55)" strokeWidth="1.2" />
+      <rect width="400" height="200" fill="url(#ins-glow3)" />
+      {/* Architrave top line */}
+      <line x1="128" y1="170" x2="286" y2="170" stroke="rgba(201,168,76,0.70)" strokeWidth="2.5" />
+      {/* Stylobate base */}
+      <line x1="120" y1="178" x2="295" y2="178" stroke="rgba(201,168,76,0.50)" strokeWidth="1.5" />
+      {/* Columns */}
+      {cols.map((c, i) => (
+        <rect key={i} x={c.x} y={c.y} width="14" height={c.h}
+          fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.60)" strokeWidth="1.4" />
       ))}
-      <line x1="130" y1="70" x2="270" y2="70" stroke="rgba(201,168,76,0.6)" strokeWidth="2" />
-      <line x1="130" y1="170" x2="270" y2="170" stroke="rgba(201,168,76,0.6)" strokeWidth="2" />
-      <rect x="160" y="55" width="80" height="15" fill="none" stroke="rgba(201,168,76,0.4)" strokeWidth="1" />
-      <rect width="400" height="200" fill="rgba(5,12,20,0.3)" />
+      {/* Capital caps */}
+      {cols.map((c, i) => (
+        <line key={`cap-${i}`} x1={c.x - 2} y1={c.y} x2={c.x + 16} y2={c.y}
+          stroke="rgba(201,168,76,0.55)" strokeWidth="2" />
+      ))}
+      {/* Top pediment */}
+      <path d="M128 42 L202 20 L276 42" fill="none" stroke="rgba(201,168,76,0.40)" strokeWidth="1.5" />
+      <rect width="400" height="200" fill="rgba(4,10,18,0.18)" />
     </svg>
   );
 }
