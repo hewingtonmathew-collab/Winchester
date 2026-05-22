@@ -26,83 +26,130 @@ export default function AboutPreview() {
               aria-hidden="true"
             >
               <defs>
+                {/* Room interior — dark navy */}
                 <linearGradient id="room-bg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0e1c2a" />
-                  <stop offset="100%" stopColor="#0a1520" />
+                  <stop offset="0%" stopColor="#071018" />
+                  <stop offset="100%" stopColor="#050c14" />
                 </linearGradient>
-                <radialGradient id="table-light" cx="50%" cy="65%" r="60%">
-                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.14" />
+                {/* Window glass — vivid daylight blue */}
+                <linearGradient id="win-light" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8abcda" />
+                  <stop offset="45%" stopColor="#6a9fc0" />
+                  <stop offset="100%" stopColor="#4a7a9e" />
+                </linearGradient>
+                {/* Glow bloom from windows into room */}
+                <radialGradient id="win-glow" cx="50%" cy="22%" r="55%">
+                  <stop offset="0%" stopColor="#5a9ac0" stopOpacity="0.38" />
+                  <stop offset="55%" stopColor="#4080a8" stopOpacity="0.14" />
+                  <stop offset="100%" stopColor="#3070a0" stopOpacity="0" />
+                </radialGradient>
+                {/* Warm gold desk lamp glow */}
+                <radialGradient id="table-light" cx="50%" cy="72%" r="55%">
+                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.20" />
                   <stop offset="100%" stopColor="#c8a840" stopOpacity="0" />
                 </radialGradient>
-                <linearGradient id="win-light" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#253a52" />
-                  <stop offset="60%" stopColor="#1a2e44" />
-                  <stop offset="100%" stopColor="#112030" />
+                {/* Table surface highlight */}
+                <linearGradient id="table-surface" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#1a3350" />
+                  <stop offset="100%" stopColor="#0d1e30" />
                 </linearGradient>
-                {/* Ambient window glow */}
-                <radialGradient id="win-glow" cx="50%" cy="25%" r="50%">
-                  <stop offset="0%" stopColor="#4a7090" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="#4a7090" stopOpacity="0" />
-                </radialGradient>
+                {/* Floor perspective fade */}
+                <linearGradient id="floor-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#0a1828" />
+                  <stop offset="100%" stopColor="#060e18" />
+                </linearGradient>
+                {/* Soft glow bloom filter */}
+                <filter id="win-bloom" x="-15%" y="-15%" width="130%" height="130%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
 
-              {/* Background */}
+              {/* Background room */}
               <rect width="640" height="480" fill="url(#room-bg)" />
 
-              {/* Window ambient light glow */}
+              {/* Window glow — ambient light flooding into room */}
               <rect width="640" height="480" fill="url(#win-glow)" />
 
-              {/* Windows on back wall — lit with more depth */}
+              {/* ── Windows — bright daylight blue ── */}
+              {/* Glow halos behind windows (bloom) */}
+              <rect x="48" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
+              <rect x="188" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
+              <rect x="328" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
+              <rect x="472" y="48" width="120" height="200" fill="#5a9abe" opacity="0.30" rx="4" filter="url(#win-bloom)" />
+
+              {/* Window panes */}
               <rect x="55" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
               <rect x="195" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
               <rect x="335" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
-              <rect x="477" y="55" width="110" height="185" fill="url(#win-light)" rx="3" />
-              {/* Window frames */}
-              <rect x="55" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
-              <rect x="195" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
-              <rect x="335" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
-              <rect x="477" y="55" width="110" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
-              {/* Window cross bars */}
-              <line x1="117" y1="55" x2="117" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
-              <line x1="55" y1="147" x2="180" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
-              <line x1="257" y1="55" x2="257" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
-              <line x1="195" y1="147" x2="320" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
-              <line x1="397" y1="55" x2="397" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
-              <line x1="335" y1="147" x2="460" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <rect x="477" y="55" width="108" height="185" fill="url(#win-light)" rx="3" />
 
-              {/* Wall — darker band below windows */}
-              <rect x="0" y="240" width="640" height="120" fill="rgba(8,14,22,0.60)" />
+              {/* Window frames — steel dark */}
+              <rect x="55" y="55" width="125" height="185" fill="none" stroke="rgba(20,40,60,0.95)" strokeWidth="4" rx="3" />
+              <rect x="195" y="55" width="125" height="185" fill="none" stroke="rgba(20,40,60,0.95)" strokeWidth="4" rx="3" />
+              <rect x="335" y="55" width="125" height="185" fill="none" stroke="rgba(20,40,60,0.95)" strokeWidth="4" rx="3" />
+              <rect x="477" y="55" width="108" height="185" fill="none" stroke="rgba(20,40,60,0.95)" strokeWidth="4" rx="3" />
 
-              {/* Conference table */}
-              <ellipse cx="320" cy="355" rx="215" ry="55" fill="#0f1c2c" stroke="rgba(50,72,95,0.95)" strokeWidth="2.5" />
-              <rect x="105" y="342" width="430" height="44" fill="#0f1c2c" stroke="rgba(50,72,95,0.95)" strokeWidth="2.5" rx="4" />
+              {/* Window cross-bars */}
+              <line x1="117" y1="58" x2="117" y2="237" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
+              <line x1="58" y1="148" x2="177" y2="148" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
+              <line x1="257" y1="58" x2="257" y2="237" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
+              <line x1="198" y1="148" x2="317" y2="148" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
+              <line x1="397" y1="58" x2="397" y2="237" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
+              <line x1="338" y1="148" x2="457" y2="148" stroke="rgba(20,40,60,0.90)" strokeWidth="3" />
 
-              {/* Table ambient glow */}
+              {/* Wall below windows — dark with slight blue tint from window light */}
+              <rect x="0" y="240" width="640" height="240" fill="rgba(5,12,20,0.85)" />
+
+              {/* Floor */}
+              <rect x="0" y="400" width="640" height="80" fill="url(#floor-grad)" />
+
+              {/* Conference table — dark with slight blue reflection */}
+              <ellipse cx="320" cy="360" rx="220" ry="50" fill="url(#table-surface)" stroke="rgba(50,80,110,0.80)" strokeWidth="2" />
+              <rect x="100" y="342" width="440" height="40" fill="url(#table-surface)" stroke="rgba(50,80,110,0.80)" strokeWidth="2" rx="4" />
+              {/* Table highlight — window reflection */}
+              <ellipse cx="300" cy="345" rx="90" ry="8" fill="rgba(90,154,190,0.12)" />
+
+              {/* Table warm glow */}
               <rect width="640" height="480" fill="url(#table-light)" />
 
-              {/* People silhouettes — more contrast */}
-              {/* Person 1 */}
-              <ellipse cx="160" cy="300" rx="23" ry="23" fill="#1f3348" />
-              <rect x="137" y="321" width="46" height="36" fill="#1f3348" rx="6" />
-              {/* Person 2 */}
-              <ellipse cx="265" cy="293" rx="23" ry="23" fill="#22364c" />
-              <rect x="242" y="314" width="46" height="40" fill="#22364c" rx="6" />
-              {/* Person 3 (presenting) */}
-              <ellipse cx="385" cy="258" rx="26" ry="26" fill="#253952" />
-              <rect x="359" y="282" width="52" height="58" fill="#253952" rx="6" />
-              {/* Person 4 */}
-              <ellipse cx="495" cy="297" rx="23" ry="23" fill="#1f3348" />
-              <rect x="472" y="318" width="46" height="37" fill="#1f3348" rx="6" />
+              {/* ── Person silhouettes ── */}
+              {/* Person 1 — far left, seated */}
+              <ellipse cx="148" cy="298" rx="22" ry="22" fill="#162840" />
+              <rect x="126" y="318" width="44" height="42" fill="#162840" rx="8" />
 
-              {/* Presentation screen (left wall) */}
-              <rect x="18" y="118" width="38" height="28" fill="#0c1926" stroke="rgba(201,168,76,0.45)" strokeWidth="2" rx="2" />
-              <rect x="23" y="123" width="28" height="18" fill="rgba(201,168,76,0.15)" rx="1" />
+              {/* Person 2 — center-left, seated */}
+              <ellipse cx="255" cy="290" rx="24" ry="24" fill="#1a3050" />
+              <rect x="231" y="312" width="48" height="46" fill="#1a3050" rx="8" />
+
+              {/* Person 3 — center-right, standing (presenter) */}
+              <ellipse cx="388" cy="250" rx="27" ry="27" fill="#1e3858" />
+              <rect x="361" y="275" width="54" height="80" fill="#1e3858" rx="8" />
+
+              {/* Person 4 — far right, seated */}
+              <ellipse cx="498" cy="295" rx="22" ry="22" fill="#162840" />
+              <rect x="476" y="315" width="44" height="42" fill="#162840" rx="8" />
+
+              {/* ── Wall / ceiling details ── */}
+              {/* Ceiling line */}
+              <line x1="0" y1="30" x2="640" y2="30" stroke="rgba(30,55,80,0.50)" strokeWidth="2" />
+
+              {/* Left wall presentation screen */}
+              <rect x="10" y="110" width="44" height="34" fill="#0c1926" stroke="rgba(201,168,76,0.55)" strokeWidth="2" rx="2" />
+              <rect x="14" y="114" width="36" height="26" fill="rgba(201,168,76,0.18)" rx="1" filter="url(#soft-glow)" />
 
               {/* Gold accent line at bottom */}
-              <line x1="0" y1="475" x2="640" y2="475" stroke="rgba(201,168,76,0.40)" strokeWidth="1.5" />
+              <line x1="0" y1="475" x2="640" y2="475" stroke="rgba(201,168,76,0.45)" strokeWidth="1.5" />
 
-              {/* Depth overlay */}
-              <rect width="640" height="480" fill="rgba(4,10,18,0.12)" />
+              {/* Final depth overlay */}
+              <rect width="640" height="480" fill="rgba(4,9,16,0.08)" />
             </svg>
 
             {/* Floating label */}
