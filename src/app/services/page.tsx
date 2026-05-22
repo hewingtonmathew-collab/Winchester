@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ContactCTA from "@/components/sections/ContactCTA";
 import GlassCard from "@/components/ui/GlassCard";
 import ServiceIcon from "@/components/ui/ServiceIcon";
 import SectionDivider from "@/components/ui/SectionDivider";
 import { services } from "@/data/services";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Services | Winchester Consultancy",
@@ -42,7 +44,6 @@ export default function ServicesPage() {
                 as="article"
               >
                 <div
-                  id={service.id}
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
                   style={{
                     background: "rgba(11,17,24,0.6)",
@@ -51,12 +52,25 @@ export default function ServicesPage() {
                 >
                   <ServiceIcon name={service.icon} size={22} />
                 </div>
-                <h2 className="font-cinzel font-bold text-white text-lg leading-snug">
-                  {service.title}
-                </h2>
+                <div className="flex flex-col gap-1">
+                  <p className="eyebrow text-[0.6rem]">{service.detail.tagline}</p>
+                  <h2 className="font-cinzel font-bold text-white text-lg leading-snug">
+                    {service.title}
+                  </h2>
+                </div>
                 <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed flex-1">
                   {service.description}
                 </p>
+                <Link
+                  href={service.href}
+                  className="inline-flex items-center gap-1.5 text-[#C9A84C] text-sm font-inter font-medium group transition-all duration-200 mt-auto"
+                >
+                  View Service
+                  <ArrowRight
+                    size={14}
+                    className="transition-transform duration-200 group-hover:translate-x-1"
+                  />
+                </Link>
               </GlassCard>
             ))}
           </div>

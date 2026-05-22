@@ -19,6 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://winchesterconsultancy.co.uk"),
   title: "Winchester Consultancy | School Compliance Intelligence",
   description:
     "Intelligence That Builds Confidence. Expert school compliance, governance, and AI readiness consultancy for schools and multi-academy trusts.",
