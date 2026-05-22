@@ -23,7 +23,7 @@ export default function TrustBar() {
                 {trustItems.map((item, i) => {
                   const Icon = iconMap[item.icon];
                   return (
-                    <div key={i} className={`glass-inset flex flex-col items-center text-center justify-center gap-2 py-4 reveal reveal-delay-${i + 1 as 1|2|3|4}`}>
+                    <div key={i} className={`glass-inset flex flex-col items-center text-center justify-center gap-2 py-4 [border-top-color:rgba(201,168,76,0.45)] reveal reveal-delay-${i + 1 as 1|2|3|4}`}>
                       <Icon
                         size={20}
                         className="text-[#C9A84C]"

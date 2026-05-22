@@ -9,7 +9,7 @@ export default function StatsSection() {
       <section className="py-16 bg-[#111A23] relative overflow-hidden" aria-labelledby="stats-heading">
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 55%, rgba(201,168,76,0.05) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 55%, rgba(201,168,76,0.07) 0%, transparent 70%)" }}
           aria-hidden="true"
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -29,7 +29,7 @@ export default function StatsSection() {
                 >
                   <span
                     className="font-cinzel font-black text-[#C9A84C] text-5xl lg:text-6xl"
-                    style={{ textShadow: "0 0 32px rgba(201,168,76,0.30), 0 0 10px rgba(201,168,76,0.15)" }}
+                    style={{ textShadow: "0 0 40px rgba(201,168,76,0.40), 0 0 16px rgba(201,168,76,0.22), 0 2px 8px rgba(0,0,0,0.40)" }}
                   >
                     {stat.value}
                   </span>
