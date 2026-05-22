@@ -15,9 +15,11 @@ export default function ServicesRow() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12">
-            <p className="eyebrow mb-3 reveal">What We Do</p>
+            <p className="eyebrow mb-3 reveal">Our Services</p>
             <h2 id="services-heading" className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-              Core Services
+              Comprehensive Assurance.
+              <br />
+              <span style={{ color: "#C9A84C" }}>Tailored to Your Needs.</span>
             </h2>
           </div>
 
