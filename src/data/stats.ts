@@ -6,8 +6,8 @@ export const stats = [
   },
   {
     value: "50+",
-    label: "MATs & Multi-site Organisations",
-    description: "MATs and multi-site organisations",
+    label: "Multi-Academy Trusts",
+    description: "And multi-site organisations",
   },
   {
     value: "16+",

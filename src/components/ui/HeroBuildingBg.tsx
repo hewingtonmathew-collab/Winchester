@@ -5,8 +5,7 @@ export default function HeroBuildingBg() {
   const numCols = 17;
   const numRows = 11;
 
-  // Lit window map: [colIndex, rowIndex] → warm opacity (0.35–0.90)
-  // More windows, higher opacities, organic distribution
+  // Warm amber-lit windows (interior office lights)
   const litMap: Record<string, number> = {
     // Row 0
     "1-0": 0.75, "3-0": 0.55, "5-0": 0.80, "7-0": 0.45, "9-0": 0.65, "11-0": 0.50, "13-0": 0.40, "15-0": 0.60,
@@ -30,6 +29,20 @@ export default function HeroBuildingBg() {
     "0-9": 0.40, "2-9": 0.55, "4-9": 0.45, "6-9": 0.60, "8-9": 0.50, "10-9": 0.40, "14-9": 0.55,
   };
 
+  // Cool blue-white screen-lit windows (fluorescent / monitor glow variety)
+  const coolLitMap: Record<string, number> = {
+    "2-0": 0.55, "8-0": 0.50, "14-0": 0.45,
+    "5-1": 0.60, "11-1": 0.50,
+    "4-2": 0.55, "10-2": 0.60, "14-2": 0.45,
+    "3-3": 0.50, "9-3": 0.55, "15-3": 0.50,
+    "6-4": 0.60, "12-4": 0.45,
+    "3-5": 0.50, "9-5": 0.55, "15-5": 0.50,
+    "4-6": 0.55, "10-6": 0.60, "14-6": 0.45,
+    "5-7": 0.55, "11-7": 0.45,
+    "4-8": 0.50, "8-8": 0.55, "12-8": 0.45,
+    "5-9": 0.45, "11-9": 0.50,
+  };
+
   const warmColor = "#c8a840";
 
   return (
@@ -47,35 +60,39 @@ export default function HeroBuildingBg() {
           <stop offset="100%" stopColor="#0c1926" />
         </linearGradient>
 
-        {/* Window glass — dark tinted blue */}
+        {/* Building wall — dark concrete between windows */}
+        <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor="#0a1522" />
+          <stop offset="100%" stopColor="#070f1a" />
+        </linearGradient>
+
+        {/* Window glass — dark tinted, low opacity to blend into wall */}
         <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="#0e1d2c" />
           <stop offset="100%" stopColor="#081320" />
         </linearGradient>
 
-        {/* Warm lit window — amber gold gradient */}
+        {/* Warm lit window — amber gold gradient (interior office lights) */}
         <linearGradient id="lit" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="#f0c864" />
           <stop offset="40%"  stopColor="#d4a030" />
           <stop offset="100%" stopColor="#9a6c10" />
         </linearGradient>
 
-        {/* Window glow bloom filter */}
+        {/* Cool lit window — blue-white (screens / fluorescent) */}
+        <linearGradient id="coolLit" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor="#c8dff0" />
+          <stop offset="40%"  stopColor="#8ab8d8" />
+          <stop offset="100%" stopColor="#4a88b4" />
+        </linearGradient>
+
+        {/* Window warm glow bloom filter */}
         <filter id="bloom" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
 
-        {/* Strong glow filter for bright windows */}
-        <filter id="glow" x="-60%" y="-60%" width="220%" height="220%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-
-        {/* Atmospheric warm glows — more intense */}
+        {/* Atmospheric warm glows — cluster on right third */}
         <radialGradient id="atm1" cx="72%" cy="38%" r="35%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor={warmColor} stopOpacity="0.40" />
           <stop offset="60%"  stopColor={warmColor} stopOpacity="0.14" />
@@ -125,19 +142,22 @@ export default function HeroBuildingBg() {
       {/* ── Base dark sky ── */}
       <rect width="1440" height="900" fill="url(#hbg2)" />
 
-      {/* ── Dark glass window panels ── */}
+      {/* ── Building wall fill — concrete panel between windows ── */}
+      <rect x={colStart} y={0} width={1440 - colStart} height={900} fill="url(#wall)" opacity={0.85} />
+
+      {/* ── Dark glass window panels (lower opacity — let wall show) ── */}
       {Array.from({ length: numRows }, (_, ri) =>
         Array.from({ length: numCols }, (_, ci) => {
           const x = colStart + ci * colStep + 2;
           const y = ri * rowStep + 2;
           return (
             <rect key={`dp-${ci}-${ri}`} x={x} y={y} width={56} height={88}
-              fill="url(#glass)" opacity={0.80} />
+              fill="url(#glass)" opacity={0.50} />
           );
         })
       )}
 
-      {/* ── Lit window glow halos (behind windows for bloom effect) ── */}
+      {/* ── Lit window glow halos — warm amber (behind for bloom) ── */}
       {Array.from({ length: numRows }, (_, ri) =>
         Array.from({ length: numCols }, (_, ci) => {
           const op = litMap[`${ci}-${ri}`];
@@ -151,7 +171,7 @@ export default function HeroBuildingBg() {
         })
       )}
 
-      {/* ── Lit windows (warm amber) ── */}
+      {/* ── Warm amber lit windows ── */}
       {Array.from({ length: numRows }, (_, ri) =>
         Array.from({ length: numCols }, (_, ci) => {
           const op = litMap[`${ci}-${ri}`];
@@ -165,21 +185,37 @@ export default function HeroBuildingBg() {
         })
       )}
 
+      {/* ── Cool blue screen-lit windows (variety) ── */}
+      {Array.from({ length: numRows }, (_, ri) =>
+        Array.from({ length: numCols }, (_, ci) => {
+          const op = coolLitMap[`${ci}-${ri}`];
+          if (!op) return null;
+          // Skip if also warm-lit
+          if (litMap[`${ci}-${ri}`]) return null;
+          const x = colStart + ci * colStep + 2;
+          const y = ri * rowStep + 2;
+          return (
+            <rect key={`cw-${ci}-${ri}`} x={x} y={y} width={56} height={88}
+              fill="url(#coolLit)" opacity={op} />
+          );
+        })
+      )}
+
       {/* ── Structural steel frame — major verticals every 3 cols ── */}
       {[460, 640, 820, 1000, 1180, 1360, 1440].map((x) => (
         <line key={`mvc-${x}`} x1={x} y1={0} x2={x} y2={900}
-          stroke="#1e3348" strokeWidth="4" strokeOpacity="0.9" />
+          stroke="#1e3348" strokeWidth="5" strokeOpacity="0.95" />
       ))}
       {/* Minor verticals */}
       {Array.from({ length: numCols + 1 }, (_, i) => colStart + i * colStep).map((x) => (
         <line key={`mvc2-${x}`} x1={x} y1={0} x2={x} y2={900}
-          stroke="rgba(36,56,76,0.65)" strokeWidth="1" />
+          stroke="rgba(30,48,64,0.80)" strokeWidth="2" />
       ))}
 
       {/* ── Structural floor slabs ── */}
       {Array.from({ length: numRows + 1 }, (_, i) => i * rowStep).map((y) => (
         <line key={`hf-${y}`} x1={460} y1={y} x2={1440} y2={y}
-          stroke="#1c2e3e" strokeWidth="3" />
+          stroke="#1a2c3c" strokeWidth="4" />
       ))}
 
       {/* ── Atmospheric warm glow blobs ── */}
