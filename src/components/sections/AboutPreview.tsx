@@ -201,7 +201,7 @@ export default function AboutPreview() {
               {coreServices.map((service, i) => (
                 <div
                   key={service.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] hover:border-[rgba(201,168,76,0.35)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
+                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] bg-[rgba(11,17,24,0.30)] hover:border-[rgba(201,168,76,0.40)] hover:bg-[rgba(11,17,24,0.50)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
                 >
                   <div
                     className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center"
