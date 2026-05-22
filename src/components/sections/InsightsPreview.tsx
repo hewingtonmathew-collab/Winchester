@@ -12,9 +12,9 @@ export default function InsightsPreview() {
         <ScrollReveal>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
             <div>
-              <p className="eyebrow mb-3 reveal">Latest Thinking</p>
+              <p className="eyebrow mb-3 reveal">Intelligence &amp; Analysis</p>
               <h2 id="insights-heading" className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-                Insights &amp; Resources
+                Latest Insights
               </h2>
             </div>
             <div className="reveal reveal-delay-2">
@@ -31,14 +31,7 @@ export default function InsightsPreview() {
                 className={`flex flex-col gap-4 reveal reveal-delay-${i + 1 as 1 | 2 | 3}`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span
-                    className="inline-block px-2.5 py-0.5 rounded-full text-[0.65rem] font-inter font-semibold uppercase tracking-widest"
-                    style={{
-                      background: "rgba(201,168,76,0.12)",
-                      color: "#C9A84C",
-                      border: "1px solid rgba(201,168,76,0.25)",
-                    }}
-                  >
+                  <span className="badge badge-gold uppercase tracking-widest">
                     {article.category}
                   </span>
                   <p className="font-inter text-[#A7B1BE] text-xs">{article.date}</p>
@@ -56,7 +49,7 @@ export default function InsightsPreview() {
                   <div className="flex items-center gap-3">
                     <span className="font-inter text-[#A7B1BE] text-xs">{article.author}</span>
                     <span className="inline-flex items-center gap-1 font-inter text-[#A7B1BE] text-xs">
-                      <Clock size={10} strokeWidth={1.5} />
+                      <Clock size={10} strokeWidth={1.5} aria-hidden="true" />
                       {article.readTime}
                     </span>
                   </div>

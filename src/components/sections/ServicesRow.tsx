@@ -17,7 +17,7 @@ export default function ServicesRow() {
           <div className="text-center mb-12">
             <p className="eyebrow mb-3 reveal">What We Do</p>
             <h2 id="services-heading" className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-              Our Services
+              Core Services
             </h2>
           </div>
 
@@ -37,6 +37,10 @@ export default function ServicesRow() {
                 >
                   <ServiceIcon name={service.icon} size={18} />
                 </div>
+
+                <p className="font-inter text-[#C9A84C] text-[0.6rem] font-semibold uppercase tracking-widest leading-none">
+                  {service.detail.tagline}
+                </p>
 
                 <h3 className="font-cinzel font-bold text-white text-xs leading-snug tracking-wide">
                   {service.title}

@@ -32,6 +32,12 @@ export default function ValuesSection() {
       <section className="py-16 bg-[#0B1118]" aria-label="Our values">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
+            <div className="text-center mb-12">
+              <p className="eyebrow mb-3 reveal">Our Principles</p>
+              <h2 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
+                What We Stand For
+              </h2>
+            </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {values.map((value, i) => {
                 const Icon = value.icon;
@@ -47,7 +53,7 @@ export default function ValuesSection() {
                         border: "1px solid rgba(201,168,76,0.25)",
                       }}
                     >
-                      <Icon size={20} className="text-[#C9A84C]" strokeWidth={1.5} />
+                      <Icon size={20} className="text-[#C9A84C]" strokeWidth={1.5} aria-hidden="true" />
                     </div>
                     <p className="font-cinzel font-bold text-white text-sm tracking-widest uppercase">
                       {value.title}
