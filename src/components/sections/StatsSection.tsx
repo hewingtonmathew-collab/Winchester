@@ -12,7 +12,8 @@ export default function StatsSection() {
             <div className="text-center mb-14">
               <p className="eyebrow mb-3 reveal">By the Numbers</p>
               <h2 id="stats-heading" className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-                Proven at Scale
+                Proven at{" "}
+                <span style={{ color: "#C9A84C" }}>Scale.</span>
               </h2>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">

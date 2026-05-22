@@ -39,7 +39,7 @@ export default function ServicesRow() {
                     boxShadow: "0 0 20px rgba(201,168,76,0.12), inset 0 1px 0 rgba(201,168,76,0.06)",
                   }}
                 >
-                  <ServiceIcon name={service.icon} size={26} />
+                  <ServiceIcon name={service.icon} size={28} />
                 </div>
 
                 {/* Title — uppercase, more prominent */}
