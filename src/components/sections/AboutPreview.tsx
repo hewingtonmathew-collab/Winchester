@@ -27,70 +27,82 @@ export default function AboutPreview() {
             >
               <defs>
                 <linearGradient id="room-bg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0d1a26" />
-                  <stop offset="100%" stopColor="#091320" />
+                  <stop offset="0%" stopColor="#0e1c2a" />
+                  <stop offset="100%" stopColor="#0a1520" />
                 </linearGradient>
-                <radialGradient id="table-light" cx="50%" cy="60%" r="55%">
-                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.08" />
+                <radialGradient id="table-light" cx="50%" cy="65%" r="60%">
+                  <stop offset="0%" stopColor="#c8a840" stopOpacity="0.14" />
                   <stop offset="100%" stopColor="#c8a840" stopOpacity="0" />
                 </radialGradient>
                 <linearGradient id="win-light" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1a2e42" />
-                  <stop offset="100%" stopColor="#0f1e2e" />
+                  <stop offset="0%" stopColor="#253a52" />
+                  <stop offset="60%" stopColor="#1a2e44" />
+                  <stop offset="100%" stopColor="#112030" />
                 </linearGradient>
+                {/* Ambient window glow */}
+                <radialGradient id="win-glow" cx="50%" cy="25%" r="50%">
+                  <stop offset="0%" stopColor="#4a7090" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#4a7090" stopOpacity="0" />
+                </radialGradient>
               </defs>
 
               {/* Background */}
               <rect width="640" height="480" fill="url(#room-bg)" />
 
-              {/* Windows on back wall — lit */}
-              <rect x="60" y="60" width="120" height="180" fill="url(#win-light)" rx="2" />
-              <rect x="200" y="60" width="120" height="180" fill="url(#win-light)" rx="2" />
-              <rect x="340" y="60" width="120" height="180" fill="url(#win-light)" rx="2" />
-              <rect x="480" y="60" width="100" height="180" fill="url(#win-light)" rx="2" />
+              {/* Window ambient light glow */}
+              <rect width="640" height="480" fill="url(#win-glow)" />
+
+              {/* Windows on back wall — lit with more depth */}
+              <rect x="55" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
+              <rect x="195" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
+              <rect x="335" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
+              <rect x="477" y="55" width="110" height="185" fill="url(#win-light)" rx="3" />
               {/* Window frames */}
-              <rect x="60" y="60" width="120" height="180" fill="none" stroke="rgba(42,65,85,0.8)" strokeWidth="3" rx="2" />
-              <rect x="200" y="60" width="120" height="180" fill="none" stroke="rgba(42,65,85,0.8)" strokeWidth="3" rx="2" />
-              <rect x="340" y="60" width="120" height="180" fill="none" stroke="rgba(42,65,85,0.8)" strokeWidth="3" rx="2" />
-              <rect x="480" y="60" width="100" height="180" fill="none" stroke="rgba(42,65,85,0.8)" strokeWidth="3" rx="2" />
+              <rect x="55" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
+              <rect x="195" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
+              <rect x="335" y="55" width="125" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
+              <rect x="477" y="55" width="110" height="185" fill="none" stroke="rgba(55,80,105,0.90)" strokeWidth="3.5" rx="3" />
               {/* Window cross bars */}
-              <line x1="120" y1="60" x2="120" y2="240" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
-              <line x1="60" y1="150" x2="180" y2="150" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
-              <line x1="260" y1="60" x2="260" y2="240" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
-              <line x1="200" y1="150" x2="320" y2="150" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
-              <line x1="400" y1="60" x2="400" y2="240" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
-              <line x1="340" y1="150" x2="460" y2="150" stroke="rgba(42,65,85,0.8)" strokeWidth="2" />
+              <line x1="117" y1="55" x2="117" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <line x1="55" y1="147" x2="180" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <line x1="257" y1="55" x2="257" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <line x1="195" y1="147" x2="320" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <line x1="397" y1="55" x2="397" y2="240" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+              <line x1="335" y1="147" x2="460" y2="147" stroke="rgba(55,80,105,0.85)" strokeWidth="2.5" />
+
+              {/* Wall — darker band below windows */}
+              <rect x="0" y="240" width="640" height="120" fill="rgba(8,14,22,0.60)" />
 
               {/* Conference table */}
-              <ellipse cx="320" cy="350" rx="200" ry="50" fill="#131f2e" stroke="rgba(42,58,75,0.9)" strokeWidth="2" />
-              <rect x="120" y="340" width="400" height="40" fill="#131f2e" stroke="rgba(42,58,75,0.9)" strokeWidth="2" rx="3" />
+              <ellipse cx="320" cy="355" rx="215" ry="55" fill="#0f1c2c" stroke="rgba(50,72,95,0.95)" strokeWidth="2.5" />
+              <rect x="105" y="342" width="430" height="44" fill="#0f1c2c" stroke="rgba(50,72,95,0.95)" strokeWidth="2.5" rx="4" />
 
               {/* Table ambient glow */}
               <rect width="640" height="480" fill="url(#table-light)" />
 
-              {/* People silhouettes — seated */}
+              {/* People silhouettes — more contrast */}
               {/* Person 1 */}
-              <ellipse cx="160" cy="298" rx="22" ry="22" fill="#1b2d40" />
-              <rect x="138" y="318" width="44" height="35" fill="#1b2d40" rx="5" />
+              <ellipse cx="160" cy="300" rx="23" ry="23" fill="#1f3348" />
+              <rect x="137" y="321" width="46" height="36" fill="#1f3348" rx="6" />
               {/* Person 2 */}
-              <ellipse cx="260" cy="292" rx="22" ry="22" fill="#1c2f42" />
-              <rect x="238" y="312" width="44" height="38" fill="#1c2f42" rx="5" />
-              {/* Person 3 (standing/presenting) */}
-              <ellipse cx="380" cy="260" rx="24" ry="24" fill="#1e3248" />
-              <rect x="356" y="282" width="48" height="55" fill="#1e3248" rx="5" />
+              <ellipse cx="265" cy="293" rx="23" ry="23" fill="#22364c" />
+              <rect x="242" y="314" width="46" height="40" fill="#22364c" rx="6" />
+              {/* Person 3 (presenting) */}
+              <ellipse cx="385" cy="258" rx="26" ry="26" fill="#253952" />
+              <rect x="359" y="282" width="52" height="58" fill="#253952" rx="6" />
               {/* Person 4 */}
-              <ellipse cx="490" cy="295" rx="22" ry="22" fill="#1b2d40" />
-              <rect x="468" y="315" width="44" height="36" fill="#1b2d40" rx="5" />
+              <ellipse cx="495" cy="297" rx="23" ry="23" fill="#1f3348" />
+              <rect x="472" y="318" width="46" height="37" fill="#1f3348" rx="6" />
 
-              {/* Screen/presentation on left */}
-              <rect x="20" y="120" width="35" height="25" fill="#0a1825" stroke="rgba(201,168,76,0.35)" strokeWidth="1.5" rx="2" />
-              <rect x="25" y="125" width="25" height="15" fill="rgba(201,168,76,0.12)" rx="1" />
+              {/* Presentation screen (left wall) */}
+              <rect x="18" y="118" width="38" height="28" fill="#0c1926" stroke="rgba(201,168,76,0.45)" strokeWidth="2" rx="2" />
+              <rect x="23" y="123" width="28" height="18" fill="rgba(201,168,76,0.15)" rx="1" />
 
               {/* Gold accent line at bottom */}
-              <line x1="0" y1="475" x2="640" y2="475" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+              <line x1="0" y1="475" x2="640" y2="475" stroke="rgba(201,168,76,0.40)" strokeWidth="1.5" />
 
-              {/* Subtle overlay for depth */}
-              <rect width="640" height="480" fill="rgba(5,12,20,0.15)" />
+              {/* Depth overlay */}
+              <rect width="640" height="480" fill="rgba(4,10,18,0.12)" />
             </svg>
 
             {/* Floating label */}
