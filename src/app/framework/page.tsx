@@ -22,7 +22,15 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Winchester Digital Assurance Framework | Winchester Consultancy",
   description:
-    "A structured intelligence methodology for school compliance — 6 pillars covering Digital Safeguarding, Governance, AI Governance, Cyber Resilience, Data Protection, and Operational Assurance.",
+    "Winchester's Digital Assurance Framework is a structured school compliance methodology covering KCSIE compliance, digital safeguarding, AI governance, cyber resilience, data protection, and governance — giving schools and trusts a rigorous, evidence-based assurance cycle.",
+  openGraph: {
+    type: "website",
+    title: "Winchester Digital Assurance Framework | Winchester Consultancy",
+    description:
+      "Winchester's Digital Assurance Framework is a structured school compliance methodology covering KCSIE compliance, digital safeguarding, AI governance, cyber resilience, data protection, and governance — giving schools and trusts a rigorous, evidence-based assurance cycle.",
+    url: "https://winchesterconsultancy.co.uk/framework",
+    siteName: "Winchester Consultancy",
+  },
   twitter: { card: "summary_large_image" },
 };
 
