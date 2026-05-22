@@ -97,7 +97,7 @@ export default function ContactPage() {
               </p>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                 We aim to respond to all enquiries within one business day.
-                For urgent matters, please call us directly.
+                For urgent matters, please email us directly and we will prioritise your request.
               </p>
             </div>
           </div>
