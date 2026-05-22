@@ -2,6 +2,7 @@ import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import ButtonSecondary from "@/components/ui/ButtonSecondary";
 import GlassCard from "@/components/ui/GlassCard";
 import ShieldLogo from "@/components/ui/ShieldLogo";
+import HeroBuildingBg from "@/components/ui/HeroBuildingBg";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 
@@ -11,58 +12,10 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center pt-16 overflow-hidden"
       aria-label="Hero"
     >
-      {/* ── BACKGROUND LAYERS ─────────────────────────────────────────── */}
-
-      {/* 1. Deep navy base */}
-      <div
-        className="absolute inset-0 -z-40"
-        style={{
-          background:
-            "linear-gradient(150deg, #060d15 0%, #0B1118 45%, #0d1722 100%)",
-        }}
-      />
-
-      {/* 2. Simulated building facade — fine window-grid lines */}
-      <div
-        className="absolute inset-0 -z-30 opacity-40"
-        style={{
-          backgroundImage: [
-            "repeating-linear-gradient(90deg, transparent 0px, transparent 79px, rgba(201,168,76,0.05) 79px, rgba(201,168,76,0.05) 80px)",
-            "repeating-linear-gradient(0deg, transparent 0px, transparent 59px, rgba(201,168,76,0.04) 59px, rgba(201,168,76,0.04) 60px)",
-          ].join(", "),
-        }}
-      />
-
-      {/* 3. Architectural bokeh — simulated interior lighting of a glass building */}
-      <div
-        className="absolute inset-0 -z-20"
-        style={{
-          background: [
-            "radial-gradient(ellipse 55% 45% at 78% 42%, rgba(201,168,76,0.11) 0%, transparent 65%)",
-            "radial-gradient(ellipse 35% 25% at 65% 28%, rgba(180,148,64,0.07) 0%, transparent 55%)",
-            "radial-gradient(circle 180px at 85% 68%, rgba(160,130,55,0.06) 0%, transparent 100%)",
-            "radial-gradient(circle 250px at 55% 55%, rgba(120,100,45,0.04) 0%, transparent 100%)",
-          ].join(", "),
-        }}
-      />
-
-      {/* 4. Left-side readability vignette */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          background:
-            "linear-gradient(100deg, rgba(6,13,21,0.96) 0%, rgba(6,13,21,0.82) 38%, rgba(6,13,21,0.30) 65%, transparent 100%)",
-        }}
-      />
-
-      {/* 5. Edge vignette */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 35%, rgba(5,10,18,0.75) 100%)",
-        }}
-      />
+      {/* ── BACKGROUND: SVG architectural building facade ── */}
+      <div className="absolute inset-0 -z-10">
+        <HeroBuildingBg />
+      </div>
 
       {/* ── CONTENT ───────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">

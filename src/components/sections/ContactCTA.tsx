@@ -16,9 +16,9 @@ export default function ContactCTA() {
               id="contact-cta-heading"
               className="heading-display text-3xl lg:text-5xl mb-6 reveal reveal-delay-1"
             >
-              Ready to Build
+              Let&apos;s Start a
               <br />
-              Confidence?
+              <span style={{ color: "#C9A84C" }}>Conversation.</span>
             </h2>
             <p className="font-inter text-[#E6E9ED] text-base leading-relaxed mb-10 max-w-xl mx-auto reveal reveal-delay-2">
               Whether you have a specific compliance challenge or want to understand how
