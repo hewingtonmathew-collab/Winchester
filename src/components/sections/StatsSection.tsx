@@ -21,7 +21,10 @@ export default function StatsSection() {
                   key={stat.label}
                   className={`text-center flex flex-col gap-2 reveal reveal-delay-${i + 1 as 1 | 2 | 3 | 4}`}
                 >
-                  <span className="font-cinzel font-black text-[#C9A84C] text-5xl lg:text-6xl">
+                  <span
+                    className="font-cinzel font-black text-[#C9A84C] text-5xl lg:text-6xl"
+                    style={{ textShadow: "0 0 32px rgba(201,168,76,0.30), 0 0 10px rgba(201,168,76,0.15)" }}
+                  >
                     {stat.value}
                   </span>
                   <span className="font-inter text-[#E6E9ED] text-sm tracking-wide leading-snug font-semibold">
