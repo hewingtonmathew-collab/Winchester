@@ -6,8 +6,13 @@ export default function StatsSection() {
   return (
     <>
       <SectionDivider />
-      <section className="py-16 bg-[#111A23]" aria-labelledby="stats-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 bg-[#111A23] relative overflow-hidden" aria-labelledby="stats-heading">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 55%, rgba(201,168,76,0.05) 0%, transparent 70%)" }}
+          aria-hidden="true"
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <ScrollReveal>
             <div className="text-center mb-14">
               <p className="eyebrow mb-3 reveal">By the Numbers</p>

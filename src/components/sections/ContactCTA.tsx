@@ -8,8 +8,13 @@ export default function ContactCTA() {
   return (
     <>
       <SectionDivider />
-      <section className="py-24 bg-[#111A23]" aria-labelledby="contact-cta-heading">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-24 bg-[#111A23] relative overflow-hidden" aria-labelledby="contact-cta-heading">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,168,76,0.06) 0%, transparent 70%)" }}
+          aria-hidden="true"
+        />
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <ScrollReveal>
             <p className="eyebrow mb-4 reveal">Get in Touch</p>
             <h2
