@@ -191,12 +191,14 @@ export default function ServiceDetailPage({ params }: { params: Params }) {
                 </p>
                 <Link
                   href={s.href}
+                  aria-label={`Learn more about ${s.title}`}
                   className="inline-flex items-center gap-1.5 text-[#C9A84C] text-xs font-inter font-medium group transition-all duration-200"
                 >
                   Learn More
                   <ArrowRight
                     size={12}
                     className="transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden="true"
                   />
                 </Link>
               </GlassCard>

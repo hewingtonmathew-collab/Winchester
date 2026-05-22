@@ -26,6 +26,36 @@
   ::-webkit-scrollbar-track { background: #0B1118; }
   ::-webkit-scrollbar-thumb { background: #2A3340; border-radius: 9999px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.35); }
+
+  /* Global focus management */
+  :focus-visible {
+    outline: 2px solid rgba(201, 168, 76, 0.7);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-left,
+    .reveal-scale {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .animate-fade-up,
+    .animate-float,
+    .animate-pulse-slow,
+    .animate-glow-pulse,
+    .animate-scale-in,
+    .animate-slide-down {
+      animation: none !important;
+    }
+
+    html {
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {

@@ -75,6 +75,7 @@ export default function ContactPage() {
                       size={16}
                       className="text-[#C9A84C]"
                       strokeWidth={1.5}
+                      aria-hidden="true"
                     />
                   </div>
                   <div>

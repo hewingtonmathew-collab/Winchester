@@ -61,7 +61,7 @@ export default function ToolsPage() {
                         border: "1px solid rgba(201,168,76,0.3)",
                       }}
                     >
-                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} />
+                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} aria-hidden="true" />
                     </div>
                     <span className="inline-block px-2.5 py-0.5 rounded-full text-[0.65rem] font-inter font-semibold uppercase tracking-widest bg-[rgba(201,168,76,0.12)] border border-[rgba(201,168,76,0.25)] text-[#C9A84C]">
                       {tool.badge}
@@ -75,6 +75,7 @@ export default function ToolsPage() {
                   </p>
                   <Link
                     href={tool.href}
+                    aria-label={`Use ${tool.title}`}
                     className="inline-flex items-center gap-1 text-[#C9A84C] text-sm font-inter font-medium hover:text-white transition-colors duration-200"
                   >
                     {tool.cta}

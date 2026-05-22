@@ -190,7 +190,7 @@ export default function AboutPage() {
                         border: "1px solid rgba(201,168,76,0.3)",
                       }}
                     >
-                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} />
+                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} aria-hidden="true" />
                     </div>
                     <h3 className="font-cinzel font-bold text-white text-lg">{p.title}</h3>
                     <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
@@ -313,7 +313,7 @@ export default function AboutPage() {
                   className="inline-flex items-center gap-2 font-inter text-sm text-[#A7B1BE] hover:text-white transition-colors"
                 >
                   View Services
-                  <ArrowRight size={14} />
+                  <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>
             </div>

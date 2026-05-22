@@ -5,7 +5,7 @@ import SectionDivider from "@/components/ui/SectionDivider";
 
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0B1118]">
+    <main role="main" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0B1118]">
       {/* Dot grid */}
       <div
         className="absolute inset-0"
@@ -46,6 +46,6 @@ export default function NotFound() {
           <ButtonSecondary href="/contact">Get in Touch</ButtonSecondary>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

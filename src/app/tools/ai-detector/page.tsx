@@ -114,7 +114,7 @@ export default function AiDetectorPage() {
                 <ul className="flex flex-col gap-2.5">
                   {useCases.map((useCase) => (
                     <li key={useCase} className="flex gap-2.5 items-start">
-                      <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+                      <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[#C9A84C]" aria-hidden="true" />
                       <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                         {useCase}
                       </p>
