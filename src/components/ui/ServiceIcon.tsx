@@ -1,4 +1,14 @@
-import { Shield, Columns2, Cpu, BarChart2, Users } from "lucide-react";
+import {
+  Shield,
+  Columns2,
+  Cpu,
+  BarChart2,
+  Users,
+  Lock,
+  Database,
+  Briefcase,
+  HeartPulse,
+} from "lucide-react";
 import type { ServiceIconName } from "@/data/services";
 
 type Props = {
@@ -13,6 +23,11 @@ const iconMap: Record<ServiceIconName, React.ElementType> = {
   cpu: Cpu,
   "bar-chart": BarChart2,
   users: Users,
+  lock: Lock,
+  database: Database,
+  briefcase: Briefcase,
+  "heart-pulse": HeartPulse,
+  "bar-chart-2": BarChart2,
 };
 
 export default function ServiceIcon({ name, size = 20, className }: Props) {

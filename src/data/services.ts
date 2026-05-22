@@ -1,4 +1,14 @@
-export type ServiceIconName = "shield" | "columns" | "cpu" | "bar-chart" | "users";
+export type ServiceIconName =
+  | "shield"
+  | "columns"
+  | "cpu"
+  | "bar-chart"
+  | "users"
+  | "lock"
+  | "database"
+  | "briefcase"
+  | "heart-pulse"
+  | "bar-chart-2";
 
 export type Service = {
   id: string;
@@ -147,6 +157,141 @@ export const services: Service[] = [
         "Consistent standards and processes across all settings",
         "A central function that genuinely supports its schools",
         "Governance and accountability structures built for scale",
+      ],
+    },
+  },
+  {
+    id: "cyber-resilience",
+    icon: "lock",
+    title: "Cyber Resilience Review",
+    description:
+      "Structured assessment of your cyber security posture against NCSC guidance — identifying vulnerabilities before they become incidents.",
+    href: "/services/cyber-resilience",
+    detail: {
+      tagline: "Assess. Harden. Protect.",
+      intro:
+        "Schools and trusts are increasingly targeted by sophisticated cyber threats — from ransomware attacks that shut down entire networks to phishing campaigns that compromise sensitive staff and pupil data. Winchester Consultancy delivers a structured Cyber Resilience Review aligned to NCSC guidance and Cyber Essentials, providing school leaders with a clear picture of their current security posture and a prioritised roadmap to reduce risk. Our assessments go beyond technical checklists, examining the human, procedural, and governance dimensions of cyber security that are so often the weakest link. With education-sector context throughout, we help you build the defences that matter most.",
+      deliverables: [
+        "Cyber security posture assessment against NCSC Cyber Essentials and education-specific guidance",
+        "Phishing and social engineering vulnerability review with staff awareness recommendations",
+        "Ransomware readiness assessment: backup integrity, recovery procedures, and incident response planning",
+        "Secure configuration audit covering devices, networks, user accounts, and software",
+        "Penetration testing readiness report and vendor briefing pack",
+        "Staff cyber awareness training needs analysis and programme design",
+      ],
+      outcomes: [
+        "A clear, evidence-based picture of your cyber security strengths and vulnerabilities",
+        "A prioritised action plan aligned to NCSC Cyber Essentials certification readiness",
+        "Reduced exposure to ransomware, phishing, and data breach incidents",
+        "Governors and senior leaders equipped to provide meaningful cyber security oversight",
+      ],
+    },
+  },
+  {
+    id: "data-protection",
+    icon: "database",
+    title: "Data Protection Intelligence",
+    description:
+      "Expert review of your data protection compliance against UK GDPR, the DfE Data Protection Toolkit, and ICO guidance for educational settings.",
+    href: "/services/data-protection",
+    detail: {
+      tagline: "Compliant. Secure. Accountable.",
+      intro:
+        "Schools handle vast quantities of sensitive personal data — from pupil records and SEND information to staff files and third-party processor agreements — and the regulatory obligations under UK GDPR are substantial and unforgiving. Winchester Consultancy provides a comprehensive Data Protection Intelligence review that assesses your compliance posture against the DfE Data Protection Toolkit, ICO accountability framework, and best practice for educational settings. We examine not just the documentation but the real-world practices, data flows, and staff understanding that determine whether your school is genuinely compliant. Our approach equips your DPO and SLT with the evidence and tools to demonstrate accountability to regulators, governors, and the communities you serve.",
+      deliverables: [
+        "UK GDPR compliance audit against the DfE Data Protection Toolkit and ICO accountability framework",
+        "Records of Processing Activities (ROPA) review and development support",
+        "Data Protection Impact Assessment (DPIA) process review and template development",
+        "Third-party data processor agreement audit and due-diligence framework",
+        "Data subject rights procedure review (access requests, erasure, rectification)",
+        "Staff training needs analysis and DPO support programme design",
+      ],
+      outcomes: [
+        "A fully evidenced compliance baseline against UK GDPR and DfE Data Protection Toolkit requirements",
+        "Robust ROPA, DPIA, and processor agreement documentation ready for ICO scrutiny",
+        "Clear, actionable procedures for handling data subject rights requests efficiently and lawfully",
+        "A staff training programme that builds genuine data protection culture rather than compliance theatre",
+      ],
+    },
+  },
+  {
+    id: "hr-finance",
+    icon: "briefcase",
+    title: "HR, Finance & Procurement",
+    description:
+      "Operational intelligence across human resources, financial management, and procurement — ensuring compliance, efficiency, and best value.",
+    href: "/services/hr-finance",
+    detail: {
+      tagline: "Efficient. Compliant. Best Value.",
+      intro:
+        "Strong financial management, rigorous HR compliance, and effective procurement are the operational pillars that allow schools and trusts to deploy resources where they matter most — in the classroom. Winchester Consultancy provides specialist operational intelligence across all three disciplines, drawing on deep expertise in education sector frameworks including ESFA requirements, Crown Commercial Service agreements, and DfE guidance on financial management in schools. Our reviews identify compliance gaps, inefficiencies, and risk exposures across HR, finance, and procurement functions — and translate findings into practical, prioritised improvement plans that senior leaders and governors can act on immediately.",
+      deliverables: [
+        "Safer recruitment compliance audit against KCSIE and Keeping Children Safe in Education statutory guidance",
+        "HR policy framework review: contracts, disciplinary procedures, grievance, absence, and performance management",
+        "Financial health review: budget management, internal controls, financial reporting, and ESFA compliance",
+        "Procurement compliance audit against Public Contracts Regulations, ESPO, and Crown Commercial Service frameworks",
+        "Value for money assessment across key spend categories with benchmarking against sector data",
+        "Trust-level finance framework design: scheme of financial delegation, financial regulations, and audit committee support",
+      ],
+      outcomes: [
+        "Evidenced compliance across safer recruitment, HR policy, and financial management obligations",
+        "Stronger internal controls and financial governance that withstand ESFA and external audit scrutiny",
+        "Procurement processes that deliver genuine best value and meet public sector transparency requirements",
+        "Senior leaders and governors confident in the integrity and efficiency of operational functions",
+      ],
+    },
+  },
+  {
+    id: "health-safety",
+    icon: "heart-pulse",
+    title: "Health & Safety Assurance",
+    description:
+      "Comprehensive health and safety review ensuring your school meets its statutory obligations and provides a safe environment for pupils and staff.",
+    href: "/services/health-safety",
+    detail: {
+      tagline: "Safe Environments. Statutory Confidence.",
+      intro:
+        "Every school carries a fundamental statutory duty to maintain safe premises and working environments for pupils, staff, and visitors — and the consequences of getting this wrong can be severe. Winchester Consultancy delivers a comprehensive Health & Safety Assurance review that examines your compliance posture against HSE statutory requirements, DfE premises standards, and sector-specific guidance across fire safety, lone working, COSHH, and educational visits. We work with headteachers, SBMs, and governing bodies to build a safety management culture that goes beyond paperwork — one where risk is actively managed, staff are properly trained, and governors have the oversight they need to discharge their legal responsibilities with confidence.",
+      deliverables: [
+        "Statutory health and safety compliance audit against HSE requirements and DfE premises standards",
+        "Risk assessment framework review: quality, coverage, review cycles, and staff competency",
+        "Fire safety management review including evacuation procedures, fire risk assessment status, and record-keeping",
+        "Educational visits and school trips compliance review against the DfE's standards for learning outside the classroom",
+        "COSHH, manual handling, lone working, and display screen equipment (DSE) compliance assessment",
+        "Governor health and safety oversight review with training recommendations and reporting framework",
+      ],
+      outcomes: [
+        "A comprehensive compliance baseline demonstrating statutory obligations are understood and met",
+        "A prioritised remediation plan that addresses the highest-risk gaps first with clear ownership and timescales",
+        "Governors equipped with the knowledge and reporting tools to fulfil their health and safety oversight responsibilities",
+        "A safety management culture embedded in day-to-day operations rather than confined to annual audits",
+      ],
+    },
+  },
+  {
+    id: "compliance-intelligence",
+    icon: "bar-chart-2",
+    title: "Compliance Intelligence Systems",
+    description:
+      "Building the systems, dashboards and frameworks that give your school or trust real-time visibility of compliance status across all operational areas.",
+    href: "/services/compliance-intelligence",
+    detail: {
+      tagline: "Visibility. Control. Confidence.",
+      intro:
+        "For too many schools and trusts, compliance is managed through disconnected spreadsheets, manual reminders, and institutional memory — leaving leaders exposed to gaps they cannot see and risks they cannot quantify. Winchester Consultancy builds bespoke Compliance Intelligence Systems that consolidate your compliance obligations into coherent, trackable frameworks — giving headteachers, SBMs, trust executives, and governors a real-time view of where you stand and what needs attention. Our approach combines statutory policy review cycles, risk register design, and KPI frameworks into integrated systems that drive continuous assurance rather than one-off audits. The result is a school or trust that governs itself proactively, with the audit trails and evidence portfolios that Ofsted and regulators expect to see.",
+      deliverables: [
+        "Compliance framework design: statutory policy register with review cycles, ownership, and RAG status tracking",
+        "Governance dashboard design for trust boards and local governing bodies — translating compliance data into strategic oversight",
+        "Risk register development with likelihood and impact scoring, mitigation plans, and governor reporting integration",
+        "Self-evaluation framework (SEF) aligned to compliance domains: safeguarding, governance, operations, finance, and digital",
+        "KPI design for trust board reporting: compliance health metrics, trend analysis, and exception reporting",
+        "Audit trail and evidence portfolio framework for Ofsted and regulatory inspection readiness",
+      ],
+      outcomes: [
+        "A single, coherent view of compliance status across all statutory and regulatory obligations",
+        "Trust boards and governing bodies with the data and dashboards to provide meaningful strategic oversight",
+        "A risk register that is genuinely used — embedded in committee cycles and informing decision-making",
+        "Inspection readiness embedded into daily operations, not scrambled for in the weeks before Ofsted arrives",
       ],
     },
   },
