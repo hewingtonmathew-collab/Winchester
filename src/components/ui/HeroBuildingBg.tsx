@@ -1,23 +1,33 @@
 export default function HeroBuildingBg() {
-  // Grid: columns start at x=480, spaced 62px. Rows start at y=0, spaced 96px.
-  // Window panel = 58w × 90h, offset 2px from grid line.
-  const colStart = 480;
-  const colStep = 62;
-  const rowStep = 96;
-  const numCols = 16;
-  const numRows = 10;
+  const colStart = 460;
+  const colStep = 60;
+  const rowStep = 94;
+  const numCols = 17;
+  const numRows = 11;
 
-  // Lit window positions [colIndex, rowIndex, warm_opacity]
-  // opacity 0.40-0.70 = brightly lit; 0.15-0.35 = softly lit; 0 = dark
+  // Lit window map: [colIndex, rowIndex] → warm opacity (0.35–0.90)
+  // More windows, higher opacities, organic distribution
   const litMap: Record<string, number> = {
-    "1-0": 0.55, "3-0": 0.45, "5-0": 0.60, "7-0": 0.35, "9-0": 0.50, "12-0": 0.40, "14-0": 0.30,
-    "0-1": 0.25, "2-1": 0.60, "4-1": 0.40, "6-1": 0.55, "8-1": 0.30, "10-1": 0.45, "13-1": 0.50, "15-1": 0.35,
-    "1-2": 0.65, "3-2": 0.50, "5-2": 0.35, "7-2": 0.60, "9-2": 0.45, "11-2": 0.30, "14-2": 0.55,
-    "0-3": 0.30, "2-3": 0.45, "4-3": 0.60, "6-3": 0.35, "8-3": 0.50, "10-3": 0.65, "12-3": 0.40, "15-3": 0.30,
-    "1-4": 0.50, "3-4": 0.35, "5-4": 0.60, "7-4": 0.45, "9-4": 0.30, "11-4": 0.55, "13-4": 0.40,
-    "0-5": 0.35, "2-5": 0.55, "4-5": 0.40, "6-5": 0.60, "8-5": 0.25, "10-5": 0.45, "14-5": 0.50,
-    "1-6": 0.45, "3-6": 0.60, "5-6": 0.30, "9-6": 0.50, "11-6": 0.35, "15-6": 0.40,
-    "2-7": 0.35, "4-7": 0.45, "6-7": 0.30, "8-7": 0.55, "12-7": 0.40,
+    // Row 0
+    "1-0": 0.75, "3-0": 0.55, "5-0": 0.80, "7-0": 0.45, "9-0": 0.65, "11-0": 0.50, "13-0": 0.40, "15-0": 0.60,
+    // Row 1
+    "0-1": 0.40, "2-1": 0.80, "4-1": 0.55, "6-1": 0.70, "8-1": 0.45, "10-1": 0.60, "12-1": 0.75, "14-1": 0.50, "16-1": 0.35,
+    // Row 2
+    "1-2": 0.85, "3-2": 0.65, "5-2": 0.45, "7-2": 0.80, "9-2": 0.55, "11-2": 0.40, "13-2": 0.70, "15-2": 0.60,
+    // Row 3
+    "0-3": 0.45, "2-3": 0.60, "4-3": 0.80, "6-3": 0.50, "8-3": 0.70, "10-3": 0.85, "12-3": 0.55, "14-3": 0.40, "16-3": 0.65,
+    // Row 4
+    "1-4": 0.70, "3-4": 0.50, "5-4": 0.80, "7-4": 0.60, "9-4": 0.45, "11-4": 0.75, "13-4": 0.55, "15-4": 0.40,
+    // Row 5
+    "0-5": 0.50, "2-5": 0.75, "4-5": 0.55, "6-5": 0.80, "8-5": 0.40, "10-5": 0.65, "12-5": 0.50, "14-5": 0.70, "16-5": 0.45,
+    // Row 6
+    "1-6": 0.60, "3-6": 0.80, "5-6": 0.45, "7-6": 0.70, "9-6": 0.75, "11-6": 0.50, "13-6": 0.40, "15-6": 0.65,
+    // Row 7
+    "2-7": 0.50, "4-7": 0.65, "6-7": 0.45, "8-7": 0.75, "10-7": 0.55, "12-7": 0.60, "14-7": 0.40, "16-7": 0.50,
+    // Row 8
+    "1-8": 0.45, "3-8": 0.60, "5-8": 0.75, "7-8": 0.40, "9-8": 0.65, "11-8": 0.55, "13-8": 0.70,
+    // Row 9
+    "0-9": 0.40, "2-9": 0.55, "4-9": 0.45, "6-9": 0.60, "8-9": 0.50, "10-9": 0.40, "14-9": 0.55,
   };
 
   const warmColor = "#c8a840";
@@ -32,65 +42,87 @@ export default function HeroBuildingBg() {
     >
       <defs>
         <linearGradient id="hbg2" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="#040b12" />
-          <stop offset="38%"  stopColor="#070f18" />
+          <stop offset="0%"   stopColor="#030910" />
+          <stop offset="32%"  stopColor="#060d16" />
           <stop offset="100%" stopColor="#0c1926" />
         </linearGradient>
 
-        {/* Window glass — dark but slightly reflective */}
+        {/* Window glass — dark tinted blue */}
         <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#0f1e2e" />
-          <stop offset="100%" stopColor="#091420" />
+          <stop offset="0%"   stopColor="#0e1d2c" />
+          <stop offset="100%" stopColor="#081320" />
         </linearGradient>
 
-        {/* Warm lit window fill */}
+        {/* Warm lit window — amber gold gradient */}
         <linearGradient id="lit" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#e8c060" />
-          <stop offset="50%"  stopColor="#c8a030" />
-          <stop offset="100%" stopColor="#a07820" />
+          <stop offset="0%"   stopColor="#f0c864" />
+          <stop offset="40%"  stopColor="#d4a030" />
+          <stop offset="100%" stopColor="#9a6c10" />
         </linearGradient>
 
-        {/* Atmospheric warm glows */}
-        <radialGradient id="atm1" cx="74%" cy="35%" r="30%" gradientUnits="objectBoundingBox">
+        {/* Window glow bloom filter */}
+        <filter id="bloom" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+
+        {/* Strong glow filter for bright windows */}
+        <filter id="glow" x="-60%" y="-60%" width="220%" height="220%" colorInterpolationFilters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* Atmospheric warm glows — more intense */}
+        <radialGradient id="atm1" cx="72%" cy="38%" r="35%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor={warmColor} stopOpacity="0.40" />
+          <stop offset="60%"  stopColor={warmColor} stopOpacity="0.14" />
+          <stop offset="100%" stopColor={warmColor} stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="atm2" cx="88%" cy="60%" r="28%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor={warmColor} stopOpacity="0.28" />
           <stop offset="100%" stopColor={warmColor} stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="atm2" cx="88%" cy="58%" r="25%" gradientUnits="objectBoundingBox">
-          <stop offset="0%"   stopColor={warmColor} stopOpacity="0.18" />
+        <radialGradient id="atm3" cx="60%" cy="72%" r="25%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor={warmColor} stopOpacity="0.20" />
           <stop offset="100%" stopColor={warmColor} stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="atm3" cx="62%" cy="70%" r="22%" gradientUnits="objectBoundingBox">
-          <stop offset="0%"   stopColor={warmColor} stopOpacity="0.13" />
+        <radialGradient id="atm4" cx="80%" cy="20%" r="20%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor={warmColor} stopOpacity="0.22" />
           <stop offset="100%" stopColor={warmColor} stopOpacity="0" />
         </radialGradient>
 
-        {/* Left readability vignette */}
+        {/* Left readability vignette — text side */}
         <linearGradient id="lv2" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="#040b12" stopOpacity="1" />
-          <stop offset="25%"  stopColor="#040b12" stopOpacity="0.96" />
-          <stop offset="45%"  stopColor="#040b12" stopOpacity="0.72" />
-          <stop offset="62%"  stopColor="#040b12" stopOpacity="0.30" />
-          <stop offset="100%" stopColor="#040b12" stopOpacity="0" />
+          <stop offset="0%"   stopColor="#030910" stopOpacity="1" />
+          <stop offset="22%"  stopColor="#030910" stopOpacity="0.97" />
+          <stop offset="38%"  stopColor="#030910" stopOpacity="0.82" />
+          <stop offset="55%"  stopColor="#030910" stopOpacity="0.40" />
+          <stop offset="72%"  stopColor="#030910" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="#030910" stopOpacity="0" />
         </linearGradient>
 
         {/* Edge/corner vignette */}
-        <radialGradient id="ev2" cx="58%" cy="50%" r="60%">
+        <radialGradient id="ev2" cx="58%" cy="50%" r="62%">
           <stop offset="0%"   stopColor="transparent" />
-          <stop offset="100%" stopColor="#030910" stopOpacity="0.65" />
+          <stop offset="100%" stopColor="#020810" stopOpacity="0.70" />
         </radialGradient>
 
-        {/* Top + bottom fades */}
+        {/* Top fade */}
         <linearGradient id="tf2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#040b12" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#040b12" stopOpacity="0" />
+          <stop offset="0%"   stopColor="#030910" stopOpacity="0.90" />
+          <stop offset="100%" stopColor="#030910" stopOpacity="0" />
         </linearGradient>
+        {/* Bottom fade */}
         <linearGradient id="bf2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#040b12" stopOpacity="0" />
-          <stop offset="100%" stopColor="#040b12" stopOpacity="0.85" />
+          <stop offset="0%"   stopColor="#030910" stopOpacity="0" />
+          <stop offset="100%" stopColor="#030910" stopOpacity="0.90" />
         </linearGradient>
       </defs>
 
-      {/* ── Base ── */}
+      {/* ── Base dark sky ── */}
       <rect width="1440" height="900" fill="url(#hbg2)" />
 
       {/* ── Dark glass window panels ── */}
@@ -99,8 +131,22 @@ export default function HeroBuildingBg() {
           const x = colStart + ci * colStep + 2;
           const y = ri * rowStep + 2;
           return (
-            <rect key={`dp-${ci}-${ri}`} x={x} y={y} width={58} height={90}
-              fill="url(#glass)" opacity={0.75} />
+            <rect key={`dp-${ci}-${ri}`} x={x} y={y} width={56} height={88}
+              fill="url(#glass)" opacity={0.80} />
+          );
+        })
+      )}
+
+      {/* ── Lit window glow halos (behind windows for bloom effect) ── */}
+      {Array.from({ length: numRows }, (_, ri) =>
+        Array.from({ length: numCols }, (_, ci) => {
+          const op = litMap[`${ci}-${ri}`];
+          if (!op || op < 0.60) return null;
+          const x = colStart + ci * colStep + 2;
+          const y = ri * rowStep + 2;
+          return (
+            <rect key={`gh-${ci}-${ri}`} x={x - 4} y={y - 4} width={64} height={96}
+              fill={warmColor} opacity={op * 0.35} rx={2} filter="url(#bloom)" />
           );
         })
       )}
@@ -113,33 +159,34 @@ export default function HeroBuildingBg() {
           const x = colStart + ci * colStep + 2;
           const y = ri * rowStep + 2;
           return (
-            <rect key={`lw-${ci}-${ri}`} x={x} y={y} width={58} height={90}
+            <rect key={`lw-${ci}-${ri}`} x={x} y={y} width={56} height={88}
               fill="url(#lit)" opacity={op} />
           );
         })
       )}
 
       {/* ── Structural steel frame — major verticals every 3 cols ── */}
-      {[480, 666, 852, 1038, 1224, 1410].map((x) => (
+      {[460, 640, 820, 1000, 1180, 1360, 1440].map((x) => (
         <line key={`mvc-${x}`} x1={x} y1={0} x2={x} y2={900}
-          stroke="#1a2d40" strokeWidth="4" />
+          stroke="#1e3348" strokeWidth="4" strokeOpacity="0.9" />
       ))}
       {/* Minor verticals */}
       {Array.from({ length: numCols + 1 }, (_, i) => colStart + i * colStep).map((x) => (
         <line key={`mvc2-${x}`} x1={x} y1={0} x2={x} y2={900}
-          stroke="rgba(30,48,65,0.60)" strokeWidth="1" />
+          stroke="rgba(36,56,76,0.65)" strokeWidth="1" />
       ))}
 
       {/* ── Structural floor slabs ── */}
       {Array.from({ length: numRows + 1 }, (_, i) => i * rowStep).map((y) => (
-        <line key={`hf-${y}`} x1={480} y1={y} x2={1440} y2={y}
-          stroke="#182030" strokeWidth="3" />
+        <line key={`hf-${y}`} x1={460} y1={y} x2={1440} y2={y}
+          stroke="#1c2e3e" strokeWidth="3" />
       ))}
 
       {/* ── Atmospheric warm glow blobs ── */}
       <rect width="1440" height="900" fill="url(#atm1)" />
       <rect width="1440" height="900" fill="url(#atm2)" />
       <rect width="1440" height="900" fill="url(#atm3)" />
+      <rect width="1440" height="900" fill="url(#atm4)" />
 
       {/* ── Vignettes ── */}
       <rect width="1440" height="900" fill="url(#lv2)" />
