@@ -58,7 +58,9 @@ export default function ResourcesPage() {
           <ScrollReveal>
             <p className="eyebrow mb-4 reveal">Tools &amp; Guidance</p>
             <h1 className="heading-display text-4xl lg:text-6xl mb-6 reveal reveal-delay-1">
-              Resources for School Leaders.
+              Resources for
+              <br />
+              <span style={{ color: "#C9A84C" }}>School Leaders.</span>
             </h1>
             <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed reveal reveal-delay-2">
               Practical guides, reference frameworks, and templates drawn from our work with schools

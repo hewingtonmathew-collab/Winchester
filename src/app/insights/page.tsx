@@ -26,7 +26,9 @@ export default function InsightsPage() {
           <ScrollReveal>
             <p className="eyebrow mb-4 reveal">Intelligence &amp; Analysis</p>
             <h1 className="heading-display text-4xl lg:text-6xl mb-6 reveal reveal-delay-1">
-              Insights from the Field.
+              Insights from
+              <br />
+              <span style={{ color: "#C9A84C" }}>the Field.</span>
             </h1>
             <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed reveal reveal-delay-2">
               Expert commentary on the compliance, governance, and digital challenges facing school

@@ -31,7 +31,7 @@ export default function ToolsPage() {
           <h1 className="heading-display text-4xl lg:text-6xl mb-6">
             Free Tools for
             <br />
-            School Leaders.
+            <span style={{ color: "#C9A84C" }}>School Leaders.</span>
           </h1>
           <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed">
             Practical, free tools to help school leaders, compliance teams, and governance
