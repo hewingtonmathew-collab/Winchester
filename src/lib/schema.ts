@@ -23,6 +23,16 @@ export function organizationSchema(): SchemaOrg {
       availableLanguage: "English",
     },
     sameAs: [],
+    knowsAbout: [
+      "School compliance",
+      "Digital safeguarding",
+      "AI governance for schools",
+      "Governance and leadership",
+      "Cyber resilience for education",
+      "Multi-academy trust governance",
+      "KCSIE compliance",
+      "Data protection in schools",
+    ],
   };
 }
 
@@ -64,10 +74,12 @@ export function serviceSchema(service: Service): SchemaOrg {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.title,
+    serviceType: service.title,
     description: service.detail.intro,
     provider: {
       "@type": "Organization",
       name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
     },
     areaServed: {
       "@type": "Country",
@@ -91,6 +103,29 @@ export function faqSchema(
         text: item.answer,
       },
     })),
+  };
+}
+
+export function articleSchema(article: {
+  title: string;
+  excerpt: string;
+  date: string;
+  href: string;
+  author: string;
+}): SchemaOrg {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    author: { "@type": "Organization", name: "Winchester Consultancy" },
+    publisher: {
+      "@type": "Organization",
+      name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    url: `https://winchesterconsultancy.co.uk${article.href}`,
   };
 }
 
