@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { services } from "@/data/services";
+import { articles } from "@/data/insights";
 
 const BASE = "https://winchesterconsultancy.co.uk";
 
@@ -21,5 +22,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...serviceRoutes];
+  const articleRoutes: MetadataRoute.Sitemap = articles.map((a) => ({
+    url: `${BASE}${a.href}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...articleRoutes];
 }

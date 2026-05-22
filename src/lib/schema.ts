@@ -123,6 +123,43 @@ export function frameworkSchema(): SchemaOrg {
   };
 }
 
+export function articleSchema({
+  title,
+  excerpt,
+  date,
+  href,
+  author,
+}: {
+  title: string;
+  excerpt: string;
+  date: string;
+  href: string;
+  author: string;
+}): SchemaOrg {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description: excerpt.slice(0, 160),
+    datePublished: date,
+    url: `https://winchesterconsultancy.co.uk${href}`,
+    author: {
+      "@type": "Organization",
+      name: author,
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://winchesterconsultancy.co.uk${href}`,
+    },
+  };
+}
+
 export function localBusinessSchema(): SchemaOrg {
   return {
     "@context": "https://schema.org",
