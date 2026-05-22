@@ -75,7 +75,8 @@ export default function ServicesPage() {
             <div className="mb-10">
               <p className="eyebrow mb-3 reveal">Service Areas</p>
               <h2 className="heading-display text-2xl lg:text-3xl reveal reveal-delay-1">
-                Three Areas of Expertise
+                Three Areas of{" "}
+                <span style={{ color: "#C9A84C" }}>Expertise</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -120,7 +121,8 @@ export default function ServicesPage() {
             <div className="mb-12">
               <p className="eyebrow mb-3 reveal">All Services</p>
               <h2 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-                Every Service We Offer
+                Every Service{" "}
+                <span style={{ color: "#C9A84C" }}>We Offer</span>
               </h2>
             </div>
 

@@ -95,7 +95,7 @@ export default function FrameworkPage() {
                 <br />
                 Evidence-Based.
                 <br />
-                Methodology.
+                <span style={{ color: "#C9A84C" }}>Methodology.</span>
               </h2>
               <p className="font-inter text-[#E6E9ED] leading-relaxed reveal reveal-delay-2">
                 The Winchester Digital Assurance Framework is not an off-the-shelf audit
@@ -158,7 +158,8 @@ export default function FrameworkPage() {
                 id="pillars-heading"
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
-                Six Domains of Assurance
+                Six Domains of{" "}
+                <span style={{ color: "#C9A84C" }}>Assurance</span>
               </h2>
             </div>
 

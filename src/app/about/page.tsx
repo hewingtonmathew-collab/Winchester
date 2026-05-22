@@ -172,7 +172,8 @@ export default function AboutPage() {
                 id="principles-heading"
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
-                Our Three Principles
+                Our Three{" "}
+                <span style={{ color: "#C9A84C" }}>Principles</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -216,7 +217,8 @@ export default function AboutPage() {
                 id="process-heading"
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
-                Our Four-Stage Process
+                Our Four-Stage{" "}
+                <span style={{ color: "#C9A84C" }}>Process</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
