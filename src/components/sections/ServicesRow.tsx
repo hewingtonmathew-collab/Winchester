@@ -5,7 +5,11 @@ import { services } from "@/data/services";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+const coreServiceIds = ["safeguarding", "governance", "ai-governance", "operational", "strategic"];
+
 export default function ServicesRow() {
+  const coreServices = services.filter((s) => coreServiceIds.includes(s.id));
+
   return (
     <section className="py-20 bg-[#111A23]" aria-labelledby="services-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,7 +22,7 @@ export default function ServicesRow() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {services.map((service, i) => (
+            {coreServices.map((service, i) => (
               <GlassCard
                 key={service.id}
                 hover
@@ -55,6 +59,19 @@ export default function ServicesRow() {
                 </Link>
               </GlassCard>
             ))}
+          </div>
+
+          <div className="flex justify-center mt-8 reveal reveal-delay-5">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 font-inter text-sm text-[#C9A84C] hover:text-white transition-colors duration-200 group"
+            >
+              View All 10 Services
+              <ArrowRight
+                size={14}
+                className="transition-transform duration-200 group-hover:translate-x-1"
+              />
+            </Link>
           </div>
         </ScrollReveal>
       </div>

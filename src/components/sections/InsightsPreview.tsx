@@ -2,7 +2,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import ButtonSecondary from "@/components/ui/ButtonSecondary";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { articles } from "@/data/insights";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 
 export default function InsightsPreview() {
@@ -52,16 +52,25 @@ export default function InsightsPreview() {
                   {article.excerpt}
                 </p>
 
-                <Link
-                  href={article.href}
-                  className="inline-flex items-center gap-1.5 text-[#C9A84C] text-sm font-inter font-medium group mt-auto transition-all duration-200"
-                >
-                  Read More
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  />
-                </Link>
+                <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-[#2A3340]">
+                  <div className="flex items-center gap-3">
+                    <span className="font-inter text-[#A7B1BE] text-xs">{article.author}</span>
+                    <span className="inline-flex items-center gap-1 font-inter text-[#A7B1BE] text-xs">
+                      <Clock size={10} strokeWidth={1.5} />
+                      {article.readTime}
+                    </span>
+                  </div>
+                  <Link
+                    href={article.href}
+                    className="inline-flex items-center gap-1.5 text-[#C9A84C] text-sm font-inter font-medium group transition-all duration-200"
+                  >
+                    Read More
+                    <ArrowRight
+                      size={14}
+                      className="transition-transform duration-200 group-hover:translate-x-1"
+                    />
+                  </Link>
+                </div>
               </GlassCard>
             ))}
           </div>
