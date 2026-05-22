@@ -111,7 +111,7 @@ export default function HeroSection() {
             {/* CTA */}
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg border border-[#2A3340] hover:border-[rgba(201,168,76,0.5)] font-inter text-sm text-[#A7B1BE] hover:text-white transition-all duration-200 group"
+              className="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg border border-[rgba(201,168,76,0.30)] hover:border-[rgba(201,168,76,0.60)] font-inter text-sm text-[#C9A84C] hover:text-white transition-all duration-200 group"
             >
               Explore Our Services
               <ArrowRight
