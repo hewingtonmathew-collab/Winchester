@@ -2,7 +2,7 @@ import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 export default function ContactCTA() {
   return (
@@ -26,13 +26,21 @@ export default function ContactCTA() {
               hear from you.
             </p>
 
-            <GlassCard variant="prominent" className="flex items-center justify-center gap-5 mb-8 reveal reveal-delay-3">
+            <GlassCard variant="prominent" className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-8 reveal reveal-delay-3">
               <a
                 href="mailto:hello@winchesterconsultancy.co.uk"
                 className="inline-flex items-center gap-2 text-[#A7B1BE] hover:text-white transition-colors font-inter text-sm"
               >
                 <Mail size={15} strokeWidth={1.5} className="text-[#C9A84C]" aria-hidden="true" />
                 hello@winchesterconsultancy.co.uk
+              </a>
+              <span className="hidden sm:block w-px h-4 bg-[#2A3340]" aria-hidden="true" />
+              <a
+                href="tel:+441962000000"
+                className="inline-flex items-center gap-2 text-[#A7B1BE] hover:text-white transition-colors font-inter text-sm"
+              >
+                <Phone size={15} strokeWidth={1.5} className="text-[#C9A84C]" aria-hidden="true" />
+                +44 (0) 1962 000 000
               </a>
             </GlassCard>
 

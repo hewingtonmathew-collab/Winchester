@@ -26,7 +26,7 @@ export default function HeroSection() {
             className="font-inter text-[#C9A84C] text-[0.7rem] font-semibold tracking-[0.35em] uppercase animate-fade-up"
             style={{ animationDelay: "0.1s", animationFillMode: "both" }}
           >
-            Intelligence. Insight. Assurance.
+            Intelligence · Insight · Assurance
           </p>
 
           <h1
