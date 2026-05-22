@@ -1,9 +1,6 @@
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import ButtonSecondary from "@/components/ui/ButtonSecondary";
 import GlassCard from "@/components/ui/GlassCard";
-import ShieldLogo from "@/components/ui/ShieldLogo";
-import SectionDivider from "@/components/ui/SectionDivider";
-import { FileDown } from "lucide-react";
 
 export default function HeroSection() {
   return (
@@ -61,7 +58,7 @@ export default function HeroSection() {
         {/* LEFT — Headline */}
         <div className="flex flex-col gap-6">
           <p className="eyebrow animate-fade-up" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
-            Intelligence. Insight. Assurance.
+            School Compliance Intelligence
           </p>
 
           <h1
@@ -84,7 +81,7 @@ export default function HeroSection() {
             className="font-cinzel text-[#A7B1BE] text-sm lg:text-base tracking-[0.2em] uppercase animate-fade-up"
             style={{ animationDelay: "0.35s", animationFillMode: "both" }}
           >
-            School Compliance Intelligence
+            Winchester Digital Assurance Framework
           </p>
 
           <p
@@ -106,42 +103,77 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* RIGHT — Glass feature card */}
+        {/* RIGHT — Intelligence Dashboard Card */}
         <div
           className="flex justify-center lg:justify-end animate-fade-up"
           style={{ animationDelay: "0.3s", animationFillMode: "both" }}
         >
-          <GlassCard className="w-full max-w-sm flex flex-col items-center text-center gap-6 py-10 px-8">
-            <ShieldLogo size={80} variant="mark-only" />
+          <GlassCard variant="prominent" className="w-full max-w-sm">
+            {/* Header bar */}
+            <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#2A3340]">
+              <span className="eyebrow" style={{ fontSize: "0.65rem" }}>Compliance Intelligence</span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-[pulse-slow_3s_ease-in-out_infinite] inline-block" />
+                <span className="font-inter text-[#A7B1BE] text-xs">Live Dashboard</span>
+              </div>
+            </div>
 
-            <div className="flex flex-col gap-1">
-              {["ASSURANCE.", "COMPLIANCE.", "CONFIDENCE."].map((word) => (
-                <p
-                  key={word}
-                  className="font-cinzel font-bold text-white text-2xl tracking-[0.15em]"
-                >
-                  {word}
-                </p>
+            {/* Score gauge + overall rating */}
+            <div className="flex items-center gap-5 mb-6">
+              {/* SVG circular progress — 82% filled in gold */}
+              <div className="relative w-[72px] h-[72px] flex-shrink-0">
+                <svg viewBox="0 0 72 72" className="w-full h-full -rotate-90">
+                  <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(42,51,64,0.6)" strokeWidth="5" />
+                  <circle
+                    cx="36" cy="36" r="28" fill="none"
+                    stroke="#C9A84C" strokeWidth="5"
+                    strokeDasharray={`${2 * Math.PI * 28 * 0.82} ${2 * Math.PI * 28}`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-cinzel font-black text-white text-lg leading-none">82</span>
+                  <span className="font-inter text-[#A7B1BE]" style={{ fontSize: "0.6rem" }}>/ 100</span>
+                </div>
+              </div>
+              <div>
+                <p className="font-inter text-[#A7B1BE] text-xs uppercase tracking-wider mb-0.5">Overall Readiness</p>
+                <p className="font-cinzel font-bold text-white text-sm mb-1">GOOD STANDING</p>
+                <span className="badge badge-warning">3 Actions Required</span>
+              </div>
+            </div>
+
+            {/* Domain status rows */}
+            <div className="flex flex-col gap-2.5 mb-5">
+              {[
+                { label: "Digital Safeguarding", score: 88, status: "success" },
+                { label: "Governance", score: 79, status: "warning" },
+                { label: "AI Governance", score: 65, status: "warning" },
+                { label: "Cyber Resilience", score: 91, status: "success" },
+              ].map((domain) => (
+                <div key={domain.label} className="flex items-center gap-2.5">
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    domain.status === "success" ? "bg-emerald-400" : "bg-amber-400"
+                  }`} />
+                  <span className="font-inter text-[#A7B1BE] flex-1" style={{ fontSize: "0.72rem" }}>{domain.label}</span>
+                  <div className="w-14 h-1 bg-[#2A3340] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#C9A84C] rounded-full"
+                      style={{ width: `${domain.score}%` }}
+                    />
+                  </div>
+                  <span className="font-inter text-[#E6E9ED] w-6 text-right" style={{ fontSize: "0.7rem" }}>{domain.score}</span>
+                </div>
               ))}
             </div>
 
-            <SectionDivider />
-
-            <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
-              We help schools and trusts navigate complex compliance, digital
-              risk and operational challenges with clarity and confidence.
-            </p>
-
-            <a
-              href="/capability-statement.pdf"
-              download
-              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-lg w-full justify-center
-                border border-[rgba(201,168,76,0.5)] text-[#C9A84C] font-inter text-sm tracking-wide
-                hover:bg-[rgba(201,168,76,0.08)] transition-colors duration-200"
-            >
-              <FileDown size={15} strokeWidth={1.5} />
-              Download Our Capability Statement
-            </a>
+            {/* Footer */}
+            <div className="pt-3 border-t border-[#2A3340] flex items-center justify-between">
+              <span className="font-inter text-[#A7B1BE]" style={{ fontSize: "0.7rem" }}>Demo assessment view</span>
+              <a href="/framework" className="font-inter text-[#C9A84C] hover:text-white transition-colors" style={{ fontSize: "0.7rem" }}>
+                View Framework →
+              </a>
+            </div>
           </GlassCard>
         </div>
       </div>

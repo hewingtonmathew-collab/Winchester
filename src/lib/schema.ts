@@ -94,6 +94,35 @@ export function faqSchema(
   };
 }
 
+export function frameworkSchema(): SchemaOrg {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Winchester Digital Assurance Framework",
+    url: "https://winchesterconsultancy.co.uk/framework",
+    description:
+      "A structured intelligence methodology for school compliance — 6 pillars covering Digital Safeguarding, Governance, AI Governance, Cyber Resilience, Data Protection, and Operational Assurance.",
+    publisher: {
+      "@type": "Organization",
+      name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    about: {
+      "@type": "Service",
+      name: "Winchester Digital Assurance Framework",
+      provider: {
+        "@type": "Organization",
+        name: "Winchester Consultancy",
+      },
+      serviceType: "School Compliance Intelligence",
+      areaServed: {
+        "@type": "Country",
+        name: "United Kingdom",
+      },
+    },
+  };
+}
+
 export function localBusinessSchema(): SchemaOrg {
   return {
     "@context": "https://schema.org",
