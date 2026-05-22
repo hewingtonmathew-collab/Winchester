@@ -29,7 +29,7 @@ export default function ScrollReveal({ children, className, threshold = 0.12 }: 
       { threshold }
     );
 
-    const targets = container.querySelectorAll<HTMLElement>(".reveal");
+    const targets = container.querySelectorAll<HTMLElement>(".reveal, .reveal-left, .reveal-scale");
     targets.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();

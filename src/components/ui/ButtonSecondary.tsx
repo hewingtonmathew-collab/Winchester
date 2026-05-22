@@ -16,7 +16,8 @@ export default function ButtonSecondary({ href, children, className }: Props) {
         "border border-[#2A3340] text-[#A7B1BE]",
         "font-inter font-medium text-sm tracking-wide",
         "transition-all duration-200",
-        "hover:border-[#A7B1BE] hover:text-white",
+        "hover:border-[#A7B1BE] hover:text-white hover:bg-[rgba(167,177,190,0.05)]",
+        "focus-visible:ring-2 focus-visible:ring-[rgba(167,177,190,0.4)] focus-visible:outline-none",
         className
       )}
     >

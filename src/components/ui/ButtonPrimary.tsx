@@ -26,6 +26,7 @@ export default function ButtonPrimary({
         "text-white font-inter font-medium text-sm tracking-wide",
         "transition-all duration-200 ease-out",
         "hover:bg-[#2A3340] hover:border-[rgba(201,168,76,0.5)] hover:shadow-[0_0_20px_rgba(201,168,76,0.12)]",
+        "focus-visible:ring-2 focus-visible:ring-[rgba(201,168,76,0.5)] focus-visible:outline-none",
         "group",
         className
       )}
