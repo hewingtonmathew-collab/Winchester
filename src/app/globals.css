@@ -108,6 +108,14 @@
   .reveal-delay-4 { transition-delay: 0.40s; }
   .reveal-delay-5 { transition-delay: 0.50s; }
 
+  /* CSS containment for paint isolation */
+  .glass,
+  .glass-subtle,
+  .glass-prominent,
+  .glass-inset {
+    contain: layout style;
+  }
+
   /* Glass variants */
   .glass-subtle {
     background: rgba(17, 26, 35, 0.45);
@@ -215,5 +223,10 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .section-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px;
   }
 }

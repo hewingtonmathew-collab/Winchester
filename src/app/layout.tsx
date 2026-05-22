@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
@@ -38,6 +38,10 @@ export const metadata: Metadata = {
       "School Compliance Intelligence — strategic assurance for schools and trusts.",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B1118",
 };
 
 export default function RootLayout({
