@@ -80,20 +80,20 @@ export default function HeroSection() {
         >
           <GlassCard
             variant="prominent"
-            className="w-full max-w-[360px] flex flex-col items-center text-center gap-0"
+            className="w-full max-w-[400px] flex flex-col items-center text-center gap-0"
           >
             {/* Large shield mark */}
-            <div className="mb-7">
-              <ShieldLogo size={88} variant="mark-only" />
+            <div className="mb-8">
+              <ShieldLogo size={100} variant="mark-only" />
             </div>
 
             {/* ASSURANCE. COMPLIANCE. CONFIDENCE. */}
-            <div className="flex flex-col gap-[2px] mb-7">
+            <div className="flex flex-col gap-[3px] mb-8">
               {["Assurance.", "Compliance.", "Confidence."].map((word) => (
                 <p
                   key={word}
                   className="font-cinzel font-black text-white leading-tight"
-                  style={{ fontSize: "clamp(1.35rem, 2.2vw, 1.6rem)", letterSpacing: "0.06em" }}
+                  style={{ fontSize: "clamp(1.5rem, 2.6vw, 1.85rem)", letterSpacing: "0.06em" }}
                 >
                   {word}
                 </p>
