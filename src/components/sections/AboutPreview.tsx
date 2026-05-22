@@ -31,17 +31,17 @@ export default function AboutPreview() {
                   <stop offset="0%" stopColor="#071018" />
                   <stop offset="100%" stopColor="#050c14" />
                 </linearGradient>
-                {/* Window glass — vivid daylight blue */}
+                {/* Window glass — subdued dusk blue, more atmospheric */}
                 <linearGradient id="win-light" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8abcda" />
-                  <stop offset="45%" stopColor="#6a9fc0" />
-                  <stop offset="100%" stopColor="#4a7a9e" />
+                  <stop offset="0%" stopColor="#5a8aa8" />
+                  <stop offset="45%" stopColor="#3d6a88" />
+                  <stop offset="100%" stopColor="#2a5070" />
                 </linearGradient>
                 {/* Glow bloom from windows into room */}
                 <radialGradient id="win-glow" cx="50%" cy="18%" r="70%">
-                  <stop offset="0%" stopColor="#5a9ac0" stopOpacity="0.55" />
-                  <stop offset="45%" stopColor="#4080a8" stopOpacity="0.28" />
-                  <stop offset="100%" stopColor="#3070a0" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#3a6a90" stopOpacity="0.35" />
+                  <stop offset="45%" stopColor="#2a5070" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#1a3050" stopOpacity="0" />
                 </radialGradient>
                 {/* Mid-room ambient light (window light reaching floor) */}
                 <radialGradient id="mid-light" cx="50%" cy="60%" r="55%">
@@ -85,10 +85,10 @@ export default function AboutPreview() {
 
               {/* ── Windows — bright daylight blue ── */}
               {/* Glow halos behind windows (bloom) */}
-              <rect x="48" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
-              <rect x="188" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
-              <rect x="328" y="48" width="140" height="200" fill="#5a9abe" opacity="0.35" rx="4" filter="url(#win-bloom)" />
-              <rect x="472" y="48" width="120" height="200" fill="#5a9abe" opacity="0.30" rx="4" filter="url(#win-bloom)" />
+              <rect x="48" y="48" width="140" height="200" fill="#3a6a90" opacity="0.25" rx="4" filter="url(#win-bloom)" />
+              <rect x="188" y="48" width="140" height="200" fill="#3a6a90" opacity="0.25" rx="4" filter="url(#win-bloom)" />
+              <rect x="328" y="48" width="140" height="200" fill="#3a6a90" opacity="0.25" rx="4" filter="url(#win-bloom)" />
+              <rect x="472" y="48" width="120" height="200" fill="#3a6a90" opacity="0.20" rx="4" filter="url(#win-bloom)" />
 
               {/* Window panes */}
               <rect x="55" y="55" width="125" height="185" fill="url(#win-light)" rx="3" />
