@@ -157,6 +157,9 @@ export default function InsightsPreview() {
                 {/* Visual panel */}
                 <div className="relative w-full h-44 overflow-hidden">
                   {(() => { const V = articleVisualComponents[i % articleVisualComponents.length]; return <V />; })()}
+                  {/* Bottom fade to content */}
+                  <div className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none"
+                    style={{ background: "linear-gradient(to top, rgba(18,27,38,0.85), transparent)" }} />
                   <div className="absolute top-3 left-3">
                     <span className="badge badge-gold uppercase tracking-widest text-[0.6rem]">
                       {article.category}
