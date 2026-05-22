@@ -133,8 +133,13 @@ const articleVisualComponents = [InsightVisual1, InsightVisual2, InsightVisual3]
 
 export default function InsightsPreview() {
   return (
-    <section className="py-24 bg-[#0B1118]" aria-labelledby="insights-heading">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-[#0B1118] relative overflow-hidden" aria-labelledby="insights-heading">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse 90% 50% at 50% 20%, rgba(201,168,76,0.04) 0%, transparent 70%)" }}
+        aria-hidden="true"
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <ScrollReveal>
           {/* Header */}
           <div className="text-center mb-14">

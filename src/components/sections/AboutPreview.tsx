@@ -201,7 +201,7 @@ export default function AboutPreview() {
               {coreServices.map((service, i) => (
                 <div
                   key={service.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] bg-[rgba(27,36,48,0.35)] hover:border-[rgba(201,168,76,0.40)] hover:bg-[rgba(27,36,48,0.55)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
+                  className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] [border-top-color:rgba(201,168,76,0.30)] bg-[rgba(27,36,48,0.35)] hover:border-[rgba(201,168,76,0.40)] hover:bg-[rgba(27,36,48,0.55)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
                 >
                   <div
                     className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center"
@@ -216,7 +216,7 @@ export default function AboutPreview() {
                   <p className="font-cinzel font-bold text-white text-xs group-hover:text-[#C9A84C] transition-colors duration-200 leading-snug flex-1">
                     {service.title}
                   </p>
-                  <ArrowRight size={12} className="text-[#2A3340] group-hover:text-[#C9A84C] transition-colors duration-200 flex-shrink-0" />
+                  <ArrowRight size={12} className="text-[#A7B1BE] group-hover:text-[#C9A84C] transition-colors duration-200 flex-shrink-0" />
                 </div>
               ))}
             </div>
