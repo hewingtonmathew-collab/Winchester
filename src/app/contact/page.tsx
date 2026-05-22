@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ContactForm from "@/components/forms/ContactForm";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import JsonLd from "@/components/seo/JsonLd";
 import { localBusinessSchema } from "@/lib/schema";
 
@@ -17,12 +17,6 @@ const contactDetails = [
     label: "Email",
     value: "hello@winchesterconsultancy.co.uk",
     href: "mailto:hello@winchesterconsultancy.co.uk",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+44 (0) 1234 567 890",
-    href: "tel:+441234567890",
   },
   {
     icon: MapPin,

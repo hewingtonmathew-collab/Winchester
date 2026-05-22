@@ -4,7 +4,7 @@ import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ContactCTA from "@/components/sections/ContactCTA";
-import { Shield, Columns2, Cpu, CheckCircle, FileDown } from "lucide-react";
+import { Shield, Columns2, Cpu, CheckCircle, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Resources | Winchester Consultancy",
@@ -142,20 +142,20 @@ export default function ResourcesPage() {
                     Our Capability Statement
                   </h2>
                   <p className="font-inter text-[#A7B1BE] text-base leading-relaxed">
-                    Download our capability statement to share with governors, trustees, or
-                    procurement teams. It outlines our services, experience, and approach in a
-                    format designed for formal presentations and tender processes.
+                    Our capability statement outlines our services, experience, and approach in a
+                    format designed for governors, trustees, and procurement teams. Request a copy
+                    by email and we&apos;ll send it directly to you.
                   </p>
                 </div>
 
                 {/* Right */}
                 <div className="flex flex-col items-start md:items-end gap-3">
-                  <ButtonPrimary href="/capability-statement.pdf" download>
-                    <FileDown size={15} className="mr-1" />
-                    Download Capability Statement
+                  <ButtonPrimary href="mailto:hello@winchesterconsultancy.co.uk?subject=Capability%20Statement%20Request">
+                    <Mail size={15} className="mr-1" />
+                    Request by Email
                   </ButtonPrimary>
                   <p className="font-inter text-[#A7B1BE] text-xs tracking-wide">
-                    PDF &middot; Updated 2024
+                    Sent within one business day
                   </p>
                 </div>
               </div>

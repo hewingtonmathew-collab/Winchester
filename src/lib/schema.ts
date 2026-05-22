@@ -17,7 +17,7 @@ export function organizationSchema(): SchemaOrg {
       "School compliance intelligence — strategic operational, digital and governance assurance for schools and trusts.",
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+44-1234-567890",
+      email: "hello@winchesterconsultancy.co.uk",
       contactType: "customer support",
       areaServed: "GB",
       availableLanguage: "English",
@@ -178,7 +178,6 @@ export function localBusinessSchema(): SchemaOrg {
     "@type": ["LocalBusiness", "ProfessionalService"],
     name: "Winchester Consultancy",
     url: "https://winchesterconsultancy.co.uk",
-    telephone: "+44-1234-567890",
     email: "hello@winchesterconsultancy.co.uk",
     areaServed: {
       "@type": "Country",
