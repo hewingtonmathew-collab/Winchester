@@ -71,7 +71,7 @@
   .divider-gold {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
-    opacity: 0.65;
+    opacity: 0.72;
   }
 
   .eyebrow {
