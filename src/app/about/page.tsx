@@ -109,7 +109,7 @@ export default function AboutPage() {
               <p className="eyebrow reveal">Our Background</p>
               <h2 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
                 Experience That
-                <br />Understands Education.
+                <br /><span style={{ color: "#C9A84C" }}>Understands Education.</span>
               </h2>
               <p className="font-inter text-[#E6E9ED] leading-relaxed reveal reveal-delay-2">
                 Winchester Consultancy was established by practitioners who have worked
@@ -255,7 +255,7 @@ export default function AboutPage() {
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
                 What Makes Us
-                <br />Different
+                <br /><span style={{ color: "#C9A84C" }}>Different.</span>
               </h2>
               <p className="font-inter text-[#A7B1BE] leading-relaxed reveal reveal-delay-2">
                 There are many consultancies. There are few that genuinely understand the

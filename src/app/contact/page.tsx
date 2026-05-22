@@ -36,7 +36,7 @@ export default function ContactPage() {
           <h1 className="heading-display text-4xl lg:text-6xl mb-6">
             Let&apos;s Start a
             <br />
-            Conversation.
+            <span style={{ color: "#C9A84C" }}>Conversation.</span>
           </h1>
           <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed">
             Whether you need assurance, guidance or a trusted partner,
