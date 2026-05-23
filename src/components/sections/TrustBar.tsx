@@ -31,7 +31,10 @@ export default function TrustBar() {
                         aria-hidden="true"
                       />
                       {item.value && (
-                        <span className="font-cinzel font-bold text-[#C9A84C] text-2xl">
+                        <span
+                          className="font-cinzel font-bold text-[#C9A84C] text-2xl"
+                          style={{ textShadow: "0 0 32px rgba(201,168,76,0.55), 0 0 12px rgba(201,168,76,0.30)" }}
+                        >
                           {item.value}
                         </span>
                       )}
