@@ -18,7 +18,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── CONTENT ───────────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 sm:py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center w-full">
 
         {/* LEFT — Headline */}
         <div className="flex flex-col gap-6">
