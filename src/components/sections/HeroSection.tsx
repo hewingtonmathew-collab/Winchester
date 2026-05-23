@@ -90,11 +90,15 @@ export default function HeroSection() {
 
             {/* ASSURANCE. COMPLIANCE. CONFIDENCE. */}
             <div className="flex flex-col gap-[3px] mb-8">
-              {["Assurance.", "Compliance.", "Confidence."].map((word) => (
+              {(["Assurance.", "Compliance.", "Confidence."] as const).map((word) => (
                 <p
                   key={word}
-                  className="font-cinzel font-black text-white leading-tight"
-                  style={{ fontSize: "clamp(1.5rem, 2.6vw, 1.85rem)", letterSpacing: "0.06em" }}
+                  className="font-cinzel font-black leading-tight"
+                  style={{
+                    fontSize: "clamp(1.5rem, 2.6vw, 1.85rem)",
+                    letterSpacing: "0.06em",
+                    color: word === "Confidence." ? "#C9A84C" : "#FFFFFF",
+                  }}
                 >
                   {word}
                 </p>
