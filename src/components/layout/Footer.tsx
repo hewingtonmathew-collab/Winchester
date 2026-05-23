@@ -31,12 +31,12 @@ const values = ["Assurance", "Compliance", "Intelligence", "Partnership"];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B1118] border-t border-[rgba(201,168,76,0.25)]">
+    <footer className="bg-[#0B1118]">
       <SectionDivider />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-12">
           <div className="lg:col-span-1 flex flex-col gap-6">
-            <ShieldLogo size={36} />
+            <ShieldLogo size={40} />
             <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed max-w-xs">
               Expert compliance intelligence for schools and multi-academy trusts.
               Intelligence That Builds Confidence.
@@ -48,7 +48,7 @@ export default function Footer() {
 
           {Object.entries(footerLinks).map(([group, links]) => (
             <div key={group} className="flex flex-col gap-4">
-              <h4 className="font-cinzel font-bold text-white text-xs tracking-widest uppercase">
+              <h4 className="font-cinzel font-bold text-[#C9A84C] text-xs tracking-widest uppercase">
                 {group}
               </h4>
               <ul className="flex flex-col gap-3">
