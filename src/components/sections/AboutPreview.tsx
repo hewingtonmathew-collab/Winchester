@@ -199,8 +199,9 @@ export default function AboutPreview() {
             {/* Compact service list */}
             <div className="flex flex-col gap-2.5 mt-2">
               {coreServices.map((service, i) => (
-                <div
+                <Link
                   key={service.id}
+                  href={service.href}
                   className={`flex items-center gap-3 p-3 rounded-lg border border-[#2A3340] [border-top-color:rgba(201,168,76,0.30)] bg-[rgba(27,36,48,0.35)] hover:border-[rgba(201,168,76,0.40)] hover:bg-[rgba(27,36,48,0.55)] transition-colors duration-200 group reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
                 >
                   <div
@@ -217,7 +218,7 @@ export default function AboutPreview() {
                     {service.title}
                   </p>
                   <ArrowRight size={12} className="text-[#A7B1BE] group-hover:text-[#C9A84C] transition-colors duration-200 flex-shrink-0" />
-                </div>
+                </Link>
               ))}
             </div>
 
