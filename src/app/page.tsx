@@ -76,130 +76,217 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ── HERO — full-screen video ── */}
+      {/* ── HERO — cinematic full-screen video ── */}
       <section
-        className="relative w-full min-h-screen flex flex-col justify-end overflow-hidden bg-[#040608]"
+        className="relative w-full overflow-hidden bg-[#020406]"
         aria-label="SafeShield digital safeguarding intelligence"
+        style={{ height: "100svh", minHeight: "680px" }}
       >
-        {/* Full-screen video */}
+        {/* ── Video layer ── */}
         <video
           src="/videos/hero-home.mp4"
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ filter: "saturate(1.08) contrast(1.04)" }}
           aria-hidden="true"
         />
 
-        {/* Gradient overlay — let video breathe at top, darken heavily toward bottom for text legibility */}
+        {/* ── Cinematic colour grade — subtle cool-tinted scrim ── */}
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden="true"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(4,6,8,0.25) 0%, rgba(4,6,8,0.10) 30%, rgba(4,6,8,0.55) 65%, rgba(4,6,8,0.92) 85%, rgba(4,6,8,1) 100%)",
+              "linear-gradient(165deg, rgba(2,10,28,0.18) 0%, rgba(0,18,40,0.10) 40%, rgba(2,6,14,0.05) 60%, transparent 75%)",
+            mixBlendMode: "multiply",
           }}
         />
 
-        {/* Subtle particle layer — light touch so video stays dominant */}
+        {/* ── Primary overlay — video breathes in middle, dark at edges ── */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background: [
+              /* top — clear navbar */
+              "linear-gradient(to bottom, rgba(2,4,8,0.60) 0%, rgba(2,4,8,0.08) 18%, transparent 35%)",
+              /* bottom — text legibility ramp */
+              "linear-gradient(to top,   rgba(2,4,8,1.00) 0%, rgba(2,4,8,0.82) 22%, rgba(2,4,8,0.30) 48%, transparent 65%)",
+              /* left edge depth */
+              "linear-gradient(to right, rgba(2,4,8,0.40) 0%, transparent 35%)",
+              /* right edge depth */
+              "linear-gradient(to left,  rgba(2,4,8,0.25) 0%, transparent 30%)",
+            ].join(", "),
+          }}
+        />
+
+        {/* ── Corner vignette ── */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 95% 90% at 50% 50%, transparent 45%, rgba(2,4,8,0.55) 100%)",
+          }}
+        />
+
+        {/* ── Film grain ── */}
+        <svg
+          className="pointer-events-none absolute inset-0 w-full h-full opacity-[0.038]"
+          aria-hidden="true"
+          style={{ mixBlendMode: "overlay" }}
+        >
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#grain)" />
+        </svg>
+
+        {/* ── Subtle particle network — barely there ── */}
         <ParticleCanvas
-          className="opacity-25"
-          count={45}
+          className="opacity-[0.18]"
+          count={35}
           rgb="0,212,255"
-          connectDist={130}
-          speed={0.14}
+          connectDist={120}
+          speed={0.12}
         />
 
-        {/* Corner vignette */}
+        {/* ── Cyan atmospheric glow — low frequency, centred ── */}
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute"
           aria-hidden="true"
           style={{
+            inset: 0,
             background:
-              "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4,6,8,0.45) 100%)",
+              "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,180,255,0.045) 0%, transparent 70%)",
           }}
         />
 
-        {/* HUD overlay */}
+        {/* ── HUD overlay ── */}
         <HUDOverlay intensity="low" scanLine corners dataReadouts />
 
-        {/* ── Text content pinned to bottom ── */}
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24">
-          <div className="flex flex-col gap-6 max-w-3xl">
+        {/* ── Content — pinned bottom-left, editorial style ── */}
+        <div
+          className="absolute bottom-0 left-0 right-0"
+          style={{ paddingBottom: "clamp(3rem, 7vh, 5rem)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-5 max-w-[780px]">
 
-            {/* Status pill */}
-            <div
-              className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full"
-              style={{
-                background: "rgba(0,212,255,0.08)",
-                border: "0.75px solid rgba(0,212,255,0.30)",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
-                style={{ boxShadow: "0 0 6px rgba(0,212,255,0.9)" }}
-                aria-hidden="true"
-              />
-              <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
-                GuardianOS Active
-              </span>
-            </div>
+              {/* Eyebrow row — thin rule + label + thin rule */}
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-px flex-shrink-0 w-8"
+                  style={{ background: "linear-gradient(to right, transparent, rgba(0,212,255,0.55))" }}
+                  aria-hidden="true"
+                />
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none flex-shrink-0"
+                    style={{ boxShadow: "0 0 8px rgba(0,212,255,1)" }}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="text-[10px] font-bold tracking-[0.22em] uppercase"
+                    style={{ color: "rgba(0,212,255,0.85)", letterSpacing: "0.22em" }}
+                  >
+                    GuardianOS &nbsp;·&nbsp; Digital Safeguarding Intelligence
+                  </span>
+                </div>
+                <div
+                  className="h-px flex-1"
+                  style={{ background: "linear-gradient(to right, rgba(0,212,255,0.25), transparent)" }}
+                  aria-hidden="true"
+                />
+              </div>
 
-            {/* Headline */}
-            <h1
-              className="font-black text-white leading-[1.04] tracking-[-0.035em] text-balance"
-              style={{
-                fontSize: "clamp(2.8rem, 6.5vw, 5.2rem)",
-                textShadow: "0 2px 40px rgba(0,0,0,0.6)",
-              }}
-            >
-              Digital safeguarding{" "}
-              <span
-                className="text-primary"
+              {/* Headline */}
+              <h1
+                className="font-black text-white text-balance"
                 style={{
-                  textShadow:
-                    "0 0 24px rgba(0,212,255,0.65), 0 0 80px rgba(0,212,255,0.25)",
+                  fontSize: "clamp(2.9rem, 6.8vw, 5.6rem)",
+                  lineHeight: 1.03,
+                  letterSpacing: "-0.038em",
+                  textShadow: "0 4px 60px rgba(0,0,0,0.5), 0 1px 0 rgba(0,0,0,0.8)",
                 }}
               >
-                intelligence
-              </span>{" "}
-              for UK schools.
-            </h1>
-
-            {/* Subhead */}
-            <p
-              className="text-white/70 leading-relaxed max-w-2xl text-balance"
-              style={{ fontSize: "clamp(1rem, 1.4vw, 1.175rem)", fontWeight: 300 }}
-            >
-              GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
-              and governor accountability structured in a single evidence-first platform.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-4 pt-1">
-              <Link href="/book-review" className="btn-primary">
-                Book a Readiness Review
-              </Link>
-              <Link href="/guardian-os" className="btn-secondary">
-                Explore GuardianOS
-              </Link>
-            </div>
-
-            {/* Trust chips */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
-              {["KCSIE 2024", "UK GDPR", "NCSC Aligned", "MAT Ready"].map((t, i) => (
-                <span key={t} className="flex items-center gap-1.5">
-                  {i > 0 && <span className="w-px h-3 bg-white/15 mr-2 hidden sm:inline-block" aria-hidden="true" />}
-                  <span className="w-1 h-1 rounded-full bg-primary/60" aria-hidden="true" />
-                  <span className="text-[10px] font-semibold tracking-widest uppercase text-white/40">
-                    {t}
-                  </span>
+                Digital safeguarding{" "}
+                <span
+                  style={{
+                    color: "#00d4ff",
+                    textShadow:
+                      "0 0 30px rgba(0,212,255,0.70), 0 0 100px rgba(0,212,255,0.25), 0 4px 60px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  intelligence
                 </span>
-              ))}
-            </div>
+                <br />
+                <span style={{ color: "rgba(255,255,255,0.92)" }}>for UK schools.</span>
+              </h1>
 
+              {/* Subhead */}
+              <p
+                style={{
+                  fontSize: "clamp(0.95rem, 1.35vw, 1.15rem)",
+                  fontWeight: 300,
+                  lineHeight: 1.65,
+                  color: "rgba(255,255,255,0.62)",
+                  maxWidth: "56ch",
+                  textShadow: "0 2px 20px rgba(0,0,0,0.6)",
+                }}
+              >
+                GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR,
+                AI governance and governor accountability in one structured, evidence-first platform.
+              </p>
+
+              {/* Divider */}
+              <div
+                className="h-px w-24"
+                style={{ background: "linear-gradient(to right, rgba(0,212,255,0.40), transparent)" }}
+                aria-hidden="true"
+              />
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <Link href="/book-review" className="btn-primary">
+                  Book a Readiness Review
+                </Link>
+                <Link href="/guardian-os" className="btn-secondary">
+                  Explore GuardianOS
+                </Link>
+              </div>
+
+              {/* Framework labels */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-1.5 pt-1">
+                {["KCSIE 2024", "UK GDPR", "NCSC Aligned", "MAT Ready"].map((t, i) => (
+                  <span key={t} className="flex items-center gap-2">
+                    {i > 0 && (
+                      <span
+                        className="w-px h-3 hidden sm:block"
+                        style={{ background: "rgba(255,255,255,0.12)" }}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span
+                      className="w-[5px] h-[5px] rounded-full flex-shrink-0"
+                      style={{ background: "rgba(0,212,255,0.55)" }}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className="text-[9.5px] font-semibold tracking-[0.18em] uppercase"
+                      style={{ color: "rgba(255,255,255,0.35)" }}
+                    >
+                      {t}
+                    </span>
+                  </span>
+                ))}
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
