@@ -75,17 +75,17 @@ export function serviceSchema(service: Service): SchemaOrg {
     "@type": "Service",
     name: service.title,
     serviceType: service.title,
-    description: service.detail.intro,
+    description: service.description,
     provider: {
       "@type": "Organization",
-      name: "Winchester Consultancy",
-      url: "https://winchesterconsultancy.co.uk",
+      name: "SafeShield",
+      url: "https://safeshield.education",
     },
     areaServed: {
       "@type": "Country",
       name: "United Kingdom",
     },
-    url: `https://winchesterconsultancy.co.uk${service.href}`,
+    url: `https://safeshield.education${service.href}`,
   };
 }
 

@@ -1,109 +1,146 @@
 import type { Metadata } from "next";
-import SectionDivider from "@/components/ui/SectionDivider";
+import Link from "next/link";
+import { Mail, MapPin, Clock, CalendarDays } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
+import GlassPanel from "@/components/ui/GlassPanel";
 import ContactForm from "@/components/forms/ContactForm";
-import { Mail, MapPin } from "lucide-react";
-import JsonLd from "@/components/seo/JsonLd";
-import { localBusinessSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Contact | Winchester Consultancy",
+  title: "Contact SafeShield",
   description:
-    "Get in touch with Winchester Consultancy. Whether you have a compliance challenge or simply want to learn more, we are here to help.",
+    "Have a question about SafeShield, want to discuss your school's needs, or ready to book a Readiness Review? Get in touch — we'd be glad to hear from you.",
 };
-
-const contactDetails = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hello@winchesterconsultancy.co.uk",
-    href: "mailto:hello@winchesterconsultancy.co.uk",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "England & Wales",
-    href: null,
-  },
-];
 
 export default function ContactPage() {
   return (
     <>
-      <JsonLd data={localBusinessSchema()} />
-      <section className="pt-36 pb-20 bg-[#0B1118]">
+      <PageHero
+        eyebrow="CONTACT"
+        title="Get in touch with SafeShield"
+        titleHighlight="with SafeShield"
+        description="Have a question about SafeShield, want to discuss your school's needs, or ready to book a Readiness Review? We'd be glad to hear from you."
+      />
+
+      <section className="py-section" aria-labelledby="contact-heading">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="eyebrow mb-4">Get in Touch</p>
-          <h1 className="heading-display text-4xl lg:text-6xl mb-6">
-            Let&apos;s Start a
-            <br />
-            <span style={{ color: "#C9A84C" }}>Conversation.</span>
-          </h1>
-          <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed">
-            Whether you need assurance, guidance or a trusted partner,
-            we&apos;re here to help.
-          </p>
-        </div>
-      </section>
-
-      <SectionDivider />
-
-      <section className="py-24 bg-[#111A23]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Contact details */}
-          <div className="flex flex-col gap-8">
-            <h2 className="font-cinzel font-bold text-white text-2xl">
-              Contact Details
-            </h2>
-
-            <div className="flex flex-col gap-5">
-              {contactDetails.map(({ icon: Icon, label, value, href }) => (
-                <div key={label} className="flex items-start gap-4">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{
-                      background: "rgba(11,17,24,0.6)",
-                      border: "1px solid rgba(201,168,76,0.3)",
-                    }}
-                  >
-                    <Icon
-                      size={16}
-                      className="text-[#C9A84C]"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div>
-                    <p className="font-cinzel text-white text-xs tracking-wider uppercase font-bold mb-1">
-                      {label}
-                    </p>
-                    {href ? (
-                      <a
-                        href={href}
-                        className="font-inter text-[#A7B1BE] text-sm hover:text-white transition-colors"
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      <p className="font-inter text-[#A7B1BE] text-sm">{value}</p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 p-5 rounded-xl border border-[#2A3340]">
-              <p className="font-cinzel font-bold text-white text-xs tracking-wider uppercase mb-3">
-                Response Time
-              </p>
-              <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
-                We aim to respond to all enquiries within one business day.
-                For urgent matters, please email us directly and we will prioritise your request.
-              </p>
-            </div>
+          <div className="sr-only">
+            <h2 id="contact-heading">Contact SafeShield</h2>
           </div>
 
-          {/* Server-action-powered contact form */}
-          <ContactForm />
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_380px] gap-10 items-start">
+            {/* Contact form */}
+            <GlassPanel className="p-6 sm:p-8">
+              <ContactForm />
+            </GlassPanel>
+
+            {/* Contact details */}
+            <div className="flex flex-col gap-6">
+              <GlassPanel className="p-6 flex flex-col gap-5">
+                <h2 className="text-body-lg font-semibold text-on-surface">
+                  Contact details
+                </h2>
+
+                {/* Email */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg bg-surface-low flex items-center justify-center flex-shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  >
+                    <Mail size={16} className="text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-body-sm font-medium text-on-surface mb-0.5">
+                      Email
+                    </p>
+                    <a
+                      href="mailto:hello@safeshield.education"
+                      className="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+                    >
+                      hello@safeshield.education
+                    </a>
+                  </div>
+                </div>
+
+                {/* Readiness review bookings */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg bg-surface-low flex items-center justify-center flex-shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  >
+                    <CalendarDays size={16} className="text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-body-sm font-medium text-on-surface mb-0.5">
+                      Readiness Review bookings
+                    </p>
+                    <p className="text-body-sm text-on-surface-variant">
+                      To book a Readiness Review, please use our{" "}
+                      <Link
+                        href="/book-review"
+                        className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                      >
+                        dedicated booking page
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                </div>
+
+                {/* Response time */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg bg-surface-low flex items-center justify-center flex-shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  >
+                    <Clock size={16} className="text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-body-sm font-medium text-on-surface mb-0.5">
+                      Response time
+                    </p>
+                    <p className="text-body-sm text-on-surface-variant">
+                      We aim to respond to all enquiries within 2 working days.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg bg-surface-low flex items-center justify-center flex-shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  >
+                    <MapPin size={16} className="text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-body-sm font-medium text-on-surface mb-0.5">
+                      Where we work
+                    </p>
+                    <p className="text-body-sm text-on-surface-variant">
+                      SafeShield works with schools across England and Wales.
+                    </p>
+                  </div>
+                </div>
+              </GlassPanel>
+
+              {/* CTA panel */}
+              <GlassPanel className="p-6 flex flex-col gap-4">
+                <h3 className="text-body-lg font-semibold text-on-surface">
+                  Ready to book?
+                </h3>
+                <p className="text-body-sm text-on-surface-variant leading-relaxed">
+                  If you&apos;re ready to book a Readiness Review, you can go straight to
+                  the booking form and tell us about your school and priorities.
+                </p>
+                <Link
+                  href="/book-review"
+                  className="btn-primary self-start"
+                >
+                  Book a Readiness Review
+                </Link>
+              </GlassPanel>
+            </div>
+          </div>
         </div>
       </section>
     </>

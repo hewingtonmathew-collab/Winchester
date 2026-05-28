@@ -1,221 +1,163 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import ContactCTA from "@/components/sections/ContactCTA";
-import GlassCard from "@/components/ui/GlassCard";
-import ServiceIcon from "@/components/ui/ServiceIcon";
-import SectionDivider from "@/components/ui/SectionDivider";
-import ScrollReveal from "@/components/ui/ScrollReveal";
+import { Shield, Lock, FileText, Cpu, Eye, Users, Landmark } from "lucide-react";
+
+import PageHero from "@/components/ui/PageHero";
+import ServiceCard from "@/components/ui/ServiceCard";
+import CTASection from "@/components/ui/CTASection";
+import GlassPanel from "@/components/ui/GlassPanel";
+
 import { services } from "@/data/services";
-import { ArrowRight, Layers } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Services | Winchester Consultancy",
+  title: "Services — School Digital Safeguarding & Compliance | SafeShield",
   description:
-    "Comprehensive assurance services tailored to your school or trust — from safeguarding and governance to AI readiness and operational resilience.",
+    "Seven specialist service areas covering every aspect of UK school digital compliance — from KCSIE safeguarding and NCSC cyber to GDPR, AI governance and governor accountability.",
 };
 
-const serviceCategories = [
+const serviceIcons: Record<string, React.ReactNode> = {
+  "digital-safeguarding": <Shield size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "cyber-security": <Lock size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "gdpr-dpia": <FileText size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "ai-governance": <Cpu size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "filtering-monitoring": <Eye size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "accessibility-send": <Users size={22} strokeWidth={1.5} aria-hidden="true" />,
+  "governor-oversight": <Landmark size={22} strokeWidth={1.5} aria-hidden="true" />,
+};
+
+const reviewSteps = [
   {
-    label: "Digital & Compliance",
-    ids: ["safeguarding", "governance", "ai-governance", "cyber-resilience", "data-protection"],
-    description: "Core statutory compliance, digital safeguarding, and regulatory assurance.",
+    number: "01",
+    title: "Request a Readiness Review",
+    description:
+      "Book online or by phone. Tell us about your school or trust — size, context and which compliance areas are most pressing. No commitment required at this stage.",
   },
   {
-    label: "Operational",
-    ids: ["operational", "hr-finance", "health-safety"],
-    description: "Operational efficiency, HR compliance, finance, and estates management.",
+    number: "02",
+    title: "Initial diagnostic",
+    description:
+      "SafeShield reviews your current position across the relevant compliance domains — policies, evidence records, filtering arrangements and governance documentation.",
   },
   {
-    label: "Strategic",
-    ids: ["strategic", "compliance-intelligence"],
-    description: "Trust-wide strategic intelligence and compliance visibility systems.",
+    number: "03",
+    title: "Structured report",
+    description:
+      "You receive a clear, RAG-rated findings report with prioritised actions. Written for headteachers and governors, not compliance specialists.",
+  },
+  {
+    number: "04",
+    title: "Ongoing support",
+    description:
+      "Platform access and specialist guidance to help your team act on the findings, maintain evidence and prepare for inspection or board reporting.",
   },
 ];
 
 export default function ServicesPage() {
   return (
     <>
-      <section className="pt-36 pb-20 bg-[#0B1118] relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-25"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(201,168,76,0.10) 1px, transparent 1px)",
-            backgroundSize: "36px 36px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 80% at 10% 50%, #0c1e2e 0%, transparent 70%)",
-          }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="eyebrow mb-4">Our Services</p>
-          <h1 className="heading-display text-4xl lg:text-6xl mb-6 text-balance">
-            Comprehensive Assurance.
-            <br />
-            <span style={{ color: "#C9A84C" }}>Tailored to Your Needs.</span>
-          </h1>
-          <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed">
-            Every school and trust faces unique challenges. Our ten services are designed to
-            meet you where you are and deliver outcomes that matter — from statutory compliance
-            to strategic transformation.
-          </p>
+      {/* ── PAGE HERO ── */}
+      <PageHero
+        eyebrow="SAFESHIELD SERVICES"
+        title="Structured compliance across every domain"
+        titleHighlight="across every domain"
+        description="Seven specialist service areas covering every aspect of UK school digital compliance — from KCSIE safeguarding and NCSC cyber to GDPR, AI governance and governor accountability."
+      />
+
+      {/* ── SERVICES GRID ── */}
+      <section className="py-24" aria-labelledby="all-services-heading">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <p className="eyebrow mb-3">All services</p>
+            <h2
+              id="all-services-heading"
+              className="text-display-md font-bold text-on-surface text-balance max-w-2xl"
+            >
+              Every compliance domain, structured and evidenced.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {services.map((service) => (
+              <ServiceCard
+                key={service.slug}
+                title={service.title}
+                tagline={service.tagline}
+                description={service.description}
+                icon={serviceIcons[service.slug]}
+                href={service.href}
+                colour={service.colour}
+                pillars={service.pillars}
+                compact={false}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
-      <SectionDivider />
-
-      {/* Category groupings */}
-      <section className="py-16 bg-[#111A23]">
+      {/* ── HOW A REVIEW WORKS ── */}
+      <section
+        className="py-24 glass-panel border-y border-white/[0.06]"
+        aria-labelledby="review-process-heading"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="mb-10">
-              <p className="eyebrow mb-3 reveal">Service Areas</p>
-              <h2 className="heading-display text-2xl lg:text-3xl reveal reveal-delay-1">
-                Three Areas of{" "}
-                <span style={{ color: "#C9A84C" }}>Expertise</span>
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {serviceCategories.map((cat, i) => (
-                <GlassCard
-                  key={cat.label}
-                  className={`flex flex-col gap-3 reveal reveal-delay-${i + 1 as 1 | 2 | 3}`}
+          <div className="mb-14">
+            <p className="eyebrow mb-3">The process</p>
+            <h2
+              id="review-process-heading"
+              className="text-display-md font-bold text-on-surface text-balance max-w-xl"
+            >
+              How a{" "}
+              <span className="text-primary text-glow">Readiness Review</span>{" "}
+              works
+            </h2>
+          </div>
+
+          {/* Desktop: horizontal. Mobile: vertical stack */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {reviewSteps.map((step) => (
+              <GlassPanel
+                key={step.number}
+                className="relative rounded-xl p-6 overflow-hidden"
+              >
+                {/* Background digit */}
+                <span
+                  className="absolute top-2 right-4 text-[5.5rem] font-black leading-none pointer-events-none select-none text-primary/[0.04]"
+                  aria-hidden="true"
                 >
-                  <h3 className="font-cinzel font-bold text-white text-base">
-                    {cat.label}
+                  {step.number}
+                </span>
+
+                {/* Top edge glow */}
+                <div
+                  className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/40 to-transparent"
+                  aria-hidden="true"
+                />
+
+                <div className="relative flex flex-col gap-4 h-full">
+                  <span className="text-3xl font-black text-primary/30 metric-number leading-none">
+                    {step.number}
+                  </span>
+                  <h3 className="text-headline-md font-semibold text-on-surface">
+                    {step.title}
                   </h3>
-                  <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
-                    {cat.description}
+                  <p className="text-body-sm text-on-surface-variant leading-relaxed flex-1">
+                    {step.description}
                   </p>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    {cat.ids.map((id) => {
-                      const svc = services.find((s) => s.id === id);
-                      return svc ? (
-                        <Link
-                          key={id}
-                          href={svc.href}
-                          className="badge badge-neutral hover:badge-gold transition-colors"
-                        >
-                          {svc.title.split(" ").slice(0, 2).join(" ")}
-                        </Link>
-                      ) : null;
-                    })}
-                  </div>
-                </GlassCard>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <SectionDivider />
-
-      {/* All 10 services */}
-      <section className="py-24 bg-[#0B1118]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="mb-12">
-              <p className="eyebrow mb-3 reveal">All Services</p>
-              <h2 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
-                Every Service{" "}
-                <span style={{ color: "#C9A84C" }}>We Offer</span>
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service, i) => (
-                <GlassCard
-                  key={service.id}
-                  hover
-                  className={`flex flex-col gap-5 reveal reveal-delay-${Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}`}
-                  as="article"
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{
-                      background: "rgba(11,17,24,0.6)",
-                      border: "1px solid rgba(201,168,76,0.3)",
-                    }}
-                  >
-                    <ServiceIcon name={service.icon} size={22} />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="eyebrow text-[0.6rem]">{service.detail.tagline}</p>
-                    <h2 className="font-cinzel font-bold text-white text-lg leading-snug">
-                      {service.title}
-                    </h2>
-                  </div>
-                  <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed flex-1">
-                    {service.description}
-                  </p>
-                  <Link
-                    href={service.href}
-                    className="inline-flex items-center gap-1.5 text-[#C9A84C] text-sm font-inter font-medium group transition-all duration-200 mt-auto"
-                  >
-                    View Service
-                    <ArrowRight
-                      size={14}
-                      className="transition-transform duration-200 group-hover:translate-x-1"
-                    />
-                  </Link>
-                </GlassCard>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <SectionDivider />
-
-      {/* Framework callout */}
-      <section className="py-16 bg-[#111A23]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <GlassCard variant="prominent" className="reveal">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
-                <div className="flex items-start gap-5">
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{
-                      background: "rgba(11,17,24,0.6)",
-                      border: "1px solid rgba(201,168,76,0.3)",
-                    }}
-                  >
-                    <Layers size={22} className="text-[#C9A84C]" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="eyebrow text-[0.65rem]">Our Methodology</p>
-                    <h3 className="font-cinzel font-bold text-white text-xl">
-                      Winchester Digital Assurance Framework
-                    </h3>
-                    <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed max-w-lg mt-1">
-                      All our services are structured around the Winchester Digital Assurance
-                      Framework — a six-pillar methodology that gives schools and trusts a
-                      rigorous, consistent view of their compliance posture.
-                    </p>
-                  </div>
                 </div>
-                <Link
-                  href="/framework"
-                  className="inline-flex items-center gap-2 font-inter text-sm text-[#C9A84C] hover:text-white transition-colors flex-shrink-0 group"
-                >
-                  Explore the Framework
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
-            </GlassCard>
-          </ScrollReveal>
+              </GlassPanel>
+            ))}
+          </div>
         </div>
       </section>
 
-      <ContactCTA />
+      {/* ── CTA ── */}
+      <CTASection
+        eyebrow="NEXT STEP"
+        title="Request your Readiness Review"
+        description="A structured SafeShield Readiness Review identifies gaps across your digital safeguarding, cyber and compliance position — with clear, prioritised next actions for your school."
+        variant="prominent"
+        primaryCTA={{ label: "Book a Readiness Review", href: "/book-review" }}
+        secondaryCTA={{ label: "Explore GuardianOS Framework", href: "/guardian-os" }}
+      />
     </>
   );
 }
