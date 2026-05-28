@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import HeroBackground from "@/components/ui/HeroBackground";
 
 export interface HeroMedia {
   type: "video" | "image";
@@ -100,8 +101,17 @@ export default function PageHero({
     >
       {/* ── Background layer ──────────────────────────────────────────────── */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
-        {/* Base dark surface */}
-        <div className="absolute inset-0 bg-[#0c0e12]" />
+        {/* Animated aurora + orb background */}
+        {!hasMedia && (
+          <HeroBackground
+            intensity={isCinematic ? "intense" : "normal"}
+            showOrbs
+            showGrid
+          />
+        )}
+
+        {/* Static base when media is present */}
+        {hasMedia && <div className="absolute inset-0 bg-[#0c0e12]" />}
 
         {/* Video background */}
         {hasMedia && media!.type === "video" && (
@@ -133,59 +143,27 @@ export default function PageHero({
           />
         )}
 
-        {/* Dark overlay — always present, heavier when media exists */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: hasMedia
-              ? `linear-gradient(
-                  to bottom,
-                  rgba(12,14,18,${overlayOpacity * 0.7}) 0%,
-                  rgba(12,14,18,${overlayOpacity * 0.5}) 40%,
-                  rgba(12,14,18,${overlayOpacity * 0.85}) 75%,
-                  rgba(12,14,18,0.98) 100%
-                )`
-              : "transparent",
-          }}
-        />
-
-        {/* Grain texture for premium look */}
+        {/* Dark overlay — heavier when media exists */}
         {hasMedia && (
           <div
-            className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
+            className="absolute inset-0"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-              backgroundSize: "128px 128px",
+              background: `linear-gradient(
+                to bottom,
+                rgba(12,14,18,${overlayOpacity * 0.7}) 0%,
+                rgba(12,14,18,${overlayOpacity * 0.5}) 40%,
+                rgba(12,14,18,${overlayOpacity * 0.85}) 75%,
+                rgba(12,14,18,0.98) 100%
+              )`,
             }}
           />
         )}
 
-        {/* Ambient cyan glow — always */}
-        <div
-          className="absolute left-1/2 top-0 -translate-x-1/2 w-[1200px] h-[600px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.13) 0%, rgba(0,212,255,0.04) 40%, transparent 70%)",
-          }}
-        />
-
-        {/* HUD scan line — sweeps from top to bottom */}
-        <div
-          className="absolute top-0 left-0 right-0 h-px opacity-[0.18] pointer-events-none animate-scan-hero motion-reduce:animate-none"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.6) 20%, rgba(168,232,255,1) 50%, rgba(0,212,255,0.6) 80%, transparent 100%)",
-          }}
-        />
-
-        {/* Bottom fade to background for seamless section transition */}
+        {/* Bottom fade for seamless section transition */}
         {!isCinematic && (
           <div
             className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent, rgba(12,14,18,0.6))",
-            }}
+            style={{ background: "linear-gradient(to bottom, transparent, rgba(6,8,14,0.7))" }}
           />
         )}
       </div>

@@ -132,6 +132,31 @@ const config: Config = {
         "spin-reverse": { "0%": { transform: "rotate(360deg)" }, "100%": { transform: "rotate(0deg)" } },
         shimmer: { "0%": { transform: "translateX(-100%)" }, "100%": { transform: "translateX(300%)" } },
         "glow-pulse": { "0%,100%": { boxShadow: "0 0 0 rgba(0,212,255,0)" }, "50%": { boxShadow: "0 0 24px rgba(0,212,255,0.3)" } },
+        "aurora-1": {
+          "0%,100%": { transform: "translate(0%,0%) scale(1)" },
+          "33%": { transform: "translate(-6%,10%) scale(1.07)" },
+          "66%": { transform: "translate(7%,-4%) scale(0.96)" },
+        },
+        "aurora-2": {
+          "0%,100%": { transform: "translate(0%,0%) scale(1)" },
+          "40%": { transform: "translate(5%,-9%) scale(1.1)" },
+          "70%": { transform: "translate(-7%,5%) scale(0.93)" },
+        },
+        "aurora-3": {
+          "0%,100%": { transform: "translate(0%,0%) scale(1)" },
+          "50%": { transform: "translate(9%,-6%) scale(1.05)" },
+        },
+        "aurora-4": {
+          "0%,100%": { transform: "translate(0%,0%) scale(1) rotate(0deg)" },
+          "25%": { transform: "translate(-4%,6%) scale(1.08) rotate(2deg)" },
+          "75%": { transform: "translate(5%,-3%) scale(0.95) rotate(-1deg)" },
+        },
+        "iris": {
+          "0%,100%": { borderTopColor: "rgba(168,232,255,0.35)" },
+          "25%": { borderTopColor: "rgba(186,195,255,0.45)" },
+          "50%": { borderTopColor: "rgba(255,255,255,0.5)" },
+          "75%": { borderTopColor: "rgba(168,232,255,0.4)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out forwards",
@@ -148,6 +173,11 @@ const config: Config = {
         "spin-reverse": "spin-reverse 18s linear infinite",
         shimmer: "shimmer 2s infinite",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "aurora-1": "aurora-1 20s ease-in-out infinite",
+        "aurora-2": "aurora-2 24s ease-in-out infinite",
+        "aurora-3": "aurora-3 28s ease-in-out infinite",
+        "aurora-4": "aurora-4 16s ease-in-out infinite",
+        "iris": "iris 7s ease-in-out infinite",
       },
       backgroundImage: {
         /* Legacy grid (white lines, 40px) */

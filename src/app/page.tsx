@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shield, Lock, FileText, Cpu, Eye, Users, Landmark, ArrowRight } from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
+import HeroBackground from "@/components/ui/HeroBackground";
 import ServiceCard from "@/components/ui/ServiceCard";
 import AudienceCard from "@/components/ui/AudienceCard";
 import StatusCard from "@/components/ui/StatusCard";
@@ -77,56 +78,13 @@ export default function HomePage() {
         className="relative w-full pt-32 pb-24 overflow-hidden"
         aria-label="SafeShield digital safeguarding intelligence"
       >
-        {/* Layered ambient background */}
-        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-          <div className="absolute inset-0 bg-background" />
-          {/* HUD dot-grid */}
-          <div
-            className="absolute inset-0 opacity-100"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(0,212,255,0.20) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.055) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.022) 1px, transparent 1px)",
-              backgroundSize: "80px 80px, 80px 80px, 80px 80px, 20px 20px, 20px 20px",
-              backgroundPosition: "-1px -1px, -1px -1px, -1px -1px, -1px -1px, -1px -1px",
-            }}
-          />
-          {/* Cyan top sweep */}
-          <div
-            className="absolute left-1/2 top-0 -translate-x-1/2 w-[1300px] h-[700px]"
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.13) 0%, transparent 65%)",
-            }}
-          />
-          {/* Blue bottom-right accent */}
-          <div
-            className="absolute right-0 bottom-0 w-[700px] h-[500px]"
-            style={{
-              background:
-                "radial-gradient(ellipse at 100% 100%, rgba(186,195,255,0.07) 0%, transparent 60%)",
-            }}
-          />
-          {/* Left-side secondary glow */}
-          <div
-            className="absolute left-0 top-1/3 w-[400px] h-[600px]"
-            style={{
-              background:
-                "radial-gradient(ellipse at 0% 50%, rgba(0,212,255,0.05) 0%, transparent 70%)",
-            }}
-          />
-          {/* Horizontal scan line */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div
-              className="absolute left-0 right-0 h-16 pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(to bottom, transparent 0%, rgba(168,232,255,0.04) 40%, rgba(0,212,255,0.055) 50%, rgba(168,232,255,0.04) 60%, transparent 100%)",
-                animation: "scan 14s linear infinite",
-                top: 0,
-              }}
-            />
-          </div>
-        </div>
+        {/* Animated aurora background */}
+        <HeroBackground
+          className="-z-10"
+          intensity="intense"
+          showOrbs
+          showGrid
+        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">

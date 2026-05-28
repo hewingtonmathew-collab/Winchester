@@ -172,6 +172,66 @@
   }
 
   /* ═══════════════════════════════════════
+     APPLE / visionOS GLASS (lighter, white-frost)
+  ═══════════════════════════════════════ */
+
+  .glass-apple {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E"),
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.08) 12%,
+        rgba(180, 200, 255, 0.04) 50%,
+        rgba(255, 255, 255, 0.02) 100%
+      );
+    background-size: 250px 250px, 100% 100%;
+    backdrop-filter: blur(56px) saturate(1.9) brightness(1.12);
+    -webkit-backdrop-filter: blur(56px) saturate(1.9) brightness(1.12);
+    border: 0.75px solid rgba(255, 255, 255, 0.18);
+    border-top: 0.75px solid rgba(255, 255, 255, 0.32);
+    box-shadow:
+      /* Primary top inner highlight — glass refraction */
+      inset 0 2px 0 rgba(255, 255, 255, 0.26),
+      /* Left inner edge */
+      inset 1px 0 0 rgba(255, 255, 255, 0.10),
+      /* Right inner shadow */
+      inset -1px 0 0 rgba(0, 0, 0, 0.06),
+      /* Bottom inner shadow */
+      inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+      /* Outer drop shadows */
+      0 8px 48px rgba(0, 0, 0, 0.58),
+      0 2px 8px rgba(0, 0, 0, 0.28),
+      /* Outer glow — very subtle */
+      0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    contain: layout style;
+  }
+
+  .glass-apple-hover {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-apple-hover:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    border-top-color: rgba(255, 255, 255, 0.45);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      inset 1px 0 0 rgba(255, 255, 255, 0.14),
+      inset -1px 0 0 rgba(0, 0, 0, 0.04),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(168, 232, 255, 0.12),
+      0 12px 64px rgba(0, 0, 0, 0.65),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 0 48px rgba(168, 232, 255, 0.08);
+    transform: translateY(-3px);
+  }
+
+  /* Iridescent border — animates top border color through the rainbow */
+  .glass-iridescent {
+    animation: iris 7s ease-in-out infinite;
+  }
+
+  /* ═══════════════════════════════════════
      NAVIGATION GLASS
   ═══════════════════════════════════════ */
 
