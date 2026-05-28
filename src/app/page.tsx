@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, Brain, Eye, GraduationCap, Landmark, Network, Lock, ArrowRight } from "lucide-react";
+import { Shield, Lock, FileText, Cpu, Eye, Users, Landmark, ArrowRight } from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
-import SafeShieldCommandDashboard from "@/components/ui/SafeShieldCommandDashboard";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
-import HUDOverlay from "@/components/ui/HUDOverlay";
-import CountUp from "@/components/ui/CountUp";
 import ServiceCard from "@/components/ui/ServiceCard";
 import AudienceCard from "@/components/ui/AudienceCard";
 import StatusCard from "@/components/ui/StatusCard";
@@ -22,13 +19,13 @@ export const metadata: Metadata = {
 };
 
 const serviceIcons: Record<string, React.ReactNode> = {
-  "digital-safeguarding": <ShieldCheck size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "cyber-security": <Network size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "gdpr-dpia": <Lock size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "ai-governance": <Brain size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "filtering-monitoring": <Eye size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "accessibility-send": <GraduationCap size={21} strokeWidth={1.5} aria-hidden="true" />,
-  "governor-oversight": <Landmark size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "digital-safeguarding": <Shield size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "cyber-security": <Lock size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "gdpr-dpia": <FileText size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "ai-governance": <Cpu size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "filtering-monitoring": <Eye size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "accessibility-send": <Users size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "governor-oversight": <Landmark size={20} strokeWidth={1.5} aria-hidden="true" />,
 };
 
 const trustBarItems = [
@@ -76,182 +73,97 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ── HERO — cinematic full-screen video ── */}
+      {/* ── HERO ── */}
       <section
-        className="relative w-full overflow-hidden bg-[#020406]"
+        className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#040608]"
         aria-label="SafeShield digital safeguarding intelligence"
-        style={{ height: "100svh", minHeight: "680px" }}
       >
-        {/* ── Video layer ── */}
-        <video
-          src="/videos/hero-home.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          style={{ filter: "saturate(1.08) contrast(1.04)" }}
-          aria-hidden="true"
-        />
-
-        {/* ── Cinematic colour grade — subtle cool-tinted scrim ── */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background:
-              "linear-gradient(165deg, rgba(2,10,28,0.18) 0%, rgba(0,18,40,0.10) 40%, rgba(2,6,14,0.05) 60%, transparent 75%)",
-            mixBlendMode: "multiply",
-          }}
-        />
-
-        {/* ── Primary overlay — video breathes in middle, dark at edges ── */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background: [
-              /* top — clear navbar */
-              "linear-gradient(to bottom, rgba(2,4,8,0.60) 0%, rgba(2,4,8,0.08) 18%, transparent 35%)",
-              /* bottom — text legibility ramp */
-              "linear-gradient(to top,   rgba(2,4,8,1.00) 0%, rgba(2,4,8,0.82) 22%, rgba(2,4,8,0.30) 48%, transparent 65%)",
-              /* left edge depth */
-              "linear-gradient(to right, rgba(2,4,8,0.40) 0%, transparent 35%)",
-              /* right edge depth */
-              "linear-gradient(to left,  rgba(2,4,8,0.25) 0%, transparent 30%)",
-            ].join(", "),
-          }}
-        />
-
-        {/* ── Corner vignette ── */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(ellipse 95% 90% at 50% 50%, transparent 45%, rgba(2,4,8,0.55) 100%)",
-          }}
-        />
-
-        {/* ── Film grain ── */}
-        <svg
-          className="pointer-events-none absolute inset-0 w-full h-full opacity-[0.038]"
-          aria-hidden="true"
-          style={{ mixBlendMode: "overlay" }}
-        >
-          <filter id="grain">
-            <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#grain)" />
-        </svg>
-
-        {/* ── Subtle particle network — barely there ── */}
+        {/* Particle network — fills the entire hero */}
         <ParticleCanvas
-          className="opacity-[0.18]"
-          count={35}
+          className="-z-10 opacity-70"
+          count={80}
           rgb="0,212,255"
-          connectDist={120}
-          speed={0.12}
+          connectDist={160}
+          speed={0.22}
         />
 
-        {/* ── Cyan atmospheric glow — low frequency, centred ── */}
+        {/* Very subtle radial vignette — darkens corners */}
         <div
-          className="pointer-events-none absolute"
+          className="pointer-events-none absolute inset-0 -z-10"
           aria-hidden="true"
           style={{
-            inset: 0,
             background:
-              "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,180,255,0.045) 0%, transparent 70%)",
+              "radial-gradient(ellipse 85% 70% at 50% 50%, transparent 30%, rgba(4,6,8,0.65) 100%)",
           }}
         />
 
-        {/* ── HUD overlay ── */}
-        <HUDOverlay intensity="low" scanLine corners dataReadouts />
-
-        {/* ── Content — pinned bottom-left, editorial style ── */}
+        {/* Cyan sweep from top */}
         <div
-          className="absolute bottom-0 left-0 right-0"
-          style={{ paddingBottom: "clamp(3rem, 7vh, 5rem)" }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-5 max-w-[780px]">
+          className="pointer-events-none absolute top-0 left-0 right-0 h-[50vh] -z-10"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)",
+          }}
+        />
 
-              {/* Eyebrow row — thin rule + label + thin rule */}
-              <div className="flex items-center gap-4">
-                <div
-                  className="h-px flex-shrink-0 w-8"
-                  style={{ background: "linear-gradient(to right, transparent, rgba(0,212,255,0.55))" }}
+        {/* Bottom fade */}
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 -z-10"
+          aria-hidden="true"
+          style={{ background: "linear-gradient(to bottom, transparent, #040608)" }}
+        />
+
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 lg:gap-20 items-center">
+
+            {/* LEFT — text */}
+            <div className="flex flex-col gap-7 max-w-2xl">
+              {/* Status pill */}
+              <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full"
+                style={{
+                  background: "rgba(0,212,255,0.06)",
+                  border: "0.75px solid rgba(0,212,255,0.25)",
+                }}>
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
+                  style={{ boxShadow: "0 0 6px rgba(0,212,255,0.8)" }}
                   aria-hidden="true"
                 />
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none flex-shrink-0"
-                    style={{ boxShadow: "0 0 8px rgba(0,212,255,1)" }}
-                    aria-hidden="true"
-                  />
-                  <span
-                    className="text-[10px] font-bold tracking-[0.22em] uppercase"
-                    style={{ color: "rgba(0,212,255,0.85)", letterSpacing: "0.22em" }}
-                  >
-                    GuardianOS &nbsp;·&nbsp; Digital Safeguarding Intelligence
-                  </span>
-                </div>
-                <div
-                  className="h-px flex-1"
-                  style={{ background: "linear-gradient(to right, rgba(0,212,255,0.25), transparent)" }}
-                  aria-hidden="true"
-                />
+                <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
+                  GuardianOS Active
+                </span>
               </div>
 
               {/* Headline */}
               <h1
-                className="font-black text-white text-balance"
-                style={{
-                  fontSize: "clamp(2.9rem, 6.8vw, 5.6rem)",
-                  lineHeight: 1.03,
-                  letterSpacing: "-0.038em",
-                  textShadow: "0 4px 60px rgba(0,0,0,0.5), 0 1px 0 rgba(0,0,0,0.8)",
-                }}
+                className="font-black text-on-surface leading-[1.03] tracking-[-0.035em]"
+                style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)" }}
               >
                 Digital safeguarding{" "}
                 <span
+                  className="text-primary"
                   style={{
-                    color: "#00d4ff",
                     textShadow:
-                      "0 0 30px rgba(0,212,255,0.70), 0 0 100px rgba(0,212,255,0.25), 0 4px 60px rgba(0,0,0,0.5)",
+                      "0 0 20px rgba(0,212,255,0.55), 0 0 60px rgba(0,212,255,0.20)",
                   }}
                 >
                   intelligence
-                </span>
-                <br />
-                <span style={{ color: "rgba(255,255,255,0.92)" }}>for UK schools.</span>
+                </span>{" "}
+                for UK schools.
               </h1>
 
               {/* Subhead */}
               <p
-                style={{
-                  fontSize: "clamp(0.95rem, 1.35vw, 1.15rem)",
-                  fontWeight: 300,
-                  lineHeight: 1.65,
-                  color: "rgba(255,255,255,0.62)",
-                  maxWidth: "56ch",
-                  textShadow: "0 2px 20px rgba(0,0,0,0.6)",
-                }}
+                className="text-on-surface-variant leading-relaxed max-w-xl"
+                style={{ fontSize: "clamp(1rem, 1.4vw, 1.2rem)", fontWeight: 300 }}
               >
-                GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR,
-                AI governance and governor accountability in one structured, evidence-first platform.
+                GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
+                and governor accountability structured in a single evidence-first platform.
               </p>
 
-              {/* Divider */}
-              <div
-                className="h-px w-24"
-                style={{ background: "linear-gradient(to right, rgba(0,212,255,0.40), transparent)" }}
-                aria-hidden="true"
-              />
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-3 items-center">
+              {/* CTA row */}
+              <div className="flex flex-wrap gap-4 pt-2">
                 <Link href="/book-review" className="btn-primary">
                   Book a Readiness Review
                 </Link>
@@ -260,90 +172,61 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Framework labels */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-1.5 pt-1">
-                {["KCSIE 2024", "UK GDPR", "NCSC Aligned", "MAT Ready"].map((t, i) => (
-                  <span key={t} className="flex items-center gap-2">
-                    {i > 0 && (
-                      <span
-                        className="w-px h-3 hidden sm:block"
-                        style={{ background: "rgba(255,255,255,0.12)" }}
-                        aria-hidden="true"
-                      />
-                    )}
-                    <span
-                      className="w-[5px] h-[5px] rounded-full flex-shrink-0"
-                      style={{ background: "rgba(0,212,255,0.55)" }}
-                      aria-hidden="true"
-                    />
-                    <span
-                      className="text-[9.5px] font-semibold tracking-[0.18em] uppercase"
-                      style={{ color: "rgba(255,255,255,0.35)" }}
-                    >
-                      {t}
-                    </span>
+              {/* Trust line */}
+              <div className="flex items-center gap-4 pt-2">
+                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+                {["KCSIE 2024", "UK GDPR", "NCSC Aligned"].map((t) => (
+                  <span key={t} className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/50">
+                    {t}
                   </span>
                 ))}
               </div>
-
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── SAFESHIELD COMMAND DASHBOARD ── */}
-      <section
-        className="py-16 relative overflow-hidden"
-        aria-label="SafeShield Command — live compliance dashboard"
-        style={{ background: "linear-gradient(to bottom, #040608, #06080e)" }}
-      >
-        {/* Subtle grid */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SafeShieldCommandDashboard />
+            {/* RIGHT — product visual */}
+            <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
+              <GuardianCommandVisual
+                variant="full"
+                trustScore={94}
+                kcsieScore={98}
+                activeNodes={14}
+                totalNodes={14}
+                alerts={2}
+                className="w-full max-w-[420px] lg:max-w-[460px]"
+              />
+            </div>
+
+          </div>
         </div>
       </section>
 
       {/* ── TRUST BAR ── */}
       <section
-        className="w-full py-4"
-        style={{
-          background: "rgba(8,10,16,0.9)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          backdropFilter: "blur(24px)",
-        }}
+        className="w-full py-5 glass-panel border-y border-white/[0.06]"
         aria-label="Framework alignments"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-on-surface-variant/40 shrink-0 hidden sm:block">
-              Built for UK schools
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-2">
+            <p className="eyebrow text-on-surface-variant shrink-0 mr-4 hidden sm:block">
+              Designed for UK schools
             </p>
-            <div className="w-px h-5 bg-white/[0.08] hidden sm:block" aria-hidden="true" />
-            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-px flex-1">
+            <div className="w-px h-6 bg-white/10 hidden sm:block" aria-hidden="true" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 flex-1">
               {trustBarItems.map((item, i) => (
-                <div key={item.label} className="flex items-center">
+                <div
+                  key={item.label}
+                  className="flex flex-col items-center sm:items-start sm:px-6 gap-0.5"
+                >
                   {i > 0 && (
-                    <span className="w-px h-4 bg-white/[0.08] mx-4 hidden sm:block" aria-hidden="true" />
-                  )}
-                  <div className="flex items-center gap-2 px-3 sm:px-0">
-                    <span
-                      className="w-1 h-1 rounded-full shrink-0 bg-primary"
-                      style={{ boxShadow: "0 0 4px rgba(0,212,255,0.7)" }}
+                    <div
+                      className="hidden sm:block absolute h-6 w-px bg-white/10 -left-0.5"
                       aria-hidden="true"
                     />
-                    <span className="text-[12px] font-semibold text-on-surface tracking-wide">{item.label}</span>
-                    <span className="text-[11px] text-on-surface-variant/55 hidden sm:inline">{item.description}</span>
-                  </div>
+                  )}
+                  <span className="text-body-sm font-bold text-primary tracking-wide">
+                    {item.label}
+                  </span>
+                  <span className="text-[11px] text-on-surface-variant">{item.description}</span>
                 </div>
               ))}
             </div>
@@ -380,26 +263,14 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div>
-              <p className="eyebrow mb-3">SafeShield Services</p>
-              <h2
-                id="services-heading"
-                className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
-              >
-                Structured compliance across every critical area.
-              </h2>
-              <p className="text-body-md text-on-surface-variant mt-3 max-w-xl">
-                Seven specialist domains — safeguarding, cyber, GDPR, AI governance, filtering, accessibility, and governor oversight.
-              </p>
-            </div>
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 text-[13px] font-semibold text-primary hover:text-primary-tint transition-colors shrink-0"
+          <div className="mb-12">
+            <p className="eyebrow mb-3">SafeShield Services</p>
+            <h2
+              id="services-heading"
+              className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
             >
-              View all services
-              <ArrowRight size={14} aria-hidden="true" />
-            </Link>
+              Structured compliance across every critical area.
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -417,6 +288,15 @@ export default function HomePage() {
             ))}
           </div>
 
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-primary-tint transition-colors"
+            >
+              View all services
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -456,18 +336,12 @@ export default function HomePage() {
                 Built for how school leaders actually work: plain English reporting, RAG-rated
                 summaries and inspection-conscious evidence trails that hold up to scrutiny.
               </p>
-              {/* Domain count detail — animated on scroll */}
-              <div className="flex items-center gap-8 pt-2">
-                {[
-                  { end: 6, suffix: "", label: "Domains" },
-                  { end: 94, suffix: "%", label: "Avg Score" },
-                  { end: 14, suffix: "", label: "Active Nodes" },
-                ].map(({ end, suffix, label }) => (
-                  <div key={label} className="flex flex-col gap-0.5">
-                    <span className="text-2xl font-black text-primary text-glow metric-number">
-                      <CountUp end={end} suffix={suffix} duration={1600} />
-                    </span>
-                    <span className="hud-label">{label}</span>
+              {/* Domain count detail */}
+              <div className="flex items-center gap-6 pt-2">
+                {[["6", "Domains"], ["94%", "Avg Score"], ["14", "Nodes"]].map(([val, lbl]) => (
+                  <div key={lbl} className="flex flex-col gap-0.5">
+                    <span className="text-2xl font-black text-primary text-glow">{val}</span>
+                    <span className="hud-label">{lbl}</span>
                   </div>
                 ))}
               </div>
@@ -494,36 +368,19 @@ export default function HomePage() {
       </section>
 
       {/* ── RAG RISK STRIP ── */}
-      <section className="py-20 relative overflow-hidden" aria-labelledby="metrics-heading">
+      <section className="py-16 relative overflow-hidden" aria-label="Current compliance metrics">
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
           <div className="absolute inset-0 bg-background" />
           <div
-            className="absolute inset-0 opacity-70"
+            className="absolute inset-0"
             style={{
-              backgroundImage: "radial-gradient(circle, rgba(0,212,255,0.10) 1px, transparent 1px)",
-              backgroundSize: "64px 64px",
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.12) 1px, transparent 1px)",
+              backgroundSize: "60px 60px",
             }}
-          />
-          <div
-            className="absolute inset-x-0 top-0 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.15) 30%, rgba(0,212,255,0.15) 70%, transparent)" }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.10) 30%, rgba(0,212,255,0.10) 70%, transparent)" }}
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-10 text-center">
-            <p className="eyebrow justify-center mb-2">Live Platform Metrics</p>
-            <h2
-              id="metrics-heading"
-              className="font-bold text-on-surface"
-              style={{ fontSize: "clamp(1.4rem, 2.5vw, 1.85rem)" }}
-            >
-              Current compliance position across all domains
-            </h2>
-          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <StatusCard
               label="Trust Assurance"
