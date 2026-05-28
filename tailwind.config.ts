@@ -9,17 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#111317",
+        background: "#08090e",
         surface: {
-          DEFAULT: "#111317",
-          dim: "#111317",
-          bright: "#37393e",
-          lowest: "#0c0e12",
-          low: "#1a1c20",
-          base: "#1e2024",
-          high: "#282a2e",
-          highest: "#333539",
-          variant: "#333539",
+          DEFAULT: "#08090e",
+          dim: "#060710",
+          bright: "#20242e",
+          lowest: "#040508",
+          low: "#0d0f16",
+          base: "#10121a",
+          high: "#181b24",
+          highest: "#20242e",
+          variant: "#20242e",
         },
         "on-surface": "#e2e2e8",
         "on-surface-variant": "#bbc9cf",
