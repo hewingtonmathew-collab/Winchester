@@ -197,72 +197,116 @@ export default function HomePage() {
 
             {/* LEFT — text */}
             <div className="flex flex-col gap-7 max-w-2xl">
-              {/* Status pill */}
-              <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full"
+              {/* Status pill — richer */}
+              <div
+                className="inline-flex items-center gap-3 self-start px-4 py-2 rounded-full"
                 style={{
-                  background: "rgba(0,212,255,0.06)",
-                  border: "0.75px solid rgba(0,212,255,0.25)",
-                }}>
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
-                  style={{ boxShadow: "0 0 6px rgba(0,212,255,0.8)" }}
-                  aria-hidden="true"
-                />
-                <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
+                  background: "rgba(0,212,255,0.05)",
+                  border: "1px solid rgba(0,212,255,0.18)",
+                  backdropFilter: "blur(16px)",
+                }}
+              >
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span
+                    className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 motion-reduce:animate-none"
+                    style={{ background: "rgba(0,212,255,0.8)" }}
+                    aria-hidden="true"
+                  />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+                <span className="text-[11px] font-bold tracking-[0.16em] uppercase text-primary/85">
                   GuardianOS Active
+                </span>
+                <span className="hidden sm:flex items-center gap-1.5 pl-3 border-l border-white/[0.10]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rag-green" aria-hidden="true" />
+                  <span className="text-[10px] font-medium text-on-surface-variant/55">All systems operational</span>
                 </span>
               </div>
 
               {/* Headline */}
               <h1
-                className="font-black text-on-surface leading-[1.03] tracking-[-0.035em]"
-                style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)" }}
+                className="font-black text-on-surface leading-[1.01] tracking-[-0.04em]"
+                style={{ fontSize: "clamp(2.8rem, 7.5vw, 6rem)" }}
               >
-                Digital safeguarding{" "}
+                Digital{" "}
+                <br className="hidden sm:block" />
+                safeguarding{" "}
                 <span
-                  className="text-primary"
                   style={{
-                    textShadow:
-                      "0 0 20px rgba(0,212,255,0.55), 0 0 60px rgba(0,212,255,0.20)",
+                    background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 35%, #ffffff 60%, #a8e8ff 85%, #3cd7ff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    filter: "drop-shadow(0 0 28px rgba(0,212,255,0.4))",
                   }}
                 >
                   intelligence
                 </span>{" "}
+                <br className="hidden sm:block" />
                 for UK schools.
               </h1>
 
               {/* Subhead */}
               <p
-                className="text-on-surface-variant leading-relaxed max-w-xl"
-                style={{ fontSize: "clamp(1rem, 1.4vw, 1.2rem)", fontWeight: 300 }}
+                className="text-on-surface-variant leading-relaxed max-w-[520px]"
+                style={{ fontSize: "clamp(1rem, 1.6vw, 1.175rem)", fontWeight: 300, lineHeight: 1.7 }}
               >
                 GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
                 and governor accountability structured in a single evidence-first platform.
               </p>
 
               {/* CTA row */}
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link href="/book-review" className="btn-primary">
+              <div className="flex flex-wrap gap-3 pt-1">
+                <Link href="/book-review" className="btn-primary inline-flex items-center gap-2 text-sm">
                   Book a Readiness Review
+                  <ArrowRight size={15} aria-hidden="true" />
                 </Link>
-                <Link href="/guardian-os" className="btn-secondary">
+                <Link href="/guardian-os" className="btn-secondary text-sm">
                   Explore GuardianOS
                 </Link>
               </div>
 
-              {/* Trust line */}
-              <div className="flex items-center gap-4 pt-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-                {["KCSIE 2024", "UK GDPR", "NCSC Aligned"].map((t) => (
-                  <span key={t} className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/50">
-                    {t}
+              {/* Trust signals row */}
+              <div className="flex items-center flex-wrap gap-2 pt-2">
+                <span className="text-[10px] font-bold tracking-[0.14em] uppercase text-on-surface-variant/30 shrink-0 pr-1">
+                  Aligned:
+                </span>
+                {[
+                  { label: "KCSIE 2024", color: "rgba(0,212,255,0.8)" },
+                  { label: "UK GDPR", color: "rgba(74,222,128,0.8)" },
+                  { label: "NCSC", color: "rgba(0,212,255,0.8)" },
+                  { label: "ISO 27001", color: "rgba(251,191,36,0.7)" },
+                ].map(({ label, color }) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide text-on-surface"
+                    style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: `0.5px solid rgba(255,255,255,0.09)`,
+                    }}
+                  >
+                    <span
+                      className="h-1 w-1 rounded-full shrink-0"
+                      style={{ background: color }}
+                      aria-hidden="true"
+                    />
+                    {label}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* RIGHT — product visual */}
-            <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
+            {/* RIGHT — product visual with atmospheric container */}
+            <div className="flex-shrink-0 flex items-center justify-center lg:justify-end relative">
+              {/* Glow beneath the visual */}
+              <div
+                className="absolute inset-[-20%] rounded-full pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse, rgba(0,212,255,0.09) 0%, rgba(139,92,246,0.05) 50%, transparent 75%)",
+                  filter: "blur(40px)",
+                }}
+                aria-hidden="true"
+              />
               <GuardianCommandVisual
                 variant="full"
                 trustScore={94}
@@ -270,7 +314,7 @@ export default function HomePage() {
                 activeNodes={14}
                 totalNodes={14}
                 alerts={2}
-                className="w-full max-w-[420px] lg:max-w-[460px]"
+                className="w-full max-w-[420px] lg:max-w-[500px] relative"
               />
             </div>
 
@@ -400,13 +444,24 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <ScrollReveal>
-            <div className="mb-12 reveal">
-              <p className="eyebrow mb-3">SafeShield Services</p>
+            <div className="mb-14 reveal">
+              <p className="eyebrow mb-4">SafeShield Services</p>
               <h2
                 id="services-heading"
-                className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
+                className="text-on-surface max-w-xl text-balance"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.07 }}
               >
-                Structured compliance across every critical area.
+                Compliance structured.{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Evidence-first.
+                </span>
               </h2>
             </div>
 
@@ -464,7 +519,17 @@ export default function HomePage() {
                   className="text-display-md font-bold text-on-surface text-balance"
                 >
                   Introducing{" "}
-                  <span className="text-primary text-glow">GuardianOS</span>
+                  <span
+                    style={{
+                      background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 45%, #ffffff 80%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      filter: "drop-shadow(0 0 20px rgba(0,212,255,0.35))",
+                    }}
+                  >
+                    GuardianOS
+                  </span>
                 </h2>
                 <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-lg">
                   GuardianOS is the compliance operating system that powers every SafeShield
@@ -592,9 +657,20 @@ export default function HomePage() {
                 <p className="eyebrow">Evidence &amp; Audit</p>
                 <h2
                   id="evidence-heading"
-                  className="text-display-md font-bold text-on-surface text-balance"
+                  className="text-on-surface text-balance"
+                  style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.07 }}
                 >
-                  Real-time compliance evidence
+                  Real-time{" "}
+                  <span
+                    style={{
+                      background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    compliance evidence.
+                  </span>
                 </h2>
                 <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-md">
                   Every action, policy review and governance decision is logged in an immutable,
@@ -660,9 +736,20 @@ export default function HomePage() {
               <p className="eyebrow mb-3 justify-center">Solutions by Role</p>
               <h2
                 id="audience-heading"
-                className="text-display-md font-bold text-on-surface text-balance"
+                className="text-on-surface text-balance"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.07 }}
               >
-                The right tool for every role in your school.
+                The right tool for{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  every role.
+                </span>
               </h2>
               <p className="text-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
                 SafeShield is built around the actual responsibilities of school leaders — not generic compliance checklists.

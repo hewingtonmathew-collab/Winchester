@@ -8,7 +8,32 @@ interface AudienceCardProps {
   benefits: string[];
   icon?: React.ReactNode;
   href?: string;
+  colour?: "cyan" | "violet" | "green";
 }
+
+const audienceColourMap = {
+  cyan: {
+    dot: "rgba(0,212,255,0.85)",
+    glow: "rgba(0,212,255,",
+    iconBg: "rgba(0,212,255,0.07)",
+    iconBorder: "rgba(0,212,255,0.28)",
+    text: "text-primary",
+  },
+  violet: {
+    dot: "rgba(167,139,250,0.85)",
+    glow: "rgba(167,139,250,",
+    iconBg: "rgba(167,139,250,0.07)",
+    iconBorder: "rgba(167,139,250,0.28)",
+    text: "text-[#a78bfa]",
+  },
+  green: {
+    dot: "rgba(74,222,128,0.85)",
+    glow: "rgba(74,222,128,",
+    iconBg: "rgba(74,222,128,0.07)",
+    iconBorder: "rgba(74,222,128,0.28)",
+    text: "text-rag-green",
+  },
+};
 
 function CardContent({
   role,
@@ -16,18 +41,21 @@ function CardContent({
   benefits,
   icon,
   isLink,
+  colour = "cyan",
 }: AudienceCardProps & { isLink: boolean }) {
+  const colours = audienceColourMap[colour];
+
   return (
     <div className="flex flex-col h-full p-6">
       {/* Icon + role header */}
       <div className="flex items-center gap-3 mb-4">
         {icon && (
           <div
-            className="flex items-center justify-center h-11 w-11 rounded-xl border text-primary shrink-0"
+            className={cn("flex items-center justify-center h-12 w-12 rounded-xl shrink-0", colours.text)}
             style={{
-              background: "rgba(0,212,255,0.07)",
-              border: "1px solid rgba(0,212,255,0.25)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 0 12px rgba(0,212,255,0.12)",
+              background: colours.iconBg,
+              border: `1px solid ${colours.iconBorder}`,
+              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.10), 0 0 16px ${colours.glow}0.15)`,
             }}
             aria-hidden="true"
           >
@@ -36,8 +64,9 @@ function CardContent({
         )}
         <h3
           className={cn(
-            "text-headline-md text-primary font-semibold",
-            isLink && "group-hover:text-primary-tint transition-colors duration-300"
+            "text-headline-md font-semibold",
+            colours.text,
+            isLink && "transition-colors duration-300"
           )}
         >
           {role}
@@ -58,7 +87,7 @@ function CardContent({
           >
             <Check
               size={14}
-              className="text-primary shrink-0 mt-0.5"
+              className={cn("shrink-0 mt-0.5", colours.text)}
               aria-hidden="true"
             />
             <span>{benefit}</span>
@@ -75,6 +104,7 @@ export default function AudienceCard({
   benefits,
   icon,
   href,
+  colour = "cyan" as const,
 }: AudienceCardProps) {
   const sharedClasses = "glass-panel rounded-2xl h-full";
 
@@ -84,10 +114,16 @@ export default function AudienceCard({
         href={href}
         className={cn(
           sharedClasses,
-          "group block glass-panel-hover transition-all duration-300",
+          "group block glass-panel-hover transition-all duration-300 relative overflow-hidden",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
         )}
       >
+        {/* Colour accent top line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent 10%, ${audienceColourMap[colour].dot} 50%, transparent 90%)` }}
+          aria-hidden="true"
+        />
         <CardContent
           role={role}
           description={description}
@@ -95,19 +131,27 @@ export default function AudienceCard({
           icon={icon}
           href={href}
           isLink
+          colour={colour}
         />
       </Link>
     );
   }
 
   return (
-    <div className={sharedClasses}>
+    <div className={cn(sharedClasses, "relative overflow-hidden")}>
+      {/* Colour accent top line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent 10%, ${audienceColourMap[colour].dot} 50%, transparent 90%)` }}
+        aria-hidden="true"
+      />
       <CardContent
         role={role}
         description={description}
         benefits={benefits}
         icon={icon}
         isLink={false}
+        colour={colour}
       />
     </div>
   );

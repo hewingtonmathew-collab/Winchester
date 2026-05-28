@@ -33,20 +33,17 @@ function DesktopDropdown({ group, isActive }: { group: NavGroup; isActive: boole
   }, [open, close]);
 
   const linkClass = cn(
-    "relative flex items-center h-full px-3 py-2 font-sans text-sm font-medium rounded-md",
-    "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75",
-    "min-h-[44px]",
+    "relative flex items-center px-3.5 py-2 font-sans text-sm font-medium rounded-full",
+    "transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75",
+    "min-h-[36px]",
     isActive
-      ? "text-primary text-glow-sm"
-      : "text-on-surface-variant hover:text-on-surface hover:bg-white/[0.05]"
+      ? "text-primary bg-white/[0.06] text-glow-sm"
+      : "text-on-surface-variant/80 hover:text-on-surface hover:bg-white/[0.05]"
   );
 
   if (!hasChildren) {
     return (
       <Link href={group.href} className={linkClass}>
-        {isActive && (
-          <span className="absolute bottom-1 left-3 right-3 h-[2px] bg-primary rounded-full opacity-80" />
-        )}
         {group.label}
       </Link>
     );
@@ -68,9 +65,6 @@ function DesktopDropdown({ group, isActive }: { group: NavGroup; isActive: boole
         }}
         className={cn(linkClass, "gap-1.5")}
       >
-        {isActive && (
-          <span className="absolute bottom-1 left-3 right-3 h-[2px] bg-primary rounded-full opacity-80" />
-        )}
         {group.label}
         <ChevronDown
           size={13}
@@ -241,8 +235,8 @@ export default function SiteHeader() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300 motion-reduce:transition-none",
           scrolled
-            ? "glass-nav shadow-[0_1px_0_rgba(255,255,255,0.05)]"
-            : "bg-[rgba(12,14,18,0.6)] backdrop-blur-md border-b border-white/[0.06]"
+            ? "glass-nav shadow-[0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(0,0,0,0),0_1px_0_rgba(0,212,255,0.08)]"
+            : "bg-[rgba(8,9,14,0.55)] backdrop-blur-xl border-b border-white/[0.05]"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -261,15 +255,26 @@ export default function SiteHeader() {
                 />
                 <span className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <span className="font-sans font-bold text-xl text-on-surface tracking-tight">
-                Safe<span className="text-primary">Shield</span>
+              <span className="font-sans font-bold text-xl tracking-tight"
+                style={{
+                  background: "linear-gradient(130deg, #ffffff 30%, #a8e8ff 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Safe<span style={{ WebkitTextFillColor: "#3cd7ff" }}>Shield</span>
               </span>
             </Link>
 
-            {/* Desktop nav — full height items for easy clicking */}
+            {/* Desktop nav — pill container */}
             <nav
               aria-label="Main navigation"
-              className="hidden lg:flex items-stretch h-full gap-0.5"
+              className="hidden lg:flex items-center gap-0.5 px-2 py-1.5 rounded-full"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
             >
               {mainNav.map((group) => (
                 <DesktopDropdown

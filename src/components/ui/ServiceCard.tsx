@@ -21,6 +21,7 @@ interface ServiceCardProps {
   pillars?: string[];
   badge?: string;
   compact?: boolean;
+  featured?: boolean;
 }
 
 const colourMap: Record<
@@ -87,6 +88,7 @@ export default function ServiceCard({
   pillars,
   badge,
   compact = false,
+  featured = false,
 }: ServiceCardProps) {
   const colours = colourMap[colour];
   const glowRgb = colourGlow[colour];
@@ -94,7 +96,10 @@ export default function ServiceCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col glass-panel glass-panel-hover rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
+      className={cn(
+        "group relative flex flex-col glass-panel glass-panel-hover rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden",
+        featured && "ring-1 ring-white/[0.10]"
+      )}
     >
       {/* Colour accent line — always visible at low opacity, brightens on hover */}
       <div
@@ -120,7 +125,19 @@ export default function ServiceCard({
         aria-hidden="true"
       />
 
-      <div className={cn("flex flex-col h-full", compact ? "p-5" : "p-6 lg:p-7")}>
+      {/* Featured background pattern */}
+      {featured && (
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40"
+          style={{
+            backgroundImage: `radial-gradient(circle, ${glowRgb}0.15) 1px, transparent 1px)`,
+            backgroundSize: "32px 32px",
+          }}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className={cn("flex flex-col h-full", compact ? "p-5" : featured ? "p-8 lg:p-10" : "p-6 lg:p-7")}>
         {/* Header row: icon + badge */}
         <div className="flex items-start justify-between gap-4 mb-5">
           {icon && (
@@ -128,15 +145,15 @@ export default function ServiceCard({
               className={cn(
                 "flex items-center justify-center rounded-xl shrink-0 relative",
                 colours.text,
-                compact ? "h-10 w-10" : "h-13 w-13"
+                compact ? "h-10 w-10" : featured ? "h-14 w-14" : "h-13 w-13"
               )}
               style={{
                 background: `${glowRgb}0.07)`,
                 border: `1px solid ${glowRgb}0.28)`,
                 boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px ${glowRgb}0.15)`,
                 backdropFilter: "blur(8px)",
-                width: compact ? "40px" : "48px",
-                height: compact ? "40px" : "48px",
+                width: compact ? "40px" : featured ? "56px" : "48px",
+                height: compact ? "40px" : featured ? "56px" : "48px",
               }}
               aria-hidden="true"
             >
@@ -159,7 +176,8 @@ export default function ServiceCard({
         <h3
           className={cn(
             "text-headline-md font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors duration-300",
-            compact && "text-body-lg font-semibold"
+            compact && "text-body-lg font-semibold",
+            featured && "text-headline-lg"
           )}
         >
           {title}
