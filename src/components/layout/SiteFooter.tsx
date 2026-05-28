@@ -50,7 +50,15 @@ const columns: FooterColumn[] = [
 /* ─── SiteFooter ─────────────────────────────────────────────────────────── */
 export default function SiteFooter() {
   return (
-    <footer className="bg-surface-lowest">
+    <footer className="bg-surface-lowest relative overflow-hidden">
+      {/* Atmospheric ambient glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        aria-hidden="true"
+        style={{
+          background: "radial-gradient(ellipse 70% 50% at 50% 100%, rgba(0,212,255,0.05) 0%, transparent 65%)",
+        }}
+      />
       {/* top cyan divider */}
       <div className="divider-cyan" />
 

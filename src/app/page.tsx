@@ -134,6 +134,37 @@ export default function HomePage() {
           speed={0.22}
         />
 
+        {/* ── Animated ambient orbs ── */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+          {/* Orb 1 — cyan/teal, drifts upper-left */}
+          <div
+            className="absolute -top-48 -left-48 w-[900px] h-[800px] rounded-full will-change-transform"
+            style={{
+              background: "radial-gradient(circle, rgba(0,212,255,0.11) 0%, rgba(0,212,255,0.04) 45%, transparent 70%)",
+              filter: "blur(80px)",
+              animation: "orb-drift-1 28s ease-in-out infinite",
+            }}
+          />
+          {/* Orb 2 — violet/indigo, drifts lower-right */}
+          <div
+            className="absolute -bottom-48 -right-40 w-[800px] h-[700px] rounded-full will-change-transform"
+            style={{
+              background: "radial-gradient(circle, rgba(139,92,246,0.09) 0%, rgba(167,139,250,0.03) 50%, transparent 70%)",
+              filter: "blur(100px)",
+              animation: "orb-drift-2 34s ease-in-out infinite",
+            }}
+          />
+          {/* Orb 3 — blue, center-right */}
+          <div
+            className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] rounded-full will-change-transform"
+            style={{
+              background: "radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 65%)",
+              filter: "blur(120px)",
+              animation: "orb-drift-3 40s ease-in-out infinite",
+            }}
+          />
+        </div>
+
         {/* Very subtle radial vignette — darkens corners */}
         <div
           className="pointer-events-none absolute inset-0 -z-10"

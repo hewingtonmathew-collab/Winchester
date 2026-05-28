@@ -31,27 +31,31 @@ export default function CTASection({
           variant === "prominent" && "glass-panel-active"
         )}
       >
-        {/* Ambient depth — dual orbs */}
-        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          {/* Primary top-centre glow */}
+        {/* Animated ambient depth */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          {/* Animated cyan orb — top centre */}
           <div
-            className="absolute left-1/2 top-0 -translate-x-1/2 w-[800px] h-[500px]"
+            className="absolute left-1/2 -top-32 -translate-x-1/2 w-[900px] h-[600px] rounded-full will-change-transform"
             style={{
-              background: "radial-gradient(ellipse at 50% 10%, rgba(0,212,255,0.12) 0%, rgba(0,212,255,0.04) 45%, transparent 70%)",
+              background: "radial-gradient(ellipse, rgba(0,212,255,0.14) 0%, rgba(0,212,255,0.05) 40%, transparent 70%)",
+              filter: "blur(60px)",
+              animation: "orb-drift-1 24s ease-in-out infinite",
             }}
           />
-          {/* Secondary bottom orb */}
+          {/* Animated violet orb — bottom left */}
           <div
-            className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[600px] h-[300px]"
+            className="absolute -bottom-20 -left-20 w-[600px] h-[400px] rounded-full will-change-transform"
             style={{
-              background: "radial-gradient(ellipse at 50% 100%, rgba(100,140,255,0.07) 0%, transparent 65%)",
+              background: "radial-gradient(ellipse, rgba(139,92,246,0.09) 0%, transparent 65%)",
+              filter: "blur(80px)",
+              animation: "orb-drift-2 32s ease-in-out infinite",
             }}
           />
           {/* Subtle grid */}
           <div
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0 opacity-20"
             style={{
-              backgroundImage: "radial-gradient(circle, rgba(0,212,255,0.14) 1px, transparent 1px)",
+              backgroundImage: "radial-gradient(circle, rgba(0,212,255,0.18) 1px, transparent 1px)",
               backgroundSize: "64px 64px",
             }}
           />

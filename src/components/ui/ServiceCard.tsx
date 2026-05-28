@@ -94,12 +94,29 @@ export default function ServiceCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col glass-panel glass-panel-hover rounded-2xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
+      className="group relative flex flex-col glass-panel glass-panel-hover rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
     >
-      {/* Colour accent line — top edge */}
+      {/* Colour accent line — always visible at low opacity, brightens on hover */}
       <div
-        className="absolute top-0 left-6 right-6 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: `linear-gradient(90deg, transparent, ${glowRgb}0.6), transparent)` }}
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent 5%, ${glowRgb}0.35) 30%, ${glowRgb}0.5) 50%, ${glowRgb}0.35) 70%, transparent 95%)` }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `linear-gradient(90deg, transparent 5%, ${glowRgb}0.8) 30%, ${glowRgb}1) 50%, ${glowRgb}0.8) 70%, transparent 95%)`,
+          boxShadow: `0 0 16px ${glowRgb}0.5), 0 0 32px ${glowRgb}0.2)`,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Ambient card glow — appears on hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+        style={{
+          background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${glowRgb}0.08) 0%, transparent 70%)`,
+        }}
         aria-hidden="true"
       />
 
