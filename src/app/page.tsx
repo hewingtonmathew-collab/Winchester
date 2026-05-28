@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shield, Lock, FileText, Cpu, Eye, Users, Landmark, ArrowRight } from "lucide-react";
+import {
+  Shield,
+  Lock,
+  FileText,
+  Cpu,
+  Eye,
+  Users,
+  Landmark,
+  ArrowRight,
+  GraduationCap,
+  BarChart3,
+} from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
@@ -9,6 +20,8 @@ import AudienceCard from "@/components/ui/AudienceCard";
 import StatusCard from "@/components/ui/StatusCard";
 import EvidenceStream from "@/components/ui/EvidenceStream";
 import CTASection from "@/components/ui/CTASection";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import CountUp from "@/components/ui/CountUp";
 
 import { services } from "@/data/services";
 
@@ -31,7 +44,9 @@ const serviceIcons: Record<string, React.ReactNode> = {
 const audienceCards = [
   {
     role: "Headteachers",
-    description: "Strategic oversight and assurance",
+    description: "Strategic oversight, assurance and inspection readiness.",
+    icon: <GraduationCap size={20} strokeWidth={1.5} aria-hidden="true" />,
+    href: "/schools-governors",
     benefits: [
       "RAG compliance dashboard",
       "Governor-ready reporting",
@@ -41,7 +56,9 @@ const audienceCards = [
   },
   {
     role: "DSLs / DPOs",
-    description: "Safeguarding and privacy evidence",
+    description: "Safeguarding, privacy and monitoring evidence in one place.",
+    icon: <Shield size={20} strokeWidth={1.5} aria-hidden="true" />,
+    href: "/services/digital-safeguarding",
     benefits: [
       "KCSIE policy checker",
       "DPIA and SAR workflow",
@@ -51,13 +68,50 @@ const audienceCards = [
   },
   {
     role: "MAT Directors / Governors",
-    description: "Trust-wide accountability",
+    description: "Trust-wide accountability and board-level compliance visibility.",
+    icon: <Landmark size={20} strokeWidth={1.5} aria-hidden="true" />,
+    href: "/mats-las",
     benefits: [
       "Multi-school overview",
       "Statutory assurance tracking",
       "Board-level reporting",
       "Action accountability",
     ],
+  },
+];
+
+const keyMetrics = [
+  {
+    value: 98,
+    decimals: 0,
+    suffix: "%",
+    label: "KCSIE Alignment",
+    sub: "Average across SafeShield schools",
+    color: "rgba(74,222,128,0.9)",
+  },
+  {
+    value: 1247,
+    decimals: 0,
+    suffix: "",
+    label: "Evidence Entries",
+    sub: "Logged per school per year",
+    color: "rgba(0,212,255,0.9)",
+  },
+  {
+    value: 6,
+    decimals: 0,
+    suffix: "",
+    label: "Compliance Domains",
+    sub: "Fully integrated in GuardianOS",
+    color: "rgba(167,139,250,0.9)",
+  },
+  {
+    value: 94,
+    decimals: 0,
+    suffix: "%",
+    label: "Trust Assurance",
+    sub: "Platform confidence score",
+    color: "rgba(251,191,36,0.9)",
   },
 ];
 
@@ -240,6 +294,51 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── KEY METRICS STRIP ── */}
+      <section
+        className="w-full py-16 relative overflow-hidden"
+        style={{ background: "#050710", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        aria-label="Platform impact metrics"
+      >
+        {/* ambient glow */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 80% at 50% 50%, rgba(0,212,255,0.04) 0%, transparent 70%)",
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <ScrollReveal>
+            <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-white/[0.06] rounded-2xl overflow-hidden ring-1 ring-white/[0.06]">
+              {keyMetrics.map(({ value, decimals, suffix, label, sub, color }, i) => (
+                <div
+                  key={label}
+                  className={`reveal reveal-delay-${i + 1} relative px-8 py-10 flex flex-col gap-2 group`}
+                  style={{ background: "rgba(8,9,14,0.8)" }}
+                >
+                  {/* Top accent line matching metric color */}
+                  <div
+                    className="absolute top-0 left-8 right-8 h-px opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className="text-metric-lg font-black metric-number leading-none"
+                    style={{ color, filter: `drop-shadow(0 0 12px ${color})` }}
+                  >
+                    <CountUp end={value} decimals={decimals} suffix={suffix} duration={2000} />
+                  </div>
+                  <div className="text-sm font-bold text-on-surface tracking-tight">{label}</div>
+                  <div className="text-[11px] text-on-surface-variant/50 leading-snug">{sub}</div>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* ── SERVICE MODULES GRID ── */}
       <section className="py-24 relative overflow-hidden" aria-labelledby="services-heading">
         {/* Section depth background */}
@@ -269,40 +368,43 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-12">
-            <p className="eyebrow mb-3">SafeShield Services</p>
-            <h2
-              id="services-heading"
-              className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
-            >
-              Structured compliance across every critical area.
-            </h2>
-          </div>
+          <ScrollReveal>
+            <div className="mb-12 reveal">
+              <p className="eyebrow mb-3">SafeShield Services</p>
+              <h2
+                id="services-heading"
+                className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
+              >
+                Structured compliance across every critical area.
+              </h2>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {displayedServices.map((service) => (
-              <ServiceCard
-                key={service.slug}
-                title={service.title}
-                tagline={service.tagline}
-                description={service.description}
-                icon={serviceIcons[service.slug]}
-                href={service.href}
-                colour={service.colour}
-                pillars={service.pillars.slice(0, 2)}
-              />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {displayedServices.map((service, i) => (
+                <div key={service.slug} className={`reveal reveal-delay-${i + 1}`}>
+                  <ServiceCard
+                    title={service.title}
+                    tagline={service.tagline}
+                    description={service.description}
+                    icon={serviceIcons[service.slug]}
+                    href={service.href}
+                    colour={service.colour}
+                    pillars={service.pillars.slice(0, 2)}
+                  />
+                </div>
+              ))}
+            </div>
 
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-primary-tint transition-colors"
-            >
-              View all services
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
+            <div className="mt-8 flex justify-center reveal">
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-primary-tint transition-colors"
+              >
+                View all services
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -322,54 +424,62 @@ export default function HomePage() {
           }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <div className="flex flex-col gap-6">
-              <p className="eyebrow">The Platform</p>
-              <h2
-                id="guardianOS-heading"
-                className="text-display-md font-bold text-on-surface text-balance"
-              >
-                Introducing{" "}
-                <span className="text-primary text-glow">GuardianOS</span>
-              </h2>
-              <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-lg">
-                GuardianOS is the compliance operating system that powers every SafeShield
-                service. Six interconnected domains — safeguarding, cyber, GDPR, AI governance,
-                filtering and governor accountability — give your school a structured, evidence-first
-                view of its compliance position.
-              </p>
-              <p className="text-body-md text-on-surface-variant leading-relaxed max-w-lg">
-                Built for how school leaders actually work: plain English reporting, RAG-rated
-                summaries and inspection-conscious evidence trails that hold up to scrutiny.
-              </p>
-              {/* Domain count detail */}
-              <div className="flex items-center gap-6 pt-2">
-                {[["6", "Domains"], ["94%", "Avg Score"], ["14", "Nodes"]].map(([val, lbl]) => (
-                  <div key={lbl} className="flex flex-col gap-0.5">
-                    <span className="text-2xl font-black text-primary text-glow">{val}</span>
-                    <span className="hud-label">{lbl}</span>
-                  </div>
-                ))}
+          <ScrollReveal>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+              <div className="flex flex-col gap-6 reveal reveal-left">
+                <p className="eyebrow">The Platform</p>
+                <h2
+                  id="guardianOS-heading"
+                  className="text-display-md font-bold text-on-surface text-balance"
+                >
+                  Introducing{" "}
+                  <span className="text-primary text-glow">GuardianOS</span>
+                </h2>
+                <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-lg">
+                  GuardianOS is the compliance operating system that powers every SafeShield
+                  service. Six interconnected domains — safeguarding, cyber, GDPR, AI governance,
+                  filtering and governor accountability — give your school a structured, evidence-first
+                  view of its compliance position.
+                </p>
+                <p className="text-body-md text-on-surface-variant leading-relaxed max-w-lg">
+                  Built for how school leaders actually work: plain English reporting, RAG-rated
+                  summaries and inspection-conscious evidence trails that hold up to scrutiny.
+                </p>
+                {/* Domain count detail */}
+                <div className="flex items-center gap-6 pt-2">
+                  {[
+                    { val: 6, lbl: "Domains" },
+                    { val: 94, lbl: "Avg Score %" },
+                    { val: 14, lbl: "Nodes" },
+                  ].map(({ val, lbl }) => (
+                    <div key={lbl} className="flex flex-col gap-0.5">
+                      <span className="text-2xl font-black text-primary text-glow metric-number">
+                        <CountUp end={val} duration={1600} />
+                      </span>
+                      <span className="hud-label">{lbl}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-1">
+                  <Link href="/guardian-os" className="btn-secondary">
+                    Explore the framework
+                  </Link>
+                </div>
               </div>
-              <div className="pt-1">
-                <Link href="/guardian-os" className="btn-secondary">
-                  Explore the framework
-                </Link>
-              </div>
-            </div>
 
-            <div className="flex justify-center lg:justify-end">
-              <GuardianCommandVisual
-                variant="full"
-                trustScore={94}
-                kcsieScore={98}
-                activeNodes={14}
-                totalNodes={14}
-                alerts={2}
-                className="w-full max-w-lg"
-              />
+              <div className="flex justify-center lg:justify-end reveal reveal-scale">
+                <GuardianCommandVisual
+                  variant="full"
+                  trustScore={94}
+                  kcsieScore={98}
+                  activeNodes={14}
+                  totalNodes={14}
+                  alerts={2}
+                  className="w-full max-w-lg"
+                />
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -387,38 +497,46 @@ export default function HomePage() {
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <StatusCard
-              label="Trust Assurance"
-              value="94"
-              unit="%"
-              status="cyan"
-              variant="gauge"
-              gaugePercent={94}
-              animated
-              trend={{ direction: "up", label: "+2.4% this cycle" }}
-              description="Overall platform confidence score across all active compliance domains."
-            />
-            <StatusCard
-              label="KCSIE Alignment"
-              value="98"
-              unit="%"
-              status="green"
-              variant="gauge"
-              gaugePercent={98}
-              animated
-              trend={{ direction: "stable", label: "Stable" }}
-              description="Proportion of current KCSIE requirements evidenced and documented."
-            />
-            <StatusCard
-              label="Active Domains"
-              value="7/7"
-              status="cyan"
-              variant="metric"
-              trend={{ direction: "stable", label: "All operational" }}
-              description="All seven compliance domains are active and receiving regular review."
-            />
-          </div>
+          <ScrollReveal>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div className="reveal reveal-delay-1">
+                <StatusCard
+                  label="Trust Assurance"
+                  value="94"
+                  unit="%"
+                  status="cyan"
+                  variant="gauge"
+                  gaugePercent={94}
+                  animated
+                  trend={{ direction: "up", label: "+2.4% this cycle" }}
+                  description="Overall platform confidence score across all active compliance domains."
+                />
+              </div>
+              <div className="reveal reveal-delay-2">
+                <StatusCard
+                  label="KCSIE Alignment"
+                  value="98"
+                  unit="%"
+                  status="green"
+                  variant="gauge"
+                  gaugePercent={98}
+                  animated
+                  trend={{ direction: "stable", label: "Stable" }}
+                  description="Proportion of current KCSIE requirements evidenced and documented."
+                />
+              </div>
+              <div className="reveal reveal-delay-3">
+                <StatusCard
+                  label="Active Domains"
+                  value="7/7"
+                  status="cyan"
+                  variant="metric"
+                  trend={{ direction: "stable", label: "All operational" }}
+                  description="All seven compliance domains are active and receiving regular review."
+                />
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -437,57 +555,58 @@ export default function HomePage() {
           }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
-            <div className="flex flex-col gap-6 lg:pt-4">
-              <p className="eyebrow">Evidence & Audit</p>
-              <h2
-                id="evidence-heading"
-                className="text-display-md font-bold text-on-surface text-balance"
-              >
-                Real-time compliance evidence
-              </h2>
-              <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-md">
-                Every action, policy review and governance decision is logged in an immutable,
-                timestamped evidence trail. When an inspection question is asked, your answer
-                is already documented.
-              </p>
-              <ul className="flex flex-col gap-3 pt-2">
-                {[
-                  "Timestamped audit entries across all compliance domains",
-                  "Safeguarding, GDPR, cyber and governance events in one stream",
-                  "RAG-rated status on every recorded action",
-                  "Exportable for governor reporting and inspection preparation",
-                ].map((point) => (
-                  <li
-                    key={point}
-                    className="flex items-start gap-3 text-body-sm text-on-surface-variant"
-                  >
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0"
-                      aria-hidden="true"
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <ScrollReveal>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+              <div className="flex flex-col gap-6 lg:pt-4 reveal reveal-left">
+                <p className="eyebrow">Evidence &amp; Audit</p>
+                <h2
+                  id="evidence-heading"
+                  className="text-display-md font-bold text-on-surface text-balance"
+                >
+                  Real-time compliance evidence
+                </h2>
+                <p className="text-body-lg text-on-surface-variant leading-relaxed max-w-md">
+                  Every action, policy review and governance decision is logged in an immutable,
+                  timestamped evidence trail. When an inspection question is asked, your answer
+                  is already documented.
+                </p>
+                <ul className="flex flex-col gap-3 pt-2">
+                  {[
+                    "Timestamped audit entries across all compliance domains",
+                    "Safeguarding, GDPR, cyber and governance events in one stream",
+                    "RAG-rated status on every recorded action",
+                    "Exportable for governor reporting and inspection preparation",
+                  ].map((point) => (
+                    <li
+                      key={point}
+                      className="flex items-start gap-3 text-body-sm text-on-surface-variant"
+                    >
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0"
+                        aria-hidden="true"
+                      />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            <div>
-              <EvidenceStream
-                animated
-                title="Recent compliance activity"
-                maxVisible={6}
-              />
+              <div className="reveal reveal-scale">
+                <EvidenceStream
+                  animated
+                  title="Recent compliance activity"
+                  maxVisible={6}
+                />
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ── AUDIENCE SECTION ── */}
+      {/* ── SOLUTIONS BY ROLE ── */}
       <section className="py-24 relative overflow-hidden" aria-labelledby="audience-heading">
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
           <div className="absolute inset-0 bg-background" />
-          {/* Subtle dot grid */}
           <div
             className="absolute inset-0"
             style={{
@@ -505,25 +624,53 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-12 text-center">
-            <p className="eyebrow mb-3">Who it&apos;s for</p>
-            <h2
-              id="audience-heading"
-              className="text-display-md font-bold text-on-surface text-balance"
+          <ScrollReveal>
+            <div className="mb-12 text-center reveal">
+              <p className="eyebrow mb-3 justify-center">Solutions by Role</p>
+              <h2
+                id="audience-heading"
+                className="text-display-md font-bold text-on-surface text-balance"
+              >
+                The right tool for every role in your school.
+              </h2>
+              <p className="text-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
+                SafeShield is built around the actual responsibilities of school leaders — not generic compliance checklists.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {audienceCards.map((card, i) => (
+                <div key={card.role} className={`reveal reveal-delay-${i + 1}`}>
+                  <AudienceCard
+                    role={card.role}
+                    description={card.description}
+                    benefits={card.benefits}
+                    icon={card.icon}
+                    href={card.href}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom path chooser prompt */}
+            <div
+              className="reveal mt-10 rounded-2xl px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+              style={{
+                background: "rgba(0,212,255,0.04)",
+                border: "0.5px solid rgba(0,212,255,0.18)",
+              }}
             >
-              Built for every role in your school.
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {audienceCards.map((card) => (
-              <AudienceCard
-                key={card.role}
-                role={card.role}
-                description={card.description}
-                benefits={card.benefits}
-              />
-            ))}
-          </div>
+              <div className="flex items-center gap-3">
+                <BarChart3 size={20} className="text-primary shrink-0" aria-hidden="true" />
+                <span className="text-body-sm text-on-surface-variant">
+                  Not sure where to start? A Readiness Review maps your current position across all domains.
+                </span>
+              </div>
+              <Link href="/book-review" className="btn-primary shrink-0 text-sm">
+                Book a Review
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
