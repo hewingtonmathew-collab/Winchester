@@ -63,8 +63,28 @@ export default function ServicesPage() {
       />
 
       {/* ── SERVICES GRID ── */}
-      <section className="py-24" aria-labelledby="all-services-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 relative overflow-hidden" aria-labelledby="all-services-heading">
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          <div
+            className="absolute inset-0 opacity-80"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.18) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px)",
+              backgroundSize: "80px 80px, 80px 80px, 80px 80px",
+              backgroundPosition: "-1px -1px, -1px -1px, -1px -1px",
+            }}
+          />
+          <div
+            className="absolute left-1/2 top-0 -translate-x-1/2 w-[1000px] h-[400px]"
+            style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)" }}
+          />
+          <div
+            className="absolute right-0 bottom-0 w-[500px] h-[400px]"
+            style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(186,195,255,0.05) 0%, transparent 60%)" }}
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-12">
             <p className="eyebrow mb-3">All services</p>
             <h2
@@ -95,9 +115,18 @@ export default function ServicesPage() {
 
       {/* ── HOW A REVIEW WORKS ── */}
       <section
-        className="py-24 glass-panel border-y border-white/[0.06]"
+        className="py-24 relative overflow-hidden glass-panel border-y border-white/[0.06]"
         aria-labelledby="review-process-heading"
       >
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,212,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.022) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-14">
             <p className="eyebrow mb-3">The process</p>

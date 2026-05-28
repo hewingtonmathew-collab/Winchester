@@ -150,9 +150,17 @@ const config: Config = {
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
       },
       backgroundImage: {
+        /* Legacy grid (white lines, 40px) */
         "grid-hud": "linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)",
-        "ambient-cyan": "radial-gradient(ellipse at 50% 0%,rgba(0,212,255,0.08) 0%,transparent 60%)",
-        "ambient-blue": "radial-gradient(ellipse at 100% 100%,rgba(186,195,255,0.06) 0%,transparent 50%)",
+        /* Cyan dot-grid: dots at intersections + 80px major + 20px sub */
+        "hud-grid": "radial-gradient(circle,rgba(0,212,255,0.22) 1px,transparent 1px),linear-gradient(rgba(0,212,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.06) 1px,transparent 1px),linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)",
+        /* Ambient glows */
+        "ambient-cyan": "radial-gradient(ellipse 70% 50% at 50% 0%,rgba(0,212,255,0.10) 0%,transparent 70%)",
+        "ambient-cyan-right": "radial-gradient(ellipse 55% 65% at 100% 20%,rgba(0,212,255,0.09) 0%,transparent 60%)",
+        "ambient-blue": "radial-gradient(ellipse 50% 60% at 0% 80%,rgba(186,195,255,0.06) 0%,transparent 60%)",
+        "ambient-blue-left": "radial-gradient(ellipse 55% 65% at 0% 50%,rgba(186,195,255,0.07) 0%,transparent 60%)",
+        /* Combined section depth */
+        "section-depth": "radial-gradient(circle,rgba(0,212,255,0.18) 1px,transparent 1px),linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px),radial-gradient(ellipse 60% 40% at 80% 20%,rgba(0,212,255,0.06) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 20% 80%,rgba(186,195,255,0.05) 0%,transparent 55%)",
         "gradient-cyan": "linear-gradient(135deg,#a8e8ff 0%,#3cd7ff 100%)",
       },
     },

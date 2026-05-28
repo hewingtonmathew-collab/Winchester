@@ -86,8 +86,28 @@ export default function GuardianOSPage() {
       </section>
 
       {/* ── FRAMEWORK PILLARS ── */}
-      <section className="py-24" aria-labelledby="pillars-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 relative overflow-hidden" aria-labelledby="pillars-heading">
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.20) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px)",
+              backgroundSize: "80px 80px, 80px 80px, 80px 80px, 20px 20px, 20px 20px",
+              backgroundPosition: "-1px -1px, -1px -1px, -1px -1px, -1px -1px, -1px -1px",
+            }}
+          />
+          <div
+            className="absolute right-0 top-1/4 w-[500px] h-[600px]"
+            style={{ background: "radial-gradient(ellipse at 100% 50%, rgba(0,212,255,0.07) 0%, transparent 60%)" }}
+          />
+          <div
+            className="absolute left-0 bottom-1/4 w-[500px] h-[600px]"
+            style={{ background: "radial-gradient(ellipse at 0% 50%, rgba(186,195,255,0.05) 0%, transparent 60%)" }}
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-14">
             <p className="eyebrow mb-3">Six compliance domains</p>
             <h2
@@ -122,11 +142,21 @@ export default function GuardianOSPage() {
         </div>
       </section>
 
-      {/* ── HOW GUARDIANQS WORKS ── */}
+      {/* ── HOW GUARDIANOS WORKS ── */}
       <section
-        className="py-24 glass-panel border-y border-white/[0.06]"
+        className="py-24 relative overflow-hidden glass-panel border-y border-white/[0.06]"
         aria-labelledby="how-it-works-heading"
       >
+        {/* Fine sub-grid overlay */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-14">
             <p className="eyebrow mb-3">The approach</p>

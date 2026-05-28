@@ -77,16 +77,55 @@ export default function HomePage() {
         className="relative w-full pt-32 pb-24 overflow-hidden"
         aria-label="SafeShield digital safeguarding intelligence"
       >
-        {/* Ambient background */}
+        {/* Layered ambient background */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
           <div className="absolute inset-0 bg-background" />
+          {/* HUD dot-grid */}
           <div
-            className="absolute left-1/2 top-0 -translate-x-1/2 w-[1100px] h-[600px]"
+            className="absolute inset-0 opacity-100"
             style={{
-              background:
-                "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.10) 0%, transparent 65%)",
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.20) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.055) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.022) 1px, transparent 1px)",
+              backgroundSize: "80px 80px, 80px 80px, 80px 80px, 20px 20px, 20px 20px",
+              backgroundPosition: "-1px -1px, -1px -1px, -1px -1px, -1px -1px, -1px -1px",
             }}
           />
+          {/* Cyan top sweep */}
+          <div
+            className="absolute left-1/2 top-0 -translate-x-1/2 w-[1300px] h-[700px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.13) 0%, transparent 65%)",
+            }}
+          />
+          {/* Blue bottom-right accent */}
+          <div
+            className="absolute right-0 bottom-0 w-[700px] h-[500px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 100% 100%, rgba(186,195,255,0.07) 0%, transparent 60%)",
+            }}
+          />
+          {/* Left-side secondary glow */}
+          <div
+            className="absolute left-0 top-1/3 w-[400px] h-[600px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 0% 50%, rgba(0,212,255,0.05) 0%, transparent 70%)",
+            }}
+          />
+          {/* Horizontal scan line */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute left-0 right-0 h-16 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent 0%, rgba(168,232,255,0.04) 40%, rgba(0,212,255,0.055) 50%, rgba(168,232,255,0.04) 60%, transparent 100%)",
+                animation: "scan 14s linear infinite",
+                top: 0,
+              }}
+            />
+          </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,7 +134,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-6">
               <p className="eyebrow">Digital Safeguarding Intelligence</p>
               <h1 className="text-6xl sm:text-7xl font-black text-on-surface tracking-tight leading-none">
-                Safe<span className="text-primary text-glow">Shield</span>
+                Safe<span className="text-primary text-glow-strong">Shield</span>
               </h1>
               <p className="text-xl font-semibold text-on-surface max-w-lg leading-snug">
                 Digital safeguarding intelligence for schools that need more than basic compliance.
@@ -105,7 +144,12 @@ export default function HomePage() {
                 — safeguarding, cyber, GDPR, AI governance and governor accountability in one
                 structured platform.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2">
+              {/* Fine HUD detail line */}
+              <div className="flex items-center gap-3 pt-1">
+                <div className="flex-1 h-px bg-gradient-to-r from-primary/30 via-primary/10 to-transparent" />
+                <span className="hud-label">GuardianOS v2.4</span>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-1">
                 <Link href="/book-review" className="btn-primary">
                   Book a Readiness Review
                 </Link>
@@ -166,8 +210,34 @@ export default function HomePage() {
       </section>
 
       {/* ── SERVICE MODULES GRID ── */}
-      <section className="py-24" aria-labelledby="services-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 relative overflow-hidden" aria-labelledby="services-heading">
+        {/* Section depth background */}
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          <div
+            className="absolute inset-0 opacity-60"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.14) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.032) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.032) 1px, transparent 1px)",
+              backgroundSize: "80px 80px, 80px 80px, 80px 80px",
+              backgroundPosition: "-1px -1px, -1px -1px, -1px -1px",
+            }}
+          />
+          <div
+            className="absolute right-0 top-0 w-[600px] h-[400px]"
+            style={{
+              background: "radial-gradient(ellipse at 100% 0%, rgba(0,212,255,0.06) 0%, transparent 60%)",
+            }}
+          />
+          <div
+            className="absolute left-0 bottom-0 w-[500px] h-[400px]"
+            style={{
+              background: "radial-gradient(ellipse at 0% 100%, rgba(186,195,255,0.05) 0%, transparent 60%)",
+            }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-12">
             <p className="eyebrow mb-3">SafeShield Services</p>
             <h2
@@ -207,12 +277,21 @@ export default function HomePage() {
 
       {/* ── GUARDIAN COMMAND VISUAL (full-width split) ── */}
       <section
-        className="py-24 glass-panel border-y border-white/[0.06]"
+        className="py-24 relative overflow-hidden glass-panel border-y border-white/[0.06]"
         aria-labelledby="guardianOS-heading"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Fine grid overlay inside glass section */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            {/* Left */}
             <div className="flex flex-col gap-6">
               <p className="eyebrow">The Platform</p>
               <h2
@@ -232,14 +311,22 @@ export default function HomePage() {
                 Built for how school leaders actually work: plain English reporting, RAG-rated
                 summaries and inspection-conscious evidence trails that hold up to scrutiny.
               </p>
-              <div className="pt-2">
+              {/* Domain count detail */}
+              <div className="flex items-center gap-6 pt-2">
+                {[["6", "Domains"], ["94%", "Avg Score"], ["14", "Nodes"]].map(([val, lbl]) => (
+                  <div key={lbl} className="flex flex-col gap-0.5">
+                    <span className="text-2xl font-black text-primary text-glow">{val}</span>
+                    <span className="hud-label">{lbl}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-1">
                 <Link href="/guardian-os" className="btn-secondary">
                   Explore the framework
                 </Link>
               </div>
             </div>
 
-            {/* Right */}
             <div className="flex justify-center lg:justify-end">
               <GuardianCommandVisual
                 variant="full"
@@ -256,8 +343,19 @@ export default function HomePage() {
       </section>
 
       {/* ── RAG RISK STRIP ── */}
-      <section className="py-16" aria-label="Current compliance metrics">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 relative overflow-hidden" aria-label="Current compliance metrics">
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.12) 1px, transparent 1px)",
+              backgroundSize: "60px 60px",
+            }}
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <StatusCard
               label="Trust Assurance"
@@ -295,12 +393,20 @@ export default function HomePage() {
 
       {/* ── EVIDENCE STREAM ── */}
       <section
-        className="py-24 glass-panel border-y border-white/[0.06]"
+        className="py-24 relative overflow-hidden glass-panel border-y border-white/[0.06]"
         aria-labelledby="evidence-heading"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Diagonal fine lines overlay */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(0,212,255,0.025) 40px, rgba(0,212,255,0.025) 41px)",
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
-            {/* Left */}
             <div className="flex flex-col gap-6 lg:pt-4">
               <p className="eyebrow">Evidence & Audit</p>
               <h2
@@ -335,7 +441,6 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Right */}
             <div>
               <EvidenceStream
                 animated
@@ -348,8 +453,27 @@ export default function HomePage() {
       </section>
 
       {/* ── AUDIENCE SECTION ── */}
-      <section className="py-24" aria-labelledby="audience-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 relative overflow-hidden" aria-labelledby="audience-heading">
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          {/* Subtle dot grid */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.12) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
+              backgroundSize: "60px 60px, 60px 60px, 60px 60px",
+            }}
+          />
+          <div
+            className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[400px]"
+            style={{
+              background: "radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 70%)",
+            }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-12 text-center">
             <p className="eyebrow mb-3">Who it&apos;s for</p>
             <h2
