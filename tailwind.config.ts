@@ -74,8 +74,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-hanken)", "system-ui", "sans-serif"],
-        hanken: ["var(--font-hanken)", "system-ui", "sans-serif"],
+        sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        jakarta: ["var(--font-jakarta)", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "monospace"],
       },
       fontSize: {

@@ -41,6 +41,12 @@
     border-radius: 4px;
   }
 
+  /* Interaction quality — ui-ux-pro-max recommendations */
+  /* cursor-pointer on all clickable things */
+  a, button, [role="button"], label[for], select, summary {
+    cursor: pointer;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

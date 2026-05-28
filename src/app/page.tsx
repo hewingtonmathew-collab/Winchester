@@ -28,13 +28,6 @@ const serviceIcons: Record<string, React.ReactNode> = {
   "governor-oversight": <Landmark size={20} strokeWidth={1.5} aria-hidden="true" />,
 };
 
-const trustBarItems = [
-  { label: "KCSIE 2024", description: "Safeguarding framework" },
-  { label: "UK GDPR", description: "Data protection standard" },
-  { label: "NCSC Aligned", description: "Cyber security guidance" },
-  { label: "MAT Ready", description: "Multi-academy trust support" },
-];
-
 const audienceCards = [
   {
     role: "Headteachers",
@@ -202,31 +195,44 @@ export default function HomePage() {
 
       {/* ── TRUST BAR ── */}
       <section
-        className="w-full py-5 glass-panel border-y border-white/[0.06]"
-        aria-label="Framework alignments"
+        className="w-full py-5"
+        style={{
+          background: "rgba(6,8,14,0.95)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(24px)",
+        }}
+        aria-label="Compliance framework alignments"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-2">
-            <p className="eyebrow text-on-surface-variant shrink-0 mr-4 hidden sm:block">
-              Designed for UK schools
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
+            <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-on-surface-variant/35 shrink-0 hidden lg:block">
+              Aligned to UK frameworks
             </p>
-            <div className="w-px h-6 bg-white/10 hidden sm:block" aria-hidden="true" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 flex-1">
-              {trustBarItems.map((item, i) => (
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3">
+              {[
+                { label: "KCSIE 2024", desc: "Safeguarding", color: "rgba(0,212,255,0.9)" },
+                { label: "UK GDPR", desc: "Data Protection", color: "rgba(74,222,128,0.9)" },
+                { label: "NCSC Aligned", desc: "Cyber Security", color: "rgba(0,212,255,0.9)" },
+                { label: "MAT Ready", desc: "Multi-academy", color: "rgba(167,139,250,0.9)" },
+                { label: "ISO 27001", desc: "Security Std", color: "rgba(251,191,36,0.9)" },
+                { label: "KCSIE Part 1", desc: "Online Safety", color: "rgba(0,212,255,0.9)" },
+              ].map(({ label, desc, color }) => (
                 <div
-                  key={item.label}
-                  className="flex flex-col items-center sm:items-start sm:px-6 gap-0.5"
+                  key={label}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "0.5px solid rgba(255,255,255,0.10)",
+                  }}
                 >
-                  {i > 0 && (
-                    <div
-                      className="hidden sm:block absolute h-6 w-px bg-white/10 -left-0.5"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <span className="text-body-sm font-bold text-primary tracking-wide">
-                    {item.label}
-                  </span>
-                  <span className="text-[11px] text-on-surface-variant">{item.description}</span>
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ background: color, boxShadow: `0 0 5px ${color}` }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-[11px] font-semibold text-on-surface tracking-wide">{label}</span>
+                  <span className="hidden sm:inline text-[10px] text-on-surface-variant/45">{desc}</span>
                 </div>
               ))}
             </div>
