@@ -47,11 +47,17 @@ export default function GuardianOSPage() {
     <>
       {/* ── PAGE HERO ── */}
       <PageHero
+        palette="cyan"
+        variant="default"
         eyebrow="GUARDIAN OS FRAMEWORK"
         title="The compliance operating system for UK schools"
-        titleHighlight="for UK schools"
-        description="GuardianOS is SafeShield's structured compliance framework — six interconnected domains covering every aspect of UK school digital safety, privacy and accountability."
-        media={{ type: "video", src: "/videos/hero-guardian.mp4", poster: "/videos/hero-guardian.jpg" }}
+        titleHighlight="compliance operating system"
+        description="Six interconnected domains — safeguarding, cyber, GDPR, AI governance, filtering and governor accountability — structured into a single evidence-first compliance platform."
+        ctaPrimary={{ label: "Explore the Framework", href: "/guardian-os#framework" }}
+        ctaSecondary={{ label: "Book a Review", href: "/book-review" }}
+        badge={{ label: "Powered by GuardianOS", variant: "cyan" }}
+        statusDot
+        scrollIndicator
       >
         <GuardianCommandVisual
           variant="full"

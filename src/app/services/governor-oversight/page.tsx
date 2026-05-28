@@ -153,6 +153,7 @@ export default function GovernorOversightPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="GOVERNOR OVERSIGHT"
         title="Structured accountability for school boards"
         titleHighlight="for school boards"
@@ -161,6 +162,7 @@ export default function GovernorOversightPage() {
         badge={{ label: "Board Ready", variant: "green" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we provide */}

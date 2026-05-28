@@ -180,6 +180,7 @@ export default function CyberSecurityPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="CYBER SECURITY"
         title="Structured cyber review aligned to NCSC guidance"
         titleHighlight="aligned to NCSC guidance"
@@ -187,6 +188,7 @@ export default function CyberSecurityPage() {
         badge={{ label: "NCSC Aligned", variant: "cyan" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we review */}

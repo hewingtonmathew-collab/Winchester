@@ -97,6 +97,7 @@ export default function AccessibilitySENDPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="ACCESSIBILITY & SEND"
         title="Digital inclusion for every pupil"
         titleHighlight="for every pupil"
@@ -104,6 +105,7 @@ export default function AccessibilitySENDPage() {
         badge={{ label: "PSBAR Aligned", variant: "neutral" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we review */}

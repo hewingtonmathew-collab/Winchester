@@ -56,11 +56,16 @@ export default function ServicesPage() {
     <>
       {/* ── PAGE HERO ── */}
       <PageHero
+        palette="violet"
+        variant="centered"
         eyebrow="SAFESHIELD SERVICES"
         title="Structured compliance across every domain"
-        titleHighlight="across every domain"
-        description="Seven specialist service areas covering every aspect of UK school digital compliance — from KCSIE safeguarding and NCSC cyber to GDPR, AI governance and governor accountability."
-        media={{ type: "video", src: "/videos/hero-services.mp4", poster: "/videos/hero-services.jpg" }}
+        titleHighlight="every domain"
+        description="Seven specialist service areas — digital safeguarding, cyber security, GDPR, AI governance, filtering & monitoring, accessibility and governor oversight — built for UK schools."
+        ctaPrimary={{ label: "See All Services", href: "#services" }}
+        ctaSecondary={{ label: "Book a Review", href: "/book-review" }}
+        badge={{ label: "7 Service Domains", variant: "neutral" }}
+        scrollIndicator
       />
 
       {/* ── SERVICES GRID ── */}

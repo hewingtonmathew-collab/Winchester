@@ -166,6 +166,7 @@ export default function FilteringMonitoringPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="FILTERING & MONITORING"
         title="DfE-compliant filtering and monitoring oversight"
         titleHighlight="and monitoring oversight"
@@ -173,6 +174,7 @@ export default function FilteringMonitoringPage() {
         badge={{ label: "DfE Standards", variant: "cyan" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we review */}

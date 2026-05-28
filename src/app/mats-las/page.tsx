@@ -71,12 +71,17 @@ export default function MatsLAsPage() {
   return (
     <>
       <PageHero
-        eyebrow="MATs & LOCAL AUTHORITIES"
-        title="Trust-wide compliance and LA oversight"
-        titleHighlight="and LA oversight"
-        description="SafeShield's GuardianOS framework scales to multi-academy trusts and local authorities — providing consistent compliance evidence across multiple schools from a single oversight position."
-        ctaPrimary={{ label: "Discuss Your Requirements", href: "/contact" }}
-        ctaSecondary={{ label: "Book a Readiness Review", href: "/book-review" }}
+        palette="violet"
+        variant="default"
+        eyebrow="FOR MATs & LOCAL AUTHORITIES"
+        title="Compliance oversight at scale"
+        titleHighlight="at scale"
+        description="GuardianOS scales across multi-academy trusts and local authorities — consistent compliance evidence and RAG-rated oversight across every school from a single command position."
+        ctaPrimary={{ label: "Book a MAT Review", href: "/book-review" }}
+        ctaSecondary={{ label: "Explore GuardianOS", href: "/guardian-os" }}
+        badge={{ label: "Multi-school ready", variant: "neutral" }}
+        statusDot
+        scrollIndicator
       >
         <GuardianCommandVisual
           variant="full"

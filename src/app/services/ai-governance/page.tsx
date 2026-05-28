@@ -181,6 +181,7 @@ export default function AiGovernancePage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="AI GOVERNANCE"
         title="Practical AI governance for school leaders"
         titleHighlight="for school leaders"
@@ -188,6 +189,7 @@ export default function AiGovernancePage() {
         badge={{ label: "AI Readiness", variant: "neutral" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we cover */}

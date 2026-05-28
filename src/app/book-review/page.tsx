@@ -42,11 +42,14 @@ export default function BookReviewPage() {
   return (
     <>
       <PageHero
-        eyebrow="BOOK A READINESS REVIEW"
-        title="Start with a structured review"
-        titleHighlight="a structured review"
-        description="A SafeShield Readiness Review gives you a clear picture of your school's current compliance position across digital safeguarding, cyber, GDPR, AI governance and governor accountability — with prioritised, actionable next steps."
-        badge={{ label: "Schools & MATs", variant: "cyan" }}
+        palette="green"
+        variant="centered"
+        eyebrow="READINESS REVIEW"
+        title="Start your SafeShield Readiness Review"
+        titleHighlight="Readiness Review"
+        description="A structured review that identifies your school's compliance gaps across digital safeguarding, cyber, GDPR, AI governance and governor accountability — with clear, prioritised next actions."
+        badge={{ label: "Free initial consultation", variant: "green" }}
+        statusDot
       />
 
       {/* What to expect */}

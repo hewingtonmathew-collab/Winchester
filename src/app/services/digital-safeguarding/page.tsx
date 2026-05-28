@@ -172,6 +172,7 @@ export default function DigitalSafeguardingPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="DIGITAL SAFEGUARDING"
         title="KCSIE-aligned oversight for your school"
         titleHighlight="for your school"
@@ -180,6 +181,7 @@ export default function DigitalSafeguardingPage() {
         badge={{ label: "KCSIE Aligned", variant: "cyan" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we review */}

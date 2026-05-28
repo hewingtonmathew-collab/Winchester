@@ -180,6 +180,7 @@ export default function GdprDpiaPage() {
   return (
     <>
       <PageHero
+        palette="cyan"
         eyebrow="GDPR & PRIVACY"
         title="Data protection evidence for schools"
         titleHighlight="for schools"
@@ -187,6 +188,7 @@ export default function GdprDpiaPage() {
         badge={{ label: "UK GDPR", variant: "cyan" }}
         ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
         ctaSecondary={{ label: "See How It Works", href: "#how-it-works" }}
+        scrollIndicator
       />
 
       {/* What we cover */}

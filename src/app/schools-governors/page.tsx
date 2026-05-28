@@ -107,12 +107,17 @@ export default function SchoolsGovernorsPage() {
   return (
     <>
       <PageHero
-        eyebrow="SCHOOLS & GOVERNORS"
-        title="Built for school leaders and their governors"
-        titleHighlight="and their governors"
-        description="SafeShield is designed for the real pressures that school leaders, DSLs, DPOs and governors face — complex compliance obligations, limited time and a need for evidence that holds up to scrutiny."
+        palette="cyan"
+        variant="default"
+        eyebrow="FOR SCHOOLS & GOVERNORS"
+        title="Compliance evidence that holds up to scrutiny"
+        titleHighlight="holds up to scrutiny"
+        description="SafeShield gives headteachers, DSLs, DPOs and governors a structured, inspection-ready evidence trail across every digital compliance obligation — without the administrative burden."
         ctaPrimary={{ label: "Book a Readiness Review", href: "/book-review" }}
-        ctaSecondary={{ label: "Explore our services", href: "/services" }}
+        ctaSecondary={{ label: "See What We Cover", href: "/services" }}
+        badge={{ label: "Inspection-ready", variant: "cyan" }}
+        statusDot
+        scrollIndicator
       />
 
       {/* Challenges */}

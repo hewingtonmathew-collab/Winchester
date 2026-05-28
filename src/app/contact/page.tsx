@@ -15,10 +15,14 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
+        palette="green"
+        variant="centered"
         eyebrow="CONTACT"
         title="Get in touch with SafeShield"
-        titleHighlight="with SafeShield"
-        description="Have a question about SafeShield, want to discuss your school's needs, or ready to book a Readiness Review? We'd be glad to hear from you."
+        titleHighlight="SafeShield"
+        description="Have a question, want to discuss your school's compliance needs, or ready to book a Readiness Review? We'd be glad to hear from you."
+        ctaPrimary={{ label: "Book a Review", href: "/book-review" }}
+        badge={{ label: "Response within 1 business day", variant: "green" }}
       />
 
       <section className="py-section" aria-labelledby="contact-heading">
