@@ -76,104 +76,91 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ── HERO ── */}
+      {/* ── HERO — full-screen video ── */}
       <section
-        className="relative w-full overflow-hidden bg-[#040608]"
+        className="relative w-full min-h-screen flex flex-col justify-end overflow-hidden bg-[#040608]"
         aria-label="SafeShield digital safeguarding intelligence"
-        style={{ paddingTop: "80px" }}
       >
-        {/* Video background — shows when /videos/hero-home.mp4 is present */}
+        {/* Full-screen video */}
         <video
           src="/videos/hero-home.mp4"
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover -z-20 opacity-30"
+          className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         />
 
-        {/* Dark overlay when video plays */}
+        {/* Gradient overlay — let video breathe at top, darken heavily toward bottom for text legibility */}
         <div
-          className="pointer-events-none absolute inset-0 -z-10"
+          className="pointer-events-none absolute inset-0"
           aria-hidden="true"
           style={{
-            background: "linear-gradient(to bottom, rgba(4,6,8,0.60) 0%, rgba(4,6,8,0.45) 40%, rgba(4,6,8,0.70) 80%, rgba(4,6,8,1) 100%)",
+            background:
+              "linear-gradient(to bottom, rgba(4,6,8,0.25) 0%, rgba(4,6,8,0.10) 30%, rgba(4,6,8,0.55) 65%, rgba(4,6,8,0.92) 85%, rgba(4,6,8,1) 100%)",
           }}
         />
 
-        {/* Particle network */}
+        {/* Subtle particle layer — light touch so video stays dominant */}
         <ParticleCanvas
-          className="-z-10 opacity-50"
-          count={70}
+          className="opacity-25"
+          count={45}
           rgb="0,212,255"
-          connectDist={155}
-          speed={0.18}
+          connectDist={130}
+          speed={0.14}
         />
 
-        {/* Radial vignette */}
+        {/* Corner vignette */}
         <div
-          className="pointer-events-none absolute inset-0 -z-10"
+          className="pointer-events-none absolute inset-0"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 85% 70% at 50% 50%, transparent 30%, rgba(4,6,8,0.60) 100%)",
+              "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4,6,8,0.45) 100%)",
           }}
         />
 
-        {/* Cyan sweep from top */}
-        <div
-          className="pointer-events-none absolute top-0 left-0 right-0 h-[50vh] -z-10"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%)",
-          }}
-        />
+        {/* HUD overlay */}
+        <HUDOverlay intensity="low" scanLine corners dataReadouts />
 
-        {/* Bottom fade */}
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 -z-10"
-          aria-hidden="true"
-          style={{ background: "linear-gradient(to bottom, transparent, #040608)" }}
-        />
-
-        {/* HUD overlay — scan line + corners + data readouts */}
-        <HUDOverlay intensity="medium" scanLine corners dataReadouts />
-
-        {/* ── Hero text block ── */}
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
-          <div className="flex flex-col items-center text-center gap-6 max-w-4xl mx-auto">
+        {/* ── Text content pinned to bottom ── */}
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24">
+          <div className="flex flex-col gap-6 max-w-3xl">
 
             {/* Status pill */}
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+              className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full"
               style={{
-                background: "rgba(0,212,255,0.06)",
-                border: "0.75px solid rgba(0,212,255,0.25)",
+                background: "rgba(0,212,255,0.08)",
+                border: "0.75px solid rgba(0,212,255,0.30)",
+                backdropFilter: "blur(8px)",
               }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
-                style={{ boxShadow: "0 0 6px rgba(0,212,255,0.8)" }}
+                style={{ boxShadow: "0 0 6px rgba(0,212,255,0.9)" }}
                 aria-hidden="true"
               />
               <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
-                GuardianOS Active — Live Compliance Intelligence
+                GuardianOS Active
               </span>
             </div>
 
             {/* Headline */}
             <h1
-              className="font-black text-on-surface leading-[1.04] tracking-[-0.035em] text-balance"
-              style={{ fontSize: "clamp(2.6rem, 6vw, 4.8rem)" }}
+              className="font-black text-white leading-[1.04] tracking-[-0.035em] text-balance"
+              style={{
+                fontSize: "clamp(2.8rem, 6.5vw, 5.2rem)",
+                textShadow: "0 2px 40px rgba(0,0,0,0.6)",
+              }}
             >
               Digital safeguarding{" "}
               <span
                 className="text-primary"
                 style={{
                   textShadow:
-                    "0 0 20px rgba(0,212,255,0.55), 0 0 60px rgba(0,212,255,0.20)",
+                    "0 0 24px rgba(0,212,255,0.65), 0 0 80px rgba(0,212,255,0.25)",
                 }}
               >
                 intelligence
@@ -183,15 +170,15 @@ export default function HomePage() {
 
             {/* Subhead */}
             <p
-              className="text-on-surface-variant leading-relaxed max-w-2xl text-balance"
-              style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.125rem)", fontWeight: 300 }}
+              className="text-white/70 leading-relaxed max-w-2xl text-balance"
+              style={{ fontSize: "clamp(1rem, 1.4vw, 1.175rem)", fontWeight: 300 }}
             >
               GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
               and governor accountability structured in a single evidence-first platform.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap justify-center gap-4 pt-1">
+            <div className="flex flex-wrap gap-4 pt-1">
               <Link href="/book-review" className="btn-primary">
                 Book a Readiness Review
               </Link>
@@ -201,15 +188,12 @@ export default function HomePage() {
             </div>
 
             {/* Trust chips */}
-            <div className="flex items-center gap-5 pt-1">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
               {["KCSIE 2024", "UK GDPR", "NCSC Aligned", "MAT Ready"].map((t, i) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  {i > 0 && <span className="w-px h-3 bg-white/10 mr-2" aria-hidden="true" />}
-                  <span
-                    className="w-1 h-1 rounded-full bg-primary/70"
-                    aria-hidden="true"
-                  />
-                  <span className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/45">
+                  {i > 0 && <span className="w-px h-3 bg-white/15 mr-2 hidden sm:inline-block" aria-hidden="true" />}
+                  <span className="w-1 h-1 rounded-full bg-primary/60" aria-hidden="true" />
+                  <span className="text-[10px] font-semibold tracking-widest uppercase text-white/40">
                     {t}
                   </span>
                 </span>
@@ -218,9 +202,25 @@ export default function HomePage() {
 
           </div>
         </div>
+      </section>
 
-        {/* ── SafeShield Command Dashboard ── */}
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      {/* ── SAFESHIELD COMMAND DASHBOARD ── */}
+      <section
+        className="py-16 relative overflow-hidden"
+        aria-label="SafeShield Command — live compliance dashboard"
+        style={{ background: "linear-gradient(to bottom, #040608, #06080e)" }}
+      >
+        {/* Subtle grid */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SafeShieldCommandDashboard />
         </div>
       </section>
