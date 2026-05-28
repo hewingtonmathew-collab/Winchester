@@ -39,9 +39,62 @@ function CircularGauge({
   // Outer glow ring radius — just outside the arc
   const rOuter = r + 5;
 
+  const rRing1 = r + 10;
+  const rRing2 = r + 16;
+  const ringCirc1 = 2 * Math.PI * rRing1;
+  const ringCirc2 = 2 * Math.PI * rRing2;
+
   return (
     <div className="flex flex-col items-center gap-1.5">
       <div className="relative" style={{ width: size, height: size }}>
+        {/* Rotating outer rings — Stark HUD effect */}
+        <svg
+          width={size + 40}
+          height={size + 40}
+          className="absolute"
+          style={{
+            top: "-20px",
+            left: "-20px",
+            overflow: "visible",
+            pointerEvents: "none",
+          }}
+          aria-hidden="true"
+        >
+          {/* Ring 1 — slow CW rotation with dashes */}
+          <circle
+            cx={(size + 40) / 2}
+            cy={(size + 40) / 2}
+            r={rRing1}
+            fill="none"
+            stroke={colour}
+            strokeWidth={0.6}
+            strokeOpacity={0.25}
+            strokeDasharray={`${ringCirc1 * 0.12} ${ringCirc1 * 0.88}`}
+            style={{ animation: "ring-cw 14s linear infinite", transformOrigin: "50% 50%" }}
+          />
+          {/* Ring 2 — faster CCW, different dash pattern */}
+          <circle
+            cx={(size + 40) / 2}
+            cy={(size + 40) / 2}
+            r={rRing2}
+            fill="none"
+            stroke={colour}
+            strokeWidth={0.4}
+            strokeOpacity={0.15}
+            strokeDasharray={`${ringCirc2 * 0.06} ${ringCirc2 * 0.14} ${ringCirc2 * 0.04} ${ringCirc2 * 0.76}`}
+            style={{ animation: "ring-ccw 20s linear infinite", transformOrigin: "50% 50%" }}
+          />
+          {/* Small dot at 12 o'clock on ring 1 */}
+          <circle
+            cx={(size + 40) / 2}
+            cy={(size + 40) / 2 - rRing1}
+            r={1.5}
+            fill={colour}
+            fillOpacity={0.5}
+            style={{ animation: "ring-cw 14s linear infinite", transformOrigin: `${(size + 40) / 2}px ${(size + 40) / 2}px` }}
+          />
+        </svg>
+
         <svg
           width={size}
           height={size}

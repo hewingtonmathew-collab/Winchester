@@ -157,6 +157,39 @@ const config: Config = {
           "50%": { borderTopColor: "rgba(255,255,255,0.5)" },
           "75%": { borderTopColor: "rgba(168,232,255,0.4)" },
         },
+        /* Tony Stark / HUD animations */
+        "hud-scan": {
+          "0%": { top: "-2px", opacity: "0" },
+          "5%": { opacity: "1" },
+          "95%": { opacity: "1" },
+          "100%": { top: "100%", opacity: "0" },
+        },
+        "ring-cw": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "ring-ccw": {
+          "0%": { transform: "rotate(360deg)" },
+          "100%": { transform: "rotate(0deg)" },
+        },
+        "hud-flicker": {
+          "0%,100%": { opacity: "1" },
+          "8%": { opacity: "0.85" },
+          "12%": { opacity: "1" },
+          "55%": { opacity: "0.92" },
+          "58%": { opacity: "1" },
+        },
+        "data-in": {
+          "0%": { opacity: "0", transform: "translateX(-8px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "gauge-fill": {
+          "0%": { strokeDashoffset: "999" },
+        },
+        "hex-pulse": {
+          "0%,100%": { transform: "scale(1)", opacity: "0.7" },
+          "50%": { transform: "scale(1.08)", opacity: "1" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out forwards",
@@ -178,6 +211,12 @@ const config: Config = {
         "aurora-3": "aurora-3 28s ease-in-out infinite",
         "aurora-4": "aurora-4 16s ease-in-out infinite",
         "iris": "iris 7s ease-in-out infinite",
+        "hud-scan": "hud-scan 9s linear infinite",
+        "ring-cw": "ring-cw 12s linear infinite",
+        "ring-ccw": "ring-ccw 18s linear infinite",
+        "hud-flicker": "hud-flicker 8s ease-in-out infinite",
+        "data-in": "data-in 0.4s ease-out forwards",
+        "hex-pulse": "hex-pulse 3s ease-in-out infinite",
       },
       backgroundImage: {
         /* Legacy grid (white lines, 40px) */

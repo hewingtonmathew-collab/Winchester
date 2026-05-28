@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
+import HUDOverlay from "@/components/ui/HUDOverlay";
 
 export interface HeroMedia {
   type: "video" | "image";
@@ -251,9 +252,18 @@ export default function PageHero({
         )}
       </div>
 
+      {/* ── HUD Overlay — scan line + corner brackets ─────────────────── */}
+      <HUDOverlay
+        className="z-0"
+        intensity="low"
+        scanLine
+        corners
+        dataReadouts={!isCinematic}
+      />
+
       {/* ── Scroll indicator ─────────────────────────────────────────────── */}
       {scrollIndicator && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-on-surface-variant/50 animate-bounce motion-reduce:animate-none">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-on-surface-variant/50 animate-bounce motion-reduce:animate-none z-10">
           <span className="text-[0.65rem] font-semibold tracking-widest uppercase">
             Scroll
           </span>

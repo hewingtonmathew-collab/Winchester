@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shield, Lock, FileText, Cpu, Eye, Users, Landmark, ArrowRight } from "lucide-react";
+import { ShieldCheck, Brain, Eye, GraduationCap, Landmark, Network, Lock, ArrowRight } from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
+import HUDOverlay from "@/components/ui/HUDOverlay";
+import CountUp from "@/components/ui/CountUp";
 import ServiceCard from "@/components/ui/ServiceCard";
 import AudienceCard from "@/components/ui/AudienceCard";
 import StatusCard from "@/components/ui/StatusCard";
@@ -19,13 +21,13 @@ export const metadata: Metadata = {
 };
 
 const serviceIcons: Record<string, React.ReactNode> = {
-  "digital-safeguarding": <Shield size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "cyber-security": <Lock size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "gdpr-dpia": <FileText size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "ai-governance": <Cpu size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "filtering-monitoring": <Eye size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "accessibility-send": <Users size={20} strokeWidth={1.5} aria-hidden="true" />,
-  "governor-oversight": <Landmark size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "digital-safeguarding": <ShieldCheck size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "cyber-security": <Network size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "gdpr-dpia": <Lock size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "ai-governance": <Brain size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "filtering-monitoring": <Eye size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "accessibility-send": <GraduationCap size={21} strokeWidth={1.5} aria-hidden="true" />,
+  "governor-oversight": <Landmark size={21} strokeWidth={1.5} aria-hidden="true" />,
 };
 
 const trustBarItems = [
@@ -134,6 +136,9 @@ export default function HomePage() {
           style={{ background: "linear-gradient(to bottom, transparent, #040608)" }}
         />
 
+        {/* HUD overlay — scan line + corners + data readouts */}
+        <HUDOverlay intensity="medium" scanLine corners dataReadouts />
+
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 lg:gap-20 items-center">
 
@@ -222,31 +227,36 @@ export default function HomePage() {
 
       {/* ── TRUST BAR ── */}
       <section
-        className="w-full py-5 glass-panel border-y border-white/[0.06]"
+        className="w-full py-4"
+        style={{
+          background: "rgba(8,10,16,0.9)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(24px)",
+        }}
         aria-label="Framework alignments"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-2">
-            <p className="eyebrow text-on-surface-variant shrink-0 mr-4 hidden sm:block">
-              Designed for UK schools
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-on-surface-variant/40 shrink-0 hidden sm:block">
+              Built for UK schools
             </p>
-            <div className="w-px h-6 bg-white/10 hidden sm:block" aria-hidden="true" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-0 flex-1">
+            <div className="w-px h-5 bg-white/[0.08] hidden sm:block" aria-hidden="true" />
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-px flex-1">
               {trustBarItems.map((item, i) => (
-                <div
-                  key={item.label}
-                  className="flex flex-col items-center sm:items-start sm:px-6 gap-0.5"
-                >
+                <div key={item.label} className="flex items-center">
                   {i > 0 && (
-                    <div
-                      className="hidden sm:block absolute h-6 w-px bg-white/10 -left-0.5"
+                    <span className="w-px h-4 bg-white/[0.08] mx-4 hidden sm:block" aria-hidden="true" />
+                  )}
+                  <div className="flex items-center gap-2 px-3 sm:px-0">
+                    <span
+                      className="w-1 h-1 rounded-full shrink-0 bg-primary"
+                      style={{ boxShadow: "0 0 4px rgba(0,212,255,0.7)" }}
                       aria-hidden="true"
                     />
-                  )}
-                  <span className="text-body-sm font-bold text-primary tracking-wide">
-                    {item.label}
-                  </span>
-                  <span className="text-[11px] text-on-surface-variant">{item.description}</span>
+                    <span className="text-[12px] font-semibold text-on-surface tracking-wide">{item.label}</span>
+                    <span className="text-[11px] text-on-surface-variant/55 hidden sm:inline">{item.description}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -283,14 +293,26 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-12">
-            <p className="eyebrow mb-3">SafeShield Services</p>
-            <h2
-              id="services-heading"
-              className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
+          <div className="mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <p className="eyebrow mb-3">SafeShield Services</p>
+              <h2
+                id="services-heading"
+                className="text-display-md font-bold text-on-surface max-w-2xl text-balance"
+              >
+                Structured compliance across every critical area.
+              </h2>
+              <p className="text-body-md text-on-surface-variant mt-3 max-w-xl">
+                Seven specialist domains — safeguarding, cyber, GDPR, AI governance, filtering, accessibility, and governor oversight.
+              </p>
+            </div>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 text-[13px] font-semibold text-primary hover:text-primary-tint transition-colors shrink-0"
             >
-              Structured compliance across every critical area.
-            </h2>
+              View all services
+              <ArrowRight size={14} aria-hidden="true" />
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -308,15 +330,6 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-primary-tint transition-colors"
-            >
-              View all services
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -356,12 +369,18 @@ export default function HomePage() {
                 Built for how school leaders actually work: plain English reporting, RAG-rated
                 summaries and inspection-conscious evidence trails that hold up to scrutiny.
               </p>
-              {/* Domain count detail */}
-              <div className="flex items-center gap-6 pt-2">
-                {[["6", "Domains"], ["94%", "Avg Score"], ["14", "Nodes"]].map(([val, lbl]) => (
-                  <div key={lbl} className="flex flex-col gap-0.5">
-                    <span className="text-2xl font-black text-primary text-glow">{val}</span>
-                    <span className="hud-label">{lbl}</span>
+              {/* Domain count detail — animated on scroll */}
+              <div className="flex items-center gap-8 pt-2">
+                {[
+                  { end: 6, suffix: "", label: "Domains" },
+                  { end: 94, suffix: "%", label: "Avg Score" },
+                  { end: 14, suffix: "", label: "Active Nodes" },
+                ].map(({ end, suffix, label }) => (
+                  <div key={label} className="flex flex-col gap-0.5">
+                    <span className="text-2xl font-black text-primary text-glow metric-number">
+                      <CountUp end={end} suffix={suffix} duration={1600} />
+                    </span>
+                    <span className="hud-label">{label}</span>
                   </div>
                 ))}
               </div>
@@ -388,19 +407,36 @@ export default function HomePage() {
       </section>
 
       {/* ── RAG RISK STRIP ── */}
-      <section className="py-16 relative overflow-hidden" aria-label="Current compliance metrics">
+      <section className="py-20 relative overflow-hidden" aria-labelledby="metrics-heading">
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
           <div className="absolute inset-0 bg-background" />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 opacity-70"
             style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(0,212,255,0.12) 1px, transparent 1px)",
-              backgroundSize: "60px 60px",
+              backgroundImage: "radial-gradient(circle, rgba(0,212,255,0.10) 1px, transparent 1px)",
+              backgroundSize: "64px 64px",
             }}
+          />
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.15) 30%, rgba(0,212,255,0.15) 70%, transparent)" }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.10) 30%, rgba(0,212,255,0.10) 70%, transparent)" }}
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="mb-10 text-center">
+            <p className="eyebrow justify-center mb-2">Live Platform Metrics</p>
+            <h2
+              id="metrics-heading"
+              className="font-bold text-on-surface"
+              style={{ fontSize: "clamp(1.4rem, 2.5vw, 1.85rem)" }}
+            >
+              Current compliance position across all domains
+            </h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <StatusCard
               label="Trust Assurance"

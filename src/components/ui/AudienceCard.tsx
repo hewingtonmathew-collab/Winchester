@@ -23,7 +23,12 @@ function CardContent({
       <div className="flex items-center gap-3 mb-4">
         {icon && (
           <div
-            className="flex items-center justify-center h-10 w-10 rounded-md bg-primary/10 border border-primary/25 text-primary shrink-0"
+            className="flex items-center justify-center h-11 w-11 rounded-xl border text-primary shrink-0"
+            style={{
+              background: "rgba(0,212,255,0.07)",
+              border: "1px solid rgba(0,212,255,0.25)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 0 12px rgba(0,212,255,0.12)",
+            }}
             aria-hidden="true"
           >
             {icon}

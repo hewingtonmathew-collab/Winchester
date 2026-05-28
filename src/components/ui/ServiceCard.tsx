@@ -2,6 +2,15 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const colourGlow: Record<NonNullable<ServiceCardProps["colour"]>, string> = {
+  cyan: "rgba(0,212,255,",
+  secondary: "rgba(186,195,255,",
+  error: "rgba(255,100,80,",
+  amber: "rgba(251,191,36,",
+  green: "rgba(74,222,128,",
+  tertiary: "rgba(150,120,255,",
+};
+
 interface ServiceCardProps {
   title: string;
   tagline: string;
@@ -80,27 +89,46 @@ export default function ServiceCard({
   compact = false,
 }: ServiceCardProps) {
   const colours = colourMap[colour];
+  const glowRgb = colourGlow[colour];
 
   return (
     <Link
       href={href}
       className="group relative flex flex-col glass-panel glass-panel-hover rounded-2xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
     >
+      {/* Colour accent line — top edge */}
+      <div
+        className="absolute top-0 left-6 right-6 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `linear-gradient(90deg, transparent, ${glowRgb}0.6), transparent)` }}
+        aria-hidden="true"
+      />
+
       <div className={cn("flex flex-col h-full", compact ? "p-5" : "p-6 lg:p-7")}>
         {/* Header row: icon + badge */}
-        <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex items-start justify-between gap-4 mb-5">
           {icon && (
             <div
               className={cn(
-                "flex items-center justify-center rounded-xl border shrink-0",
-                colours.icon,
-                colours.iconBorder,
+                "flex items-center justify-center rounded-xl shrink-0 relative",
                 colours.text,
-                compact ? "h-10 w-10" : "h-12 w-12"
+                compact ? "h-10 w-10" : "h-13 w-13"
               )}
+              style={{
+                background: `${glowRgb}0.07)`,
+                border: `1px solid ${glowRgb}0.28)`,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px ${glowRgb}0.15)`,
+                backdropFilter: "blur(8px)",
+                width: compact ? "40px" : "48px",
+                height: compact ? "40px" : "48px",
+              }}
               aria-hidden="true"
             >
-              {icon}
+              {/* Inner glow dot */}
+              <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ background: `radial-gradient(circle at 50% 0%, ${glowRgb}0.18) 0%, transparent 70%)` }}
+              />
+              <span className="relative z-10">{icon}</span>
             </div>
           )}
           {badge && (

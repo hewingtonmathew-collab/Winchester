@@ -276,14 +276,23 @@
   ═══════════════════════════════════════ */
 
   .glass-nav {
-    background: rgba(6, 8, 14, 0.93);
-    backdrop-filter: blur(48px) saturate(1.8) brightness(1.05);
-    -webkit-backdrop-filter: blur(48px) saturate(1.8) brightness(1.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(6, 8, 14, 0.92);
+    backdrop-filter: blur(48px) saturate(1.9) brightness(1.04);
+    -webkit-backdrop-filter: blur(48px) saturate(1.9) brightness(1.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.05),
-      0 4px 32px rgba(0, 0, 0, 0.6),
-      0 0 60px rgba(0, 212, 255, 0.03);
+      0 1px 0 rgba(255, 255, 255, 0.04),
+      0 4px 32px rgba(0, 0, 0, 0.65),
+      0 0 80px rgba(0, 212, 255, 0.025);
+  }
+
+  /* Alias used by legacy code */
+  .glass {
+    background: rgba(6, 8, 14, 0.92);
+    backdrop-filter: blur(48px) saturate(1.9) brightness(1.04);
+    -webkit-backdrop-filter: blur(48px) saturate(1.9) brightness(1.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.65);
   }
 
   /* ═══════════════════════════════════════
@@ -944,6 +953,68 @@
   .reveal-delay-5 { transition-delay: 0.40s; }
   .reveal-delay-6 { transition-delay: 0.48s; }
 
+}
+
+/* ═══════════════════════════════════════
+   KEYFRAME DEFINITIONS
+   (must be outside @layer so SVG inline styles can reference them)
+═══════════════════════════════════════ */
+
+@keyframes ring-cw {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ring-ccw {
+  0%   { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes hud-scan {
+  0%   { top: -2px; opacity: 0; }
+  3%   { opacity: 1; }
+  97%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(2.2);  opacity: 0; }
+}
+
+@keyframes hud-flicker {
+  0%, 100%  { opacity: 1; }
+  8%        { opacity: 0.84; }
+  12%       { opacity: 1; }
+  55%       { opacity: 0.91; }
+  58%       { opacity: 1; }
+}
+
+@keyframes data-in {
+  0%   { opacity: 0; transform: translateX(-8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(300%); }
+}
+
+@keyframes iris {
+  0%, 100% { border-top-color: rgba(168,232,255,0.35); }
+  25%       { border-top-color: rgba(186,195,255,0.45); }
+  50%       { border-top-color: rgba(255,255,255,0.50); }
+  75%       { border-top-color: rgba(168,232,255,0.40); }
+}
+
+@keyframes hex-pulse {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%       { transform: scale(1.08); opacity: 1;   }
 }
 
 @layer utilities {
