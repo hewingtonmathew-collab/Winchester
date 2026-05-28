@@ -36,6 +36,8 @@ export interface PageHeroProps {
   variant?: "default" | "cinematic" | "centered";
   /** Show an animated scroll-down chevron */
   scrollIndicator?: boolean;
+  /** Colour palette for particles, glow and highlight */
+  palette?: "cyan" | "green" | "amber" | "violet" | "rose";
 }
 
 const badgeClass = {
@@ -46,17 +48,32 @@ const badgeClass = {
   neutral: "badge-neutral",
 } as const;
 
-function renderTitle(title: string, highlight?: string) {
+function renderTitle(title: string, highlight?: string, palRgb = "0,212,255") {
   if (!highlight || !title.includes(highlight)) return <span>{title}</span>;
   const [before, ...rest] = title.split(highlight);
   return (
     <>
       {before}
-      <span className="text-primary text-glow">{highlight}</span>
+      <span
+        style={{
+          color: `rgb(${palRgb})`,
+          textShadow: `0 0 20px rgba(${palRgb},0.55), 0 0 60px rgba(${palRgb},0.20)`,
+        }}
+      >
+        {highlight}
+      </span>
       {rest.join(highlight)}
     </>
   );
 }
+
+const paletteMap = {
+  cyan:   { rgb: "0,212,255",   particle: "0,212,255",   glow: "rgba(0,212,255,0.07)",   sweep: "rgba(0,212,255,0.07)" },
+  green:  { rgb: "74,222,128",  particle: "74,222,128",  glow: "rgba(74,222,128,0.07)",  sweep: "rgba(74,222,128,0.06)" },
+  amber:  { rgb: "251,191,36",  particle: "251,191,36",  glow: "rgba(251,191,36,0.06)",  sweep: "rgba(251,191,36,0.05)" },
+  violet: { rgb: "167,139,250", particle: "167,139,250", glow: "rgba(167,139,250,0.07)", sweep: "rgba(167,139,250,0.06)" },
+  rose:   { rgb: "251,113,133", particle: "251,113,133", glow: "rgba(251,113,133,0.06)", sweep: "rgba(251,113,133,0.05)" },
+} as const;
 
 export default function PageHero({
   eyebrow,
@@ -72,7 +89,9 @@ export default function PageHero({
   media,
   variant = "default",
   scrollIndicator = false,
+  palette = "cyan",
 }: PageHeroProps) {
+  const pal = paletteMap[palette];
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
 
@@ -95,7 +114,7 @@ export default function PageHero({
         "relative w-full overflow-hidden",
         isCinematic
           ? "min-h-[85vh] flex flex-col justify-end"
-          : "pt-28 sm:pt-32 pb-section",
+          : "pt-32 sm:pt-36 pb-section min-h-[65vh] flex flex-col justify-center",
         className
       )}
       aria-label={eyebrow ?? "Page hero"}
@@ -167,18 +186,18 @@ export default function PageHero({
         {/* Particle network overlay — always visible, sits above video or plain bg */}
         <ParticleCanvas
           count={hasMedia ? 55 : 60}
-          rgb="0,212,255"
+          rgb={pal.particle}
           connectDist={145}
           speed={0.18}
           className={hasMedia ? "opacity-35" : "opacity-50"}
         />
 
-        {/* Cyan top sweep — always */}
+        {/* Palette top sweep — always */}
         <div
           className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 80% 90% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)",
+              `radial-gradient(ellipse 80% 90% at 50% 0%, ${pal.sweep} 0%, transparent 70%)`,
           }}
         />
 
@@ -211,6 +230,8 @@ export default function PageHero({
               ctaPrimary={ctaPrimary}
               ctaSecondary={ctaSecondary}
               size="xl"
+              palette={palette}
+              palRgb={pal.rgb}
             />
           </div>
         ) : isCentered ? (
@@ -227,6 +248,8 @@ export default function PageHero({
               ctaSecondary={ctaSecondary}
               centered
               size="lg"
+              palette={palette}
+              palRgb={pal.rgb}
             />
           </div>
         ) : (
@@ -243,6 +266,8 @@ export default function PageHero({
                 ctaPrimary={ctaPrimary}
                 ctaSecondary={ctaSecondary}
                 size="lg"
+                palette={palette}
+                palRgb={pal.rgb}
               />
             </div>
             {children && (
@@ -286,6 +311,8 @@ interface TextStackProps {
   ctaSecondary?: { label: string; href: string };
   centered?: boolean;
   size?: "lg" | "xl";
+  palette?: PageHeroProps["palette"];
+  palRgb?: string;
 }
 
 function HeroTextStack({
@@ -299,6 +326,7 @@ function HeroTextStack({
   ctaSecondary,
   centered,
   size = "lg",
+  palRgb = "0,212,255",
 }: TextStackProps) {
   return (
     <>
@@ -333,7 +361,7 @@ function HeroTextStack({
             : "text-[clamp(2rem,4.5vw,3.5rem)]"
         )}
       >
-        {renderTitle(title, titleHighlight)}
+        {renderTitle(title, titleHighlight, palRgb)}
       </h1>
 
       {/* Description */}
