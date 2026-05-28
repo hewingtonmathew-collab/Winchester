@@ -78,13 +78,33 @@ export default function HomePage() {
         className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#040608]"
         aria-label="SafeShield digital safeguarding intelligence"
       >
-        {/* Particle network — fills the entire hero */}
+        {/* Video background — shows when /videos/hero-home.mp4 is present */}
+        <video
+          src="/videos/hero-home.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover -z-20 opacity-40"
+          aria-hidden="true"
+        />
+
+        {/* Dark overlay when video plays */}
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          aria-hidden="true"
+          style={{
+            background: "linear-gradient(to bottom, rgba(4,6,8,0.55) 0%, rgba(4,6,8,0.40) 40%, rgba(4,6,8,0.65) 75%, rgba(4,6,8,0.98) 100%)",
+          }}
+        />
+
+        {/* Particle network — layered on top of / instead of video */}
         <ParticleCanvas
-          className="-z-10 opacity-70"
-          count={80}
+          className="-z-10 opacity-60"
+          count={90}
           rgb="0,212,255"
-          connectDist={160}
-          speed={0.22}
+          connectDist={170}
+          speed={0.20}
         />
 
         {/* Very subtle radial vignette — darkens corners */}
@@ -103,7 +123,7 @@ export default function HomePage() {
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)",
+              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.09) 0%, transparent 70%)",
           }}
         />
 

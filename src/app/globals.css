@@ -67,108 +67,148 @@
 @layer components {
 
   /* ═══════════════════════════════════════
-     GLASS PANEL SYSTEM
+     LIQUID GLASS SYSTEM  (Apple iOS 26 / visionOS aesthetic)
+     Three layers: grain noise · specular sweep · diagonal refraction
+     Borders: bright top → medium sides → dark bottom (real glass physics)
   ═══════════════════════════════════════ */
 
+  /* Shared noise data-URI — reused in every variant */
+  :root {
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E");
+  }
+
   .glass-panel {
-    /* Grain texture + gradient layered background */
     background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E"),
-      linear-gradient(145deg,
-        rgba(0, 212, 255, 0.03) 0%,
-        rgba(255, 255, 255, 0.012) 8%,
-        rgba(14, 18, 28, 0.80) 20%,
-        rgba(10, 12, 20, 0.74) 100%
+      var(--grain),
+      /* Specular sweep — bright at top, fades to near-transparent */
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.07) 30%,
+        rgba(255, 255, 255, 0.02) 60%,
+        rgba(0, 0, 0, 0.05) 100%
+      ),
+      /* Diagonal refraction shimmer */
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        transparent 55%,
+        rgba(0, 0, 0, 0.04) 100%
       );
-    background-size: 250px 250px, 100% 100%;
-    backdrop-filter: blur(80px) saturate(1.8) brightness(1.06);
-    -webkit-backdrop-filter: blur(80px) saturate(1.8) brightness(1.06);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    background-size: 250px 250px, 100% 100%, 100% 100%;
+    backdrop-filter: blur(56px) saturate(2.0) brightness(1.18);
+    -webkit-backdrop-filter: blur(56px) saturate(2.0) brightness(1.18);
+    /* Variable border weight — physics of real glass */
+    border-top: 1px solid rgba(255, 255, 255, 0.40);
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
-      /* top inner highlight — simulates glass refraction */
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.13),
-      /* left inner edge */
-      inset 1px 0 0 rgba(255, 255, 255, 0.05),
-      /* bottom inner shadow — depth */
-      inset 0 -1px 0 rgba(0, 0, 0, 0.55),
-      /* outer drop shadow */
-      0 4px 48px rgba(0, 0, 0, 0.72),
-      0 1px 0 rgba(0, 0, 0, 0.6);
+      /* Primary specular — the bright rim at top */
+      inset 0 2.5px 0 rgba(255, 255, 255, 0.38),
+      /* Left inner edge */
+      inset 1.5px 0 0 rgba(255, 255, 255, 0.14),
+      /* Right inner shadow */
+      inset -1px 0 0 rgba(0, 0, 0, 0.10),
+      /* Bottom inner — base of glass */
+      inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+      /* Outer: soft deep drop shadow */
+      0 16px 56px rgba(0, 0, 0, 0.55),
+      0 4px 14px rgba(0, 0, 0, 0.30),
+      /* Outer: thin white rim (floating effect) */
+      0 0 0 0.5px rgba(255, 255, 255, 0.07);
     contain: layout style;
   }
 
   .glass-panel-hover {
-    transition: border-color 0.25s ease, box-shadow 0.28s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      border-color 0.28s ease,
+      box-shadow 0.30s ease,
+      transform 0.34s cubic-bezier(0.16, 1, 0.3, 1),
+      background 0.28s ease;
   }
 
   .glass-panel-hover:hover {
-    border-color: rgba(0, 212, 255, 0.42);
+    border-top-color: rgba(255, 255, 255, 0.55);
+    border-left-color: rgba(255, 255, 255, 0.30);
     background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E"),
-      linear-gradient(145deg,
-        rgba(0, 212, 255, 0.07) 0%,
-        rgba(255, 255, 255, 0.015) 8%,
-        rgba(14, 18, 28, 0.82) 20%,
-        rgba(10, 12, 20, 0.76) 100%
+      var(--grain),
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.26) 0%,
+        rgba(255, 255, 255, 0.10) 30%,
+        rgba(255, 255, 255, 0.03) 60%,
+        rgba(0, 0, 0, 0.04) 100%
+      ),
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        transparent 55%,
+        rgba(0, 0, 0, 0.03) 100%
       );
-    background-size: 250px 250px, 100% 100%;
     box-shadow:
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.18),
-      inset 1px 0 0 rgba(255, 255, 255, 0.08),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-      /* outer glow ring */
-      0 0 0 1px rgba(0, 212, 255, 0.16),
-      0 8px 60px rgba(0, 0, 0, 0.78),
-      0 0 36px rgba(0, 212, 255, 0.20),
-      0 0 72px rgba(0, 212, 255, 0.07);
-    transform: translateY(-3px);
+      inset 0 2.5px 0 rgba(255, 255, 255, 0.52),
+      inset 1.5px 0 0 rgba(255, 255, 255, 0.20),
+      inset -1px 0 0 rgba(0, 0, 0, 0.07),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.22),
+      0 0 0 1px rgba(0, 212, 255, 0.12),
+      0 20px 72px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 48px rgba(0, 212, 255, 0.08);
+    transform: translateY(-3px) scale(1.005);
   }
 
   .glass-panel-active {
-    border: 1px solid rgba(0, 212, 255, 0.5);
+    border-top-color: rgba(0, 212, 255, 0.60);
+    border-left-color: rgba(0, 212, 255, 0.35);
     background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E"),
-      linear-gradient(145deg, rgba(0, 212, 255, 0.07) 0%, rgba(14, 18, 28, 0.80) 100%);
-    background-size: 250px 250px, 100% 100%;
+      var(--grain),
+      linear-gradient(to bottom, rgba(0,212,255,0.14) 0%, rgba(255,255,255,0.04) 40%, rgba(0,0,0,0.04) 100%),
+      linear-gradient(135deg, rgba(0,212,255,0.08) 0%, transparent 55%);
     box-shadow:
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.14),
-      0 0 0 1px rgba(0, 212, 255, 0.2),
-      0 0 30px rgba(0, 212, 255, 0.18),
-      0 4px 40px rgba(0, 0, 0, 0.6);
+      inset 0 2.5px 0 rgba(255, 255, 255, 0.42),
+      inset 1.5px 0 0 rgba(255, 255, 255, 0.16),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(0, 212, 255, 0.22),
+      0 0 32px rgba(0, 212, 255, 0.18),
+      0 12px 48px rgba(0, 0, 0, 0.55);
   }
 
   .glass-panel-error {
-    border: 1px solid rgba(255, 180, 171, 0.4);
+    border-top-color: rgba(255, 180, 171, 0.50);
+    border-left-color: rgba(255, 180, 171, 0.28);
     background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E"),
-      linear-gradient(145deg, rgba(147, 0, 10, 0.15) 0%, rgba(10, 12, 20, 0.75) 100%);
-    background-size: 250px 250px, 100% 100%;
+      var(--grain),
+      linear-gradient(to bottom, rgba(255,100,80,0.12) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.06) 100%),
+      linear-gradient(135deg, rgba(255,120,100,0.08) 0%, transparent 55%);
     box-shadow:
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.08),
-      0 0 0 1px rgba(255, 180, 171, 0.1),
-      0 0 24px rgba(255, 180, 171, 0.15);
+      inset 0 2.5px 0 rgba(255, 200, 180, 0.35),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.30),
+      0 0 0 1px rgba(255, 180, 171, 0.12),
+      0 0 28px rgba(255, 180, 171, 0.14);
   }
 
-  /* Stronger version for hero/feature panels */
+  /* Premium: extra-deep blur, stronger specular — for featured panels */
   .glass-panel-premium {
     background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
-      linear-gradient(145deg,
-        rgba(0, 212, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.018) 6%,
-        rgba(10, 14, 22, 0.90) 18%,
-        rgba(6, 8, 14, 0.88) 100%
-      );
-    background-size: 250px 250px, 100% 100%;
-    backdrop-filter: blur(100px) saturate(1.9) brightness(1.08);
-    -webkit-backdrop-filter: blur(100px) saturate(1.9) brightness(1.08);
-    border: 1px solid rgba(255, 255, 255, 0.13);
+      var(--grain),
+      linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.02) 55%, rgba(0,0,0,0.07) 100%),
+      linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 50%, rgba(0,0,0,0.05) 100%);
+    background-size: 250px 250px, 100% 100%, 100% 100%;
+    backdrop-filter: blur(80px) saturate(2.2) brightness(1.22);
+    -webkit-backdrop-filter: blur(80px) saturate(2.2) brightness(1.22);
+    border-top: 1px solid rgba(255, 255, 255, 0.50);
+    border-left: 1px solid rgba(255, 255, 255, 0.26);
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.15),
-      inset 2px 0 0 rgba(255, 255, 255, 0.06),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.6),
-      0 8px 64px rgba(0, 0, 0, 0.85),
-      0 0 0 0.5px rgba(0, 0, 0, 0.8);
+      inset 0 3px 0 rgba(255, 255, 255, 0.48),
+      inset 2px 0 0 rgba(255, 255, 255, 0.18),
+      inset -1px 0 0 rgba(0, 0, 0, 0.12),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.32),
+      0 20px 80px rgba(0, 0, 0, 0.70),
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 0 0.5px rgba(255, 255, 255, 0.10);
   }
 
   /* ═══════════════════════════════════════

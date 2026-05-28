@@ -92,7 +92,7 @@ export default function DPIAWizardPage() {
           <p className="eyebrow text-center mb-6">INTERFACE PREVIEW</p>
 
           <div
-            className="glass-panel hud-corners rounded-xl overflow-hidden max-w-4xl mx-auto"
+            className="glass-panel rounded-2xl overflow-hidden max-w-4xl mx-auto"
             role="img"
             aria-label="DPIA Wizard HUD interface mockup showing step-by-step DPIA workflow"
           >
@@ -289,7 +289,7 @@ export default function DPIAWizardPage() {
             ].map((cap) => (
               <div
                 key={cap.title}
-                className="glass-panel glass-panel-hover hud-corners rounded-xl p-6 relative overflow-hidden group"
+                className="glass-panel glass-panel-hover rounded-2xl p-6 relative overflow-hidden group"
               >
                 <div
                   className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity"
@@ -345,7 +345,7 @@ export default function DPIAWizardPage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="glass-panel hud-corners rounded-xl p-6 relative overflow-hidden"
+                className="glass-panel rounded-2xl p-6 relative overflow-hidden"
               >
                 <div
                   className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent"
@@ -380,7 +380,7 @@ export default function DPIAWizardPage() {
             </p>
           </div>
 
-          <div className="glass-panel hud-corners rounded-xl overflow-hidden max-w-3xl">
+          <div className="glass-panel rounded-2xl overflow-hidden max-w-3xl">
             <div className="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
               <div>
                 <p className="text-body-sm font-semibold text-on-surface">
@@ -470,7 +470,7 @@ export default function DPIAWizardPage() {
               <Link
                 key={mod.title}
                 href={mod.href}
-                className="glass-panel glass-panel-hover hud-corners rounded-xl p-5 flex items-start gap-3 group transition-all"
+                className="glass-panel glass-panel-hover rounded-2xl p-5 flex items-start gap-3 group transition-all"
               >
                 <div className="flex items-center justify-center h-9 w-9 rounded-md bg-primary/10 border border-primary/30 text-primary flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                   {mod.icon}

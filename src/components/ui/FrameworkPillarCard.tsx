@@ -85,7 +85,7 @@ export default function FrameworkPillarCard({
   const indexStr = index !== undefined ? String(index).padStart(2, "0") : null;
 
   const inner = (
-    <div className="glass-panel glass-panel-hover rounded-xl p-6 relative overflow-hidden group h-full flex flex-col">
+    <div className="glass-panel glass-panel-hover rounded-2xl p-6 relative overflow-hidden group h-full flex flex-col">
       {/* Background index number */}
       {indexStr && (
         <span
@@ -112,7 +112,7 @@ export default function FrameworkPillarCard({
       {icon && (
         <div
           className={cn(
-            "w-12 h-12 rounded-lg border flex items-center justify-center mb-5 flex-shrink-0",
+            "w-12 h-12 rounded-xl border flex items-center justify-center mb-5 flex-shrink-0",
             c.iconBg,
             c.iconText,
             c.glow

@@ -59,6 +59,7 @@ export default function AboutPage() {
         title="Purpose-built for UK schools"
         titleHighlight="for UK schools"
         description="SafeShield exists because UK schools face increasingly complex digital compliance obligations — and most existing tools are built for corporate environments, not school leaders."
+        media={{ type: "video", src: "/videos/hero-about.mp4", poster: "/videos/hero-about.jpg" }}
       />
 
       {/* ── OUR MISSION ── */}

@@ -84,7 +84,7 @@ export default function ServiceCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col glass-panel glass-panel-hover hud-corners rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+      className="group relative flex flex-col glass-panel glass-panel-hover rounded-2xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
     >
       <div className={cn("flex flex-col h-full", compact ? "p-5" : "p-6 lg:p-7")}>
         {/* Header row: icon + badge */}
@@ -92,7 +92,7 @@ export default function ServiceCard({
           {icon && (
             <div
               className={cn(
-                "flex items-center justify-center rounded-md border shrink-0",
+                "flex items-center justify-center rounded-xl border shrink-0",
                 colours.icon,
                 colours.iconBorder,
                 colours.text,

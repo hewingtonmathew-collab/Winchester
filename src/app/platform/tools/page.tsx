@@ -146,7 +146,7 @@ export default function PlatformToolsPage() {
                   "Access all five GuardianOS modules with regular review support from your SafeShield adviser — keeping evidence inspection-ready at all times.",
               },
             ].map((item) => (
-              <div key={item.step} className="glass-panel hud-corners rounded-xl p-6 relative overflow-hidden">
+              <div key={item.step} className="glass-panel rounded-2xl p-6 relative overflow-hidden">
                 <div
                   className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/50 to-transparent"
                   aria-hidden="true"

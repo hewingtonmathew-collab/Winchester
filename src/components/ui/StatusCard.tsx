@@ -219,7 +219,7 @@ export default function StatusCard({
     return (
       <div
         className={cn(
-          "glass-panel rounded-lg p-6 flex flex-col gap-3",
+          "glass-panel rounded-2xl p-6 flex flex-col gap-3",
           borderGlow
         )}
       >
@@ -273,7 +273,7 @@ export default function StatusCard({
     return (
       <div
         className={cn(
-          "glass-panel rounded-lg p-6 flex flex-col items-center gap-4",
+          "glass-panel rounded-2xl p-6 flex flex-col items-center gap-4",
           borderGlow
         )}
       >
@@ -301,7 +301,7 @@ export default function StatusCard({
   return (
     <div
       className={cn(
-        "glass-panel rounded-lg p-5 flex items-center gap-4",
+        "glass-panel rounded-2xl p-5 flex items-center gap-4",
         borderGlow
       )}
     >

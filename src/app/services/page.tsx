@@ -60,6 +60,7 @@ export default function ServicesPage() {
         title="Structured compliance across every domain"
         titleHighlight="across every domain"
         description="Seven specialist service areas covering every aspect of UK school digital compliance — from KCSIE safeguarding and NCSC cyber to GDPR, AI governance and governor accountability."
+        media={{ type: "video", src: "/videos/hero-services.mp4", poster: "/videos/hero-services.jpg" }}
       />
 
       {/* ── SERVICES GRID ── */}

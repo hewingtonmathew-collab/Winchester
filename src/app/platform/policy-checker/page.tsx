@@ -53,7 +53,7 @@ export default function PolicyCheckerPage() {
           <div className="divider-cyan mb-12" aria-hidden="true" />
           <p className="eyebrow text-center mb-6">INTERFACE PREVIEW</p>
 
-          <div className="glass-panel hud-corners rounded-xl overflow-hidden max-w-4xl mx-auto" role="img" aria-label="Policy Checker HUD interface mockup showing document scanner with KCSIE analysis">
+          <div className="glass-panel rounded-2xl overflow-hidden max-w-4xl mx-auto" role="img" aria-label="Policy Checker HUD interface mockup showing document scanner with KCSIE analysis">
             {/* HUD grid overlay */}
             <div
               className="absolute inset-0 bg-grid-hud bg-[size:40px_40px] pointer-events-none opacity-40"
@@ -202,7 +202,7 @@ export default function PolicyCheckerPage() {
                   "Export an Ofsted-conscious governor summary report with annotated gap analysis — ready to present at the next board meeting or during an inspection.",
               },
             ].map((cap) => (
-              <div key={cap.title} className="glass-panel glass-panel-hover hud-corners rounded-xl p-6 relative overflow-hidden group">
+              <div key={cap.title} className="glass-panel glass-panel-hover rounded-2xl p-6 relative overflow-hidden group">
                 <div
                   className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/50 to-transparent opacity-60 group-hover:opacity-100 transition-opacity"
                   aria-hidden="true"
@@ -255,7 +255,7 @@ export default function PolicyCheckerPage() {
                   "Download an annotated report with gap analysis and recommendations — formatted for governors, with plain-language explanations of any shortfalls.",
               },
             ].map((item) => (
-              <div key={item.step} className="glass-panel hud-corners rounded-xl p-6 relative overflow-hidden">
+              <div key={item.step} className="glass-panel rounded-2xl p-6 relative overflow-hidden">
                 <div
                   className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/50 to-transparent"
                   aria-hidden="true"
@@ -289,7 +289,7 @@ export default function PolicyCheckerPage() {
             </p>
           </div>
 
-          <div className="glass-panel hud-corners rounded-xl overflow-hidden max-w-3xl">
+          <div className="glass-panel rounded-2xl overflow-hidden max-w-3xl">
             {/* Report header */}
             <div className="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
               <div>
@@ -388,7 +388,7 @@ export default function PolicyCheckerPage() {
               <Link
                 key={mod.title}
                 href={mod.href}
-                className="glass-panel glass-panel-hover hud-corners rounded-xl p-5 flex items-start gap-3 group transition-all"
+                className="glass-panel glass-panel-hover rounded-2xl p-5 flex items-start gap-3 group transition-all"
               >
                 <div className="flex items-center justify-center h-9 w-9 rounded-md bg-primary/10 border border-primary/30 text-primary flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                   {mod.icon}

@@ -71,7 +71,7 @@ export default function AudienceCard({
   icon,
   href,
 }: AudienceCardProps) {
-  const sharedClasses = "glass-panel rounded-lg h-full";
+  const sharedClasses = "glass-panel rounded-2xl h-full";
 
   if (href) {
     return (

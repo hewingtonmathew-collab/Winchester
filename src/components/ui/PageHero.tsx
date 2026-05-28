@@ -101,34 +101,17 @@ export default function PageHero({
     >
       {/* ── Background layer ──────────────────────────────────────────────── */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
-        {/* Particle network canvas */}
+        {/* Dark base */}
+        {!hasMedia && <div className="absolute inset-0 bg-[#040608]" />}
+        {/* Corner vignette */}
         {!hasMedia && (
-          <>
-            <div className="absolute inset-0 bg-[#040608]" />
-            <ParticleCanvas
-              count={60}
-              rgb="0,212,255"
-              connectDist={140}
-              speed={0.2}
-              className="opacity-50"
-            />
-            {/* Cyan top sweep */}
-            <div
-              className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(ellipse 80% 90% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%)",
-              }}
-            />
-            {/* Corner vignette */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4,6,8,0.55) 100%)",
-              }}
-            />
-          </>
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4,6,8,0.55) 100%)",
+            }}
+          />
         )}
 
         {/* Static base when media is present */}
@@ -179,6 +162,24 @@ export default function PageHero({
             }}
           />
         )}
+
+        {/* Particle network overlay — always visible, sits above video or plain bg */}
+        <ParticleCanvas
+          count={hasMedia ? 55 : 60}
+          rgb="0,212,255"
+          connectDist={145}
+          speed={0.18}
+          className={hasMedia ? "opacity-35" : "opacity-50"}
+        />
+
+        {/* Cyan top sweep — always */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 90% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)",
+          }}
+        />
 
         {/* Bottom fade for seamless section transition */}
         {!isCinematic && (

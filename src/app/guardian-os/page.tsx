@@ -51,6 +51,7 @@ export default function GuardianOSPage() {
         title="The compliance operating system for UK schools"
         titleHighlight="for UK schools"
         description="GuardianOS is SafeShield's structured compliance framework — six interconnected domains covering every aspect of UK school digital safety, privacy and accountability."
+        media={{ type: "video", src: "/videos/hero-guardian.mp4", poster: "/videos/hero-guardian.jpg" }}
       >
         <GuardianCommandVisual
           variant="full"

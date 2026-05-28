@@ -97,7 +97,7 @@ function MetricGrid({
       {metrics.map((m) => (
         <div
           key={m.label}
-          className="glass-panel rounded-md px-3 py-2.5 flex flex-col gap-1"
+          className="glass-panel rounded-xl px-3 py-2.5 flex flex-col gap-1"
         >
           <span className="text-label-caps text-on-surface-variant">
             {m.label}
@@ -270,7 +270,7 @@ export default function ToolModuleCard({
   const isComingSoon = status === "coming-soon";
 
   const cardClasses = cn(
-    "group relative glass-panel hud-corners rounded-lg overflow-hidden",
+    "group relative glass-panel rounded-2xl overflow-hidden",
     "transition-all duration-300",
     featured ? "p-7" : "p-6",
     featured && "col-span-2",
