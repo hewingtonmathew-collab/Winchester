@@ -7,24 +7,15 @@ import { Shield, Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav, ctaPrimary } from "@/data/nav";
 
-/* ─── Types ─────────────────────────────────────────────────────────────── */
 type NavGroup = (typeof mainNav)[number];
 
 /* ─── Desktop dropdown ───────────────────────────────────────────────────── */
-function DesktopDropdown({
-  group,
-  isActive,
-}: {
-  group: NavGroup;
-  isActive: boolean;
-}) {
+function DesktopDropdown({ group, isActive }: { group: NavGroup; isActive: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const hasChildren = Boolean(group.children?.length);
-
   const close = useCallback(() => setOpen(false), []);
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -34,27 +25,28 @@ function DesktopDropdown({
     return () => document.removeEventListener("mousedown", handler);
   }, [open, close]);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open, close]);
 
+  const linkClass = cn(
+    "relative flex items-center h-full px-3 py-2 font-sans text-sm font-medium rounded-md",
+    "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75",
+    "min-h-[44px]",
+    isActive
+      ? "text-primary text-glow-sm"
+      : "text-on-surface-variant hover:text-on-surface hover:bg-white/[0.05]"
+  );
+
   if (!hasChildren) {
     return (
-      <Link
-        href={group.href}
-        className={cn(
-          "relative font-sans text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75 rounded px-1 py-0.5",
-          isActive
-            ? "text-primary text-glow after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-[2px] after:bg-primary after:rounded-full"
-            : "text-on-surface-variant hover:text-on-surface"
+      <Link href={group.href} className={linkClass}>
+        {isActive && (
+          <span className="absolute bottom-1 left-3 right-3 h-[2px] bg-primary rounded-full opacity-80" />
         )}
-      >
         {group.label}
       </Link>
     );
@@ -63,7 +55,7 @@ function DesktopDropdown({
   return (
     <div
       ref={ref}
-      className="relative"
+      className="relative h-full flex items-center"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
@@ -72,23 +64,18 @@ function DesktopDropdown({
         aria-expanded={open}
         aria-haspopup="true"
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setOpen((v) => !v);
-          }
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen((v) => !v); }
         }}
-        className={cn(
-          "flex items-center gap-1 font-sans text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75 rounded px-1 py-0.5",
-          isActive
-            ? "text-primary text-glow"
-            : "text-on-surface-variant hover:text-on-surface"
-        )}
+        className={cn(linkClass, "gap-1.5")}
       >
+        {isActive && (
+          <span className="absolute bottom-1 left-3 right-3 h-[2px] bg-primary rounded-full opacity-80" />
+        )}
         {group.label}
         <ChevronDown
-          size={14}
+          size={13}
           className={cn(
-            "transition-transform duration-200 motion-reduce:transition-none",
+            "transition-transform duration-200 motion-reduce:transition-none opacity-60",
             open ? "rotate-180" : "rotate-0"
           )}
           aria-hidden="true"
@@ -100,24 +87,25 @@ function DesktopDropdown({
         role="menu"
         aria-label={group.label}
         className={cn(
-          "absolute top-[calc(100%+14px)] left-1/2 -translate-x-1/2 z-50 min-w-[280px] rounded-lg glass-panel border border-outline-variant/60",
-          "transition-all duration-200 motion-reduce:transition-none",
+          "absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 z-50 min-w-[260px] rounded-xl",
+          "glass-panel border border-outline-variant/50",
+          "transition-all duration-200 motion-reduce:transition-none origin-top",
           open
-            ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 -translate-y-2 pointer-events-none"
+            ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-y-95 -translate-y-1 pointer-events-none"
         )}
       >
-        {/* small caret */}
-        <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rotate-45 bg-surface-low border-l border-t border-outline-variant/60" />
+        {/* Caret */}
+        <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rotate-45 bg-surface-low border-l border-t border-outline-variant/50" />
 
-        <ul className="py-2">
+        <ul className="py-1.5">
           {group.children!.map((child) => (
             <li key={child.href} role="none">
               <Link
                 href={child.href}
                 role="menuitem"
                 onClick={close}
-                className="flex flex-col gap-0.5 px-4 py-3 group hover:bg-white/[0.04] transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/[0.06]"
+                className="flex flex-col gap-0.5 px-4 py-3.5 group hover:bg-white/[0.05] transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/[0.07] rounded-lg mx-1"
               >
                 <span className="font-sans text-sm font-semibold text-on-surface group-hover:text-primary transition-colors duration-150">
                   {child.label}
@@ -136,7 +124,7 @@ function DesktopDropdown({
   );
 }
 
-/* ─── Mobile nav item ────────────────────────────────────────────────────── */
+/* ─── Mobile nav group ───────────────────────────────────────────────────── */
 function MobileNavGroup({
   group,
   isActive,
@@ -149,17 +137,16 @@ function MobileNavGroup({
   const [expanded, setExpanded] = useState(false);
   const hasChildren = Boolean(group.children?.length);
 
+  const baseClass = cn(
+    "flex items-center w-full font-sans text-base font-medium py-4 min-h-[52px]",
+    "border-b border-outline-variant/30 transition-colors duration-150",
+    isActive ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
+  );
+
   if (!hasChildren) {
     return (
       <li>
-        <Link
-          href={group.href}
-          onClick={onClose}
-          className={cn(
-            "block font-sans text-base font-medium py-3 border-b border-outline-variant/40 transition-colors duration-150",
-            isActive ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
-          )}
-        >
+        <Link href={group.href} onClick={onClose} className={baseClass}>
           {group.label}
         </Link>
       </li>
@@ -171,17 +158,8 @@ function MobileNavGroup({
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setExpanded((v) => !v);
-          }
-        }}
         aria-expanded={expanded}
-        className={cn(
-          "flex items-center justify-between w-full font-sans text-base font-medium py-3 border-b border-outline-variant/40 transition-colors duration-150",
-          isActive ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
-        )}
+        className={cn(baseClass, "justify-between")}
       >
         {group.label}
         <ChevronDown
@@ -194,21 +172,31 @@ function MobileNavGroup({
         />
       </button>
 
-      {expanded && (
-        <ul className="pl-4 mt-1 mb-2 space-y-1">
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-300 motion-reduce:transition-none",
+          expanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        <ul className="pl-4 pt-1 pb-3 space-y-0.5">
           {group.children!.map((child) => (
             <li key={child.href}>
               <Link
                 href={child.href}
                 onClick={onClose}
-                className="block py-2 font-sans text-sm text-on-surface-variant hover:text-primary transition-colors duration-150"
+                className="flex flex-col gap-0.5 py-3 min-h-[48px] font-sans text-sm text-on-surface-variant hover:text-primary transition-colors duration-150"
               >
-                {child.label}
+                <span className="font-semibold">{child.label}</span>
+                {child.description && (
+                  <span className="text-xs text-on-surface-variant/70 leading-relaxed">
+                    {child.description}
+                  </span>
+                )}
               </Link>
             </li>
           ))}
         </ul>
-      )}
+      </div>
     </li>
   );
 }
@@ -220,45 +208,31 @@ export default function SiteHeader() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
-  // Close mobile on Escape
   useEffect(() => {
     if (!mobileOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [mobileOpen]);
 
   const isGroupActive = (group: NavGroup): boolean => {
     if (pathname === group.href) return true;
-    if (group.children) {
-      return group.children.some((child) => pathname === child.href || pathname.startsWith(child.href + "/"));
-    }
-    return false;
+    return group.children?.some(
+      (child) => pathname === child.href || pathname.startsWith(child.href + "/")
+    ) ?? false;
   };
 
   return (
@@ -266,29 +240,37 @@ export default function SiteHeader() {
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300 motion-reduce:transition-none",
-          scrolled ? "glass-nav" : "bg-transparent"
+          scrolled
+            ? "glass-nav shadow-[0_1px_0_rgba(255,255,255,0.05)]"
+            : "bg-[rgba(12,14,18,0.6)] backdrop-blur-md border-b border-white/[0.06]"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-[68px]">
+          <div className="flex items-center justify-between h-[68px] lg:h-[72px]">
             {/* Logo */}
             <Link
               href="/"
               aria-label="SafeShield — Home"
-              className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75 rounded"
+              className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75 rounded-md py-2 pr-2"
             >
-              <Shield
-                size={26}
-                className="text-primary transition-all duration-200 group-hover:drop-shadow-[0_0_8px_rgba(168,232,255,0.7)]"
-                aria-hidden="true"
-              />
-              <span className="font-sans font-bold text-xl text-primary tracking-tight">
-                SafeShield
+              <div className="relative">
+                <Shield
+                  size={28}
+                  className="text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(0,212,255,0.8)]"
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <span className="font-sans font-bold text-xl text-on-surface tracking-tight">
+                Safe<span className="text-primary">Shield</span>
               </span>
             </Link>
 
-            {/* Desktop nav */}
-            <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6">
+            {/* Desktop nav — full height items for easy clicking */}
+            <nav
+              aria-label="Main navigation"
+              className="hidden lg:flex items-stretch h-full gap-0.5"
+            >
               {mainNav.map((group) => (
                 <DesktopDropdown
                   key={group.href}
@@ -299,51 +281,58 @@ export default function SiteHeader() {
             </nav>
 
             {/* Desktop CTA */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex items-center gap-3">
               <Link href={ctaPrimary.href} className="btn-primary text-sm">
                 {ctaPrimary.label}
               </Link>
             </div>
 
-            {/* Mobile hamburger */}
+            {/* Mobile hamburger — 48×48 tap target */}
             <button
               type="button"
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded text-on-surface-variant hover:text-on-surface transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75"
+              className="lg:hidden flex items-center justify-center w-12 h-12 -mr-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/[0.06] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
             >
-              {mobileOpen ? (
-                <X size={22} aria-hidden="true" />
-              ) : (
-                <Menu size={22} aria-hidden="true" />
-              )}
+              {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile menu — full-screen slide-down */}
+      {/* Mobile menu */}
       <div
         id="mobile-nav"
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
         className={cn(
-          "fixed inset-0 z-40 lg:hidden glass-nav flex flex-col",
+          "fixed inset-0 z-40 lg:hidden flex flex-col",
+          "bg-[rgba(12,14,18,0.97)] backdrop-blur-2xl",
           "transition-all duration-300 motion-reduce:transition-none",
           mobileOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
-            : "opacity-0 pointer-events-none -translate-y-4"
+            : "opacity-0 pointer-events-none -translate-y-2"
         )}
       >
-        {/* Spacer to sit below header */}
-        <div className="h-16" aria-hidden="true" />
+        {/* Spacer below header */}
+        <div className="h-[68px]" aria-hidden="true" />
 
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-8">
+        {/* Ambient glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 60%)",
+          }}
+        />
+
+        <div className="relative flex-1 overflow-y-auto px-5 sm:px-8 pb-10">
           <nav aria-label="Mobile navigation">
-            <ul className="divide-y divide-outline-variant/20">
+            <ul>
               {mainNav.map((group) => (
                 <MobileNavGroup
                   key={group.href}
@@ -359,7 +348,7 @@ export default function SiteHeader() {
             <Link
               href={ctaPrimary.href}
               onClick={() => setMobileOpen(false)}
-              className="btn-primary w-full justify-center"
+              className="btn-primary w-full justify-center text-base"
             >
               {ctaPrimary.label}
             </Link>
