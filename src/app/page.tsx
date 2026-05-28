@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, Brain, Eye, GraduationCap, Landmark, Network, Lock, ArrowRight } from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
+import SafeShieldCommandDashboard from "@/components/ui/SafeShieldCommandDashboard";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
 import HUDOverlay from "@/components/ui/HUDOverlay";
 import CountUp from "@/components/ui/CountUp";
@@ -77,8 +78,9 @@ export default function HomePage() {
     <>
       {/* ── HERO ── */}
       <section
-        className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#040608]"
+        className="relative w-full overflow-hidden bg-[#040608]"
         aria-label="SafeShield digital safeguarding intelligence"
+        style={{ paddingTop: "80px" }}
       >
         {/* Video background — shows when /videos/hero-home.mp4 is present */}
         <video
@@ -87,7 +89,7 @@ export default function HomePage() {
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover -z-20 opacity-40"
+          className="absolute inset-0 w-full h-full object-cover -z-20 opacity-30"
           aria-hidden="true"
         />
 
@@ -96,26 +98,26 @@ export default function HomePage() {
           className="pointer-events-none absolute inset-0 -z-10"
           aria-hidden="true"
           style={{
-            background: "linear-gradient(to bottom, rgba(4,6,8,0.55) 0%, rgba(4,6,8,0.40) 40%, rgba(4,6,8,0.65) 75%, rgba(4,6,8,0.98) 100%)",
+            background: "linear-gradient(to bottom, rgba(4,6,8,0.60) 0%, rgba(4,6,8,0.45) 40%, rgba(4,6,8,0.70) 80%, rgba(4,6,8,1) 100%)",
           }}
         />
 
-        {/* Particle network — layered on top of / instead of video */}
+        {/* Particle network */}
         <ParticleCanvas
-          className="-z-10 opacity-60"
-          count={90}
+          className="-z-10 opacity-50"
+          count={70}
           rgb="0,212,255"
-          connectDist={170}
-          speed={0.20}
+          connectDist={155}
+          speed={0.18}
         />
 
-        {/* Very subtle radial vignette — darkens corners */}
+        {/* Radial vignette */}
         <div
           className="pointer-events-none absolute inset-0 -z-10"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 85% 70% at 50% 50%, transparent 30%, rgba(4,6,8,0.65) 100%)",
+              "radial-gradient(ellipse 85% 70% at 50% 50%, transparent 30%, rgba(4,6,8,0.60) 100%)",
           }}
         />
 
@@ -125,13 +127,13 @@ export default function HomePage() {
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.09) 0%, transparent 70%)",
+              "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%)",
           }}
         />
 
         {/* Bottom fade */}
         <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 -z-10"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 -z-10"
           aria-hidden="true"
           style={{ background: "linear-gradient(to bottom, transparent, #040608)" }}
         />
@@ -139,89 +141,87 @@ export default function HomePage() {
         {/* HUD overlay — scan line + corners + data readouts */}
         <HUDOverlay intensity="medium" scanLine corners dataReadouts />
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 lg:gap-20 items-center">
+        {/* ── Hero text block ── */}
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
+          <div className="flex flex-col items-center text-center gap-6 max-w-4xl mx-auto">
 
-            {/* LEFT — text */}
-            <div className="flex flex-col gap-7 max-w-2xl">
-              {/* Status pill */}
-              <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full"
-                style={{
-                  background: "rgba(0,212,255,0.06)",
-                  border: "0.75px solid rgba(0,212,255,0.25)",
-                }}>
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
-                  style={{ boxShadow: "0 0 6px rgba(0,212,255,0.8)" }}
-                  aria-hidden="true"
-                />
-                <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
-                  GuardianOS Active
-                </span>
-              </div>
-
-              {/* Headline */}
-              <h1
-                className="font-black text-on-surface leading-[1.03] tracking-[-0.035em]"
-                style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)" }}
-              >
-                Digital safeguarding{" "}
-                <span
-                  className="text-primary"
-                  style={{
-                    textShadow:
-                      "0 0 20px rgba(0,212,255,0.55), 0 0 60px rgba(0,212,255,0.20)",
-                  }}
-                >
-                  intelligence
-                </span>{" "}
-                for UK schools.
-              </h1>
-
-              {/* Subhead */}
-              <p
-                className="text-on-surface-variant leading-relaxed max-w-xl"
-                style={{ fontSize: "clamp(1rem, 1.4vw, 1.2rem)", fontWeight: 300 }}
-              >
-                GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
-                and governor accountability structured in a single evidence-first platform.
-              </p>
-
-              {/* CTA row */}
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link href="/book-review" className="btn-primary">
-                  Book a Readiness Review
-                </Link>
-                <Link href="/guardian-os" className="btn-secondary">
-                  Explore GuardianOS
-                </Link>
-              </div>
-
-              {/* Trust line */}
-              <div className="flex items-center gap-4 pt-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-                {["KCSIE 2024", "UK GDPR", "NCSC Aligned"].map((t) => (
-                  <span key={t} className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/50">
-                    {t}
-                  </span>
-                ))}
-              </div>
+            {/* Status pill */}
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{
+                background: "rgba(0,212,255,0.06)",
+                border: "0.75px solid rgba(0,212,255,0.25)",
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none"
+                style={{ boxShadow: "0 0 6px rgba(0,212,255,0.8)" }}
+                aria-hidden="true"
+              />
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-primary/90">
+                GuardianOS Active — Live Compliance Intelligence
+              </span>
             </div>
 
-            {/* RIGHT — product visual */}
-            <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
-              <GuardianCommandVisual
-                variant="full"
-                trustScore={94}
-                kcsieScore={98}
-                activeNodes={14}
-                totalNodes={14}
-                alerts={2}
-                className="w-full max-w-[420px] lg:max-w-[460px]"
-              />
+            {/* Headline */}
+            <h1
+              className="font-black text-on-surface leading-[1.04] tracking-[-0.035em] text-balance"
+              style={{ fontSize: "clamp(2.6rem, 6vw, 4.8rem)" }}
+            >
+              Digital safeguarding{" "}
+              <span
+                className="text-primary"
+                style={{
+                  textShadow:
+                    "0 0 20px rgba(0,212,255,0.55), 0 0 60px rgba(0,212,255,0.20)",
+                }}
+              >
+                intelligence
+              </span>{" "}
+              for UK schools.
+            </h1>
+
+            {/* Subhead */}
+            <p
+              className="text-on-surface-variant leading-relaxed max-w-2xl text-balance"
+              style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.125rem)", fontWeight: 300 }}
+            >
+              GuardianOS-powered compliance oversight — safeguarding, cyber, GDPR, AI governance
+              and governor accountability structured in a single evidence-first platform.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap justify-center gap-4 pt-1">
+              <Link href="/book-review" className="btn-primary">
+                Book a Readiness Review
+              </Link>
+              <Link href="/guardian-os" className="btn-secondary">
+                Explore GuardianOS
+              </Link>
+            </div>
+
+            {/* Trust chips */}
+            <div className="flex items-center gap-5 pt-1">
+              {["KCSIE 2024", "UK GDPR", "NCSC Aligned", "MAT Ready"].map((t, i) => (
+                <span key={t} className="flex items-center gap-1.5">
+                  {i > 0 && <span className="w-px h-3 bg-white/10 mr-2" aria-hidden="true" />}
+                  <span
+                    className="w-1 h-1 rounded-full bg-primary/70"
+                    aria-hidden="true"
+                  />
+                  <span className="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/45">
+                    {t}
+                  </span>
+                </span>
+              ))}
             </div>
 
           </div>
+        </div>
+
+        {/* ── SafeShield Command Dashboard ── */}
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <SafeShieldCommandDashboard />
         </div>
       </section>
 
