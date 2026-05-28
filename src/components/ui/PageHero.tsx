@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import HeroBackground from "@/components/ui/HeroBackground";
+import ParticleCanvas from "@/components/ui/ParticleCanvas";
 
 export interface HeroMedia {
   type: "video" | "image";
@@ -101,13 +101,34 @@ export default function PageHero({
     >
       {/* ── Background layer ──────────────────────────────────────────────── */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
-        {/* Animated aurora + orb background */}
+        {/* Particle network canvas */}
         {!hasMedia && (
-          <HeroBackground
-            intensity={isCinematic ? "intense" : "normal"}
-            showOrbs
-            showGrid
-          />
+          <>
+            <div className="absolute inset-0 bg-[#040608]" />
+            <ParticleCanvas
+              count={60}
+              rgb="0,212,255"
+              connectDist={140}
+              speed={0.2}
+              className="opacity-50"
+            />
+            {/* Cyan top sweep */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[60%] pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 80% 90% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%)",
+              }}
+            />
+            {/* Corner vignette */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4,6,8,0.55) 100%)",
+              }}
+            />
+          </>
         )}
 
         {/* Static base when media is present */}
