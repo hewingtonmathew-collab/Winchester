@@ -1064,6 +1064,11 @@
   75%       { border-top-color: rgba(0,212,255,0.60); border-left-color: rgba(168,232,255,0.25); }
 }
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

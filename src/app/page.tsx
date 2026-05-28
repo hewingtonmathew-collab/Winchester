@@ -14,6 +14,12 @@ import {
   Calendar,
   CheckCircle2,
   Quote,
+  FileCheck,
+  ShieldAlert,
+  UserSearch,
+  Wand2,
+  Archive,
+  Layers,
 } from "lucide-react";
 
 import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
@@ -25,8 +31,11 @@ import EvidenceStream from "@/components/ui/EvidenceStream";
 import CTASection from "@/components/ui/CTASection";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import CountUp from "@/components/ui/CountUp";
+import ToolModuleCard from "@/components/ui/ToolModuleCard";
+import FAQAccordion from "@/components/ui/FAQAccordion";
 
 import { services } from "@/data/services";
+import { platformModules } from "@/data/platform";
 
 export const metadata: Metadata = {
   title: "Digital Safeguarding Intelligence for Schools | SafeShield",
@@ -146,6 +155,27 @@ const howItWorks = [
     description:
       "Ongoing oversight, automatic policy updates and an immutable evidence trail mean you are ready whenever inspectors arrive.",
   },
+];
+
+const platformIcons: Record<string, React.ReactNode> = {
+  "policy-checker": <FileCheck size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "risk-register": <ShieldAlert size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "sar-planner": <UserSearch size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "dpia-wizard": <Wand2 size={20} strokeWidth={1.5} aria-hidden="true" />,
+  "evidence-audit": <Archive size={20} strokeWidth={1.5} aria-hidden="true" />,
+};
+
+const marqueeItems = [
+  { label: "KCSIE 2024", sub: "Keeping Children Safe" },
+  { label: "UK GDPR", sub: "Data Protection Act 2018" },
+  { label: "NCSC Aligned", sub: "Cyber Essentials" },
+  { label: "Working Together 2023", sub: "Statutory Safeguarding" },
+  { label: "ISO 27001", sub: "Information Security" },
+  { label: "OFSTED EIF", sub: "Education Inspection" },
+  { label: "Prevent Duty", sub: "Counter-Terrorism" },
+  { label: "SEND CoP 2015", sub: "EHCP & Inclusion" },
+  { label: "Part 1 Online Safety", sub: "Filtering & Monitoring" },
+  { label: "Equality Act 2010", sub: "Protected Characteristics" },
 ];
 
 export default function HomePage() {
@@ -373,6 +403,50 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── FRAMEWORK MARQUEE ── */}
+      <div
+        className="w-full py-5 relative overflow-hidden"
+        aria-hidden="true"
+        style={{
+          background: "rgba(4,6,8,0.99)",
+          borderBottom: "1px solid rgba(255,255,255,0.04)",
+        }}
+      >
+        {/* Left fade mask */}
+        <div
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 z-10"
+          style={{ background: "linear-gradient(90deg, rgba(4,6,8,0.99) 30%, transparent)" }}
+        />
+        {/* Right fade mask */}
+        <div
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 z-10"
+          style={{ background: "linear-gradient(270deg, rgba(4,6,8,0.99) 30%, transparent)" }}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            width: "max-content",
+            animation: "marquee 38s linear infinite",
+          }}
+        >
+          {[...marqueeItems, ...marqueeItems].map(({ label, sub }, i) => (
+            <div key={i} className="flex items-center gap-3 shrink-0 px-7">
+              <span
+                className="h-1 w-1 rounded-full shrink-0"
+                style={{ background: "rgba(0,212,255,0.45)" }}
+              />
+              <span className="text-[11px] font-bold tracking-[0.13em] uppercase text-on-surface/40 whitespace-nowrap">
+                {label}
+              </span>
+              <span className="hidden sm:inline text-[10px] text-on-surface-variant/22 whitespace-nowrap">
+                {sub}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── KEY METRICS STRIP ── */}
       <section
@@ -811,6 +885,138 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── PLATFORM TOOLS ── */}
+      <section className="py-28 relative overflow-hidden" aria-labelledby="platform-heading">
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="absolute inset-0 bg-background" />
+          <div
+            className="absolute inset-0 opacity-50"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,212,255,0.12) 1px, transparent 1px), linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px)",
+              backgroundSize: "80px 80px, 80px 80px, 80px 80px",
+            }}
+          />
+          <div
+            className="absolute left-0 top-0 w-[700px] h-[500px]"
+            style={{ background: "radial-gradient(ellipse at 0% 0%, rgba(139,92,246,0.07) 0%, transparent 65%)" }}
+          />
+          <div
+            className="absolute right-0 bottom-0 w-[600px] h-[400px]"
+            style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(0,212,255,0.06) 0%, transparent 65%)" }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <ScrollReveal>
+            <div className="mb-14 reveal">
+              <p className="eyebrow mb-4">The Platform</p>
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+                <h2
+                  id="platform-heading"
+                  className="text-on-surface max-w-xl text-balance"
+                  style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.07 }}
+                >
+                  Five tools.{" "}
+                  <span
+                    style={{
+                      background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    One platform.
+                  </span>
+                </h2>
+                <Link
+                  href="/platform/tools"
+                  className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-primary-tint transition-colors group shrink-0"
+                >
+                  <Layers size={15} aria-hidden="true" />
+                  View all platform tools
+                  <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform duration-200 motion-reduce:translate-x-0" aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Bento: first tool featured (2-col span), then 2+2 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {/* Featured: Policy Checker */}
+              <div className="md:col-span-2 lg:col-span-2 reveal reveal-delay-1">
+                <ToolModuleCard
+                  title={platformModules[0].title}
+                  tagline={platformModules[0].tagline}
+                  description={platformModules[0].description}
+                  icon={platformIcons[platformModules[0].slug]}
+                  href={platformModules[0].href}
+                  status={platformModules[0].status}
+                  colour={platformModules[0].colour}
+                  featured
+                  metrics={[
+                    { label: "KCSIE clauses", value: "98%" },
+                    { label: "Avg review time", value: "< 2 hrs" },
+                    { label: "Reports generated", value: "1,200+" },
+                  ]}
+                />
+              </div>
+
+              {/* Risk Register */}
+              <div className="reveal reveal-delay-2">
+                <ToolModuleCard
+                  title={platformModules[1].title}
+                  tagline={platformModules[1].tagline}
+                  description={platformModules[1].description}
+                  icon={platformIcons[platformModules[1].slug]}
+                  href={platformModules[1].href}
+                  status={platformModules[1].status}
+                  colour={platformModules[1].colour}
+                />
+              </div>
+
+              {/* SAR Planner */}
+              <div className="reveal reveal-delay-3">
+                <ToolModuleCard
+                  title={platformModules[2].title}
+                  tagline={platformModules[2].tagline}
+                  description={platformModules[2].description}
+                  icon={platformIcons[platformModules[2].slug]}
+                  href={platformModules[2].href}
+                  status={platformModules[2].status}
+                  colour={platformModules[2].colour}
+                />
+              </div>
+
+              {/* DPIA Wizard */}
+              <div className="reveal reveal-delay-4">
+                <ToolModuleCard
+                  title={platformModules[3].title}
+                  tagline={platformModules[3].tagline}
+                  description={platformModules[3].description}
+                  icon={platformIcons[platformModules[3].slug]}
+                  href={platformModules[3].href}
+                  status={platformModules[3].status}
+                  colour={platformModules[3].colour}
+                />
+              </div>
+
+              {/* Evidence & Audit */}
+              <div className="reveal reveal-delay-5">
+                <ToolModuleCard
+                  title={platformModules[4].title}
+                  tagline={platformModules[4].tagline}
+                  description={platformModules[4].description}
+                  icon={platformIcons[platformModules[4].slug]}
+                  href={platformModules[4].href}
+                  status={platformModules[4].status}
+                  colour={platformModules[4].colour}
+                />
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* ── TESTIMONIAL ── */}
       <section className="py-24 relative overflow-hidden" aria-label="Customer testimonial">
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
@@ -966,6 +1172,58 @@ export default function HomePage() {
               <Link href="/book-review" className="btn-primary shrink-0 text-sm">
                 Book a Review
               </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section
+        className="py-28 relative overflow-hidden glass-panel border-y border-white/[0.06]"
+        aria-labelledby="faq-heading"
+      >
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40"
+          aria-hidden="true"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(0,212,255,0.10) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 -top-40 -translate-x-1/2 w-[700px] h-[500px] rounded-full"
+          style={{
+            background: "radial-gradient(ellipse, rgba(0,212,255,0.06) 0%, transparent 65%)",
+            filter: "blur(60px)",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <ScrollReveal>
+            <div className="mb-14 text-center reveal">
+              <p className="eyebrow mb-4 justify-center">Common Questions</p>
+              <h2
+                id="faq-heading"
+                className="text-on-surface text-balance"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.07 }}
+              >
+                Everything you need{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  to know.
+                </span>
+              </h2>
+            </div>
+
+            <div className="reveal">
+              <FAQAccordion />
             </div>
           </ScrollReveal>
         </div>
