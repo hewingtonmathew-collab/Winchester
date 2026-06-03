@@ -48,7 +48,12 @@ const badgeClass = {
   neutral: "badge-neutral",
 } as const;
 
-function renderTitle(title: string, highlight?: string, palRgb = "0,212,255") {
+function renderTitle(
+  title: string,
+  highlight?: string,
+  palRgb = "0,212,255",
+  palGradient = "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)"
+) {
   if (!highlight || !title.includes(highlight)) return <span>{title}</span>;
   const [before, ...rest] = title.split(highlight);
   return (
@@ -56,8 +61,11 @@ function renderTitle(title: string, highlight?: string, palRgb = "0,212,255") {
       {before}
       <span
         style={{
-          color: `rgb(${palRgb})`,
-          textShadow: `0 0 20px rgba(${palRgb},0.55), 0 0 60px rgba(${palRgb},0.20)`,
+          background: palGradient,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          filter: `drop-shadow(0 0 24px rgba(${palRgb},0.5))`,
         }}
       >
         {highlight}
@@ -68,11 +76,11 @@ function renderTitle(title: string, highlight?: string, palRgb = "0,212,255") {
 }
 
 const paletteMap = {
-  cyan:   { rgb: "0,212,255",   particle: "0,212,255",   glow: "rgba(0,212,255,0.07)",   sweep: "rgba(0,212,255,0.07)" },
-  green:  { rgb: "74,222,128",  particle: "74,222,128",  glow: "rgba(74,222,128,0.07)",  sweep: "rgba(74,222,128,0.06)" },
-  amber:  { rgb: "251,191,36",  particle: "251,191,36",  glow: "rgba(251,191,36,0.06)",  sweep: "rgba(251,191,36,0.05)" },
-  violet: { rgb: "167,139,250", particle: "167,139,250", glow: "rgba(167,139,250,0.07)", sweep: "rgba(167,139,250,0.06)" },
-  rose:   { rgb: "251,113,133", particle: "251,113,133", glow: "rgba(251,113,133,0.06)", sweep: "rgba(251,113,133,0.05)" },
+  cyan:   { rgb: "0,212,255",   particle: "0,212,255",   glow: "rgba(0,212,255,0.07)",   sweep: "rgba(0,212,255,0.07)",   gradient: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)" },
+  green:  { rgb: "74,222,128",  particle: "74,222,128",  glow: "rgba(74,222,128,0.07)",  sweep: "rgba(74,222,128,0.06)",  gradient: "linear-gradient(130deg, #4ade80 0%, #86efac 50%, #ffffff 100%)" },
+  amber:  { rgb: "251,191,36",  particle: "251,191,36",  glow: "rgba(251,191,36,0.06)",  sweep: "rgba(251,191,36,0.05)",  gradient: "linear-gradient(130deg, #fbbf24 0%, #fde68a 50%, #ffffff 100%)" },
+  violet: { rgb: "167,139,250", particle: "167,139,250", glow: "rgba(167,139,250,0.07)", sweep: "rgba(167,139,250,0.06)", gradient: "linear-gradient(130deg, #a78bfa 0%, #c4b5fd 50%, #ffffff 100%)" },
+  rose:   { rgb: "251,113,133", particle: "251,113,133", glow: "rgba(251,113,133,0.06)", sweep: "rgba(251,113,133,0.05)", gradient: "linear-gradient(130deg, #fb7185 0%, #fda4af 50%, #ffffff 100%)" },
 } as const;
 
 export default function PageHero({
@@ -232,6 +240,7 @@ export default function PageHero({
               size="xl"
               palette={palette}
               palRgb={pal.rgb}
+              palGradient={pal.gradient}
             />
           </div>
         ) : isCentered ? (
@@ -250,6 +259,7 @@ export default function PageHero({
               size="lg"
               palette={palette}
               palRgb={pal.rgb}
+              palGradient={pal.gradient}
             />
           </div>
         ) : (
@@ -268,6 +278,7 @@ export default function PageHero({
                 size="lg"
                 palette={palette}
                 palRgb={pal.rgb}
+                palGradient={pal.gradient}
               />
             </div>
             {children && (
@@ -313,6 +324,7 @@ interface TextStackProps {
   size?: "lg" | "xl";
   palette?: PageHeroProps["palette"];
   palRgb?: string;
+  palGradient?: string;
 }
 
 function HeroTextStack({
@@ -327,6 +339,7 @@ function HeroTextStack({
   centered,
   size = "lg",
   palRgb = "0,212,255",
+  palGradient = "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
 }: TextStackProps) {
   return (
     <>
@@ -355,13 +368,14 @@ function HeroTextStack({
       {/* Title */}
       <h1
         className={cn(
-          "font-bold text-on-surface text-balance leading-[1.08]",
+          "font-black text-on-surface text-balance leading-[1.05]",
           size === "xl"
-            ? "text-[clamp(2.5rem,6vw,4.5rem)]"
-            : "text-[clamp(2rem,4.5vw,3.5rem)]"
+            ? "text-[clamp(2.8rem,6.5vw,5rem)]"
+            : "text-[clamp(2.2rem,5vw,4rem)]"
         )}
+        style={{ letterSpacing: "-0.035em" }}
       >
-        {renderTitle(title, titleHighlight, palRgb)}
+        {renderTitle(title, titleHighlight, palRgb, palGradient)}
       </h1>
 
       {/* Description */}

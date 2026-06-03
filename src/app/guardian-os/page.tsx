@@ -6,6 +6,8 @@ import GuardianCommandVisual from "@/components/ui/GuardianCommandVisual";
 import FrameworkPillarCard from "@/components/ui/FrameworkPillarCard";
 import CTASection from "@/components/ui/CTASection";
 import GlassPanel from "@/components/ui/GlassPanel";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import CountUp from "@/components/ui/CountUp";
 
 import { frameworkPillars, frameworkStats } from "@/data/framework";
 
@@ -23,6 +25,13 @@ const pillarIcons: Record<string, React.ReactNode> = {
   filtering: <Eye size={22} strokeWidth={1.5} aria-hidden="true" />,
   governance: <Landmark size={22} strokeWidth={1.5} aria-hidden="true" />,
 };
+
+const statAccentColours = [
+  "from-cyan-400/60 via-cyan-300/30 to-transparent",
+  "from-green-400/60 via-green-300/30 to-transparent",
+  "from-cyan-400/60 via-cyan-300/30 to-transparent",
+  "from-violet-400/60 via-violet-300/30 to-transparent",
+];
 
 const howItWorksItems = [
   {
@@ -76,19 +85,32 @@ export default function GuardianOSPage() {
         aria-label="Framework statistics"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {frameworkStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="glass-panel rounded-xl p-6 flex flex-col gap-2 text-center"
-              >
-                <span className="metric-number text-4xl font-black text-primary text-glow">
-                  {stat.value}
-                </span>
-                <span className="text-body-sm text-on-surface-variant">{stat.label}</span>
-              </div>
-            ))}
-          </div>
+          <ScrollReveal>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 ring-1 ring-white/[0.06] rounded-2xl p-1">
+              {frameworkStats.map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className={`reveal reveal-delay-${i + 1} glass-panel rounded-xl p-6 flex flex-col gap-2 text-center relative overflow-hidden`}
+                >
+                  {/* Top accent line */}
+                  <div
+                    className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${statAccentColours[i]}`}
+                    aria-hidden="true"
+                  />
+                  <span className={`metric-number text-4xl font-black ${
+                    i === 0 ? "text-cyan-300" : i === 1 ? "text-green-300" : i === 2 ? "text-cyan-300" : "text-violet-300"
+                  }`}>
+                    {stat.value === "7" ? (
+                      <CountUp end={7} duration={1600} />
+                    ) : (
+                      stat.value
+                    )}
+                  </span>
+                  <span className="text-body-sm text-on-surface-variant">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -122,7 +144,12 @@ export default function GuardianOSPage() {
               className="text-display-md font-bold text-on-surface text-balance max-w-2xl"
             >
               Every critical area of UK school{" "}
-              <span className="text-primary text-glow">digital compliance</span>
+              <span style={{
+                background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>digital compliance</span>
             </h2>
             <p className="mt-4 text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
               GuardianOS organises compliance across six interconnected domains. Each domain has
@@ -131,21 +158,24 @@ export default function GuardianOSPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {frameworkPillars.map((pillar, i) => (
-              <FrameworkPillarCard
-                key={pillar.id}
-                id={pillar.id}
-                title={pillar.title}
-                description={pillar.description}
-                icon={pillarIcons[pillar.id]}
-                metrics={pillar.metrics}
-                colour={pillar.colour}
-                index={i + 1}
-                href={`/services/${pillar.id === "cyber" ? "cyber-security" : pillar.id === "privacy" ? "gdpr-dpia" : pillar.id === "governance" ? "governor-oversight" : pillar.id === "filtering" ? "filtering-monitoring" : pillar.id}`}
-              />
-            ))}
-          </div>
+          <ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {frameworkPillars.map((pillar, i) => (
+                <div key={pillar.id} className={`reveal reveal-delay-${Math.min(i + 1, 4)}`}>
+                  <FrameworkPillarCard
+                    id={pillar.id}
+                    title={pillar.title}
+                    description={pillar.description}
+                    icon={pillarIcons[pillar.id]}
+                    metrics={pillar.metrics}
+                    colour={pillar.colour}
+                    index={i + 1}
+                    href={`/services/${pillar.id === "cyber" ? "cyber-security" : pillar.id === "privacy" ? "gdpr-dpia" : pillar.id === "governance" ? "governor-oversight" : pillar.id === "filtering" ? "filtering-monitoring" : pillar.id}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -175,22 +205,25 @@ export default function GuardianOSPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {howItWorksItems.map((item) => (
-              <GlassPanel
-                key={item.title}
-                className="rounded-xl p-7 flex flex-col gap-4 relative overflow-hidden"
-                topEdgeGlow
-              >
-                <h3 className="text-headline-md font-semibold text-primary">
-                  {item.title}
-                </h3>
-                <p className="text-body-sm text-on-surface-variant leading-relaxed flex-1">
-                  {item.description}
-                </p>
-              </GlassPanel>
-            ))}
-          </div>
+          <ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {howItWorksItems.map((item, i) => (
+                <div key={item.title} className={`reveal reveal-delay-${i + 1}`}>
+                  <GlassPanel
+                    className="rounded-xl p-7 flex flex-col gap-4 relative overflow-hidden"
+                    topEdgeGlow
+                  >
+                    <h3 className="text-headline-md font-semibold text-primary">
+                      {item.title}
+                    </h3>
+                    <p className="text-body-sm text-on-surface-variant leading-relaxed flex-1">
+                      {item.description}
+                    </p>
+                  </GlassPanel>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

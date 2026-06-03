@@ -5,6 +5,7 @@ import PageHero from "@/components/ui/PageHero";
 import ServiceCard from "@/components/ui/ServiceCard";
 import CTASection from "@/components/ui/CTASection";
 import GlassPanel from "@/components/ui/GlassPanel";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 import { services } from "@/data/services";
 
@@ -91,31 +92,54 @@ export default function ServicesPage() {
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="mb-12">
-            <p className="eyebrow mb-3">All services</p>
-            <h2
-              id="all-services-heading"
-              className="text-display-md font-bold text-on-surface text-balance max-w-2xl"
-            >
-              Every compliance domain, structured and evidenced.
-            </h2>
-          </div>
+          <ScrollReveal>
+            <div className="reveal mb-12">
+              <p className="eyebrow mb-3">All services</p>
+              <h2
+                id="all-services-heading"
+                className="text-display-md font-bold text-on-surface text-balance max-w-2xl"
+              >
+                Every compliance domain, structured and evidenced.
+              </h2>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.slug}
-                title={service.title}
-                tagline={service.tagline}
-                description={service.description}
-                icon={serviceIcons[service.slug]}
-                href={service.href}
-                colour={service.colour}
-                pillars={service.pillars}
-                compact={false}
-              />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {services.map((service, i) => {
+                if (i === 0) {
+                  return (
+                    <div key={service.slug} className="md:col-span-2 lg:col-span-2 reveal reveal-delay-1">
+                      <ServiceCard
+                        title={service.title}
+                        tagline={service.tagline}
+                        description={service.description}
+                        icon={serviceIcons[service.slug]}
+                        href={service.href}
+                        colour={service.colour}
+                        pillars={service.pillars}
+                        compact={false}
+                        featured
+                      />
+                    </div>
+                  );
+                }
+                const delay = Math.min(i + 1, 5);
+                return (
+                  <div key={service.slug} className={`reveal reveal-delay-${delay}`}>
+                    <ServiceCard
+                      title={service.title}
+                      tagline={service.tagline}
+                      description={service.description}
+                      icon={serviceIcons[service.slug]}
+                      href={service.href}
+                      colour={service.colour}
+                      pillars={service.pillars}
+                      compact={false}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -134,53 +158,61 @@ export default function ServicesPage() {
           }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-14">
-            <p className="eyebrow mb-3">The process</p>
-            <h2
-              id="review-process-heading"
-              className="text-display-md font-bold text-on-surface text-balance max-w-xl"
-            >
-              How a{" "}
-              <span className="text-primary text-glow">Readiness Review</span>{" "}
-              works
-            </h2>
-          </div>
-
-          {/* Desktop: horizontal. Mobile: vertical stack */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {reviewSteps.map((step) => (
-              <GlassPanel
-                key={step.number}
-                className="relative rounded-xl p-6 overflow-hidden"
+          <ScrollReveal>
+            <div className="mb-14">
+              <p className="eyebrow mb-3">The process</p>
+              <h2
+                id="review-process-heading"
+                className="text-display-md font-bold text-on-surface text-balance max-w-xl"
               >
-                {/* Background digit */}
-                <span
-                  className="absolute top-2 right-4 text-[5.5rem] font-black leading-none pointer-events-none select-none text-primary/[0.04]"
-                  aria-hidden="true"
-                >
-                  {step.number}
-                </span>
+                How a{" "}
+                <span style={{
+                  background: "linear-gradient(130deg, #3cd7ff 0%, #a8e8ff 50%, #ffffff 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}>Readiness Review</span>{" "}
+                works
+              </h2>
+            </div>
 
-                {/* Top edge glow */}
-                <div
-                  className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/40 to-transparent"
-                  aria-hidden="true"
-                />
+            {/* Desktop: horizontal. Mobile: vertical stack */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {reviewSteps.map((step, i) => (
+                <div key={step.number} className={`reveal reveal-delay-${i + 1}`}>
+                  <GlassPanel
+                    className="relative rounded-xl p-6 overflow-hidden"
+                  >
+                    {/* Background digit */}
+                    <span
+                      className="absolute top-2 right-4 text-[5.5rem] font-black leading-none pointer-events-none select-none text-primary/[0.04]"
+                      aria-hidden="true"
+                    >
+                      {step.number}
+                    </span>
 
-                <div className="relative flex flex-col gap-4 h-full">
-                  <span className="text-3xl font-black text-primary/30 metric-number leading-none">
-                    {step.number}
-                  </span>
-                  <h3 className="text-headline-md font-semibold text-on-surface">
-                    {step.title}
-                  </h3>
-                  <p className="text-body-sm text-on-surface-variant leading-relaxed flex-1">
-                    {step.description}
-                  </p>
+                    {/* Top edge glow */}
+                    <div
+                      className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-primary-container/40 to-transparent"
+                      aria-hidden="true"
+                    />
+
+                    <div className="relative flex flex-col gap-4 h-full">
+                      <span className="text-3xl font-black text-primary/30 metric-number leading-none">
+                        {step.number}
+                      </span>
+                      <h3 className="text-headline-md font-semibold text-on-surface">
+                        {step.title}
+                      </h3>
+                      <p className="text-body-sm text-on-surface-variant leading-relaxed flex-1">
+                        {step.description}
+                      </p>
+                    </div>
+                  </GlassPanel>
                 </div>
-              </GlassPanel>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
