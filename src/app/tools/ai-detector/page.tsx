@@ -6,7 +6,7 @@ import SectionDivider from "@/components/ui/SectionDivider";
 import DetectorForm from "@/components/forms/DetectorForm";
 
 export const metadata: Metadata = {
-  title: "AI Content Detector | Winchester Consultancy",
+  title: "AI Content Detector | SafeShield",
   description:
     "Free tool to detect AI-generated content. Useful for schools checking student work and compliance teams reviewing documents.",
 };
@@ -146,7 +146,7 @@ export default function AiDetectorPage() {
             processes — is increasingly expected by inspectors and regulators.
           </p>
           <p className="font-inter text-[#A7B1BE] text-base leading-relaxed mb-8">
-            Winchester Consultancy supports schools and trusts in developing robust AI
+            SafeShield supports schools and trusts in developing robust AI
             governance frameworks — from policy development and risk assessment to staff
             capability building and board-level briefings.
           </p>

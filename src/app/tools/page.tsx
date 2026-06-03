@@ -5,7 +5,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionDivider from "@/components/ui/SectionDivider";
 
 export const metadata: Metadata = {
-  title: "Free Tools | Winchester Consultancy",
+  title: "Free Tools | SafeShield",
   description:
     "Free practical tools for school leaders — AI content detector and more.",
 };

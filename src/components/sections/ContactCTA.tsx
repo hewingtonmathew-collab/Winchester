@@ -27,7 +27,7 @@ export default function ContactCTA() {
             </h2>
             <p className="font-inter text-[#E6E9ED] text-base leading-relaxed mb-10 max-w-xl mx-auto reveal reveal-delay-2">
               Whether you have a specific compliance challenge or want to understand how
-              Winchester Consultancy can support your school or trust, we&apos;d love to
+              SafeShield can support your school or trust, we&apos;d love to
               hear from you.
             </p>
 

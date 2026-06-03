@@ -3,8 +3,8 @@ import SectionDivider from "@/components/ui/SectionDivider";
 import GlassCard from "@/components/ui/GlassCard";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | Winchester Consultancy",
-  description: "Terms and conditions for using the Winchester Consultancy website.",
+  title: "Terms of Use | SafeShield",
+  description: "Terms and conditions for using the SafeShield website.",
   robots: { index: true, follow: true },
 };
 
@@ -33,7 +33,7 @@ export default function TermsPage() {
                 1. Acceptance of Terms
               </h2>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
-                By accessing or using the Winchester Consultancy website at{" "}
+                By accessing or using the SafeShield website at{" "}
                 <span className="text-white font-medium">winchesterconsultancy.co.uk</span>{" "}
                 (the &quot;Website&quot;), you agree to be bound by these Terms of Use. Please read
                 them carefully before using the Website.
@@ -99,7 +99,7 @@ export default function TermsPage() {
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
                 All content on this Website — including but not limited to text, graphics, logos,
                 icons, images, data compilations, page layouts, and software — is the property of
-                Winchester Consultancy Ltd and is protected by the copyright laws of England and
+                SafeShield Ltd and is protected by the copyright laws of England and
                 Wales and applicable international intellectual property law.
               </p>
               <div
@@ -108,9 +108,9 @@ export default function TermsPage() {
               >
                 <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                   <span className="text-[#C9A84C] font-medium">Proprietary framework notice.</span>{" "}
-                  The Winchester Digital Assurance Framework, including its methodology,
-                  terminology, structure, and associated materials, is proprietary to Winchester
-                  Consultancy Ltd. All rights are reserved.
+                  The GuardianOS Framework, including its methodology,
+                  terminology, structure, and associated materials, is proprietary to SafeShield
+                  Ltd. All rights are reserved.
                 </p>
               </div>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
@@ -121,8 +121,8 @@ export default function TermsPage() {
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                 You may print or download content for your own personal, non-commercial
                 reference only, provided that no copyright or other proprietary notices are
-                removed. Any other use requires written authorisation from Winchester
-                Consultancy Ltd.
+                removed. Any other use requires written authorisation from SafeShield
+                Ltd.
               </p>
             </GlassCard>
 
@@ -150,7 +150,7 @@ export default function TermsPage() {
                 <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                   <span className="text-white font-medium">For formal advisory work:</span>{" "}
                   If you require professional compliance or consultancy advice, please engage
-                  Winchester Consultancy directly through a formal service agreement. Website
+                  SafeShield directly through a formal service agreement. Website
                   content is no substitute for a properly scoped engagement with our team.
                 </p>
               </div>
@@ -162,7 +162,7 @@ export default function TermsPage() {
                 5. Limitation of Liability
               </h2>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
-                To the fullest extent permitted by applicable law, Winchester Consultancy Ltd,
+                To the fullest extent permitted by applicable law, SafeShield Ltd,
                 its directors, employees, and agents shall not be liable for any direct,
                 indirect, incidental, special, consequential, or punitive loss or damage
                 arising from:
@@ -199,7 +199,7 @@ export default function TermsPage() {
               </h2>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
                 This Website may contain links to third-party websites operated by organisations
-                outside of Winchester Consultancy Ltd. These links are provided for your
+                outside of SafeShield Ltd. These links are provided for your
                 convenience and information only.
               </p>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
