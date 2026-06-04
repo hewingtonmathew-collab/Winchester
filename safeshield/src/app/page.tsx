@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, ArrowRight } from "lucide-react";
+import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, ArrowRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 
 const tools = [
@@ -46,6 +46,17 @@ const tools = [
     colorDim: "rgba(251,146,60,0.12)",
     colorBorder: "rgba(251,146,60,0.25)",
     badge: "Readiness",
+  },
+  {
+    icon: FileSearch,
+    title: "DPIA Wizard",
+    description:
+      "Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can print or save.",
+    href: "/tools/dpia",
+    color: "#FCD34D",
+    colorDim: "rgba(251,191,36,0.12)",
+    colorBorder: "rgba(251,191,36,0.25)",
+    badge: "Data Protection",
   },
 ];
 

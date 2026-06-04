@@ -9,6 +9,7 @@ const links = [
   { label: "Safeguarding", href: "/tools/safeguarding" },
   { label: "Governance", href: "/tools/governance" },
   { label: "AI Readiness", href: "/tools/ai-readiness" },
+  { label: "DPIA Wizard", href: "/tools/dpia" },
 ];
 
 export default function Navbar() {
