@@ -133,7 +133,7 @@ export default function OfstedChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} />
+        <Certificate meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={categories} />
         <ImprovementReport meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>

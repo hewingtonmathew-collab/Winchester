@@ -11,9 +11,10 @@ type Props = {
   ratingColor: string;
   date?: string;
   accentColor?: string;
+  areas?: string[];
 };
 
-export default function Certificate({ meta, toolName, score, rating, ratingColor, date, accentColor = "#38BDF8" }: Props) {
+export default function Certificate({ meta, toolName, score, rating, ratingColor, date, accentColor = "#38BDF8", areas }: Props) {
   const certRef = useRef<HTMLDivElement>(null);
   const today = date ?? new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const certId = `SS-${Date.now().toString(36).toUpperCase().slice(-5)}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
@@ -83,6 +84,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     <p class="recipient-name">${meta.schoolName || "School Name"}</p>
     <p class="detail-line"><span class="detail-label">Completed by: </span>${meta.staffMember || "—"}</p>
     <p class="score-line"><span class="detail-label">Assessment score: </span><span style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:3px 12px;border-radius:5px;font-weight:700">${score}% — ${rating}</span></p>
+    ${areas && areas.length > 0 ? `<p style="font-size:12px;color:#555;margin-bottom:10mm;font-family:'EB Garamond',serif;line-height:1.6"><span style="color:#888">Areas assessed: </span>${areas.join(" · ")}</p>` : ""}
     <p class="date-text">${today}</p>
   </div>
 
@@ -107,65 +109,81 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-left:9px solid transparent"></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:center;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:10px">
-        <!-- Ofsted: 3 ascending teal figures + navy wordmark -->
-        <svg viewBox="0 0 210 100" width="126" height="60" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="90" cy="19" r="7" fill="#3a9bc1"/>
-          <line x1="90" y1="26" x2="77" y2="36" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
-          <line x1="90" y1="26" x2="103" y2="36" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
-          <line x1="90" y1="36" x2="81" y2="51" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
-          <line x1="90" y1="36" x2="99" y2="51" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
-          <circle cx="134" cy="13" r="9" fill="#3a9bc1"/>
-          <line x1="134" y1="22" x2="118" y2="33" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
-          <line x1="134" y1="22" x2="150" y2="33" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
-          <line x1="134" y1="33" x2="123" y2="51" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
-          <line x1="134" y1="33" x2="145" y2="51" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
-          <circle cx="185" cy="11" r="12" fill="#3a9bc1"/>
-          <line x1="185" y1="23" x2="166" y2="37" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
-          <line x1="185" y1="23" x2="204" y2="37" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
-          <line x1="185" y1="37" x2="172" y2="57" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
-          <line x1="185" y1="37" x2="198" y2="57" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
-          <text x="2" y="97" font-family="Arial Rounded MT Bold,Arial Black,sans-serif" font-weight="900" font-size="62" fill="#1a1372">Ofsted</text>
+      <div style="display:flex;justify-content:center;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:10px">
+        <!-- Ofsted: accurate star-person figures + bold navy wordmark -->
+        <svg viewBox="0 0 240 108" width="130" height="58" xmlns="http://www.w3.org/2000/svg">
+          <!-- Figure 1 small: arms wide+slightly up, legs spread down -->
+          <ellipse cx="86" cy="17" rx="5.5" ry="6.5" fill="#3a9bc1"/>
+          <line x1="86" y1="26" x2="68" y2="21" stroke="#3a9bc1" stroke-width="5" stroke-linecap="round"/>
+          <line x1="86" y1="26" x2="104" y2="21" stroke="#3a9bc1" stroke-width="5" stroke-linecap="round"/>
+          <line x1="86" y1="26" x2="76" y2="44" stroke="#3a9bc1" stroke-width="5" stroke-linecap="round"/>
+          <line x1="86" y1="26" x2="96" y2="44" stroke="#3a9bc1" stroke-width="5" stroke-linecap="round"/>
+          <!-- Figure 2 medium -->
+          <ellipse cx="132" cy="11" rx="7" ry="8.5" fill="#3a9bc1"/>
+          <line x1="132" y1="22" x2="109" y2="16" stroke="#3a9bc1" stroke-width="6.5" stroke-linecap="round"/>
+          <line x1="132" y1="22" x2="155" y2="16" stroke="#3a9bc1" stroke-width="6.5" stroke-linecap="round"/>
+          <line x1="132" y1="22" x2="119" y2="44" stroke="#3a9bc1" stroke-width="6.5" stroke-linecap="round"/>
+          <line x1="132" y1="22" x2="145" y2="44" stroke="#3a9bc1" stroke-width="6.5" stroke-linecap="round"/>
+          <!-- Figure 3 large -->
+          <ellipse cx="188" cy="8" rx="9.5" ry="11" fill="#3a9bc1"/>
+          <line x1="188" y1="22" x2="160" y2="14" stroke="#3a9bc1" stroke-width="8.5" stroke-linecap="round"/>
+          <line x1="188" y1="22" x2="216" y2="14" stroke="#3a9bc1" stroke-width="8.5" stroke-linecap="round"/>
+          <line x1="188" y1="22" x2="172" y2="48" stroke="#3a9bc1" stroke-width="8.5" stroke-linecap="round"/>
+          <line x1="188" y1="22" x2="204" y2="48" stroke="#3a9bc1" stroke-width="8.5" stroke-linecap="round"/>
+          <!-- Ofsted wordmark -->
+          <text x="2" y="104" font-family="Arial Rounded MT Bold,Arial Black,sans-serif" font-weight="900" font-size="64" fill="#1a1372">Ofsted</text>
         </svg>
         <!-- DfE: coat of arms + vertical rule + text -->
         <div style="display:flex;align-items:center;gap:10px">
-          <svg viewBox="0 0 46 62" width="32" height="43" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="20" width="30" height="7" rx="1" fill="#111"/>
-            <line x1="13" y1="20" x2="11" y2="11" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="23" y1="20" x2="23" y2="8" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="33" y1="20" x2="35" y2="11" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="11" cy="10" r="3.5" fill="#111"/>
-            <circle cx="23" cy="7" r="4" fill="#111"/>
-            <circle cx="35" cy="10" r="3.5" fill="#111"/>
-            <line x1="23" y1="3" x2="23" y2="5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
-            <line x1="21.5" y1="4" x2="24.5" y2="4" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
-            <path d="M8 29 L38 29 L38 50 Q38 59 23 62 Q8 59 8 50 Z" fill="none" stroke="#111" stroke-width="1.8"/>
-            <line x1="23" y1="29" x2="23" y2="62" stroke="#111" stroke-width="1.1"/>
-            <line x1="8" y1="45" x2="38" y2="45" stroke="#111" stroke-width="1.1"/>
-            <rect x="10" y="31" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <rect x="10" y="35" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <rect x="10" y="39" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <path d="M26 31 C28 33 30 35 30 38 C30 41 28 43 26 44" stroke="#111" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <circle cx="27" cy="31" r="1.8" fill="#111"/>
-            <path d="M12 47 Q10 41 16 41 L16 59" stroke="#111" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-            <line x1="12" y1="59" x2="16" y2="59" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
-            <rect x="25" y="47" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <rect x="25" y="51" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <rect x="25" y="55" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-            <path d="M2 44 C2 40 5 38 6 41 L6 50 C5 53 2 51 2 47 Z" fill="#111" opacity="0.55"/>
-            <path d="M44 44 C44 40 41 38 40 41 L40 50 C41 53 44 51 44 47 Z" fill="#111" opacity="0.55"/>
-            <line x1="40" y1="38" x2="43" y2="34" stroke="#111" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+          <svg viewBox="0 0 44 58" width="30" height="40" xmlns="http://www.w3.org/2000/svg">
+            <!-- Crown base band -->
+            <rect x="7" y="19" width="30" height="6" rx="1" fill="#111"/>
+            <!-- Crown points -->
+            <line x1="12" y1="19" x2="10" y2="10" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="22" y1="19" x2="22" y2="7" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="32" y1="19" x2="34" y2="10" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Orbs on points -->
+            <circle cx="10" cy="9" r="3.2" fill="#111"/>
+            <circle cx="22" cy="6" r="3.8" fill="#111"/>
+            <circle cx="34" cy="9" r="3.2" fill="#111"/>
+            <!-- Cross on centre orb -->
+            <line x1="22" y1="3" x2="22" y2="5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="20.5" y1="4" x2="23.5" y2="4" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- Shield -->
+            <path d="M7 27 L37 27 L37 48 Q37 57 22 60 Q7 57 7 48 Z" fill="#fff" stroke="#111" stroke-width="1.8"/>
+            <!-- Vertical + horizontal dividers -->
+            <line x1="22" y1="27" x2="22" y2="60" stroke="#111" stroke-width="1"/>
+            <line x1="7" y1="43" x2="37" y2="43" stroke="#111" stroke-width="1"/>
+            <!-- Q1 top-left: 3 horizontal lion bars -->
+            <rect x="9" y="29" width="10" height="2" rx="0.5" fill="#111"/>
+            <rect x="9" y="33" width="10" height="2" rx="0.5" fill="#111"/>
+            <rect x="9" y="37" width="10" height="2" rx="0.5" fill="#111"/>
+            <!-- Q2 top-right: rampant lion (diagonal curve + head) -->
+            <path d="M25 29 C27 31 29 34 28 38 C27 41 25 42 24 43" stroke="#111" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="25.5" cy="29.5" r="1.8" fill="#111"/>
+            <!-- Q3 bottom-left: harp shape -->
+            <path d="M11 45 Q9 39 15 39 L15 57" stroke="#111" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <line x1="11" y1="57" x2="15" y2="57" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Q4 bottom-right: 3 lion bars -->
+            <rect x="24" y="45" width="10" height="2" rx="0.5" fill="#111"/>
+            <rect x="24" y="49" width="10" height="2" rx="0.5" fill="#111"/>
+            <rect x="24" y="53" width="10" height="2" rx="0.5" fill="#111"/>
+            <!-- Lion supporter left -->
+            <path d="M1 42 C1 38 4 36 5 39 L5 49 C4 52 1 50 1 46 Z" fill="#111" opacity="0.5"/>
+            <!-- Unicorn supporter right + horn -->
+            <path d="M43 42 C43 38 40 36 39 39 L39 49 C40 52 43 50 43 46 Z" fill="#111" opacity="0.5"/>
+            <line x1="39" y1="37" x2="42" y2="32" stroke="#111" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
           </svg>
           <div style="width:1px;height:40px;background:#111"></div>
           <div style="display:flex;flex-direction:column">
-            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.35;white-space:nowrap">Department</span>
-            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.35;white-space:nowrap">for Education</span>
+            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.4;white-space:nowrap">Department</span>
+            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.4;white-space:nowrap">for Education</span>
           </div>
         </div>
-        <!-- ICO: bold navy ico. + subtitle -->
+        <!-- ICO: bold navy wordmark + subtitle -->
         <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-          <span style="font-size:34px;font-weight:900;color:#003078;font-family:Arial Black,Arial,sans-serif;line-height:1;letter-spacing:-1px">ico.</span>
-          <span style="font-size:7.5px;color:#003078;font-family:Arial,sans-serif;line-height:1.25;max-width:90px">Information Commissioner's Office</span>
+          <span style="font-size:36px;font-weight:900;color:#003078;font-family:Arial Black,Arial,sans-serif;line-height:1;letter-spacing:-1.5px">ico.</span>
+          <span style="font-size:7px;color:#003078;font-family:Arial,sans-serif;line-height:1.3;max-width:85px">Information Commissioner's Office</span>
         </div>
       </div>
       <div style="text-align:right"><p class="cert-ref">${certId}</p></div>
@@ -221,10 +239,15 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
         <p style={{ fontSize: 13, color: "#444", marginBottom: 6 }}>
           <span style={{ color: "#888" }}>Completed by: </span>{meta.staffMember || "—"}
         </p>
-        <p style={{ fontSize: 13, color: "#444", marginBottom: 24, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <p style={{ fontSize: 13, color: "#444", marginBottom: areas && areas.length > 0 ? 8 : 24, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <span style={{ color: "#888" }}>Assessment score:</span>
           <span style={{ color: ratingColor, background: "#000", border: `2px solid ${ratingColor}`, padding: "3px 12px", borderRadius: 5, fontWeight: 700, fontSize: 13 }}>{score}% — {rating}</span>
         </p>
+        {areas && areas.length > 0 && (
+          <p style={{ fontSize: 12, color: "#555", marginBottom: 24, lineHeight: 1.6 }}>
+            <span style={{ color: "#888" }}>Areas assessed: </span>{areas.join(" · ")}
+          </p>
+        )}
         <p style={{ fontSize: 13, color: "#1a1a1a", marginBottom: 32 }}>{today}</p>
 
         {/* Signature */}
@@ -254,81 +277,68 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           </div>
 
           {/* Compliance logos */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 28, flexWrap: "wrap", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 32, flexWrap: "wrap", marginBottom: 12 }}>
 
-            {/* Ofsted — accurate: 3 ascending teal star-person figures + bold navy wordmark */}
-            <svg viewBox="0 0 210 100" style={{ width: 126, height: 60 }} xmlns="http://www.w3.org/2000/svg">
-              {/* Figure 1 — small */}
-              <circle cx="90" cy="19" r="7" fill="#3a9bc1"/>
-              <line x1="90" y1="26" x2="77" y2="36" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
-              <line x1="90" y1="26" x2="103" y2="36" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
-              <line x1="90" y1="36" x2="81" y2="51" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
-              <line x1="90" y1="36" x2="99" y2="51" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
-              {/* Figure 2 — medium */}
-              <circle cx="134" cy="13" r="9" fill="#3a9bc1"/>
-              <line x1="134" y1="22" x2="118" y2="33" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
-              <line x1="134" y1="22" x2="150" y2="33" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
-              <line x1="134" y1="33" x2="123" y2="51" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
-              <line x1="134" y1="33" x2="145" y2="51" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
-              {/* Figure 3 — large */}
-              <circle cx="185" cy="11" r="12" fill="#3a9bc1"/>
-              <line x1="185" y1="23" x2="166" y2="37" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
-              <line x1="185" y1="23" x2="204" y2="37" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
-              <line x1="185" y1="37" x2="172" y2="57" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
-              <line x1="185" y1="37" x2="198" y2="57" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
-              {/* "Ofsted" wordmark */}
-              <text x="2" y="97" fontFamily="Arial Rounded MT Bold, Arial Black, sans-serif" fontWeight="900" fontSize="62" fill="#1a1372">Ofsted</text>
+            {/* Ofsted — star-person figures wide arms + bold navy wordmark */}
+            <svg viewBox="0 0 240 108" style={{ width: 130, height: 58 }} xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="86" cy="17" rx="5.5" ry="6.5" fill="#3a9bc1"/>
+              <line x1="86" y1="26" x2="68" y2="21" stroke="#3a9bc1" strokeWidth="5" strokeLinecap="round"/>
+              <line x1="86" y1="26" x2="104" y2="21" stroke="#3a9bc1" strokeWidth="5" strokeLinecap="round"/>
+              <line x1="86" y1="26" x2="76" y2="44" stroke="#3a9bc1" strokeWidth="5" strokeLinecap="round"/>
+              <line x1="86" y1="26" x2="96" y2="44" stroke="#3a9bc1" strokeWidth="5" strokeLinecap="round"/>
+              <ellipse cx="132" cy="11" rx="7" ry="8.5" fill="#3a9bc1"/>
+              <line x1="132" y1="22" x2="109" y2="16" stroke="#3a9bc1" strokeWidth="6.5" strokeLinecap="round"/>
+              <line x1="132" y1="22" x2="155" y2="16" stroke="#3a9bc1" strokeWidth="6.5" strokeLinecap="round"/>
+              <line x1="132" y1="22" x2="119" y2="44" stroke="#3a9bc1" strokeWidth="6.5" strokeLinecap="round"/>
+              <line x1="132" y1="22" x2="145" y2="44" stroke="#3a9bc1" strokeWidth="6.5" strokeLinecap="round"/>
+              <ellipse cx="188" cy="8" rx="9.5" ry="11" fill="#3a9bc1"/>
+              <line x1="188" y1="22" x2="160" y2="14" stroke="#3a9bc1" strokeWidth="8.5" strokeLinecap="round"/>
+              <line x1="188" y1="22" x2="216" y2="14" stroke="#3a9bc1" strokeWidth="8.5" strokeLinecap="round"/>
+              <line x1="188" y1="22" x2="172" y2="48" stroke="#3a9bc1" strokeWidth="8.5" strokeLinecap="round"/>
+              <line x1="188" y1="22" x2="204" y2="48" stroke="#3a9bc1" strokeWidth="8.5" strokeLinecap="round"/>
+              <text x="2" y="104" fontFamily="Arial Rounded MT Bold, Arial Black, sans-serif" fontWeight="900" fontSize="64" fill="#1a1372">Ofsted</text>
             </svg>
 
-            {/* DfE — coat of arms + vertical rule + "Department for Education" */}
+            {/* DfE — coat of arms + vertical rule + text */}
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <svg viewBox="0 0 46 62" style={{ width: 32, height: 43 }} xmlns="http://www.w3.org/2000/svg">
-                {/* Crown — arched band with 3 points and orb on centre */}
-                <rect x="8" y="20" width="30" height="7" rx="1" fill="#111"/>
-                <line x1="13" y1="20" x2="11" y2="11" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
-                <line x1="23" y1="20" x2="23" y2="8" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
-                <line x1="33" y1="20" x2="35" y2="11" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
-                <circle cx="11" cy="10" r="3.5" fill="#111"/>
-                <circle cx="23" cy="7" r="4" fill="#111"/>
-                <circle cx="35" cy="10" r="3.5" fill="#111"/>
-                {/* Vertical cross on orb */}
-                <line x1="23" y1="3" x2="23" y2="5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/>
-                <line x1="21.5" y1="4" x2="24.5" y2="4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/>
-                {/* Shield body */}
-                <path d="M8 29 L38 29 L38 50 Q38 59 23 62 Q8 59 8 50 Z" fill="none" stroke="#111" strokeWidth="1.8"/>
-                {/* Quarter divisions */}
-                <line x1="23" y1="29" x2="23" y2="62" stroke="#111" strokeWidth="1.1"/>
-                <line x1="8" y1="45" x2="38" y2="45" stroke="#111" strokeWidth="1.1"/>
-                {/* Q1 — three lions (3 horizontal bars) */}
-                <rect x="10" y="31" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                <rect x="10" y="35" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                <rect x="10" y="39" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                {/* Q2 — rampant lion diagonal */}
-                <path d="M26 31 C28 33 30 35 30 38 C30 41 28 43 26 44" stroke="#111" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                <circle cx="27" cy="31" r="1.8" fill="#111"/>
-                {/* Q3 — harp */}
-                <path d="M12 47 Q10 41 16 41 L16 59" stroke="#111" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                <line x1="12" y1="59" x2="16" y2="59" stroke="#111" strokeWidth="1.5" strokeLinecap="round"/>
-                {/* Q4 — three lions */}
-                <rect x="25" y="47" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                <rect x="25" y="51" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                <rect x="25" y="55" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
-                {/* Supporters — lion left, unicorn right (simplified) */}
-                <path d="M2 44 C2 40 5 38 6 41 L6 50 C5 53 2 51 2 47 Z" fill="#111" opacity="0.55"/>
-                <path d="M44 44 C44 40 41 38 40 41 L40 50 C41 53 44 51 44 47 Z" fill="#111" opacity="0.55"/>
-                <line x1="40" y1="38" x2="43" y2="34" stroke="#111" strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
+              <svg viewBox="0 0 44 58" style={{ width: 30, height: 40 }} xmlns="http://www.w3.org/2000/svg">
+                <rect x="7" y="19" width="30" height="6" rx="1" fill="#111"/>
+                <line x1="12" y1="19" x2="10" y2="10" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="22" y1="19" x2="22" y2="7" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="32" y1="19" x2="34" y2="10" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="10" cy="9" r="3.2" fill="#111"/>
+                <circle cx="22" cy="6" r="3.8" fill="#111"/>
+                <circle cx="34" cy="9" r="3.2" fill="#111"/>
+                <line x1="22" y1="3" x2="22" y2="5" stroke="#fff" strokeWidth="1.3" strokeLinecap="round"/>
+                <line x1="20.5" y1="4" x2="23.5" y2="4" stroke="#fff" strokeWidth="1.3" strokeLinecap="round"/>
+                <path d="M7 27 L37 27 L37 48 Q37 57 22 60 Q7 57 7 48 Z" fill="#fff" stroke="#111" strokeWidth="1.8"/>
+                <line x1="22" y1="27" x2="22" y2="60" stroke="#111" strokeWidth="1"/>
+                <line x1="7" y1="43" x2="37" y2="43" stroke="#111" strokeWidth="1"/>
+                <rect x="9" y="29" width="10" height="2" rx="0.5" fill="#111"/>
+                <rect x="9" y="33" width="10" height="2" rx="0.5" fill="#111"/>
+                <rect x="9" y="37" width="10" height="2" rx="0.5" fill="#111"/>
+                <path d="M25 29 C27 31 29 34 28 38 C27 41 25 42 24 43" stroke="#111" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                <circle cx="25.5" cy="29.5" r="1.8" fill="#111"/>
+                <path d="M11 45 Q9 39 15 39 L15 57" stroke="#111" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                <line x1="11" y1="57" x2="15" y2="57" stroke="#111" strokeWidth="1.5" strokeLinecap="round"/>
+                <rect x="24" y="45" width="10" height="2" rx="0.5" fill="#111"/>
+                <rect x="24" y="49" width="10" height="2" rx="0.5" fill="#111"/>
+                <rect x="24" y="53" width="10" height="2" rx="0.5" fill="#111"/>
+                <path d="M1 42 C1 38 4 36 5 39 L5 49 C4 52 1 50 1 46 Z" fill="#111" opacity="0.5"/>
+                <path d="M43 42 C43 38 40 36 39 39 L39 49 C40 52 43 50 43 46 Z" fill="#111" opacity="0.5"/>
+                <line x1="39" y1="37" x2="42" y2="32" stroke="#111" strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
               </svg>
               <div style={{ width: 1, height: 40, background: "#111" }} />
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.35, whiteSpace: "nowrap" }}>Department</span>
-                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.35, whiteSpace: "nowrap" }}>for Education</span>
+                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.4, whiteSpace: "nowrap" }}>Department</span>
+                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.4, whiteSpace: "nowrap" }}>for Education</span>
               </div>
             </div>
 
-            {/* ICO — bold navy "ico." + subtitle */}
+            {/* ICO — bold navy wordmark + subtitle */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-              <span style={{ fontSize: 34, fontWeight: 900, color: "#003078", fontFamily: "Arial Black, Arial, sans-serif", lineHeight: 1, letterSpacing: "-1px" }}>ico.</span>
-              <span style={{ fontSize: 7.5, color: "#003078", fontFamily: "Arial, sans-serif", lineHeight: 1.25, maxWidth: 90 }}>Information Commissioner's Office</span>
+              <span style={{ fontSize: 36, fontWeight: 900, color: "#003078", fontFamily: "Arial Black, Arial, sans-serif", lineHeight: 1, letterSpacing: "-1.5px" }}>ico.</span>
+              <span style={{ fontSize: 7, color: "#003078", fontFamily: "Arial, sans-serif", lineHeight: 1.3, maxWidth: 85 }}>Information Commissioner's Office</span>
             </div>
 
           </div>

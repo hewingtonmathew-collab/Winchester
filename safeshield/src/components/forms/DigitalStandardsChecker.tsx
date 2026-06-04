@@ -197,7 +197,7 @@ export default function DigitalStandardsChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} />
+        <Certificate meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={TABS} />
         {gaps.length > 0 && (
           <ImprovementReport meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
         )}
