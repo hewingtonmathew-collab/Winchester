@@ -82,7 +82,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     <p class="awarded-line">has been awarded to</p>
     <p class="recipient-name">${meta.schoolName || "School Name"}</p>
     <p class="detail-line"><span class="detail-label">Completed by: </span>${meta.staffMember || "—"}</p>
-    <p class="score-line"><span class="detail-label">Assessment score: </span><span style="color:${ratingColor};background:${ratingColor}22;border:1px solid ${ratingColor}44;padding:2px 10px;border-radius:5px;font-weight:700">${score}% — ${rating}</span></p>
+    <p class="score-line"><span class="detail-label">Assessment score: </span><span style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:3px 12px;border-radius:5px;font-weight:700">${score}% — ${rating}</span></p>
     <p class="date-text">${today}</p>
   </div>
 
@@ -180,7 +180,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
         </p>
         <p style={{ fontSize: 13, color: "#444", marginBottom: 24, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <span style={{ color: "#888" }}>Assessment score:</span>
-          <span style={{ color: ratingColor, background: `${ratingColor}18`, border: `1px solid ${ratingColor}40`, padding: "2px 10px", borderRadius: 6, fontWeight: 700, fontSize: 13 }}>{score}% — {rating}</span>
+          <span style={{ color: ratingColor, background: "#000", border: `2px solid ${ratingColor}`, padding: "3px 12px", borderRadius: 5, fontWeight: 700, fontSize: 13 }}>{score}% — {rating}</span>
         </p>
         <p style={{ fontSize: 13, color: "#1a1a1a", marginBottom: 32 }}>{today}</p>
 

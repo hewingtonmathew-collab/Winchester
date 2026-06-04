@@ -116,7 +116,7 @@ export default function ImprovementReport({
         <p style="color:#64748b;font-size:12px">School Improvement Report · ${today}</p>
         <div class="meta-grid">
           <div class="meta-item"><label>School / Trust</label><strong>${meta.schoolName}</strong></div>
-          <div class="meta-item"><label>Rating</label><strong style="color:${ratingColor}">${score}% — ${rating}</strong></div>
+          <div class="meta-item"><label>Rating</label><strong style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:2px 10px;border-radius:4px;display:inline-block">${score}% — ${rating}</strong></div>
           <div class="meta-item"><label>Staff Member</label>${meta.staffMember}</div>
           <div class="meta-item"><label>Consultant</label>${meta.consultantName}, SafeShield</div>
         </div>
@@ -169,7 +169,7 @@ export default function ImprovementReport({
                 <p className="text-[#475569] text-[0.6rem] uppercase tracking-wider mb-0.5">{item.label}</p>
                 {(item as { pill?: boolean }).pill && item.color ? (
                   <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md"
-                    style={{ color: item.color, background: `${item.color}20`, border: `1px solid ${item.color}40` }}>
+                    style={{ color: item.color, background: "#000", border: `2px solid ${item.color}` }}>
                     {item.value}
                   </span>
                 ) : (
