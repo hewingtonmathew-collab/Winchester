@@ -193,6 +193,22 @@ export default function HealthSafetyChecker() {
           </div>
         </GlassCard>
 
+        {/* OpenCase callout */}
+        <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.25)" }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(249,115,22,0.15)", border: "1px solid rgba(249,115,22,0.3)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C4.41 1.5 1.5 4.41 1.5 8s2.91 6.5 6.5 6.5 6.5-2.91 6.5-6.5S11.59 1.5 8 1.5zm0 11.5a5 5 0 110-10 5 5 0 010 10z" fill="#F97316"/><path d="M8 4.5v4l2.5 1.5" stroke="#F97316" strokeWidth="1.3" strokeLinecap="round"/></svg>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white mb-0.5">Check the law with OpenCase</p>
+            <p className="text-xs text-[#94A3B8] leading-relaxed mb-2">OpenCase provides the legal framework behind every H&amp;S obligation identified in this report. Use it to verify your duties under UK law before taking action.</p>
+            <a href="https://www.opencase.com" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
+              style={{ color: "#F97316" }}>
+              Visit OpenCase →
+            </a>
+          </div>
+        </div>
+
         <Certificate meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} />
         {gaps.length > 0 && (
           <ImprovementReport meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />

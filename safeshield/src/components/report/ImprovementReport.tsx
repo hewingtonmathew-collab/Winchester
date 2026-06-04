@@ -90,6 +90,68 @@ const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
   "Legal & Compliance": [
     { label: "Public Sector Bodies Accessibility Regulations", url: "https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps" },
   ],
+  // H&S categories
+  "Fire Safety": [
+    { label: "OpenCase – Fire Safety Law & Compliance", url: "https://www.opencase.com" },
+    { label: "Regulatory Reform (Fire Safety) Order 2005", url: "https://www.legislation.gov.uk/uksi/2005/1541/contents/made" },
+    { label: "HSE Fire Safety in Educational Premises", url: "https://www.hse.gov.uk/risk/firesafety.htm" },
+  ],
+  "COSHH": [
+    { label: "OpenCase – COSHH Legal Requirements", url: "https://www.opencase.com" },
+    { label: "HSE COSHH Guidance", url: "https://www.hse.gov.uk/coshh/" },
+    { label: "COSHH Regulations 2002", url: "https://www.legislation.gov.uk/uksi/2002/2677/contents/made" },
+  ],
+  "Premises & Facilities": [
+    { label: "OpenCase – Premises Compliance Law", url: "https://www.opencase.com" },
+    { label: "HSE Legionella Guidance", url: "https://www.hse.gov.uk/legionnaires/" },
+    { label: "HSE Asbestos in Schools", url: "https://www.hse.gov.uk/asbestos/schools.htm" },
+    { label: "Electricity at Work Regs 1989", url: "https://www.legislation.gov.uk/uksi/1989/635/contents/made" },
+  ],
+  "Policies & Documentation": [
+    { label: "OpenCase – H&S Policy & Documentation Law", url: "https://www.opencase.com" },
+    { label: "Health & Safety at Work Act 1974", url: "https://www.legislation.gov.uk/ukpga/1974/37/contents" },
+    { label: "RIDDOR 2013 – HSE Guidance", url: "https://www.hse.gov.uk/riddor/" },
+    { label: "Management of H&S at Work Regs 1999", url: "https://www.legislation.gov.uk/uksi/1999/3242/contents/made" },
+  ],
+  "Staff & Pupil Welfare": [
+    { label: "OpenCase – Staff Welfare Legal Obligations", url: "https://www.opencase.com" },
+    { label: "HSE First Aid at Work", url: "https://www.hse.gov.uk/firstaid/" },
+    { label: "Manual Handling Operations Regs 1992", url: "https://www.hse.gov.uk/pubns/indg143.htm" },
+    { label: "HSE Work-related Stress Guidance", url: "https://www.hse.gov.uk/stress/" },
+  ],
+  "Contractors & Visitors": [
+    { label: "OpenCase – Contractor Management Law", url: "https://www.opencase.com" },
+    { label: "HSE Managing Contractors", url: "https://www.hse.gov.uk/involvement/contractors.htm" },
+    { label: "DfE Keeping Children Safe in Education", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
+  ],
+  // Digital standards categories
+  "Digital Safeguarding": [
+    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
+    { label: "KCSiE 2024 – Online Safety", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
+  ],
+  "Cyber Security": [
+    { label: "DfE Cyber Security Standards for Schools", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/cyber-security-standards-for-schools-and-colleges" },
+    { label: "NCSC Cyber Security for Schools", url: "https://www.ncsc.gov.uk/section/education-skills/schools" },
+  ],
+  "Data & GDPR": [
+    { label: "ICO Guide to UK GDPR", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/" },
+    { label: "DfE Data Protection Toolkit for Schools", url: "https://www.gov.uk/government/publications/data-protection-toolkit-for-schools" },
+  ],
+  "Ofsted Readiness": [
+    { label: "Ofsted Education Inspection Framework", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
+    { label: "DfE Digital Standards for Schools", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
+  ],
+  "Accessibility": [
+    { label: "Public Sector Bodies Accessibility Regulations", url: "https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps" },
+    { label: "WCAG 2.1 Guidelines", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
+  ],
+  "Infrastructure": [
+    { label: "DfE Digital & Technology Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
+    { label: "ICO Guidance on Cloud Services", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/accountability-and-governance/data-protection-by-design-and-default/" },
+  ],
+  "AI Signal": [
+    { label: "DfE Generative AI in Education", url: "https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education" },
+  ],
 };
 
 function generateRecommendations(
