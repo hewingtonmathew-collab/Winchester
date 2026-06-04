@@ -1,8 +1,167 @@
 "use client";
 import { useState } from "react";
-import { Mail, Printer, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, Printer, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import type { ReportMetaData } from "./ReportMeta";
+
+const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
+  "Online Filtering": [
+    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
+  ],
+  "Online Monitoring": [
+    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
+  ],
+  "Policy": [
+    { label: "UK Council for Internet Safety (UKCIS)", url: "https://www.gov.uk/government/organisations/uk-council-for-internet-safety" },
+    { label: "DfE Online Safety Guidance", url: "https://www.gov.uk/government/publications/teaching-online-safety-in-schools" },
+  ],
+  "DSL & Staff": [
+    { label: "KCSiE 2024 – Safeguarding Roles", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
+  ],
+  "Curriculum": [
+    { label: "Relationships & Sex Education Guidance", url: "https://www.gov.uk/government/publications/relationships-education-relationships-and-sex-education-rse-and-health-education" },
+    { label: "Online Safety Teaching Resources", url: "https://www.gov.uk/government/publications/teaching-online-safety-in-schools" },
+  ],
+  "Governance": [
+    { label: "DfE Governance Handbook", url: "https://www.gov.uk/government/publications/governance-handbook" },
+    { label: "Ofsted School Inspection Handbook", url: "https://www.gov.uk/government/publications/school-inspection-handbook-eif" },
+  ],
+  "Devices": [
+    { label: "DfE Device & Technology Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
+  ],
+  "Data Protection": [
+    { label: "ICO Guide to UK GDPR", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/" },
+    { label: "DfE Data Protection Toolkit", url: "https://www.gov.uk/government/publications/data-protection-toolkit-for-schools" },
+  ],
+  "Safeguarding": [
+    { label: "KCSiE 2024", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
+    { label: "Working Together to Safeguard Children", url: "https://www.gov.uk/government/publications/working-together-to-safeguard-children--2" },
+  ],
+  "Procurement": [
+    { label: "DfE EdTech Procurement Guidance", url: "https://www.gov.uk/guidance/buying-for-schools/digital-devices-and-technology" },
+    { label: "ICO Accountability Framework", url: "https://ico.org.uk/for-organisations/accountability-framework/" },
+  ],
+  "Staff Capability": [
+    { label: "DfE Teacher CPD Standard", url: "https://www.gov.uk/government/publications/standard-for-teachers-professional-development" },
+  ],
+  "Board Structure": [
+    { label: "DfE Governance Handbook", url: "https://www.gov.uk/government/publications/governance-handbook" },
+  ],
+  "Skills & Membership": [
+    { label: "Competency Framework for Governance", url: "https://www.gov.uk/government/publications/governance-handbook" },
+  ],
+  "Statutory Compliance": [
+    { label: "DfE Statutory Policies for Schools", url: "https://www.gov.uk/government/publications/statutory-policies-for-schools-and-academy-trusts" },
+  ],
+  "Accountability": [
+    { label: "Ofsted School Inspection Handbook", url: "https://www.gov.uk/government/publications/school-inspection-handbook-eif" },
+  ],
+  "Financial Oversight": [
+    { label: "DfE Schools Financial Value Standard", url: "https://www.gov.uk/guidance/schools-financial-value-standard-sfvs" },
+  ],
+  "Quality of Education": [
+    { label: "Ofsted EIF – Quality of Education", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
+    { label: "DfE Curriculum Guidance", url: "https://www.gov.uk/government/collections/national-curriculum" },
+  ],
+  "Behaviour & Attitudes": [
+    { label: "DfE Behaviour in Schools Guidance", url: "https://www.gov.uk/government/publications/behaviour-in-schools--2" },
+  ],
+  "Personal Development": [
+    { label: "Ofsted EIF – Personal Development", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
+  ],
+  "Leadership & Management": [
+    { label: "Ofsted EIF – Leadership & Management", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
+  ],
+  "SEND & Inclusion": [
+    { label: "SEND Code of Practice", url: "https://www.gov.uk/government/publications/send-code-of-practice-0-to-25" },
+  ],
+  "Perceivable": [
+    { label: "WCAG 2.1 – Perceivable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/perceivable" },
+  ],
+  "Operable": [
+    { label: "WCAG 2.1 – Operable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/operable" },
+  ],
+  "Understandable": [
+    { label: "WCAG 2.1 – Understandable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/understandable" },
+  ],
+  "Robust": [
+    { label: "WCAG 2.1 – Robust Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/robust" },
+  ],
+  "Legal & Compliance": [
+    { label: "Public Sector Bodies Accessibility Regulations", url: "https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps" },
+  ],
+};
+
+function generateRecommendations(
+  toolName: string,
+  schoolName: string,
+  score: number,
+  rating: string,
+  gaps: Gap[]
+): string {
+  const high = gaps.filter((g) => g.priority === "high");
+  const med = gaps.filter((g) => g.priority === "medium");
+  const low = gaps.filter((g) => g.priority === "low");
+  const cats = [...new Set(gaps.map((g) => g.category))];
+
+  const urgency = score < 45 ? "significant and urgent" : score < 70 ? "moderate" : "minor";
+  const timeframe = score < 45 ? "within the next 30 days" : score < 70 ? "within the next term" : "within the next 6 months";
+
+  let text = `Following the completion of the ${toolName} for ${schoolName || "this school"}, the assessment returned a score of ${score}% (${rating}). `;
+  text += `${gaps.length} area${gaps.length !== 1 ? "s" : ""} for improvement ${gaps.length !== 1 ? "have" : "has"} been identified, representing ${urgency} gaps in current provision.\n\n`;
+
+  if (high.length > 0) {
+    text += `IMMEDIATE ACTIONS (${high.length} High Priority)\n`;
+    text += `The following areas require attention ${timeframe}:\n`;
+    high.forEach((g) => {
+      text += `• ${g.category}: ${g.text}\n`;
+      const links = GUIDANCE_LINKS[g.category];
+      if (links?.length) {
+        links.forEach((l) => { text += `  → ${l.label}: ${l.url}\n`; });
+      }
+    });
+    text += "\n";
+  }
+
+  if (med.length > 0) {
+    text += `MEDIUM-TERM IMPROVEMENTS (${med.length} Medium Priority)\n`;
+    med.forEach((g) => {
+      text += `• ${g.category}: ${g.text}\n`;
+      const links = GUIDANCE_LINKS[g.category];
+      if (links?.length) {
+        links.forEach((l) => { text += `  → ${l.label}: ${l.url}\n`; });
+      }
+    });
+    text += "\n";
+  }
+
+  if (low.length > 0) {
+    text += `ONGOING IMPROVEMENTS (${low.length} Lower Priority)\n`;
+    low.forEach((g) => {
+      text += `• ${g.category}: ${g.text}\n`;
+    });
+    text += "\n";
+  }
+
+  const uniqueLinks = cats
+    .flatMap((c) => GUIDANCE_LINKS[c] ?? [])
+    .filter((v, i, a) => a.findIndex((x) => x.url === v.url) === i)
+    .slice(0, 6);
+
+  if (uniqueLinks.length > 0) {
+    text += `KEY GUIDANCE & RESOURCES\n`;
+    uniqueLinks.forEach((l) => { text += `• ${l.label}: ${l.url}\n`; });
+    text += "\n";
+  }
+
+  text += `RECOMMENDED NEXT STEPS\n`;
+  text += `1. Share this report with the senior leadership team and governing board.\n`;
+  text += `2. Assign a named lead for each high-priority action with a clear deadline.\n`;
+  text += `3. Schedule a follow-up review in ${score < 55 ? "6-8 weeks" : "one term"} to assess progress.\n`;
+  text += `4. Contact your SafeShield consultant for targeted support on any of the above areas.`;
+
+  return text;
+}
 
 export type Gap = {
   category: string;
@@ -207,13 +366,22 @@ export default function ImprovementReport({
 
           {/* Consultant notes */}
           <div>
-            <label className="block text-[#CBD5E1] text-sm mb-1">Consultant Notes <span className="text-[#475569] font-normal">(optional)</span></label>
-            <p className="text-[#475569] text-xs mb-2">Add tailored commentary that will appear in the printed report and email.</p>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[#CBD5E1] text-sm">Consultant Notes <span className="text-[#475569] font-normal">(optional)</span></label>
+              <button
+                onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}
+              >
+                <Sparkles size={12} /> Generate Recommendations
+              </button>
+            </div>
+            <p className="text-[#475569] text-xs mb-2">Auto-generate recommendations with guidance links, or write your own notes below.</p>
             <textarea
               value={consultantNotes}
               onChange={(e) => setConsultantNotes(e.target.value)}
-              rows={4}
-              placeholder="e.g. Based on my visit and this assessment, I recommend prioritising online monitoring before the next Ofsted window. The school has strong policy foundations but gaps in staff awareness need addressing urgently..."
+              rows={8}
+              placeholder="Click 'Generate Recommendations' to auto-fill based on the assessment gaps, or type your own consultant notes here..."
               className="w-full px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none transition-colors resize-none placeholder:text-[#475569]"
               style={{ borderColor: consultantNotes ? accentBorder : undefined }}
             />
