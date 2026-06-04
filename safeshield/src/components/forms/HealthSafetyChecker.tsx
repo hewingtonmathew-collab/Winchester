@@ -193,7 +193,12 @@ export default function HealthSafetyChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={TABS} />
+        <Certificate meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={TABS.map(tab => {
+          const ti = items.filter(i => i.tab === tab);
+          const tot = ti.reduce((s, i) => s + i.weight * 2, 0);
+          const earn = ti.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+          return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
         {gaps.length > 0 && (
           <ImprovementReport meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
         )}
@@ -252,14 +257,25 @@ export default function HealthSafetyChecker() {
         </div>
       </GlassCard>
 
-      {/* Progress + submit */}
+      {/* Navigation + submit */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-[#475569]">{answered} of {items.length} questions answered</span>
-        <button onClick={submit} disabled={answered < items.length}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
-          Generate Report <ChevronRight size={14} />
-        </button>
+        <div className="flex gap-2">
+          {TABS.indexOf(activeTab) < TABS.length - 1 ? (
+            <button
+              onClick={() => setActiveTab(TABS[TABS.indexOf(activeTab) + 1])}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
+              Next Section <ChevronRight size={14} />
+            </button>
+          ) : (
+            <button onClick={submit} disabled={answered < items.length}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
+              Generate Report <ChevronRight size={14} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

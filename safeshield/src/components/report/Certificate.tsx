@@ -11,7 +11,7 @@ type Props = {
   ratingColor: string;
   date?: string;
   accentColor?: string;
-  areas?: string[];
+  areas?: { name: string; score?: number }[];
 };
 
 export default function Certificate({ meta, toolName, score, rating, ratingColor, date, accentColor = "#38BDF8", areas }: Props) {
@@ -23,7 +23,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     const w = window.open("", "_blank");
     if (!w) return;
     const areasHtml = areas && areas.length > 0
-      ? `<p class="areas-line"><span class="label">Areas assessed: </span>${areas.join(" · ")}</p>`
+      ? `<div class="areas-block"><p class="areas-heading">Key stages assessed:</p><ul class="areas-list">${areas.map(a => `<li><span class="area-name">${a.name}</span>${a.score !== undefined ? `<span class="area-score">${a.score}%</span>` : ""}</li>`).join("")}</ul></div>`
       : "";
     const logoHtml = meta.logoDataUrl
       ? `<img src="${meta.logoDataUrl}" alt="School logo" class="school-logo-img" />`
@@ -153,12 +153,36 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
       font-size: 13px;
       display: inline-block;
     }
-    .areas-line {
-      font-size: 11px;
-      color: #555555;
-      line-height: 1.7;
+    .areas-block {
+      margin-top: 6px;
       margin-bottom: 8mm;
-      margin-top: 4px;
+    }
+    .areas-heading {
+      font-size: 11px;
+      color: #888888;
+      margin-bottom: 4px;
+      font-style: italic;
+    }
+    .areas-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
+    .areas-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #444444;
+    }
+    .area-name { }
+    .area-score {
+      font-weight: 700;
+      color: #1a1a1a;
+      font-size: 10px;
     }
     .date-line {
       font-size: 13px;
@@ -420,7 +444,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 
   function handleEmail() {
     const subject = encodeURIComponent(`${toolName} Certificate — ${meta.schoolName}`);
-    const areasLine = areas && areas.length > 0 ? `\nAreas assessed: ${areas.join(", ")}` : "";
+    const areasLine = areas && areas.length > 0 ? `\nKey stages assessed: ${areas.map(a => a.score !== undefined ? `${a.name} (${a.score}%)` : a.name).join(", ")}` : "";
     const body = encodeURIComponent(
       `Dear ${meta.schoolName},\n\nPlease find attached your ${toolName} assessment certificate from SafeShield.\n\nTo save as PDF: open the tool, complete the assessment, click "Print / Save PDF" and choose "Save as PDF" from the print dialog.\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nCompleted by: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nScore:        ${score}% — ${rating}${areasLine}\nDate:         ${today}\nCertificate:  ${certId}\n\nKind regards,\n${meta.consultantName}\nSafeShield Assessment Tools`
     );
@@ -469,9 +493,16 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <span style={{ color: ratingColor, background: "#000", border: `2px solid ${ratingColor}`, padding: "3px 12px", borderRadius: 5, fontWeight: 700, fontSize: 13 }}>{score}% — {rating}</span>
         </p>
         {areas && areas.length > 0 && (
-          <p style={{ fontSize: 12, color: "#555", marginBottom: 24, lineHeight: 1.6 }}>
-            <span style={{ color: "#888" }}>Areas assessed: </span>{areas.join(" · ")}
-          </p>
+          <div style={{ marginTop: 6, marginBottom: 24 }}>
+            <p style={{ fontSize: 11, color: "#888", fontStyle: "italic", marginBottom: 6 }}>Key stages assessed:</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px" }}>
+              {areas.map((a) => (
+                <span key={a.name} style={{ fontSize: 11, color: "#444", display: "flex", alignItems: "center", gap: 5 }}>
+                  {a.name}{a.score !== undefined && <strong style={{ fontSize: 10, color: "#1a1a1a" }}>{a.score}%</strong>}
+                </span>
+              ))}
+            </div>
+          </div>
         )}
         <p style={{ fontSize: 13, color: "#1a1a1a", marginBottom: 32 }}>{today}</p>
         </div>
