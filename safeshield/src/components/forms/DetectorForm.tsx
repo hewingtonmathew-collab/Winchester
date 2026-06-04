@@ -1,8 +1,16 @@
 "use client";
 import { useState } from "react";
 import { detectAi, type DetectionResult } from "@/lib/ai-detector";
-import { ScanSearch, AlertCircle, CheckCircle2, HelpCircle } from "lucide-react";
+import { ScanSearch, AlertCircle, CheckCircle2, HelpCircle, ChevronRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
+import Certificate from "@/components/report/Certificate";
+import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import { saveSubmission } from "@/lib/submissions";
+
+const defaultMeta: ReportMetaData = {
+  schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
+};
 
 function ScoreGauge({ score }: { score: number }) {
   const r = 45;
@@ -38,17 +46,53 @@ function Verdict({ label }: { label: DetectionResult["label"] }) {
 }
 
 export default function DetectorForm() {
+  const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
+  const [step, setStep] = useState<"meta" | "analyse">("meta");
   const [text, setText] = useState("");
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [error, setError] = useState("");
 
+  const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
   const wordCount = text.replace(/[^a-z0-9'\s]/gi, " ").split(/\s+/).filter(Boolean).length;
+
+  const scoreAsPercent = result ? 100 - result.score : 0;
+  const rating = result ? result.label : "";
+  const ratingColor = result ? (result.score > 65 ? "#ef4444" : result.score > 35 ? "#f59e0b" : "#22c55e") : "#38BDF8";
+
+  const reportGaps: Gap[] = result
+    ? result.breakdown
+        .filter((b) => b.weight >= 10)
+        .map((b) => ({
+          category: "AI Signal",
+          text: `${b.signal}: ${b.explanation}`,
+          priority: b.weight >= 18 ? "high" : b.weight >= 12 ? "medium" : "low",
+        }))
+    : [];
 
   function analyse() {
     setError("");
     if (!text.trim()) { setError("Please paste some text to analyse."); return; }
     if (wordCount < 50) { setError(`Please provide at least 50 words. You have ${wordCount}.`); return; }
-    setResult(detectAi(text));
+    const res = detectAi(text);
+    setResult(res);
+    const lbl = res.label;
+    const rc = res.score > 65 ? "#ef4444" : res.score > 35 ? "#f59e0b" : "#22c55e";
+    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc });
+  }
+
+  if (step === "meta") {
+    return (
+      <div className="flex flex-col gap-5">
+        <ReportMeta value={meta} onChange={setMeta} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" />
+        <div className="flex justify-end">
+          <button onClick={() => setStep("analyse")} disabled={!metaValid}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+            Start Analysis <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -138,6 +182,15 @@ export default function DetectorForm() {
               </div>
             </GlassCard>
           )}
+
+          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" />
+          {reportGaps.length > 0 && (
+            <ImprovementReport meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} gaps={reportGaps} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" />
+          )}
+
+          <button onClick={() => { setResult(null); setText(""); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#38BDF8] text-sm hover:text-white transition-colors">
+            ← Start again
+          </button>
         </>
       )}
     </div>
