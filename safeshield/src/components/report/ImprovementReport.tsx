@@ -161,13 +161,20 @@ export default function ImprovementReport({
           <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
             {[
               { label: "School", value: meta.schoolName || "—" },
-              { label: "Score", value: `${score}% — ${rating}`, color: ratingColor },
+              { label: "Score", value: `${score}% — ${rating}`, color: ratingColor, pill: true },
               { label: "Staff Member", value: meta.staffMember || "—" },
               { label: "Consultant", value: meta.consultantName || "—" },
             ].map((item) => (
               <div key={item.label}>
                 <p className="text-[#475569] text-[0.6rem] uppercase tracking-wider mb-0.5">{item.label}</p>
-                <p className="text-xs font-medium" style={{ color: item.color ?? "#CBD5E1" }}>{item.value}</p>
+                {(item as { pill?: boolean }).pill && item.color ? (
+                  <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md"
+                    style={{ color: item.color, background: `${item.color}20`, border: `1px solid ${item.color}40` }}>
+                    {item.value}
+                  </span>
+                ) : (
+                  <p className="text-xs font-medium" style={{ color: item.color ?? "#CBD5E1" }}>{item.value}</p>
+                )}
               </div>
             ))}
           </div>
