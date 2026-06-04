@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, ArrowRight } from "lucide-react";
+import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 
 type Tool = {
@@ -21,6 +21,7 @@ const sections: { heading: string; sub: string; tools: Tool[] }[] = [
       { icon: ShieldCheck, title: "Safeguarding Risk Checker", description: "Answer a structured set of questions about your school's digital safeguarding provision and receive an instant risk rating with priority actions.", href: "/tools/safeguarding", color: "#34D399", colorDim: "rgba(52,211,153,0.12)", colorBorder: "rgba(52,211,153,0.25)", badge: "Assessment" },
       { icon: ClipboardList, title: "Governance Compliance Checker", description: "Check your governance arrangements against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance", color: "#A78BFA", colorDim: "rgba(167,139,250,0.12)", colorBorder: "rgba(167,139,250,0.25)", badge: "Compliance" },
       { icon: CheckSquare, title: "Ofsted Ready Checker", description: "Self-evaluate your school's readiness across the Ofsted Education Inspection Framework. Identify strengths, areas for improvement, and inspection risks.", href: "/tools/ofsted", color: "#4ADE80", colorDim: "rgba(74,222,128,0.12)", colorBorder: "rgba(74,222,128,0.25)", badge: "Inspection" },
+      { icon: HardHat, title: "Health & Safety Checker", description: "Assess compliance across fire safety, COSHH, premises, policies, staff and pupil welfare, and contractor management. Aligned to HSE and statutory school obligations.", href: "/tools/health-safety", color: "#F97316", colorDim: "rgba(249,115,22,0.12)", colorBorder: "rgba(249,115,22,0.25)", badge: "H&S" },
     ],
   },
   {
