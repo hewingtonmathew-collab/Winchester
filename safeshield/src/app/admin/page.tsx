@@ -27,7 +27,7 @@ function sendCertificateEmail(s: Submission) {
   const subject = encodeURIComponent(`${s.tool} Certificate — ${s.schoolName}`);
   const date = new Date(s.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const body = encodeURIComponent(
-    `Dear ${s.schoolName},\n\nPlease find below your ${s.tool} certificate completed on ${date}.\n\nAssessment Summary:\n• Score: ${s.score}%\n• Rating: ${s.rating}\n• Staff Member: ${s.staffMember}\n• Consultant: ${s.consultantName}\n\nThis certificate was generated via SafeShield Tools by Winchester Consultancy.\n\nKind regards,\n${s.consultantName}\nWinchester Consultancy`
+    `Dear ${s.schoolName},\n\nPlease find below your ${s.tool} certificate completed on ${date}.\n\nAssessment Summary:\n• Score: ${s.score}%\n• Rating: ${s.rating}\n• Staff Member: ${s.staffMember}\n• Consultant: ${s.consultantName}\n\nThis certificate was generated via SafeShield Tools by SafeShield.\n\nKind regards,\n${s.consultantName}\nSafeShield`
   );
   window.location.href = `mailto:${s.schoolEmail}?subject=${subject}&body=${body}`;
 }

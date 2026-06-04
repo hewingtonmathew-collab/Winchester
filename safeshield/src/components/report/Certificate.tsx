@@ -65,7 +65,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     <div class="logo-row">
       ${meta.logoDataUrl
         ? `<img src="${meta.logoDataUrl}" alt="Logo" />`
-        : `<div class="brand-pill"><div class="brand-dot"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l4 2v3.5c0 2-1.5 3.5-4 4.5C3.5 10 2 8.5 2 6.5V3L6 1z" fill="none" stroke="${accentColor}" stroke-width="1.2"/></svg></div><span class="brand-name">SafeShield · Winchester Consultancy</span></div>`
+        : `<div class="brand-pill"><div class="brand-dot"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l4 2v3.5c0 2-1.5 3.5-4 4.5C3.5 10 2 8.5 2 6.5V3L6 1z" fill="none" stroke="${accentColor}" stroke-width="1.2"/></svg></div><span class="brand-name">SafeShield</span></div>`
       }
     </div>
     <span class="cert-title-word">CERTIFICATE</span>
@@ -81,7 +81,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     </div>
   </div>
   <div class="sig-row">
-    <div class="sig-block"><div class="sig-line"></div><div class="sig-name">${meta.consultantName || "Consultant"}</div><div class="sig-role">Winchester Consultancy</div></div>
+    <div class="sig-block"><div class="sig-line"></div><div class="sig-name">${meta.consultantName || "Consultant"}</div><div class="sig-role">SafeShield</div></div>
   </div>
   <div class="swoosh-area">
     <svg viewBox="0 0 570 190" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">
@@ -112,7 +112,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   function handleEmail() {
     const subject = encodeURIComponent(`${toolName} Certificate — ${meta.schoolName}`);
     const body = encodeURIComponent(
-      `Dear ${meta.schoolName},\n\nPlease find below the ${toolName} assessment certificate completed on ${today}.\n\nTo save the certificate as a PDF:\n1. Open the SafeShield tool and complete the assessment\n2. Click "Print / Save PDF" on the certificate\n3. Choose "Save as PDF" in your print dialog\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nScore:        ${score}%\nRating:       ${rating}\nStaff Member: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nDate:         ${today}\nCertificate:  ${certId}\n\nKind regards,\n${meta.consultantName}\nWinchester Consultancy`
+      `Dear ${meta.schoolName},\n\nPlease find below the ${toolName} assessment certificate completed on ${today}.\n\nTo save the certificate as a PDF:\n1. Open the SafeShield tool and complete the assessment\n2. Click "Print / Save PDF" on the certificate\n3. Choose "Save as PDF" in your print dialog\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nScore:        ${score}%\nRating:       ${rating}\nStaff Member: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nDate:         ${today}\nCertificate:  ${certId}\n\nKind regards,\n${meta.consultantName}\nSafeShield`
     );
     const recipients = [meta.schoolEmail, meta.consultantEmail].filter(Boolean).join(",");
     window.location.href = `mailto:${recipients}?subject=${subject}&body=${body}`;
@@ -133,7 +133,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
                 <div style={{ width: 22, height: 22, borderRadius: 5, background: `${accentColor}22`, border: `1px solid ${accentColor}55`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l4 2v3.5c0 2-1.5 3.5-4 4.5C3.5 10 2 8.5 2 6.5V3L6 1z" fill="none" stroke={accentColor} strokeWidth="1.2" /></svg>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.5px" }}>SafeShield · Winchester Consultancy</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.5px" }}>SafeShield</span>
               </div>
             )}
           </div>
@@ -185,7 +185,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <div style={{ textAlign: "center" }}>
             <div style={{ width: 120, height: 1, background: "rgba(255,255,255,0.2)", marginBottom: 5 }} />
             <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.75)", fontFamily: "system-ui, sans-serif" }}>{meta.consultantName || "Consultant"}</div>
-            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>Winchester Consultancy</div>
+            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>SafeShield</div>
           </div>
         </div>
 
