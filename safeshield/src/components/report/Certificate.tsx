@@ -107,22 +107,26 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-left:9px solid transparent"></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><path d="M11 20 L11 14 L14 11 L17 14 L17 11 L20 8 L23 11 L23 8 L26 6 L29 8 L29 11 L32 8 L35 11 L35 14 L38 11 L41 14 L41 20 Z" fill="#1a1a1a"/><rect x="10" y="20" width="32" height="4" rx="1" fill="#1a1a1a"/></svg>
-          <span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:system-ui">Dept. for Education</span>
+      <div style="display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:10px">
+        <!-- DfE -->
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff">
+          <svg width="22" height="28" viewBox="0 0 22 28" xmlns="http://www.w3.org/2000/svg"><path d="M11 2 L20 5 L20 16 C20 22 15.5 25.5 11 27 C6.5 25.5 2 22 2 16 L2 5 Z" fill="none" stroke="#1a1a1a" stroke-width="1.2"/><path d="M3 6 L3 15 L10 15 L10 6 Z" fill="none" stroke="#1a1a1a" stroke-width="0.4"/><path d="M12 6 L12 15 L19 15 L19 6 Z" fill="none" stroke="#1a1a1a" stroke-width="0.4"/><path d="M14 8 Q14 6 16.5 7 L15.5 14" fill="none" stroke="#1a1a1a" stroke-width="0.7"/><path d="M7 4 L7 2 M11 4 L11 1.5 M15 4 L15 2" stroke="#1a1a1a" stroke-width="0.8" stroke-linecap="round"/><rect x="6" y="3.5" width="10" height="1.5" rx="0.5" fill="#1a1a1a"/></svg>
+          <div style="width:1px;height:24px;background:#1a1a1a"></div>
+          <div style="display:flex;flex-direction:column"><span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:Arial,sans-serif;line-height:1.2">Department</span><span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:Arial,sans-serif;line-height:1.2">for Education</span></div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><text x="26" y="22" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#003A70">ico.</text></svg>
-          <span style="font-size:7px;font-weight:700;color:#003A70;font-family:system-ui">UK GDPR Compliant</span>
+        <!-- ICO -->
+        <div style="display:flex;flex-direction:column;align-items:flex-start;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff;gap:1px">
+          <span style="font-size:18px;font-weight:900;color:#003A70;font-family:Arial Black,Arial,sans-serif;line-height:1">ico.</span>
+          <span style="font-size:5.5px;color:#003A70;font-family:Arial,sans-serif;letter-spacing:0.2px;line-height:1.2;max-width:52px">Information Commissioner's Office</span>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><rect x="0" y="0" width="52" height="12" rx="2" fill="#003057"/><rect x="0" y="12" width="52" height="8" fill="#00a88e"/><rect x="0" y="20" width="52" height="12" rx="2" fill="#fff"/><text x="26" y="10" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="8" fill="#fff">Ofsted</text><text x="26" y="18" text-anchor="middle" font-family="Arial,sans-serif" font-weight="600" font-size="5.5" fill="#fff">EIF Aligned</text><text x="26" y="28" text-anchor="middle" font-family="Arial,sans-serif" font-weight="600" font-size="5.5" fill="#333">Inspection Framework</text></svg>
-          <span style="font-size:7px;font-weight:700;color:#003057;font-family:system-ui">EIF Framework</span>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><path d="M26 4 L38 9 L38 18 C38 24 32 28 26 30 C20 28 14 24 14 18 L14 9 Z" fill="#1a1a1a"/><text x="26" y="19" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="8" fill="#fff">KCSiE</text></svg>
-          <span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:system-ui">Safeguarding Aligned</span>
+        <!-- Ofsted -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff;gap:2px">
+          <div style="display:flex;gap:4px">
+            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
+            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
+            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:900;color:#1a1372;font-family:Arial Black,Arial,sans-serif;letter-spacing:0.5px;line-height:1">Ofsted</span>
         </div>
       </div>
       <div style="text-align:right"><p class="cert-ref">${certId}</p></div>
@@ -211,50 +215,47 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           </div>
 
           {/* Compliance logos */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, flexWrap: "wrap", marginBottom: 12 }}>
 
-            {/* DfE */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
-                {/* Tudor Crown simplified */}
-                <path d="M11 20 L11 14 L14 11 L17 14 L17 11 L20 8 L23 11 L23 8 L26 6 L29 8 L29 11 L32 8 L35 11 L35 14 L38 11 L41 14 L41 20 Z" fill="#1a1a1a"/>
-                <rect x="10" y="20" width="32" height="4" rx="1" fill="#1a1a1a"/>
+            {/* DfE — coat of arms left, vertical rule, "Department\nfor Education" right */}
+            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff" }}>
+              <svg width="22" height="28" viewBox="0 0 22 28" xmlns="http://www.w3.org/2000/svg">
+                {/* Shield outline */}
+                <path d="M11 2 L20 5 L20 16 C20 22 15.5 25.5 11 27 C6.5 25.5 2 22 2 16 L2 5 Z" fill="none" stroke="#1a1a1a" strokeWidth="1.2"/>
+                {/* Quarter 1: lions (top-left) */}
+                <path d="M3 6 L3 15 L10 15 L10 6 Z" fill="none" stroke="#1a1a1a" strokeWidth="0.4"/>
+                <text x="6.5" y="12" textAnchor="middle" fontFamily="serif" fontSize="6" fill="#1a1a1a">𝄜</text>
+                {/* Quarter 2: harp (top-right) */}
+                <path d="M12 6 L12 15 L19 15 L19 6 Z" fill="none" stroke="#1a1a1a" strokeWidth="0.4"/>
+                <path d="M14 8 Q14 6 16.5 7 L15.5 14" fill="none" stroke="#1a1a1a" strokeWidth="0.7"/>
+                {/* Crown on top */}
+                <path d="M7 4 L7 2 M11 4 L11 1.5 M15 4 L15 2" stroke="#1a1a1a" strokeWidth="0.8" strokeLinecap="round"/>
+                <rect x="6" y="3.5" width="10" height="1.5" rx="0.5" fill="#1a1a1a"/>
               </svg>
-              <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "system-ui", letterSpacing: "0.5px" }}>Dept. for Education</span>
+              <div style={{ width: 1, height: 24, background: "#1a1a1a" }} />
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "Arial, sans-serif", lineHeight: 1.2 }}>Department</span>
+                <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "Arial, sans-serif", lineHeight: 1.2 }}>for Education</span>
+              </div>
             </div>
 
-            {/* ICO */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
-                <text x="26" y="22" textAnchor="middle" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900" fontSize="16" fill="#003A70">ico.</text>
-              </svg>
-              <span style={{ fontSize: 7, fontWeight: 700, color: "#003A70", fontFamily: "system-ui", letterSpacing: "0.5px" }}>UK GDPR Compliant</span>
+            {/* ICO — bold "ico." with subtitle */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff", gap: 1 }}>
+              <span style={{ fontSize: 18, fontWeight: 900, color: "#003A70", fontFamily: "Arial Black, Arial, sans-serif", lineHeight: 1 }}>ico.</span>
+              <span style={{ fontSize: 5.5, color: "#003A70", fontFamily: "Arial, sans-serif", letterSpacing: "0.2px", lineHeight: 1.2, maxWidth: 52 }}>Information Commissioner's Office</span>
             </div>
 
-            {/* Ofsted */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
-                <rect x="0" y="0" width="52" height="12" rx="2" fill="#003057"/>
-                <rect x="0" y="12" width="52" height="8" fill="#00a88e"/>
-                <rect x="0" y="20" width="52" height="12" rx="2" fill="#fff"/>
-                <text x="26" y="10" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="8" fill="#fff">Ofsted</text>
-                <text x="26" y="18" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="600" fontSize="5.5" fill="#fff">EIF Aligned</text>
-                <text x="26" y="28" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="600" fontSize="5.5" fill="#333">Inspection Framework</text>
-              </svg>
-              <span style={{ fontSize: 7, fontWeight: 700, color: "#003057", fontFamily: "system-ui", letterSpacing: "0.5px" }}>EIF Framework</span>
-            </div>
-
-            {/* KCSiE */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
-                <path d="M26 4 L38 9 L38 18 C38 24 32 28 26 30 C20 28 14 24 14 18 L14 9 Z" fill="#1a1a1a"/>
-                <text x="26" y="19" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="8" fill="#fff">KCSiE</text>
-              </svg>
-              <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "system-ui", letterSpacing: "0.5px" }}>Safeguarding Aligned</span>
+            {/* Ofsted — "Ofsted" bold navy with 3 teal people icons above */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff", gap: 2 }}>
+              <div style={{ display: "flex", gap: 4 }}>
+                {[0,1,2].map(i => (
+                  <svg key={i} width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="5" cy="3" r="2.2" fill="#00a4a6"/>
+                    <path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/>
+                  </svg>
+                ))}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 900, color: "#1a1372", fontFamily: "Arial Black, Arial, sans-serif", letterSpacing: "0.5px", lineHeight: 1 }}>Ofsted</span>
             </div>
 
           </div>
