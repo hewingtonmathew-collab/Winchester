@@ -5,6 +5,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
 import Certificate from "@/components/report/Certificate";
 import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import { saveSubmission } from "@/lib/submissions";
 
 const defaultMeta: ReportMetaData = {
   schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
@@ -222,7 +223,7 @@ export default function AiReadiness() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => setSubmitted(true)} disabled={answered < questions.length}
+            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "AI Readiness Assessment", ...meta, score, rating: readinessLabel, ratingColor: ringColor }); }} disabled={answered < questions.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(251,146,60,0.15)] border border-[rgba(251,146,60,0.3)] text-[#FB923C] text-sm font-medium hover:bg-[rgba(251,146,60,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>
