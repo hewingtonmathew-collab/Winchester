@@ -107,11 +107,23 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-left:9px solid transparent"></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">DfE</div><div style="font-size:7px;color:#888;font-family:system-ui">Statutory Guidance</div></div>
-        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">ICO</div><div style="font-size:7px;color:#888;font-family:system-ui">UK GDPR Compliant</div></div>
-        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">Ofsted</div><div style="font-size:7px;color:#888;font-family:system-ui">EIF Framework</div></div>
-        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">KCSiE</div><div style="font-size:7px;color:#888;font-family:system-ui">Safeguarding Aligned</div></div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><path d="M11 20 L11 14 L14 11 L17 14 L17 11 L20 8 L23 11 L23 8 L26 6 L29 8 L29 11 L32 8 L35 11 L35 14 L38 11 L41 14 L41 20 Z" fill="#1a1a1a"/><rect x="10" y="20" width="32" height="4" rx="1" fill="#1a1a1a"/></svg>
+          <span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:system-ui">Dept. for Education</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><text x="26" y="22" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#003A70">ico.</text></svg>
+          <span style="font-size:7px;font-weight:700;color:#003A70;font-family:system-ui">UK GDPR Compliant</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><rect x="0" y="0" width="52" height="12" rx="2" fill="#003057"/><rect x="0" y="12" width="52" height="8" fill="#00a88e"/><rect x="0" y="20" width="52" height="12" rx="2" fill="#fff"/><text x="26" y="10" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="8" fill="#fff">Ofsted</text><text x="26" y="18" text-anchor="middle" font-family="Arial,sans-serif" font-weight="600" font-size="5.5" fill="#fff">EIF Aligned</text><text x="26" y="28" text-anchor="middle" font-family="Arial,sans-serif" font-weight="600" font-size="5.5" fill="#333">Inspection Framework</text></svg>
+          <span style="font-size:7px;font-weight:700;color:#003057;font-family:system-ui">EIF Framework</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+          <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" stroke-width="0.5"/><path d="M26 4 L38 9 L38 18 C38 24 32 28 26 30 C20 28 14 24 14 18 L14 9 Z" fill="#1a1a1a"/><text x="26" y="19" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="8" fill="#fff">KCSiE</text></svg>
+          <span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:system-ui">Safeguarding Aligned</span>
+        </div>
       </div>
       <div style="text-align:right"><p class="cert-ref">${certId}</p></div>
     </div>
@@ -198,19 +210,53 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
             </div>
           </div>
 
-          {/* Compliance badges */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-            {[
-              { label: "DfE", sub: "Statutory Guidance Aligned" },
-              { label: "ICO", sub: "UK GDPR Compliant" },
-              { label: "Ofsted", sub: "EIF Framework" },
-              { label: "KCSiE", sub: "Safeguarding Aligned" },
-            ].map((b) => (
-              <div key={b.label} style={{ border: "1px solid #d1d5db", borderRadius: 4, padding: "4px 10px", textAlign: "center", minWidth: 72 }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: "#1a1a1a", letterSpacing: "1px", fontFamily: "system-ui, sans-serif" }}>{b.label}</div>
-                <div style={{ fontSize: 7, color: "#888", letterSpacing: "0.3px", fontFamily: "system-ui, sans-serif", marginTop: 1 }}>{b.sub}</div>
-              </div>
-            ))}
+          {/* Compliance logos */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+
+            {/* DfE */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
+                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
+                {/* Tudor Crown simplified */}
+                <path d="M11 20 L11 14 L14 11 L17 14 L17 11 L20 8 L23 11 L23 8 L26 6 L29 8 L29 11 L32 8 L35 11 L35 14 L38 11 L41 14 L41 20 Z" fill="#1a1a1a"/>
+                <rect x="10" y="20" width="32" height="4" rx="1" fill="#1a1a1a"/>
+              </svg>
+              <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "system-ui", letterSpacing: "0.5px" }}>Dept. for Education</span>
+            </div>
+
+            {/* ICO */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
+                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
+                <text x="26" y="22" textAnchor="middle" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900" fontSize="16" fill="#003A70">ico.</text>
+              </svg>
+              <span style={{ fontSize: 7, fontWeight: 700, color: "#003A70", fontFamily: "system-ui", letterSpacing: "0.5px" }}>UK GDPR Compliant</span>
+            </div>
+
+            {/* Ofsted */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
+                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
+                <rect x="0" y="0" width="52" height="12" rx="2" fill="#003057"/>
+                <rect x="0" y="12" width="52" height="8" fill="#00a88e"/>
+                <rect x="0" y="20" width="52" height="12" rx="2" fill="#fff"/>
+                <text x="26" y="10" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="8" fill="#fff">Ofsted</text>
+                <text x="26" y="18" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="600" fontSize="5.5" fill="#fff">EIF Aligned</text>
+                <text x="26" y="28" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="600" fontSize="5.5" fill="#333">Inspection Framework</text>
+              </svg>
+              <span style={{ fontSize: 7, fontWeight: 700, color: "#003057", fontFamily: "system-ui", letterSpacing: "0.5px" }}>EIF Framework</span>
+            </div>
+
+            {/* KCSiE */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <svg width="52" height="32" viewBox="0 0 52 32" xmlns="http://www.w3.org/2000/svg">
+                <rect width="52" height="32" rx="2" fill="#fff" stroke="#d1d5db" strokeWidth="0.5"/>
+                <path d="M26 4 L38 9 L38 18 C38 24 32 28 26 30 C20 28 14 24 14 18 L14 9 Z" fill="#1a1a1a"/>
+                <text x="26" y="19" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="8" fill="#fff">KCSiE</text>
+              </svg>
+              <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "system-ui", letterSpacing: "0.5px" }}>Safeguarding Aligned</span>
+            </div>
+
           </div>
 
           <div style={{ textAlign: "right" }}>
