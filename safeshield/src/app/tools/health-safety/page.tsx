@@ -55,19 +55,6 @@ export default function HealthSafetyPage() {
                 ))}
               </ul>
             </GlassCard>
-            {/* OpenCase */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.25)" }}>
-              <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#F97316" }}>Legal Reference</p>
-              <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-faint)" }}>
-                Every question in this checker is underpinned by UK law. Use <strong className="text-white">OpenCase</strong> to read the legislation behind each obligation.
-              </p>
-              <a href="https://www.opencase.com" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{ background: "rgba(249,115,22,0.15)", border: "1px solid rgba(249,115,22,0.35)", color: "#F97316" }}>
-                Open OpenCase →
-              </a>
-            </div>
-
             <GlassCard>
               <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Rating Scale</h2>
               <div className="flex flex-col gap-1.5">

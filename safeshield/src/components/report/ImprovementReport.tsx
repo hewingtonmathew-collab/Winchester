@@ -92,35 +92,29 @@ const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
   ],
   // H&S categories
   "Fire Safety": [
-    { label: "OpenCase – Fire Safety Law & Compliance", url: "https://www.opencase.com" },
     { label: "Regulatory Reform (Fire Safety) Order 2005", url: "https://www.legislation.gov.uk/uksi/2005/1541/contents/made" },
     { label: "HSE Fire Safety in Educational Premises", url: "https://www.hse.gov.uk/risk/firesafety.htm" },
   ],
   "COSHH": [
-    { label: "OpenCase – COSHH Legal Requirements", url: "https://www.opencase.com" },
     { label: "HSE COSHH Guidance", url: "https://www.hse.gov.uk/coshh/" },
     { label: "COSHH Regulations 2002", url: "https://www.legislation.gov.uk/uksi/2002/2677/contents/made" },
   ],
   "Premises & Facilities": [
-    { label: "OpenCase – Premises Compliance Law", url: "https://www.opencase.com" },
     { label: "HSE Legionella Guidance", url: "https://www.hse.gov.uk/legionnaires/" },
     { label: "HSE Asbestos in Schools", url: "https://www.hse.gov.uk/asbestos/schools.htm" },
     { label: "Electricity at Work Regs 1989", url: "https://www.legislation.gov.uk/uksi/1989/635/contents/made" },
   ],
   "Policies & Documentation": [
-    { label: "OpenCase – H&S Policy & Documentation Law", url: "https://www.opencase.com" },
     { label: "Health & Safety at Work Act 1974", url: "https://www.legislation.gov.uk/ukpga/1974/37/contents" },
     { label: "RIDDOR 2013 – HSE Guidance", url: "https://www.hse.gov.uk/riddor/" },
     { label: "Management of H&S at Work Regs 1999", url: "https://www.legislation.gov.uk/uksi/1999/3242/contents/made" },
   ],
   "Staff & Pupil Welfare": [
-    { label: "OpenCase – Staff Welfare Legal Obligations", url: "https://www.opencase.com" },
     { label: "HSE First Aid at Work", url: "https://www.hse.gov.uk/firstaid/" },
     { label: "Manual Handling Operations Regs 1992", url: "https://www.hse.gov.uk/pubns/indg143.htm" },
     { label: "HSE Work-related Stress Guidance", url: "https://www.hse.gov.uk/stress/" },
   ],
   "Contractors & Visitors": [
-    { label: "OpenCase – Contractor Management Law", url: "https://www.opencase.com" },
     { label: "HSE Managing Contractors", url: "https://www.hse.gov.uk/involvement/contractors.htm" },
     { label: "DfE Keeping Children Safe in Education", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
   ],
