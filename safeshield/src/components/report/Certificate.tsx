@@ -79,7 +79,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   <div class="cert-body">
     <p class="the-text">The</p>
     <p class="cert-title">${toolName}<br/>Assessment Certificate</p>
-    <p class="awarded-line">has been awarded to</p>
+    <p class="awarded-line">has been completed by</p>
     <p class="recipient-name">${meta.schoolName || "School Name"}</p>
     <p class="detail-line"><span class="detail-label">Completed by: </span>${meta.staffMember || "—"}</p>
     <p class="score-line"><span class="detail-label">Assessment score: </span><span style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:3px 12px;border-radius:5px;font-weight:700">${score}% — ${rating}</span></p>
@@ -216,7 +216,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
         <p style={{ fontSize: 20, fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px", lineHeight: 1.35, color: "#1a1a1a", marginBottom: 24, maxWidth: 380 }}>
           {toolName}<br />Assessment Certificate
         </p>
-        <p style={{ fontSize: 14, fontStyle: "italic", color: "#555", marginBottom: 14 }}>has been awarded to</p>
+        <p style={{ fontSize: 14, fontStyle: "italic", color: "#555", marginBottom: 14 }}>has been completed by</p>
         <p style={{ fontSize: 28, fontStyle: "italic", fontWeight: 600, color: "#1a1a1a", marginBottom: 20 }}>{meta.schoolName || "School Name"}</p>
         <p style={{ fontSize: 13, color: "#444", marginBottom: 6 }}>
           <span style={{ color: "#888" }}>Completed by: </span>{meta.staffMember || "—"}
