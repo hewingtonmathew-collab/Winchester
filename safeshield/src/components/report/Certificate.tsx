@@ -45,8 +45,8 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   .score-rating { font-size: 13px; font-weight: 600; color: ${ratingColor}; font-family: system-ui, sans-serif; }
   .meta-row { display: flex; justify-content: center; gap: 12mm; margin-bottom: 6mm; font-family: system-ui, sans-serif; }
   .meta-block { text-align: center; }
-  .meta-value { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); display: block; }
-  .meta-label { font-size: 8px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; display: block; }
+  .meta-value { font-size: 14px; font-weight: 700; color: #ffffff; display: block; }
+  .meta-label { font-size: 8px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; display: block; }
   .sig-row { display: flex; justify-content: flex-end; padding: 0 14mm 4mm; position: relative; z-index: 2; }
   .sig-block { text-align: center; }
   .sig-line { width: 44mm; height: 1px; background: rgba(255,255,255,0.2); margin-bottom: 5px; }
@@ -174,8 +174,8 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
               <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, marginTop: 2 }}>Staff Member</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{today}</div>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, marginTop: 2 }}>Date Completed</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff" }}>{today}</div>
+              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: 1.5, marginTop: 3 }}>Date Completed</div>
             </div>
           </div>
         </div>
