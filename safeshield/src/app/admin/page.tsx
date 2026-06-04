@@ -1,8 +1,66 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "safeshield2025";
+const SESSION_KEY = "ss_admin_auth";
+
+function LoginGate({ onSuccess }: { onSuccess: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  function attempt(e: React.FormEvent) {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      onSuccess();
+    } else {
+      setError(true);
+      setShake(true);
+      setPassword("");
+      setTimeout(() => setShake(false), 500);
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className={`w-full max-w-sm transition-all ${shake ? "animate-[shake_0.4s_ease]" : ""}`}>
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+            <Lock size={24} className="text-[#38BDF8]" strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">Admin Access</h1>
+          <p className="text-sm text-[#64748B]">Enter your password to continue</p>
+        </div>
+        <GlassCard>
+          <form onSubmit={attempt} className="flex flex-col gap-4">
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                placeholder="Password"
+                autoFocus
+                className="w-full px-4 py-3 rounded-xl text-sm bg-white/5 border text-white placeholder-[#475569] outline-none transition-all"
+                style={{ borderColor: error ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.08)" }}
+              />
+              {error && <p className="text-red-400 text-xs mt-2">Incorrect password. Try again.</p>}
+            </div>
+            <button type="submit"
+              className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+              style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+              Sign In
+            </button>
+          </form>
+        </GlassCard>
+      </div>
+      <style>{`@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}`}</style>
+    </div>
+  );
+}
 
 const TOOL_COLORS: Record<string, string> = {
   "Safeguarding Risk Checker": "#34D399",
@@ -102,12 +160,19 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
 }
 
 export default function AdminPage() {
+  const [authed, setAuthed] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [view, setView] = useState<"schools" | "all">("schools");
 
   useEffect(() => {
-    setSubmissions(getSubmissions());
+    if (sessionStorage.getItem(SESSION_KEY) === "1") setAuthed(true);
   }, []);
+
+  useEffect(() => {
+    if (authed) setSubmissions(getSubmissions());
+  }, [authed]);
+
+  if (!authed) return <LoginGate onSuccess={() => setAuthed(true)} />;
 
   function handleDelete(id: string) {
     deleteSubmission(id);
@@ -123,17 +188,23 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="pt-10 pb-10 flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-            <LayoutDashboard size={22} className="text-[#38BDF8]" strokeWidth={1.5} />
+        <div className="pt-10 pb-10 flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+              <LayoutDashboard size={22} className="text-[#38BDF8]" strokeWidth={1.5} />
+            </div>
+            <div>
+              <p className="text-[#38BDF8] text-xs font-medium uppercase tracking-widest mb-1">Admin</p>
+              <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Admin Panel</h1>
+              <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                View all schools that have completed assessments, track results, and send certificates.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[#38BDF8] text-xs font-medium uppercase tracking-widest mb-1">Admin</p>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Admin Panel</h1>
-            <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              View all schools that have completed assessments, track results, and send certificates.
-            </p>
-          </div>
+          <button onClick={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all glass border border-white/10 text-[#64748B] hover:text-white shrink-0 mt-2">
+            <Lock size={11} /> Sign out
+          </button>
         </div>
 
         {/* Stats row */}
