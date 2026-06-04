@@ -37,3 +37,6 @@ next-env.d.ts
 
 # claude code
 .claude/
+safeshield/.next/
+safeshield/.next/
+safeshield/node_modules/
