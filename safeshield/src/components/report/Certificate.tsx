@@ -16,98 +16,94 @@ type Props = {
 export default function Certificate({ meta, toolName, score, rating, ratingColor, date, accentColor = "#38BDF8" }: Props) {
   const certRef = useRef<HTMLDivElement>(null);
   const today = date ?? new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-  const certId = `WC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+  const certId = `SS-${Date.now().toString(36).toUpperCase().slice(-5)}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
 
   function handlePrint() {
-    const content = certRef.current?.innerHTML ?? "";
     const w = window.open("", "_blank");
     if (!w) return;
     w.document.write(`<!DOCTYPE html><html><head><title>Certificate — ${toolName}</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  @page { size: A4 landscape; margin: 0; }
-  html, body { width: 297mm; height: 210mm; overflow: hidden; background: #020610; font-family: Georgia, serif; }
-  body { display: flex; justify-content: center; align-items: center; }
-  .cert { width: 297mm; height: 210mm; background: linear-gradient(160deg, #0d1726 0%, #060d1a 60%, #020610 100%); position: relative; overflow: hidden; page-break-inside: avoid; }
-  .cert-inner { padding: 10mm 16mm 0; position: relative; z-index: 2; }
-  .logo-row { display: flex; justify-content: center; margin-bottom: 5mm; }
-  .logo-row img { height: 44px; object-fit: contain; }
-  .brand-pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
-  .brand-dot { width: 20px; height: 20px; border-radius: 4px; background: ${accentColor}22; border: 1px solid ${accentColor}55; display: flex; align-items: center; justify-content: center; }
-  .brand-name { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; font-family: system-ui, sans-serif; }
-  .cert-title-word { font-size: 34px; font-weight: 700; color: #fff; letter-spacing: 6px; text-align: center; display: block; }
-  .cert-title-sub { font-size: 17px; font-style: italic; color: rgba(255,255,255,0.5); text-align: center; display: block; margin-top: 1px; font-weight: 400; }
-  .divider { width: 60mm; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent); margin: 4mm auto; }
-  .awarded-text { text-align: center; font-size: 8px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 3mm; font-family: system-ui, sans-serif; }
-  .school-name { font-size: 30px; font-style: italic; font-weight: 700; color: ${accentColor}; text-align: center; margin-bottom: 3mm; line-height: 1.2; }
-  .assessment-text { font-size: 9px; color: rgba(255,255,255,0.5); text-align: center; max-width: 120mm; margin: 0 auto 3mm; line-height: 1.6; font-family: system-ui, sans-serif; }
-  .score-pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 16px; border-radius: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); margin: 0 auto 3mm; }
-  .score-num { font-size: 20px; font-weight: 700; color: ${ratingColor}; }
-  .score-sep { color: rgba(255,255,255,0.2); }
-  .score-rating { font-size: 12px; font-weight: 600; color: ${ratingColor}; font-family: system-ui, sans-serif; }
-  .meta-row { display: flex; justify-content: center; gap: 14mm; margin-bottom: 4mm; font-family: system-ui, sans-serif; }
-  .meta-block { text-align: center; }
-  .meta-value { font-size: 13px; font-weight: 700; color: #ffffff; display: block; }
-  .meta-label { font-size: 7px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; display: block; }
-  .sig-row { display: flex; justify-content: flex-end; padding: 0 14mm 2mm; position: relative; z-index: 2; }
-  .sig-block { text-align: center; }
-  .sig-line { width: 44mm; height: 1px; background: rgba(255,255,255,0.2); margin-bottom: 4px; }
-  .sig-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8); font-family: system-ui, sans-serif; }
-  .sig-role { font-size: 8px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1.5px; font-family: system-ui, sans-serif; margin-top: 2px; }
-  .swoosh-area { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; height: 52mm; }
-  .swoosh-area svg { position: absolute; bottom: 0; left: 0; width: 100%; }
-  .badge-wrap { position: absolute; bottom: 10mm; left: 14mm; z-index: 3; }
-  .badge-outer { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37, #F9E87B, #B8860B); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
-  .badge-inner { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
-  .badge-text { font-size: 7px; font-weight: 700; color: #5a3800; letter-spacing: 1px; font-family: system-ui, sans-serif; }
-  .badge-star { font-size: 13px; color: #5a3800; line-height: 1; }
-  .cert-id { position: absolute; bottom: 4mm; left: 0; right: 0; text-align: center; font-size: 7px; color: rgba(255,255,255,0.25); letter-spacing: 1.5px; font-family: system-ui, sans-serif; z-index: 3; }
+  @page { size: A4 portrait; margin: 0; }
+  html, body { width: 210mm; height: 297mm; background: #fff; font-family: 'EB Garamond', Georgia, serif; color: #1a1a1a; }
+  .page { width: 210mm; height: 297mm; padding: 18mm 20mm 16mm; display: flex; flex-direction: column; position: relative; background: #fff; }
+  .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18mm; }
+  .school-logo img { height: 70px; object-fit: contain; }
+  .school-logo-placeholder { width: 70px; height: 70px; }
+  .brand-logo { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .brand-icon-row { display: flex; align-items: center; gap: 7px; }
+  .brand-icon-box { width: 28px; height: 28px; border: 2px solid #1a1a1a; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+  .brand-name { font-size: 15px; font-weight: 600; color: #1a1a1a; letter-spacing: 0.3px; font-family: 'EB Garamond', serif; }
+  .brand-sub { font-size: 10px; color: #666; letter-spacing: 0.5px; font-family: Georgia, serif; }
+  .cert-body { flex: 1; }
+  .the-text { font-size: 14px; color: #1a1a1a; margin-bottom: 5mm; font-family: 'EB Garamond', serif; }
+  .cert-title { font-size: 22px; font-weight: 600; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; margin-bottom: 8mm; font-family: 'EB Garamond', serif; max-width: 140mm; }
+  .awarded-line { font-size: 14px; font-style: italic; color: #444; margin-bottom: 5mm; font-family: 'EB Garamond', serif; }
+  .recipient-name { font-size: 32px; font-weight: 600; color: #1a1a1a; margin-bottom: 8mm; font-family: 'Cormorant Garamond', 'EB Garamond', serif; font-style: italic; }
+  .detail-line { font-size: 13px; color: #333; margin-bottom: 3mm; font-family: 'EB Garamond', serif; }
+  .detail-label { color: #666; }
+  .score-line { font-size: 13px; color: #333; margin-bottom: 10mm; font-family: 'EB Garamond', serif; }
+  .date-text { font-size: 13px; color: #1a1a1a; margin-bottom: 16mm; font-family: 'EB Garamond', serif; }
+  .sig-section { display: flex; justify-content: flex-end; gap: 14mm; margin-bottom: 10mm; }
+  .sig-block { text-align: left; min-width: 50mm; }
+  .sig-line-rule { width: 50mm; height: 1px; background: #1a1a1a; margin-bottom: 3px; }
+  .sig-name { font-size: 12px; font-style: italic; color: #1a1a1a; font-family: 'EB Garamond', serif; }
+  .sig-role { font-size: 10px; color: #666; letter-spacing: 0.3px; font-family: Georgia, serif; margin-top: 1px; }
+  .bottom-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+  .hologram { width: 28mm; height: 20mm; border: 1px solid #ccc; border-radius: 2px; background: linear-gradient(135deg, #e8e0d0, #f5f0e8, #ddd8c8, #ede8dc); display: flex; align-items: center; justify-content: center; }
+  .hologram-inner { width: 22mm; height: 14mm; border: 1px solid #b8b0a0; border-radius: 1px; background: linear-gradient(45deg, rgba(100,150,200,0.2), rgba(150,200,100,0.2), rgba(200,100,150,0.2)); display: flex; align-items: center; justify-content: center; }
+  .hologram-text { font-size: 6px; color: #888; letter-spacing: 0.5px; font-family: Georgia, serif; text-align: center; }
+  .cert-ref { font-size: 9px; color: #999; letter-spacing: 1px; font-family: Georgia, serif; text-align: right; }
 </style>
-</head><body><div class="cert">
-  <div class="cert-inner">
-    <div class="logo-row">
+</head><body>
+<div class="page">
+  <div class="top-bar">
+    <div class="school-logo">
       ${meta.logoDataUrl
-        ? `<img src="${meta.logoDataUrl}" alt="Logo" />`
-        : `<div class="brand-pill"><div class="brand-dot"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l4 2v3.5c0 2-1.5 3.5-4 4.5C3.5 10 2 8.5 2 6.5V3L6 1z" fill="none" stroke="${accentColor}" stroke-width="1.2"/></svg></div><span class="brand-name">SafeShield</span></div>`
+        ? `<img src="${meta.logoDataUrl}" alt="School logo" />`
+        : `<div class="school-logo-placeholder"></div>`
       }
     </div>
-    <span class="cert-title-word">CERTIFICATE</span>
-    <span class="cert-title-sub">of Assessment</span>
-    <div class="divider"></div>
-    <p class="awarded-text">This certificate is awarded to</p>
-    <div class="school-name">${meta.schoolName || "School Name"}</div>
-    <p class="assessment-text">In recognition of completing the <strong style="color:rgba(255,255,255,0.7)">${toolName}</strong> and demonstrating commitment to compliance and safeguarding excellence.</p>
-    <div style="text-align:center"><div class="score-pill"><span class="score-num">${score}%</span><span class="score-sep">|</span><span class="score-rating">${rating}</span></div></div>
-    <div class="meta-row">
-      <div class="meta-block"><span class="meta-value">${meta.staffMember || "—"}</span><span class="meta-label">Staff Member</span></div>
-      <div class="meta-block"><span class="meta-value">${today}</span><span class="meta-label">Date Completed</span></div>
+    <div class="brand-logo">
+      <div class="brand-icon-row">
+        <div class="brand-icon-box">
+          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l4.5 2.25v4c0 2.25-1.8 4-4.5 5C4.3 11.75 2.5 10 2.5 7.75v-4L7 1.5z" fill="none" stroke="#1a1a1a" stroke-width="1.3"/></svg>
+        </div>
+        <span class="brand-name">SafeShield</span>
+      </div>
+      <span class="brand-sub">Assessment Tools</span>
     </div>
   </div>
-  <div class="sig-row">
-    <div class="sig-block"><div class="sig-line"></div><div class="sig-name">${meta.consultantName || "Consultant"}</div><div class="sig-role">SafeShield</div></div>
+
+  <div class="cert-body">
+    <p class="the-text">The</p>
+    <p class="cert-title">${toolName}<br/>Assessment Certificate</p>
+    <p class="awarded-line">has been awarded to</p>
+    <p class="recipient-name">${meta.schoolName || "School Name"}</p>
+    <p class="detail-line"><span class="detail-label">Completed by: </span>${meta.staffMember || "—"}</p>
+    <p class="score-line"><span class="detail-label">Assessment score: </span><strong>${score}% — ${rating}</strong></p>
+    <p class="date-text">${today}</p>
   </div>
-  <div class="swoosh-area">
-    <svg viewBox="0 0 840 148" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="sw1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="${accentColor}" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="${accentColor}" stop-opacity="0.05"/>
-        </linearGradient>
-        <linearGradient id="sw2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
-          <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
-        </linearGradient>
-      </defs>
-      <path d="M0 148 L0 60 Q320 -15 840 40 L840 148 Z" fill="rgba(255,255,255,0.025)"/>
-      <path d="M0 115 Q300 20 840 68 L840 95 Q300 47 0 142 Z" fill="url(#sw1)"/>
-      <path d="M0 130 Q310 35 840 80 L840 105 Q310 58 0 155 Z" fill="url(#sw2)"/>
-    </svg>
-    <div class="badge-wrap">
-      <div class="badge-outer"><div class="badge-inner"><span class="badge-text">BEST</span><span class="badge-star">★</span><span class="badge-text">AWARD</span></div></div>
+
+  <div class="sig-section">
+    <div class="sig-block">
+      <div class="sig-line-rule"></div>
+      <p class="sig-name">${meta.consultantName || "Consultant"}</p>
+      <p class="sig-role">Consultant, SafeShield</p>
     </div>
-    <div class="cert-id">Certificate ID: ${certId}</div>
   </div>
-</div></body></html>`);
+
+  <div class="bottom-row">
+    <div class="hologram">
+      <div class="hologram-inner">
+        <span class="hologram-text">VERIFIED<br/>ASSESSMENT</span>
+      </div>
+    </div>
+    <p class="cert-ref">${certId}</p>
+  </div>
+</div>
+</body></html>`);
     w.document.close();
     setTimeout(() => w.print(), 800);
   }
@@ -115,7 +111,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   function handleEmail() {
     const subject = encodeURIComponent(`${toolName} Certificate — ${meta.schoolName}`);
     const body = encodeURIComponent(
-      `Dear ${meta.schoolName},\n\nPlease find below the ${toolName} assessment certificate completed on ${today}.\n\nTo save the certificate as a PDF:\n1. Open the SafeShield tool and complete the assessment\n2. Click "Print / Save PDF" on the certificate\n3. Choose "Save as PDF" in your print dialog\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nScore:        ${score}%\nRating:       ${rating}\nStaff Member: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nDate:         ${today}\nCertificate:  ${certId}\n\nKind regards,\n${meta.consultantName}\nSafeShield`
+      `Dear ${meta.schoolName},\n\nPlease find below your ${toolName} assessment certificate.\n\nTo save as PDF: open the tool, complete the assessment, then click "Print / Save PDF" and choose "Save as PDF".\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nScore:        ${score}%\nRating:       ${rating}\nCompleted by: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nDate:         ${today}\nCertificate:  ${certId}\n\nKind regards,\n${meta.consultantName}\nSafeShield`
     );
     const recipients = [meta.schoolEmail, meta.consultantEmail].filter(Boolean).join(",");
     window.location.href = `mailto:${recipients}?subject=${subject}&body=${body}`;
@@ -123,108 +119,62 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Certificate preview */}
-      <div ref={certRef} style={{ background: "linear-gradient(160deg, #0d1726 0%, #060d1a 60%, #020610 100%)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, overflow: "hidden", fontFamily: "Georgia, serif", position: "relative" }}>
-        {/* Top section */}
-        <div style={{ padding: "32px 40px 0", position: "relative", zIndex: 2 }}>
-          {/* Logo / brand */}
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            {meta.logoDataUrl ? (
-              <img src={meta.logoDataUrl} alt="Logo" style={{ height: 48, objectFit: "contain" }} />
-            ) : (
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 40, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                <div style={{ width: 22, height: 22, borderRadius: 5, background: `${accentColor}22`, border: `1px solid ${accentColor}55`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l4 2v3.5c0 2-1.5 3.5-4 4.5C3.5 10 2 8.5 2 6.5V3L6 1z" fill="none" stroke={accentColor} strokeWidth="1.2" /></svg>
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.5px" }}>SafeShield</span>
+      {/* Preview */}
+      <div ref={certRef}
+        style={{ background: "#fff", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "36px 40px", fontFamily: "Georgia, serif", color: "#1a1a1a", minHeight: 480 }}>
+
+        {/* Top row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
+          <div>
+            {meta.logoDataUrl
+              ? <img src={meta.logoDataUrl} alt="Logo" style={{ height: 60, objectFit: "contain" }} />
+              : <div style={{ width: 60, height: 60 }} />
+            }
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <div style={{ width: 26, height: 26, border: "2px solid #1a1a1a", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="13" height="13" viewBox="0 0 14 14"><path d="M7 1.5l4.5 2.25v4c0 2.25-1.8 4-4.5 5C4.3 11.75 2.5 10 2.5 7.75v-4L7 1.5z" fill="none" stroke="#1a1a1a" strokeWidth="1.3"/></svg>
               </div>
-            )}
-          </div>
-
-          {/* Title */}
-          <div style={{ textAlign: "center", marginBottom: 0 }}>
-            <div style={{ fontSize: 34, fontWeight: 700, color: "#fff", letterSpacing: 6, fontFamily: "Georgia, serif" }}>CERTIFICATE</div>
-            <div style={{ fontSize: 18, fontStyle: "italic", color: "rgba(255,255,255,0.45)", fontFamily: "Georgia, serif", marginTop: 2 }}>of Assessment</div>
-          </div>
-
-          {/* Accent divider */}
-          <div style={{ width: 80, height: 1, background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`, margin: "16px auto" }} />
-
-          <p style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", textAlign: "center", letterSpacing: 3, textTransform: "uppercase", marginBottom: 10, fontFamily: "system-ui, sans-serif" }}>This certificate is awarded to</p>
-
-          {/* School name */}
-          <div style={{ fontSize: 28, fontStyle: "italic", fontWeight: 700, color: accentColor, textAlign: "center", marginBottom: 12, fontFamily: "Georgia, serif", lineHeight: 1.2 }}>
-            {meta.schoolName || "School Name"}
-          </div>
-
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textAlign: "center", marginBottom: 14, lineHeight: 1.7, fontFamily: "system-ui, sans-serif" }}>
-            In recognition of completing the <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>{toolName}</span> and demonstrating commitment to compliance and safeguarding excellence.
-          </p>
-
-          {/* Score pill */}
-          <div style={{ textAlign: "center", marginBottom: 14 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: "7px 20px", borderRadius: 40, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <span style={{ fontSize: 20, fontWeight: 700, color: ratingColor, fontFamily: "Georgia, serif" }}>{score}%</span>
-              <span style={{ color: "rgba(255,255,255,0.2)" }}>|</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: ratingColor, fontFamily: "system-ui, sans-serif" }}>{rating}</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>SafeShield</span>
             </div>
-          </div>
-
-          {/* Meta */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 40, marginBottom: 12, fontFamily: "system-ui, sans-serif" }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{meta.staffMember || "—"}</div>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, marginTop: 2 }}>Staff Member</div>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff" }}>{today}</div>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: 1.5, marginTop: 3 }}>Date Completed</div>
-            </div>
+            <span style={{ fontSize: 10, color: "#888", letterSpacing: "0.5px" }}>Assessment Tools</span>
           </div>
         </div>
+
+        {/* Body */}
+        <p style={{ fontSize: 14, color: "#1a1a1a", marginBottom: 10 }}>The</p>
+        <p style={{ fontSize: 20, fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px", lineHeight: 1.35, color: "#1a1a1a", marginBottom: 24, maxWidth: 380 }}>
+          {toolName}<br />Assessment Certificate
+        </p>
+        <p style={{ fontSize: 14, fontStyle: "italic", color: "#555", marginBottom: 14 }}>has been awarded to</p>
+        <p style={{ fontSize: 28, fontStyle: "italic", fontWeight: 600, color: "#1a1a1a", marginBottom: 20 }}>{meta.schoolName || "School Name"}</p>
+        <p style={{ fontSize: 13, color: "#444", marginBottom: 6 }}>
+          <span style={{ color: "#888" }}>Completed by: </span>{meta.staffMember || "—"}
+        </p>
+        <p style={{ fontSize: 13, color: "#444", marginBottom: 24 }}>
+          <span style={{ color: "#888" }}>Assessment score: </span>
+          <strong style={{ color: ratingColor }}>{score}% — {rating}</strong>
+        </p>
+        <p style={{ fontSize: 13, color: "#1a1a1a", marginBottom: 32 }}>{today}</p>
 
         {/* Signature */}
-        <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 40px 8px", position: "relative", zIndex: 2 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ width: 120, height: 1, background: "rgba(255,255,255,0.2)", marginBottom: 5 }} />
-            <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.75)", fontFamily: "system-ui, sans-serif" }}>{meta.consultantName || "Consultant"}</div>
-            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>SafeShield</div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 24 }}>
+          <div style={{ textAlign: "left", minWidth: 160 }}>
+            <div style={{ width: "100%", height: 1, background: "#1a1a1a", marginBottom: 4 }} />
+            <p style={{ fontSize: 12, fontStyle: "italic", color: "#1a1a1a" }}>{meta.consultantName || "Consultant"}</p>
+            <p style={{ fontSize: 10, color: "#888", marginTop: 1 }}>Consultant, SafeShield</p>
           </div>
         </div>
 
-        {/* Swoosh */}
-        <div style={{ position: "relative", zIndex: 1, marginTop: -8 }}>
-          <svg viewBox="0 0 570 160" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "100%" }}>
-            <defs>
-              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={accentColor} stopOpacity="0.3" />
-                <stop offset="100%" stopColor={accentColor} stopOpacity="0.05" />
-              </linearGradient>
-              <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0.01)" />
-              </linearGradient>
-            </defs>
-            <path d="M0 160 L0 70 Q220 -20 570 55 L570 160 Z" fill="rgba(255,255,255,0.025)" />
-            <path d="M0 125 Q200 10 570 78 L570 105 Q200 38 0 155 Z" fill="url(#g1)" />
-            <path d="M0 142 Q210 28 570 92 L570 115 Q210 55 0 168 Z" fill="url(#g2)" />
-          </svg>
-
-          {/* Gold badge */}
-          <div style={{ position: "absolute", bottom: 16, left: 32, zIndex: 3 }}>
-            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "linear-gradient(135deg, #D4AF37, #F9E87B, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px rgba(212,175,55,0.5), 0 0 40px rgba(212,175,55,0.2)` }}>
-              <div style={{ width: 50, height: 50, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.35)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                <span style={{ fontSize: 7, fontWeight: 700, color: "#5a3800", letterSpacing: 1, fontFamily: "system-ui, sans-serif" }}>BEST</span>
-                <span style={{ fontSize: 14, color: "#5a3800", lineHeight: 1 }}>★</span>
-                <span style={{ fontSize: 7, fontWeight: 700, color: "#5a3800", letterSpacing: 1, fontFamily: "system-ui, sans-serif" }}>AWARD</span>
-              </div>
+        {/* Bottom row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div style={{ width: 80, height: 52, border: "1px solid #ccc", borderRadius: 2, background: "linear-gradient(135deg, #e8e0d0, #f5f0e8, #ddd8c8, #ede8dc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 64, height: 38, border: "1px solid #b8b0a0", borderRadius: 1, background: "linear-gradient(45deg, rgba(100,150,200,0.2), rgba(150,200,100,0.2), rgba(200,100,150,0.2))", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: 6, color: "#999", letterSpacing: "0.5px", textAlign: "center", fontFamily: "system-ui" }}>VERIFIED<br/>ASSESSMENT</span>
             </div>
           </div>
-
-          {/* Certificate ID */}
-          <div style={{ position: "absolute", bottom: 8, left: 0, right: 0, textAlign: "center", fontSize: 8, color: "rgba(255,255,255,0.2)", letterSpacing: 1.5, fontFamily: "system-ui, sans-serif", zIndex: 3 }}>
-            Certificate ID: {certId}
-          </div>
+          <span style={{ fontSize: 9, color: "#bbb", letterSpacing: "1px", fontFamily: "system-ui" }}>{certId}</span>
         </div>
       </div>
 
