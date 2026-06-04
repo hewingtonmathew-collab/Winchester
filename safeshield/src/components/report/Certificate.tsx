@@ -25,40 +25,43 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     w.document.write(`<!DOCTYPE html><html><head><title>Certificate — ${toolName}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #020610; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Georgia, serif; }
-  .cert { width: 190mm; min-height: 270mm; background: linear-gradient(160deg, #0d1726 0%, #060d1a 60%, #020610 100%); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
-  .cert-inner { padding: 14mm 16mm 0; position: relative; z-index: 2; }
-  .logo-row { display: flex; justify-content: center; margin-bottom: 8mm; }
-  .logo-row img { height: 52px; object-fit: contain; }
-  .brand-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
-  .brand-dot { width: 22px; height: 22px; border-radius: 5px; background: ${accentColor}22; border: 1px solid ${accentColor}55; display: flex; align-items: center; justify-content: center; }
-  .brand-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; font-family: system-ui, sans-serif; }
-  .cert-title-word { font-size: 40px; font-weight: 700; color: #fff; letter-spacing: 6px; text-align: center; display: block; }
-  .cert-title-sub { font-size: 20px; font-style: italic; color: rgba(255,255,255,0.5); text-align: center; display: block; margin-top: 2px; font-weight: 400; }
-  .divider { width: 60mm; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent); margin: 6mm auto; }
-  .awarded-text { text-align: center; font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4mm; font-family: system-ui, sans-serif; }
-  .school-name { font-size: 34px; font-style: italic; font-weight: 700; color: ${accentColor}; text-align: center; margin-bottom: 5mm; line-height: 1.2; }
-  .assessment-text { font-size: 10px; color: rgba(255,255,255,0.5); text-align: center; max-width: 110mm; margin: 0 auto 5mm; line-height: 1.7; font-family: system-ui, sans-serif; }
-  .score-pill { display: inline-flex; align-items: center; gap: 10px; padding: 6px 18px; border-radius: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); margin: 0 auto 5mm; }
-  .score-num { font-size: 22px; font-weight: 700; color: ${ratingColor}; }
+  @page { size: A4 landscape; margin: 0; }
+  html, body { width: 297mm; height: 210mm; overflow: hidden; background: #020610; font-family: Georgia, serif; }
+  body { display: flex; justify-content: center; align-items: center; }
+  .cert { width: 297mm; height: 210mm; background: linear-gradient(160deg, #0d1726 0%, #060d1a 60%, #020610 100%); position: relative; overflow: hidden; page-break-inside: avoid; }
+  .cert-inner { padding: 10mm 16mm 0; position: relative; z-index: 2; }
+  .logo-row { display: flex; justify-content: center; margin-bottom: 5mm; }
+  .logo-row img { height: 44px; object-fit: contain; }
+  .brand-pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+  .brand-dot { width: 20px; height: 20px; border-radius: 4px; background: ${accentColor}22; border: 1px solid ${accentColor}55; display: flex; align-items: center; justify-content: center; }
+  .brand-name { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; font-family: system-ui, sans-serif; }
+  .cert-title-word { font-size: 34px; font-weight: 700; color: #fff; letter-spacing: 6px; text-align: center; display: block; }
+  .cert-title-sub { font-size: 17px; font-style: italic; color: rgba(255,255,255,0.5); text-align: center; display: block; margin-top: 1px; font-weight: 400; }
+  .divider { width: 60mm; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent); margin: 4mm auto; }
+  .awarded-text { text-align: center; font-size: 8px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 3mm; font-family: system-ui, sans-serif; }
+  .school-name { font-size: 30px; font-style: italic; font-weight: 700; color: ${accentColor}; text-align: center; margin-bottom: 3mm; line-height: 1.2; }
+  .assessment-text { font-size: 9px; color: rgba(255,255,255,0.5); text-align: center; max-width: 120mm; margin: 0 auto 3mm; line-height: 1.6; font-family: system-ui, sans-serif; }
+  .score-pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 16px; border-radius: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); margin: 0 auto 3mm; }
+  .score-num { font-size: 20px; font-weight: 700; color: ${ratingColor}; }
   .score-sep { color: rgba(255,255,255,0.2); }
-  .score-rating { font-size: 13px; font-weight: 600; color: ${ratingColor}; font-family: system-ui, sans-serif; }
-  .meta-row { display: flex; justify-content: center; gap: 12mm; margin-bottom: 6mm; font-family: system-ui, sans-serif; }
+  .score-rating { font-size: 12px; font-weight: 600; color: ${ratingColor}; font-family: system-ui, sans-serif; }
+  .meta-row { display: flex; justify-content: center; gap: 14mm; margin-bottom: 4mm; font-family: system-ui, sans-serif; }
   .meta-block { text-align: center; }
-  .meta-value { font-size: 14px; font-weight: 700; color: #ffffff; display: block; }
-  .meta-label { font-size: 8px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; display: block; }
-  .sig-row { display: flex; justify-content: flex-end; padding: 0 14mm 4mm; position: relative; z-index: 2; }
+  .meta-value { font-size: 13px; font-weight: 700; color: #ffffff; display: block; }
+  .meta-label { font-size: 7px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; display: block; }
+  .sig-row { display: flex; justify-content: flex-end; padding: 0 14mm 2mm; position: relative; z-index: 2; }
   .sig-block { text-align: center; }
-  .sig-line { width: 44mm; height: 1px; background: rgba(255,255,255,0.2); margin-bottom: 5px; }
+  .sig-line { width: 44mm; height: 1px; background: rgba(255,255,255,0.2); margin-bottom: 4px; }
   .sig-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8); font-family: system-ui, sans-serif; }
   .sig-role { font-size: 8px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1.5px; font-family: system-ui, sans-serif; margin-top: 2px; }
-  .swoosh-area { position: relative; z-index: 1; margin-top: -10mm; }
-  .badge-wrap { position: absolute; bottom: 22mm; left: 14mm; z-index: 3; }
-  .badge-outer { width: 66px; height: 66px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37, #F9E87B, #B8860B); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
-  .badge-inner { width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .swoosh-area { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; height: 52mm; }
+  .swoosh-area svg { position: absolute; bottom: 0; left: 0; width: 100%; }
+  .badge-wrap { position: absolute; bottom: 10mm; left: 14mm; z-index: 3; }
+  .badge-outer { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37, #F9E87B, #B8860B); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
+  .badge-inner { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .badge-text { font-size: 7px; font-weight: 700; color: #5a3800; letter-spacing: 1px; font-family: system-ui, sans-serif; }
-  .badge-star { font-size: 15px; color: #5a3800; line-height: 1; }
-  .cert-id { position: absolute; bottom: 6mm; left: 0; right: 0; text-align: center; font-size: 7px; color: rgba(255,255,255,0.25); letter-spacing: 1.5px; font-family: system-ui, sans-serif; z-index: 3; }
+  .badge-star { font-size: 13px; color: #5a3800; line-height: 1; }
+  .cert-id { position: absolute; bottom: 4mm; left: 0; right: 0; text-align: center; font-size: 7px; color: rgba(255,255,255,0.25); letter-spacing: 1.5px; font-family: system-ui, sans-serif; z-index: 3; }
 </style>
 </head><body><div class="cert">
   <div class="cert-inner">
@@ -84,10 +87,10 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     <div class="sig-block"><div class="sig-line"></div><div class="sig-name">${meta.consultantName || "Consultant"}</div><div class="sig-role">SafeShield</div></div>
   </div>
   <div class="swoosh-area">
-    <svg viewBox="0 0 570 190" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">
+    <svg viewBox="0 0 840 148" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
       <defs>
         <linearGradient id="sw1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="${accentColor}" stop-opacity="0.25"/>
+          <stop offset="0%" stop-color="${accentColor}" stop-opacity="0.3"/>
           <stop offset="100%" stop-color="${accentColor}" stop-opacity="0.05"/>
         </linearGradient>
         <linearGradient id="sw2" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -95,9 +98,9 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
         </linearGradient>
       </defs>
-      <path d="M0 190 L0 90 Q220 -10 570 70 L570 190 Z" fill="rgba(255,255,255,0.03)"/>
-      <path d="M0 150 Q200 30 570 100 L570 128 Q200 58 0 178 Z" fill="url(#sw1)"/>
-      <path d="M0 168 Q210 48 570 115 L570 138 Q210 70 0 192 Z" fill="url(#sw2)"/>
+      <path d="M0 148 L0 60 Q320 -15 840 40 L840 148 Z" fill="rgba(255,255,255,0.025)"/>
+      <path d="M0 115 Q300 20 840 68 L840 95 Q300 47 0 142 Z" fill="url(#sw1)"/>
+      <path d="M0 130 Q310 35 840 80 L840 105 Q310 58 0 155 Z" fill="url(#sw2)"/>
     </svg>
     <div class="badge-wrap">
       <div class="badge-outer"><div class="badge-inner"><span class="badge-text">BEST</span><span class="badge-star">★</span><span class="badge-text">AWARD</span></div></div>
