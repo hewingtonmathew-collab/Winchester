@@ -107,26 +107,65 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-left:9px solid transparent"></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:10px">
-        <!-- DfE -->
-        <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff">
-          <svg width="22" height="28" viewBox="0 0 22 28" xmlns="http://www.w3.org/2000/svg"><path d="M11 2 L20 5 L20 16 C20 22 15.5 25.5 11 27 C6.5 25.5 2 22 2 16 L2 5 Z" fill="none" stroke="#1a1a1a" stroke-width="1.2"/><path d="M3 6 L3 15 L10 15 L10 6 Z" fill="none" stroke="#1a1a1a" stroke-width="0.4"/><path d="M12 6 L12 15 L19 15 L19 6 Z" fill="none" stroke="#1a1a1a" stroke-width="0.4"/><path d="M14 8 Q14 6 16.5 7 L15.5 14" fill="none" stroke="#1a1a1a" stroke-width="0.7"/><path d="M7 4 L7 2 M11 4 L11 1.5 M15 4 L15 2" stroke="#1a1a1a" stroke-width="0.8" stroke-linecap="round"/><rect x="6" y="3.5" width="10" height="1.5" rx="0.5" fill="#1a1a1a"/></svg>
-          <div style="width:1px;height:24px;background:#1a1a1a"></div>
-          <div style="display:flex;flex-direction:column"><span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:Arial,sans-serif;line-height:1.2">Department</span><span style="font-size:7px;font-weight:700;color:#1a1a1a;font-family:Arial,sans-serif;line-height:1.2">for Education</span></div>
-        </div>
-        <!-- ICO -->
-        <div style="display:flex;flex-direction:column;align-items:flex-start;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff;gap:1px">
-          <span style="font-size:18px;font-weight:900;color:#003A70;font-family:Arial Black,Arial,sans-serif;line-height:1">ico.</span>
-          <span style="font-size:5.5px;color:#003A70;font-family:Arial,sans-serif;letter-spacing:0.2px;line-height:1.2;max-width:52px">Information Commissioner's Office</span>
-        </div>
-        <!-- Ofsted -->
-        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 8px;border:0.5px solid #d1d5db;border-radius:3px;background:#fff;gap:2px">
-          <div style="display:flex;gap:4px">
-            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
-            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
-            <svg width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="3" r="2.2" fill="#00a4a6"/><path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/></svg>
+      <div style="display:flex;justify-content:center;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:10px">
+        <!-- Ofsted: 3 ascending teal figures + navy wordmark -->
+        <svg viewBox="0 0 210 100" width="126" height="60" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="90" cy="19" r="7" fill="#3a9bc1"/>
+          <line x1="90" y1="26" x2="77" y2="36" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
+          <line x1="90" y1="26" x2="103" y2="36" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
+          <line x1="90" y1="36" x2="81" y2="51" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
+          <line x1="90" y1="36" x2="99" y2="51" stroke="#3a9bc1" stroke-width="5.5" stroke-linecap="round"/>
+          <circle cx="134" cy="13" r="9" fill="#3a9bc1"/>
+          <line x1="134" y1="22" x2="118" y2="33" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
+          <line x1="134" y1="22" x2="150" y2="33" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
+          <line x1="134" y1="33" x2="123" y2="51" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
+          <line x1="134" y1="33" x2="145" y2="51" stroke="#3a9bc1" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="185" cy="11" r="12" fill="#3a9bc1"/>
+          <line x1="185" y1="23" x2="166" y2="37" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
+          <line x1="185" y1="23" x2="204" y2="37" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
+          <line x1="185" y1="37" x2="172" y2="57" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
+          <line x1="185" y1="37" x2="198" y2="57" stroke="#3a9bc1" stroke-width="9" stroke-linecap="round"/>
+          <text x="2" y="97" font-family="Arial Rounded MT Bold,Arial Black,sans-serif" font-weight="900" font-size="62" fill="#1a1372">Ofsted</text>
+        </svg>
+        <!-- DfE: coat of arms + vertical rule + text -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg viewBox="0 0 46 62" width="32" height="43" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="20" width="30" height="7" rx="1" fill="#111"/>
+            <line x1="13" y1="20" x2="11" y2="11" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="23" y1="20" x2="23" y2="8" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="33" y1="20" x2="35" y2="11" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="11" cy="10" r="3.5" fill="#111"/>
+            <circle cx="23" cy="7" r="4" fill="#111"/>
+            <circle cx="35" cy="10" r="3.5" fill="#111"/>
+            <line x1="23" y1="3" x2="23" y2="5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="21.5" y1="4" x2="24.5" y2="4" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M8 29 L38 29 L38 50 Q38 59 23 62 Q8 59 8 50 Z" fill="none" stroke="#111" stroke-width="1.8"/>
+            <line x1="23" y1="29" x2="23" y2="62" stroke="#111" stroke-width="1.1"/>
+            <line x1="8" y1="45" x2="38" y2="45" stroke="#111" stroke-width="1.1"/>
+            <rect x="10" y="31" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <rect x="10" y="35" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <rect x="10" y="39" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <path d="M26 31 C28 33 30 35 30 38 C30 41 28 43 26 44" stroke="#111" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="27" cy="31" r="1.8" fill="#111"/>
+            <path d="M12 47 Q10 41 16 41 L16 59" stroke="#111" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <line x1="12" y1="59" x2="16" y2="59" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="25" y="47" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <rect x="25" y="51" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <rect x="25" y="55" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+            <path d="M2 44 C2 40 5 38 6 41 L6 50 C5 53 2 51 2 47 Z" fill="#111" opacity="0.55"/>
+            <path d="M44 44 C44 40 41 38 40 41 L40 50 C41 53 44 51 44 47 Z" fill="#111" opacity="0.55"/>
+            <line x1="40" y1="38" x2="43" y2="34" stroke="#111" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+          </svg>
+          <div style="width:1px;height:40px;background:#111"></div>
+          <div style="display:flex;flex-direction:column">
+            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.35;white-space:nowrap">Department</span>
+            <span style="font-size:13px;font-weight:400;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.35;white-space:nowrap">for Education</span>
           </div>
-          <span style="font-size:11px;font-weight:900;color:#1a1372;font-family:Arial Black,Arial,sans-serif;letter-spacing:0.5px;line-height:1">Ofsted</span>
+        </div>
+        <!-- ICO: bold navy ico. + subtitle -->
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+          <span style="font-size:34px;font-weight:900;color:#003078;font-family:Arial Black,Arial,sans-serif;line-height:1;letter-spacing:-1px">ico.</span>
+          <span style="font-size:7.5px;color:#003078;font-family:Arial,sans-serif;line-height:1.25;max-width:90px">Information Commissioner's Office</span>
         </div>
       </div>
       <div style="text-align:right"><p class="cert-ref">${certId}</p></div>
@@ -215,47 +254,81 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           </div>
 
           {/* Compliance logos */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, flexWrap: "wrap", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 28, flexWrap: "wrap", marginBottom: 12 }}>
 
-            {/* DfE — coat of arms left, vertical rule, "Department\nfor Education" right */}
-            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff" }}>
-              <svg width="22" height="28" viewBox="0 0 22 28" xmlns="http://www.w3.org/2000/svg">
-                {/* Shield outline */}
-                <path d="M11 2 L20 5 L20 16 C20 22 15.5 25.5 11 27 C6.5 25.5 2 22 2 16 L2 5 Z" fill="none" stroke="#1a1a1a" strokeWidth="1.2"/>
-                {/* Quarter 1: lions (top-left) */}
-                <path d="M3 6 L3 15 L10 15 L10 6 Z" fill="none" stroke="#1a1a1a" strokeWidth="0.4"/>
-                <text x="6.5" y="12" textAnchor="middle" fontFamily="serif" fontSize="6" fill="#1a1a1a">𝄜</text>
-                {/* Quarter 2: harp (top-right) */}
-                <path d="M12 6 L12 15 L19 15 L19 6 Z" fill="none" stroke="#1a1a1a" strokeWidth="0.4"/>
-                <path d="M14 8 Q14 6 16.5 7 L15.5 14" fill="none" stroke="#1a1a1a" strokeWidth="0.7"/>
-                {/* Crown on top */}
-                <path d="M7 4 L7 2 M11 4 L11 1.5 M15 4 L15 2" stroke="#1a1a1a" strokeWidth="0.8" strokeLinecap="round"/>
-                <rect x="6" y="3.5" width="10" height="1.5" rx="0.5" fill="#1a1a1a"/>
+            {/* Ofsted — accurate: 3 ascending teal star-person figures + bold navy wordmark */}
+            <svg viewBox="0 0 210 100" style={{ width: 126, height: 60 }} xmlns="http://www.w3.org/2000/svg">
+              {/* Figure 1 — small */}
+              <circle cx="90" cy="19" r="7" fill="#3a9bc1"/>
+              <line x1="90" y1="26" x2="77" y2="36" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
+              <line x1="90" y1="26" x2="103" y2="36" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
+              <line x1="90" y1="36" x2="81" y2="51" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
+              <line x1="90" y1="36" x2="99" y2="51" stroke="#3a9bc1" strokeWidth="5.5" strokeLinecap="round"/>
+              {/* Figure 2 — medium */}
+              <circle cx="134" cy="13" r="9" fill="#3a9bc1"/>
+              <line x1="134" y1="22" x2="118" y2="33" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
+              <line x1="134" y1="22" x2="150" y2="33" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
+              <line x1="134" y1="33" x2="123" y2="51" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
+              <line x1="134" y1="33" x2="145" y2="51" stroke="#3a9bc1" strokeWidth="7" strokeLinecap="round"/>
+              {/* Figure 3 — large */}
+              <circle cx="185" cy="11" r="12" fill="#3a9bc1"/>
+              <line x1="185" y1="23" x2="166" y2="37" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
+              <line x1="185" y1="23" x2="204" y2="37" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
+              <line x1="185" y1="37" x2="172" y2="57" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
+              <line x1="185" y1="37" x2="198" y2="57" stroke="#3a9bc1" strokeWidth="9" strokeLinecap="round"/>
+              {/* "Ofsted" wordmark */}
+              <text x="2" y="97" fontFamily="Arial Rounded MT Bold, Arial Black, sans-serif" fontWeight="900" fontSize="62" fill="#1a1372">Ofsted</text>
+            </svg>
+
+            {/* DfE — coat of arms + vertical rule + "Department for Education" */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <svg viewBox="0 0 46 62" style={{ width: 32, height: 43 }} xmlns="http://www.w3.org/2000/svg">
+                {/* Crown — arched band with 3 points and orb on centre */}
+                <rect x="8" y="20" width="30" height="7" rx="1" fill="#111"/>
+                <line x1="13" y1="20" x2="11" y2="11" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="23" y1="20" x2="23" y2="8" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="33" y1="20" x2="35" y2="11" stroke="#111" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="11" cy="10" r="3.5" fill="#111"/>
+                <circle cx="23" cy="7" r="4" fill="#111"/>
+                <circle cx="35" cy="10" r="3.5" fill="#111"/>
+                {/* Vertical cross on orb */}
+                <line x1="23" y1="3" x2="23" y2="5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="21.5" y1="4" x2="24.5" y2="4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/>
+                {/* Shield body */}
+                <path d="M8 29 L38 29 L38 50 Q38 59 23 62 Q8 59 8 50 Z" fill="none" stroke="#111" strokeWidth="1.8"/>
+                {/* Quarter divisions */}
+                <line x1="23" y1="29" x2="23" y2="62" stroke="#111" strokeWidth="1.1"/>
+                <line x1="8" y1="45" x2="38" y2="45" stroke="#111" strokeWidth="1.1"/>
+                {/* Q1 — three lions (3 horizontal bars) */}
+                <rect x="10" y="31" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                <rect x="10" y="35" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                <rect x="10" y="39" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                {/* Q2 — rampant lion diagonal */}
+                <path d="M26 31 C28 33 30 35 30 38 C30 41 28 43 26 44" stroke="#111" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                <circle cx="27" cy="31" r="1.8" fill="#111"/>
+                {/* Q3 — harp */}
+                <path d="M12 47 Q10 41 16 41 L16 59" stroke="#111" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                <line x1="12" y1="59" x2="16" y2="59" stroke="#111" strokeWidth="1.5" strokeLinecap="round"/>
+                {/* Q4 — three lions */}
+                <rect x="25" y="47" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                <rect x="25" y="51" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                <rect x="25" y="55" width="10" height="2.2" rx="0.4" fill="#111" opacity="0.75"/>
+                {/* Supporters — lion left, unicorn right (simplified) */}
+                <path d="M2 44 C2 40 5 38 6 41 L6 50 C5 53 2 51 2 47 Z" fill="#111" opacity="0.55"/>
+                <path d="M44 44 C44 40 41 38 40 41 L40 50 C41 53 44 51 44 47 Z" fill="#111" opacity="0.55"/>
+                <line x1="40" y1="38" x2="43" y2="34" stroke="#111" strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
               </svg>
-              <div style={{ width: 1, height: 24, background: "#1a1a1a" }} />
+              <div style={{ width: 1, height: 40, background: "#111" }} />
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "Arial, sans-serif", lineHeight: 1.2 }}>Department</span>
-                <span style={{ fontSize: 7, fontWeight: 700, color: "#1a1a1a", fontFamily: "Arial, sans-serif", lineHeight: 1.2 }}>for Education</span>
+                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.35, whiteSpace: "nowrap" }}>Department</span>
+                <span style={{ fontSize: 13, fontWeight: 400, color: "#111", fontFamily: "Arial, Helvetica, sans-serif", lineHeight: 1.35, whiteSpace: "nowrap" }}>for Education</span>
               </div>
             </div>
 
-            {/* ICO — bold "ico." with subtitle */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff", gap: 1 }}>
-              <span style={{ fontSize: 18, fontWeight: 900, color: "#003A70", fontFamily: "Arial Black, Arial, sans-serif", lineHeight: 1 }}>ico.</span>
-              <span style={{ fontSize: 5.5, color: "#003A70", fontFamily: "Arial, sans-serif", letterSpacing: "0.2px", lineHeight: 1.2, maxWidth: 52 }}>Information Commissioner's Office</span>
-            </div>
-
-            {/* Ofsted — "Ofsted" bold navy with 3 teal people icons above */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "4px 8px", border: "0.5px solid #d1d5db", borderRadius: 3, background: "#fff", gap: 2 }}>
-              <div style={{ display: "flex", gap: 4 }}>
-                {[0,1,2].map(i => (
-                  <svg key={i} width="10" height="13" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="5" cy="3" r="2.2" fill="#00a4a6"/>
-                    <path d="M1 13 C1 8 9 8 9 13" fill="#00a4a6"/>
-                  </svg>
-                ))}
-              </div>
-              <span style={{ fontSize: 11, fontWeight: 900, color: "#1a1372", fontFamily: "Arial Black, Arial, sans-serif", letterSpacing: "0.5px", lineHeight: 1 }}>Ofsted</span>
+            {/* ICO — bold navy "ico." + subtitle */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+              <span style={{ fontSize: 34, fontWeight: 900, color: "#003078", fontFamily: "Arial Black, Arial, sans-serif", lineHeight: 1, letterSpacing: "-1px" }}>ico.</span>
+              <span style={{ fontSize: 7.5, color: "#003078", fontFamily: "Arial, sans-serif", lineHeight: 1.25, maxWidth: 90 }}>Information Commissioner's Office</span>
             </div>
 
           </div>
