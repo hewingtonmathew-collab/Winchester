@@ -114,7 +114,12 @@ export default function SafeguardingChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} accentColor="#34D399" />
+        <Certificate meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} accentColor="#34D399" areas={categories.map(cat => {
+          const cqs = questions.filter(q => q.category === cat);
+          const tot = cqs.reduce((s, q) => s + q.weight, 0);
+          const earn = cqs.reduce((s, q) => s + scoreValue(answers[q.id] ?? null) * q.weight, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
         <ImprovementReport meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} gaps={gaps} accentColor="#34D399" accentDim="rgba(52,211,153,0.12)" accentBorder="rgba(52,211,153,0.25)" />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#34D399] text-sm hover:text-white transition-colors">

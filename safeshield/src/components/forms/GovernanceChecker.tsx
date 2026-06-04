@@ -137,7 +137,12 @@ export default function GovernanceChecker() {
           </GlassCard>
         )}
 
-        <Certificate meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} accentColor="#A78BFA" />
+        <Certificate meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} accentColor="#A78BFA" areas={categories.map(cat => {
+          const ci = items.filter(i => i.category === cat);
+          const tot = ci.reduce((s, i) => s + i.weight, 0);
+          const earn = ci.reduce((s, i) => { const a = answers[i.id] ?? null; return s + (a === "yes" ? 1 : a === "partial" ? 0.5 : 0) * i.weight; }, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
         <ImprovementReport meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} gaps={reportGaps} accentColor="#A78BFA" accentDim="rgba(167,139,250,0.12)" accentBorder="rgba(167,139,250,0.25)" />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#A78BFA] text-sm hover:text-white transition-colors">

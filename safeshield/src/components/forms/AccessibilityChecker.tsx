@@ -106,7 +106,12 @@ export default function AccessibilityChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} />
+        <Certificate meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={categories.map(cat => {
+          const ci = items.filter(i => i.category === cat);
+          const tot = ci.reduce((s, i) => s + i.weight, 0);
+          const earn = ci.reduce((s, i) => { const a = answers[i.id] ?? null; return s + (a === "yes" ? 1 : a === "partial" ? 0.5 : 0) * i.weight; }, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
         <ImprovementReport meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>

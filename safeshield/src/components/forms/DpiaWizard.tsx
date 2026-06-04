@@ -281,6 +281,7 @@ export default function DpiaWizard() {
           rating={risk === "low" ? "Low Risk" : risk === "medium" ? "Medium Risk" : "High Risk — ICO Consultation Required"}
           ratingColor={risk === "low" ? "#22c55e" : risk === "medium" ? "#f59e0b" : "#ef4444"}
           accentColor="#FCD34D"
+          areas={steps.map(s => ({ name: s.title }))}
         />
 
         <div className="flex gap-3">

@@ -147,7 +147,12 @@ export default function AiReadiness() {
           </GlassCard>
         )}
 
-        <Certificate meta={meta} toolName="AI Readiness Assessment" score={score} rating={readinessLabel} ratingColor={ringColor} accentColor="#FB923C" />
+        <Certificate meta={meta} toolName="AI Readiness Assessment" score={score} rating={readinessLabel} ratingColor={ringColor} accentColor="#FB923C" areas={categories.map(cat => {
+          const cqs = questions.filter(q => q.category === cat);
+          const tot = cqs.reduce((s, q) => s + q.weight * 3, 0);
+          const earn = cqs.reduce((s, q) => s + (answers[q.id] ?? 0) * q.weight, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
         <ImprovementReport meta={meta} toolName="AI Readiness Assessment" score={score} rating={readinessLabel} ratingColor={ringColor} gaps={reportGaps} accentColor="#FB923C" accentDim="rgba(251,146,60,0.12)" accentBorder="rgba(251,146,60,0.25)" />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#FB923C] text-sm hover:text-white transition-colors">

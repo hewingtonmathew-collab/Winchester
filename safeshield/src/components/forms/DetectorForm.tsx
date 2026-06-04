@@ -183,7 +183,13 @@ export default function DetectorForm() {
             </GlassCard>
           )}
 
-          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" />
+          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" areas={[
+            { name: "Linguistic Patterns" },
+            { name: "Structural Analysis" },
+            { name: "Vocabulary & Phrasing" },
+            { name: "Sentence Variation" },
+            { name: "Naturalness Signals" },
+          ]} />
           {reportGaps.length > 0 && (
             <ImprovementReport meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} gaps={reportGaps} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" />
           )}
