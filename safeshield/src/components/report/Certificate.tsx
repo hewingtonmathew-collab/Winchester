@@ -95,12 +95,26 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   </div>
 
   <div class="bottom-row">
-    <div class="hologram">
-      <div class="hologram-inner">
-        <span class="hologram-text">VERIFIED<br/>ASSESSMENT</span>
+    <div style="width:100%;border-top:1px solid #e5e7eb;padding-top:12px">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">
+        <div style="display:inline-flex;align-items:center">
+          <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-right:9px solid transparent"></div>
+          <div style="background:#1a1a1a;padding:5px 18px;display:flex;align-items:center;gap:7px">
+            <svg width="12" height="12" viewBox="0 0 14 14"><polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" fill="#D4AF37"/></svg>
+            <span style="font-size:9px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;font-family:system-ui,sans-serif">Centre of Excellence</span>
+            <svg width="12" height="12" viewBox="0 0 14 14"><polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" fill="#D4AF37"/></svg>
+          </div>
+          <div style="width:0;height:0;border-top:13px solid #1a1a1a;border-bottom:13px solid #1a1a1a;border-left:9px solid transparent"></div>
+        </div>
       </div>
+      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">DfE</div><div style="font-size:7px;color:#888;font-family:system-ui">Statutory Guidance</div></div>
+        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">ICO</div><div style="font-size:7px;color:#888;font-family:system-ui">UK GDPR Compliant</div></div>
+        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">Ofsted</div><div style="font-size:7px;color:#888;font-family:system-ui">EIF Framework</div></div>
+        <div style="border:1px solid #d1d5db;border-radius:4px;padding:4px 10px;text-align:center"><div style="font-size:8px;font-weight:700;color:#1a1a1a;letter-spacing:1px;font-family:system-ui">KCSiE</div><div style="font-size:7px;color:#888;font-family:system-ui">Safeguarding Aligned</div></div>
+      </div>
+      <div style="text-align:right"><p class="cert-ref">${certId}</p></div>
     </div>
-    <p class="cert-ref">${certId}</p>
   </div>
 </div>
 </body></html>`);
@@ -167,14 +181,41 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           </div>
         </div>
 
-        {/* Bottom row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <div style={{ width: 80, height: 52, border: "1px solid #ccc", borderRadius: 2, background: "linear-gradient(135deg, #e8e0d0, #f5f0e8, #ddd8c8, #ede8dc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ width: 64, height: 38, border: "1px solid #b8b0a0", borderRadius: 1, background: "linear-gradient(45deg, rgba(100,150,200,0.2), rgba(150,200,100,0.2), rgba(200,100,150,0.2))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 6, color: "#999", letterSpacing: "0.5px", textAlign: "center", fontFamily: "system-ui" }}>VERIFIED<br/>ASSESSMENT</span>
+        {/* Bottom row: ribbon + compliance badges + cert ID */}
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 16, marginTop: 8 }}>
+          {/* Centre of Excellence ribbon */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+            <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+              {/* Left ribbon tail */}
+              <div style={{ width: 0, height: 0, borderTop: "14px solid #1a1a1a", borderBottom: "14px solid #1a1a1a", borderRight: "10px solid transparent", marginRight: -1 }} />
+              <div style={{ background: "#1a1a1a", padding: "6px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" fill="#D4AF37"/></svg>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "system-ui, sans-serif" }}>Centre of Excellence</span>
+                <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" fill="#D4AF37"/></svg>
+              </div>
+              {/* Right ribbon tail */}
+              <div style={{ width: 0, height: 0, borderTop: "14px solid #1a1a1a", borderBottom: "14px solid #1a1a1a", borderLeft: "10px solid transparent", marginLeft: -1 }} />
             </div>
           </div>
-          <span style={{ fontSize: 9, color: "#bbb", letterSpacing: "1px", fontFamily: "system-ui" }}>{certId}</span>
+
+          {/* Compliance badges */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+            {[
+              { label: "DfE", sub: "Statutory Guidance Aligned" },
+              { label: "ICO", sub: "UK GDPR Compliant" },
+              { label: "Ofsted", sub: "EIF Framework" },
+              { label: "KCSiE", sub: "Safeguarding Aligned" },
+            ].map((b) => (
+              <div key={b.label} style={{ border: "1px solid #d1d5db", borderRadius: 4, padding: "4px 10px", textAlign: "center", minWidth: 72 }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: "#1a1a1a", letterSpacing: "1px", fontFamily: "system-ui, sans-serif" }}>{b.label}</div>
+                <div style={{ fontSize: 7, color: "#888", letterSpacing: "0.3px", fontFamily: "system-ui, sans-serif", marginTop: 1 }}>{b.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: "right" }}>
+            <span style={{ fontSize: 9, color: "#bbb", letterSpacing: "1px", fontFamily: "system-ui" }}>{certId}</span>
+          </div>
         </div>
       </div>
 
