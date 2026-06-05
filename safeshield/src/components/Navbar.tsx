@@ -127,6 +127,12 @@ export default function Navbar() {
                     )}
                   </div>
                   <div className="p-1">
+                    <Link href="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-white/5 transition-all"
+                      style={{ color: "var(--text-dim)" }}>
+                      <User size={12} /> My Profile & Reports
+                    </Link>
                     <button onClick={handleSignOut}
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 transition-all">
                       <LogOut size={12} /> Sign out

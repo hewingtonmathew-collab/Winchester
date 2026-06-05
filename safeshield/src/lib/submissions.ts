@@ -22,6 +22,10 @@ export function saveSubmission(s: Omit<Submission, "id" | "date">): Submission {
   const all = getSubmissions();
   const entry: Submission = { ...s, id: crypto.randomUUID(), date: new Date().toISOString() };
   localStorage.setItem(KEY, JSON.stringify([entry, ...all]));
+  // Fire-and-forget save to Supabase
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) saveReportToSupabase(entry, session.user.id);
+  });
   return entry;
 }
 
