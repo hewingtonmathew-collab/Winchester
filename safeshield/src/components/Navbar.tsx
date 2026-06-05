@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown } from "lucide-react";
+import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getTheme, setTheme, applyTheme, type Theme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
@@ -14,7 +14,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const path = usePathname();
   const router = useRouter();
-  const { user, profile, enabledTools, signOut } = useAuth();
+  const { user, profile, enabledTools, isOrgAdmin, signOut } = useAuth();
   const [theme, setThemeState] = useState<Theme>("dark");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -86,6 +86,14 @@ export default function Navbar() {
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
             {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-dim)" }} /> : <Moon size={14} style={{ color: "var(--text-dim)" }} />}
           </button>
+
+          {(isAdmin || isOrgAdmin) && (
+            <Link href="/org"
+              className={`w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all ${path.startsWith("/org") ? "border border-[rgba(56,189,248,0.3)]" : ""}`}
+              title="Organisations">
+              <Building2 size={14} style={{ color: path.startsWith("/org") ? "#38BDF8" : "var(--text-dim)" }} />
+            </Link>
+          )}
 
           {isAdmin && (
             <Link href="/admin"

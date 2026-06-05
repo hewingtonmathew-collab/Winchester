@@ -8,6 +8,7 @@ type AuthContextType = {
   profile: Profile | null;
   loading: boolean;
   enabledTools: string[];
+  isOrgAdmin: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   enabledTools: [],
+  isOrgAdmin: false,
   signOut: async () => {},
   refreshProfile: async () => {},
 });
@@ -25,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [enabledTools, setEnabledTools] = useState<string[]>([]);
+  const [isOrgAdmin, setIsOrgAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function loadProfile(userId: string, appMeta?: Record<string, unknown>) {
@@ -55,6 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setEnabledTools([]);
     }
+
+    // Check if user is an org admin
+    const { data: orgAdminRows } = await supabase
+      .from("org_members")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .limit(1);
+    setIsOrgAdmin((orgAdminRows?.length ?? 0) > 0);
   }
 
   async function refreshProfile() {
@@ -88,10 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     setProfile(null);
     setEnabledTools([]);
+    setIsOrgAdmin(false);
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, enabledTools, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, enabledTools, isOrgAdmin, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
