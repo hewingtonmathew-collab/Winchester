@@ -31,6 +31,8 @@ export type Organisation = {
   id: string;
   name: string;
   type: "school" | "mat";
+  manager_name: string | null;
+  logo_url: string | null;
   created_by: string | null;
   created_at: string;
 };

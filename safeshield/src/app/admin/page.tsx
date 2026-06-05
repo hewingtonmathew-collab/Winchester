@@ -594,6 +594,8 @@ export default function AdminPage() {
   const [orgsLoading, setOrgsLoading] = useState(false);
   const [newOrgName, setNewOrgName] = useState("");
   const [newOrgType, setNewOrgType] = useState<"school" | "mat">("school");
+  const [newOrgManager, setNewOrgManager] = useState("");
+  const [newOrgLogo, setNewOrgLogo] = useState<string | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
   const [showOrgForm, setShowOrgForm] = useState(false);
 
@@ -659,13 +661,15 @@ export default function AdminPage() {
     setCreatingOrg(true);
     const { data, error } = await supabase
       .from("organisations")
-      .insert({ name: newOrgName.trim(), type: newOrgType, created_by: user.id })
+      .insert({ name: newOrgName.trim(), type: newOrgType, manager_name: newOrgManager.trim() || null, logo_url: newOrgLogo || null, created_by: user.id })
       .select()
       .single();
     if (error) { alert(`Failed to create: ${error.message}`); setCreatingOrg(false); return; }
     setOrgs((prev) => [{ ...(data as Organisation), schools: [], members: [] }, ...prev]);
     setNewOrgName("");
     setNewOrgType("school");
+    setNewOrgManager("");
+    setNewOrgLogo(null);
     setShowOrgForm(false);
     setCreatingOrg(false);
   }
@@ -899,39 +903,53 @@ export default function AdminPage() {
             {showOrgForm && (
               <GlassCard className="mb-5">
                 <p className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>New Organisation</p>
-                <form onSubmit={handleCreateOrg} className="flex flex-wrap gap-3 items-end">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Name</label>
-                    <input
-                      value={newOrgName}
-                      onChange={(e) => setNewOrgName(e.target.value)}
-                      placeholder="e.g. Riverside Academy"
-                      className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-64"
-                      style={{ color: "var(--text)" }}
-                      required
-                    />
+                <form onSubmit={handleCreateOrg} className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Organisation Name *</label>
+                      <input value={newOrgName} onChange={(e) => setNewOrgName(e.target.value)} placeholder="e.g. Riverside Academy" required
+                        className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Type</label>
+                      <select value={newOrgType} onChange={(e) => setNewOrgType(e.target.value as "school" | "mat")}
+                        className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                        <option value="school">Single School</option>
+                        <option value="mat">MAT</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Manager Name</label>
+                      <input value={newOrgManager} onChange={(e) => setNewOrgManager(e.target.value)} placeholder="e.g. Jane Smith"
+                        className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
+                      <div className="flex items-center gap-2">
+                        {newOrgLogo ? (
+                          <>
+                            <img src={newOrgLogo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+                            <button type="button" onClick={() => setNewOrgLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                          </>
+                        ) : (
+                          <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                            <Plus size={12} /> Upload logo
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                              const f = e.target.files?.[0]; if (!f) return;
+                              const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f);
+                            }} />
+                          </label>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Type</label>
-                    <select
-                      value={newOrgType}
-                      onChange={(e) => setNewOrgType(e.target.value as "school" | "mat")}
-                      className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]"
-                      style={{ color: "var(--text)" }}
-                    >
-                      <option value="school">School</option>
-                      <option value="mat">MAT</option>
-                    </select>
+                  <div className="flex justify-end">
+                    <button type="submit" disabled={creatingOrg || !newOrgName.trim()}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+                      style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                      {creatingOrg ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Create Organisation
+                    </button>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={creatingOrg || !newOrgName.trim()}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
-                    style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}
-                  >
-                    {creatingOrg ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                    Create
-                  </button>
                 </form>
               </GlassCard>
             )}
