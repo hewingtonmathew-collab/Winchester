@@ -13,10 +13,13 @@ import {
   Loader2,
   X,
   UserPlus,
+  ToggleLeft,
+  ToggleRight,
+  SlidersHorizontal,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { supabase, ALL_TOOLS } from "@/lib/supabase";
 import type { Organisation, School as SchoolType, OrgMember } from "@/lib/supabase";
 
 type OrgWithDetails = Organisation & {
@@ -294,6 +297,69 @@ function AddMemberForm({
   );
 }
 
+// ── Per-member tool toggles ──────────────────────────────────────────────────
+// Controls the user_tools table for one member: which tools they can access.
+// A tool is only visible to the member if it's enabled here AND at org AND
+// school level, so this is the per-person on/off switch.
+
+function MemberToolToggles({ userId }: { userId: string }) {
+  const [tools, setTools] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("user_tools")
+        .select("tool_slug, enabled")
+        .eq("user_id", userId);
+      if (!active) return;
+      const map: Record<string, boolean> = {};
+      for (const r of data ?? []) map[r.tool_slug] = r.enabled;
+      setTools(map);
+      setLoading(false);
+    })();
+    return () => { active = false; };
+  }, [userId]);
+
+  async function toggle(slug: string, next: boolean) {
+    setTools((p) => ({ ...p, [slug]: next })); // optimistic
+    const { error } = await supabase
+      .from("user_tools")
+      .upsert({ user_id: userId, tool_slug: slug, enabled: next }, { onConflict: "user_id,tool_slug" });
+    if (error) {
+      setTools((p) => ({ ...p, [slug]: !next })); // revert
+      alert(`Failed to save tool access: ${error.message}`);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2">
+        <Loader2 size={12} className="animate-spin text-[#38BDF8]" />
+        <span className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>Loading tools…</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-3 pb-2">
+      {ALL_TOOLS.map((tool) => {
+        const on = tools[tool.slug] ?? false;
+        return (
+          <button key={tool.slug} type="button" onClick={() => toggle(tool.slug, !on)}
+            className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg transition-all hover:bg-white/5">
+            <span className="text-[0.7rem] text-left" style={{ color: "var(--text-muted)" }}>{tool.name}</span>
+            {on
+              ? <ToggleRight size={18} className="shrink-0 text-[#34D399]" />
+              : <ToggleLeft size={18} className="shrink-0 text-[#334155]" />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Org Card ────────────────────────────────────────────────────────────────
 
 function OrgCard({
@@ -310,6 +376,7 @@ function OrgCard({
   const [members, setMembers] = useState(org.members);
   const [deletingSchool, setDeletingSchool] = useState<string | null>(null);
   const [deletingMember, setDeletingMember] = useState<string | null>(null);
+  const [expandedMemberTools, setExpandedMemberTools] = useState<Record<string, boolean>>({});
 
   async function removeSchool(schoolId: string) {
     setDeletingSchool(schoolId);
@@ -438,45 +505,66 @@ function OrgCard({
                 {members.map((member) => {
                   const assignedSchool = schools.find((s) => s.id === member.school_id);
                   const roleColor = member.role === "admin" ? "#38BDF8" : "#94A3B8";
+                  const toolsOpen = expandedMemberTools[member.id] ?? false;
                   return (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5"
+                      className="rounded-xl bg-white/[0.02] border border-white/5"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                          <span className="text-[0.6rem] font-bold text-[#94A3B8]">
-                            {(member.full_name ?? member.email ?? "?")[0].toUpperCase()}
+                      <div className="flex items-center justify-between gap-2 px-3 py-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                            <span className="text-[0.6rem] font-bold text-[#94A3B8]">
+                              {(member.full_name ?? member.email ?? "?")[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>
+                              {member.full_name ?? member.email ?? member.user_id}
+                            </p>
+                            <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
+                              {assignedSchool ? assignedSchool.name : "No school assigned"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
+                            style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}
+                          >
+                            {member.role}
                           </span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>
-                            {member.full_name ?? member.email ?? member.user_id}
-                          </p>
-                          <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
-                            {assignedSchool ? assignedSchool.name : "No school assigned"}
-                          </p>
+                          <button
+                            onClick={() => setExpandedMemberTools((p) => ({ ...p, [member.id]: !toolsOpen }))}
+                            title="Tool access"
+                            className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/5 transition-all"
+                            style={{ color: toolsOpen ? "#38BDF8" : "#94A3B8" }}
+                          >
+                            <SlidersHorizontal size={11} />
+                            <span className="text-[0.6rem] font-medium">Tools</span>
+                            {toolsOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                          </button>
+                          <button
+                            onClick={() => removeMember(member.id)}
+                            disabled={deletingMember === member.id}
+                            className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                          >
+                            {deletingMember === member.id ? (
+                              <Loader2 size={10} className="animate-spin text-red-400" />
+                            ) : (
+                              <X size={10} className="text-red-400" />
+                            )}
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span
-                          className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
-                          style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}
-                        >
-                          {member.role}
-                        </span>
-                        <button
-                          onClick={() => removeMember(member.id)}
-                          disabled={deletingMember === member.id}
-                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
-                        >
-                          {deletingMember === member.id ? (
-                            <Loader2 size={10} className="animate-spin text-red-400" />
-                          ) : (
-                            <X size={10} className="text-red-400" />
-                          )}
-                        </button>
-                      </div>
+                      {toolsOpen && (
+                        <div className="border-t border-white/5 pt-2">
+                          <p className="text-[0.6rem] font-semibold uppercase tracking-wider px-3 mb-1" style={{ color: "var(--text-faint)" }}>
+                            Tool access for this member
+                          </p>
+                          <MemberToolToggles userId={member.user_id} />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
