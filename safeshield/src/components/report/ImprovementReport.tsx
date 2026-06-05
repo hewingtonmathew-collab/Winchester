@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Mail, Printer, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import type { ReportMetaData } from "./ReportMeta";
+import { useAuth } from "@/context/AuthContext";
 
 const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
   "Online Filtering": [
@@ -256,6 +257,8 @@ export default function ImprovementReport({
 }: Props) {
   const [consultantNotes, setConsultantNotes] = useState("");
   const [expanded, setExpanded] = useState(true);
+  const { enabledTools } = useAuth();
+  const isSuperAdmin = enabledTools.includes("*");
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   const highGaps = gaps.filter((g) => g.priority === "high");
@@ -424,13 +427,15 @@ export default function ImprovementReport({
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-[#CBD5E1] text-sm">Consultant Notes <span className="text-[#475569] font-normal">(optional)</span></label>
-              <button
-                onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}
-              >
-                <Sparkles size={12} /> Generate Recommendations
-              </button>
+              {isSuperAdmin && (
+                <button
+                  onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}
+                >
+                  <Sparkles size={12} /> Generate Recommendations
+                </button>
+              )}
             </div>
             <p className="text-[#475569] text-xs mb-2">Auto-generate recommendations with guidance links, or write your own notes below.</p>
             <textarea

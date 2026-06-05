@@ -595,6 +595,7 @@ export default function AdminPage() {
   const [newOrgName, setNewOrgName] = useState("");
   const [newOrgType, setNewOrgType] = useState<"school" | "mat">("school");
   const [newOrgManager, setNewOrgManager] = useState("");
+  const [newOrgNotes, setNewOrgNotes] = useState("");
   const [newOrgLogo, setNewOrgLogo] = useState<string | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
   const [showOrgForm, setShowOrgForm] = useState(false);
@@ -661,7 +662,7 @@ export default function AdminPage() {
     setCreatingOrg(true);
     const { data, error } = await supabase
       .from("organisations")
-      .insert({ name: newOrgName.trim(), type: newOrgType, manager_name: newOrgManager.trim() || null, logo_url: newOrgLogo || null, created_by: user.id })
+      .insert({ name: newOrgName.trim(), type: newOrgType, manager_name: newOrgManager.trim() || null, notes: newOrgNotes.trim() || null, logo_url: newOrgLogo || null, created_by: user.id })
       .select()
       .single();
     if (error) { alert(`Failed to create: ${error.message}`); setCreatingOrg(false); return; }
@@ -669,6 +670,7 @@ export default function AdminPage() {
     setNewOrgName("");
     setNewOrgType("school");
     setNewOrgManager("");
+    setNewOrgNotes("");
     setNewOrgLogo(null);
     setShowOrgForm(false);
     setCreatingOrg(false);
@@ -942,6 +944,12 @@ export default function AdminPage() {
                         )}
                       </div>
                     </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Consultant Notes <span className="font-normal opacity-60">(optional)</span></label>
+                    <textarea value={newOrgNotes} onChange={(e) => setNewOrgNotes(e.target.value)} rows={3}
+                      placeholder="Internal notes about this organisation..."
+                      className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] resize-none" style={{ color: "var(--text)" }} />
                   </div>
                   <div className="flex justify-end">
                     <button type="submit" disabled={creatingOrg || !newOrgName.trim()}
