@@ -314,18 +314,20 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
     setBusy(true);
 
     try {
-      // Create user via admin API (sign up with temp password)
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
+      // Create user via server-side admin endpoint (service-role key).
+      // Avoids client signUp's email validation/confirmation and session swap.
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({ name: fullName, email, password }),
       });
-      if (signUpError) throw signUpError;
-      const userId = authData.user?.id;
-      if (!userId) throw new Error("No user ID returned.");
+      const created = await res.json();
+      if (!res.ok) throw new Error(created.error ?? "Could not create user.");
+      const userId = created.user.id as string;
 
-      // Update profile org_type — admin-created users are active immediately
-      await supabase.from("profiles").update({ org_type: orgType, status: "active" }).eq("id", userId);
+      // Set org_type (account is already active from the endpoint)
+      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
 
       let orgId: string;
 
@@ -715,17 +717,15 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
       if (newMemberPassword.length < 8) {
         setMemberError("Password must be at least 8 characters."); setAddingMember(false); return;
       }
-      const { data: authData, error: signUpErr } = await supabase.auth.signUp({
-        email: newMemberEmail.trim().toLowerCase(),
-        password: newMemberPassword,
-        options: { data: { full_name: newMemberName.trim() } },
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({ name: newMemberName.trim(), email: newMemberEmail.trim(), password: newMemberPassword }),
       });
-      if (signUpErr) { setMemberError(signUpErr.message); setAddingMember(false); return; }
-      const userId = authData.user?.id;
-      if (!userId) { setMemberError("Could not create account."); setAddingMember(false); return; }
-      // Activate immediately — admin created them
-      await supabase.from("profiles").update({ status: "active", full_name: newMemberName.trim() }).eq("id", userId);
-      prof = { id: userId, email: newMemberEmail.trim().toLowerCase(), full_name: newMemberName.trim() };
+      const json = await res.json();
+      if (!res.ok) { setMemberError(json.error ?? "Could not create account."); setAddingMember(false); return; }
+      prof = json.user as { id: string; email: string; full_name: string | null };
     } else {
       if (!memberUserId) { setMemberError("Please select a user."); setAddingMember(false); return; }
       prof = availableUsers.find((u) => u.id === memberUserId) ?? null;

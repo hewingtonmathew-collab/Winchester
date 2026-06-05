@@ -205,16 +205,15 @@ function AddMemberForm({
       if (newPassword.length < 8) {
         setError("Password must be at least 8 characters."); setBusy(false); return;
       }
-      const { data: authData, error: signUpErr } = await supabase.auth.signUp({
-        email: newEmail.trim().toLowerCase(),
-        password: newPassword,
-        options: { data: { full_name: newName.trim() } },
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({ name: newName.trim(), email: newEmail.trim(), password: newPassword }),
       });
-      if (signUpErr) { setError(signUpErr.message); setBusy(false); return; }
-      const newId = authData.user?.id;
-      if (!newId) { setError("Could not create account."); setBusy(false); return; }
-      await supabase.from("profiles").update({ status: "active", full_name: newName.trim() }).eq("id", newId);
-      profile = { id: newId, email: newEmail.trim().toLowerCase(), full_name: newName.trim() };
+      const json = await res.json();
+      if (!res.ok) { setError(json.error ?? "Could not create account."); setBusy(false); return; }
+      profile = json.user as { id: string; email: string; full_name: string | null };
     } else {
       if (!userId) { setError("Please select a user."); setBusy(false); return; }
       profile = users.find((u) => u.id === userId) ?? null;
