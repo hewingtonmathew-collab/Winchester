@@ -314,18 +314,20 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
     setBusy(true);
 
     try {
-      // Create user via admin API (sign up with temp password)
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
+      // Create user via server-side admin endpoint (service-role key).
+      // Avoids client signUp's email validation/confirmation and session swap.
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({ name: fullName, email, password }),
       });
-      if (signUpError) throw signUpError;
-      const userId = authData.user?.id;
-      if (!userId) throw new Error("No user ID returned.");
+      const created = await res.json();
+      if (!res.ok) throw new Error(created.error ?? "Could not create user.");
+      const userId = created.user.id as string;
 
-      // Update profile org_type — admin-created users are active immediately
-      await supabase.from("profiles").update({ org_type: orgType, status: "active" }).eq("id", userId);
+      // Set org_type (account is already active from the endpoint)
+      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
 
       let orgId: string;
 
@@ -501,6 +503,11 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [memberError, setMemberError] = useState("");
   const [availableUsers, setAvailableUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  // new member mode: pick existing user or create new
+  const [memberMode, setMemberMode] = useState<"existing" | "new">("new");
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [newMemberPassword, setNewMemberPassword] = useState("");
 
   // Org editing
   const [editingOrg, setEditingOrg] = useState(false);
@@ -698,16 +705,43 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
   async function handleAddMember(e: React.FormEvent) {
     e.preventDefault();
-    if (!memberUserId) return;
     setAddingMember(true);
     setMemberError("");
-    const prof = availableUsers.find((u) => u.id === memberUserId);
-    if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
-    const { data: mem, error: memErr } = await supabase.from("org_members").insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole }).select().single();
+
+    let prof: { id: string; email: string; full_name: string | null } | null = null;
+
+    if (memberMode === "new") {
+      if (!newMemberName.trim() || !newMemberEmail.trim() || !newMemberPassword.trim()) {
+        setMemberError("Name, email and password are all required."); setAddingMember(false); return;
+      }
+      if (newMemberPassword.length < 8) {
+        setMemberError("Password must be at least 8 characters."); setAddingMember(false); return;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({ name: newMemberName.trim(), email: newMemberEmail.trim(), password: newMemberPassword }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setMemberError(json.error ?? "Could not create account."); setAddingMember(false); return; }
+      prof = json.user as { id: string; email: string; full_name: string | null };
+    } else {
+      if (!memberUserId) { setMemberError("Please select a user."); setAddingMember(false); return; }
+      prof = availableUsers.find((u) => u.id === memberUserId) ?? null;
+      if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
+    }
+
+    const { data: mem, error: memErr } = await supabase
+      .from("org_members")
+      .insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole })
+      .select().single();
     if (memErr) { setMemberError(memErr.message); setAddingMember(false); return; }
-    setMembers((p) => [...p, { ...(mem as OrgMember), email: prof.email, full_name: prof.full_name }]);
-    setAvailableUsers((p) => p.filter((u) => u.id !== prof.id));
-    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
+    setMembers((p) => [...p, { ...(mem as OrgMember), email: prof!.email, full_name: prof!.full_name }]);
+    setAvailableUsers((p) => p.filter((u) => u.id !== prof!.id));
+    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member");
+    setNewMemberName(""); setNewMemberEmail(""); setNewMemberPassword("");
+    setAddingMember(false);
   }
 
   const typeBadgeColor = orgState.type === "mat" ? "#A78BFA" : "#38BDF8";
@@ -994,34 +1028,60 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 );
               })}
             </div>
-            <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
-              <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)}
-                disabled={loadingUsers}
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
-                <option value="">{loadingUsers ? "Loading users…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
-                {availableUsers.map((u) => (
-                  <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
-                ))}
-              </select>
-              {schools.length > 0 && (
-                <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
+            <div className="border border-white/8 rounded-xl p-3 bg-white/[0.02]">
+              {/* Mode toggle */}
+              <div className="flex gap-2 mb-3">
+                <button type="button" onClick={() => setMemberMode("new")}
+                  className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
+                  style={{ background: memberMode === "new" ? "rgba(56,189,248,0.15)" : "transparent", border: memberMode === "new" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: memberMode === "new" ? "#38BDF8" : "#64748B" }}>
+                  + New person
+                </button>
+                <button type="button" onClick={() => setMemberMode("existing")}
+                  className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
+                  style={{ background: memberMode === "existing" ? "rgba(56,189,248,0.15)" : "transparent", border: memberMode === "existing" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: memberMode === "existing" ? "#38BDF8" : "#64748B" }}>
+                  Existing user
+                </button>
+              </div>
+
+              <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
+                {memberMode === "new" ? (
+                  <>
+                    <input value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Full name" required
+                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-36" style={{ color: "var(--text)" }} />
+                    <input value={newMemberEmail} onChange={(e) => setNewMemberEmail(e.target.value)} placeholder="Email" type="email" required
+                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+                    <input value={newMemberPassword} onChange={(e) => setNewMemberPassword(e.target.value)} placeholder="Password (min 8)" type="password" required minLength={8}
+                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-36" style={{ color: "var(--text)" }} />
+                  </>
+                ) : (
+                  <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)} disabled={loadingUsers}
+                    className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
+                    <option value="">{loadingUsers ? "Loading…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
+                    {availableUsers.map((u) => (
+                      <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
+                    ))}
+                  </select>
+                )}
+                {schools.length > 0 && (
+                  <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
+                    className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                    <option value="">No school</option>
+                    {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                )}
+                <select value={memberRole} onChange={(e) => setMemberRole(e.target.value as "admin" | "member")}
                   className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
-                  <option value="">No school</option>
-                  {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
                 </select>
-              )}
-              <select value={memberRole} onChange={(e) => setMemberRole(e.target.value as "admin" | "member")}
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
-                <option value="member">Member</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button type="submit" disabled={addingMember || !memberUserId}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-                {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
-              </button>
-              {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
-            </form>
+                <button type="submit" disabled={addingMember}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                  {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
+                </button>
+                {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
+              </form>
+            </div>
           </div>
 
           {(() => {

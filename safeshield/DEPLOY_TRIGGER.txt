@@ -1,0 +1,2 @@
+Deploy trigger marker. Updated to force Vercel to redeploy the latest main.
+Last trigger: 2026-06-05T16:30:00Z — member creation endpoint + service-role key.
