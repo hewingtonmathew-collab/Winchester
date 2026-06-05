@@ -175,66 +175,55 @@ function AddMemberForm({
   schools: SchoolType[];
   onAdded: (member: OrgMember & { email?: string; full_name?: string | null }) => void;
 }) {
-  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [schoolId, setSchoolId] = useState("");
   const [role, setRole] = useState<"admin" | "member">("member");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [users, setUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
+
+  useEffect(() => {
+    supabase.from("profiles").select("id, email, full_name").eq("status", "active").neq("role", "admin").order("full_name")
+      .then(({ data }) => setUsers(data ?? []));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!userId) return;
     setBusy(true);
     setError("");
 
-    // Look up user by email in profiles
-    const { data: profile, error: profErr } = await supabase
-      .from("profiles")
-      .select("id, email, full_name")
-      .eq("email", email.trim().toLowerCase())
-      .single();
-
-    if (profErr || !profile) {
-      setError("No user found with that email address.");
-      setBusy(false);
-      return;
-    }
+    const profile = users.find((u) => u.id === userId);
 
     const { data: member, error: memErr } = await supabase
       .from("org_members")
-      .insert({
-        user_id: profile.id,
-        org_id: orgId,
-        school_id: schoolId || null,
-        role,
-      })
+      .insert({ user_id: userId, org_id: orgId, school_id: schoolId || null, role })
       .select()
       .single();
 
     if (memErr) {
-      setError(memErr.message);
+      setError(memErr.message.includes("unique") ? "This user is already a member." : memErr.message);
       setBusy(false);
       return;
     }
 
-    setEmail("");
+    setUserId("");
     setSchoolId("");
     setRole("member");
     setBusy(false);
-    onAdded({ ...(member as OrgMember), email: profile.email, full_name: profile.full_name });
+    onAdded({ ...(member as OrgMember), email: profile?.email, full_name: profile?.full_name ?? null });
   }
+
+  const selectCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end mt-3">
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="User email"
-        type="email"
-        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52"
-        style={{ color: "var(--text)" }}
-        required
-      />
+      <select value={userId} onChange={(e) => setUserId(e.target.value)} required className={`${selectCls} w-52`} style={{ color: userId ? "var(--text)" : "var(--text-dim)" }}>
+        <option value="">Select a user...</option>
+        {users.map((u) => (
+          <option key={u.id} value={u.id}>{u.full_name ?? u.email} — {u.email}</option>
+        ))}
+      </select>
       {schools.length > 0 && (
         <select
           value={schoolId}
@@ -259,7 +248,7 @@ function AddMemberForm({
       </select>
       <button
         type="submit"
-        disabled={busy || !email.trim()}
+        disabled={busy || !userId}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
         style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}
       >
