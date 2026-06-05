@@ -2,6 +2,12 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle, AlertTriangle, ChevronRight, ChevronLeft, FileText } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
+import Certificate from "@/components/report/Certificate";
+
+const defaultMeta: ReportMetaData = {
+  schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
+};
 
 type StepId =
   | "scope"
@@ -172,9 +178,12 @@ function CheckboxGroup({ field, value, onChange }: { field: Field; value: string
 }
 
 export default function DpiaWizard() {
+  const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
+  const [showMeta, setShowMeta] = useState(true);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [done, setDone] = useState(false);
+  const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
 
   const step = steps[stepIndex];
   const isLast = stepIndex === steps.length - 1;
@@ -265,9 +274,19 @@ export default function DpiaWizard() {
           </div>
         </GlassCard>
 
+        <Certificate
+          meta={meta}
+          toolName="DPIA Wizard"
+          score={risk === "low" ? 85 : risk === "medium" ? 55 : 25}
+          rating={risk === "low" ? "Low Risk" : risk === "medium" ? "Medium Risk" : "High Risk — ICO Consultation Required"}
+          ratingColor={risk === "low" ? "#22c55e" : risk === "medium" ? "#f59e0b" : "#ef4444"}
+          accentColor="#FCD34D"
+          areas={steps.map(s => ({ name: s.title }))}
+        />
+
         <div className="flex gap-3">
           <button
-            onClick={() => { setDone(false); setStepIndex(0); setAnswers({}); }}
+            onClick={() => { setDone(false); setStepIndex(0); setAnswers({}); setShowMeta(true); setMeta(defaultMeta); }}
             className="text-[#38BDF8] text-sm hover:text-white transition-colors"
           >
             ← Start new DPIA
@@ -277,6 +296,21 @@ export default function DpiaWizard() {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.25)] text-amber-300 text-sm font-medium hover:bg-[rgba(251,191,36,0.18)] transition-all"
           >
             <FileText size={13} /> Print / Save PDF
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showMeta) {
+    return (
+      <div className="flex flex-col gap-5">
+        <ReportMeta value={meta} onChange={setMeta} accentColor="#FCD34D" accentDim="rgba(251,191,36,0.12)" accentBorder="rgba(251,191,36,0.25)" />
+        <div className="flex justify-end">
+          <button onClick={() => setShowMeta(false)} disabled={!metaValid}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.3)", color: "#FCD34D" }}>
+            Start DPIA <ChevronRight size={14} />
           </button>
         </div>
       </div>

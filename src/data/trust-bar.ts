@@ -25,6 +25,6 @@ export const trustItems: TrustItem[] = [
   {
     icon: "lock",
     label: "Secure. Compliant. Responsible.",
-    sub: "Information governance at the heart of all we do.",
+    sub: "Data governance at the heart of everything.",
   },
 ];

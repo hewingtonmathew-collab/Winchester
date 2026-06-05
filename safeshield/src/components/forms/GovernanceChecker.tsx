@@ -2,10 +2,18 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle, AlertTriangle, ChevronRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
+import Certificate from "@/components/report/Certificate";
+import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import { saveSubmission } from "@/lib/submissions";
 
 type Answer = "yes" | "no" | "partial" | null;
 
 type Item = { id: string; category: string; text: string; weight: number };
+
+const defaultMeta: ReportMetaData = {
+  schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
+};
 
 const items: Item[] = [
   // Structure
@@ -43,13 +51,22 @@ function calcScore(answers: Record<string, Answer>): number {
 }
 
 export default function GovernanceChecker() {
+  const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [step, setStep] = useState<"meta" | "questions">("meta");
 
   const answered = Object.values(answers).filter(Boolean).length;
   const score = calcScore(answers);
   const gaps = items.filter((i) => (answers[i.id] ?? null) !== "yes");
+  const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
+
+  const reportGaps: Gap[] = gaps.sort((a, b) => b.weight - a.weight).map((i) => ({
+    category: i.category,
+    text: i.text,
+    priority: i.weight >= 9 ? "high" : i.weight >= 7 ? "medium" : "low",
+  }));
 
   if (submitted) {
     const label = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement";
@@ -120,9 +137,32 @@ export default function GovernanceChecker() {
           </GlassCard>
         )}
 
-        <button onClick={() => { setSubmitted(false); setAnswers({}); }} className="self-start text-[#A78BFA] text-sm hover:text-white transition-colors">
+        <Certificate meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} accentColor="#A78BFA" areas={categories.map(cat => {
+          const ci = items.filter(i => i.category === cat);
+          const tot = ci.reduce((s, i) => s + i.weight, 0);
+          const earn = ci.reduce((s, i) => { const a = answers[i.id] ?? null; return s + (a === "yes" ? 1 : a === "partial" ? 0.5 : 0) * i.weight; }, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
+        <ImprovementReport meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} gaps={reportGaps} accentColor="#A78BFA" accentDim="rgba(167,139,250,0.12)" accentBorder="rgba(167,139,250,0.25)" />
+
+        <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#A78BFA] text-sm hover:text-white transition-colors">
           ← Start again
         </button>
+      </div>
+    );
+  }
+
+  if (step === "meta") {
+    return (
+      <div className="flex flex-col gap-5">
+        <ReportMeta value={meta} onChange={setMeta} accentColor="#A78BFA" accentDim="rgba(167,139,250,0.12)" accentBorder="rgba(167,139,250,0.25)" />
+        <div className="flex justify-end">
+          <button onClick={() => setStep("questions")} disabled={!metaValid}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.3)", color: "#A78BFA" }}>
+            Start Assessment <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
     );
   }
@@ -183,7 +223,7 @@ export default function GovernanceChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => setSubmitted(true)} disabled={answered < items.length}
+            <button onClick={() => { const lbl = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement"; const rc = score >= 80 ? "#22c55e" : score >= 55 ? "#f59e0b" : "#ef4444"; setSubmitted(true); saveSubmission({ tool: "Governance Compliance Checker", ...meta, score, rating: lbl, ratingColor: rc }); }} disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(167,139,250,0.15)] border border-[rgba(167,139,250,0.3)] text-[#A78BFA] text-sm font-medium hover:bg-[rgba(167,139,250,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>

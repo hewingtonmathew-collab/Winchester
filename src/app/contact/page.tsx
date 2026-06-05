@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SectionDivider from "@/components/ui/SectionDivider";
 import ContactForm from "@/components/forms/ContactForm";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import JsonLd from "@/components/seo/JsonLd";
 import { localBusinessSchema } from "@/lib/schema";
 
@@ -17,12 +17,6 @@ const contactDetails = [
     label: "Email",
     value: "hello@winchesterconsultancy.co.uk",
     href: "mailto:hello@winchesterconsultancy.co.uk",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+44 (0) 1234 567 890",
-    href: "tel:+441234567890",
   },
   {
     icon: MapPin,
@@ -42,7 +36,7 @@ export default function ContactPage() {
           <h1 className="heading-display text-4xl lg:text-6xl mb-6">
             Let&apos;s Start a
             <br />
-            Conversation.
+            <span style={{ color: "#C9A84C" }}>Conversation.</span>
           </h1>
           <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed">
             Whether you need assurance, guidance or a trusted partner,
@@ -75,6 +69,7 @@ export default function ContactPage() {
                       size={16}
                       className="text-[#C9A84C]"
                       strokeWidth={1.5}
+                      aria-hidden="true"
                     />
                   </div>
                   <div>
@@ -102,7 +97,7 @@ export default function ContactPage() {
               </p>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                 We aim to respond to all enquiries within one business day.
-                For urgent matters, please call us directly.
+                For urgent matters, please email us directly and we will prioritise your request.
               </p>
             </div>
           </div>

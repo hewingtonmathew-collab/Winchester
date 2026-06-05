@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd safeshield && npm install && npm run build",
+  "outputDirectory": "safeshield/.next",
+  "framework": "nextjs",
+  "installCommand": "echo skip"
+}

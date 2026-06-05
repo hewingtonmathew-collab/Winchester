@@ -22,20 +22,22 @@ export default function ContactForm() {
 
   if (state.success) {
     return (
-      <GlassCard className="flex flex-col items-center text-center gap-6 py-14">
-        <CheckCircle
-          size={48}
-          className="text-[#C9A84C]"
-          strokeWidth={1.5}
-          aria-hidden="true"
-        />
-        <h3 className="font-cinzel font-bold text-white text-xl">
-          Message Sent
-        </h3>
-        <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed max-w-sm">
-          {state.message}
-        </p>
-      </GlassCard>
+      <div role="status" aria-live="polite">
+        <GlassCard className="flex flex-col items-center text-center gap-6 py-14">
+          <CheckCircle
+            size={48}
+            className="text-[#C9A84C]"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          />
+          <h3 className="font-cinzel font-bold text-white text-xl">
+            Message Sent
+          </h3>
+          <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed max-w-sm">
+            {state.message}
+          </p>
+        </GlassCard>
+      </div>
     );
   }
 
@@ -137,11 +139,13 @@ export default function ContactForm() {
           )}
         </div>
 
-        {state.message && !state.success && (
-          <p role="alert" className="font-inter text-red-400 text-sm">
-            {state.message}
-          </p>
-        )}
+        <div aria-live="polite">
+          {state.message && !state.success && (
+            <p role="alert" className="font-inter text-red-400 text-sm">
+              {state.message}
+            </p>
+          )}
+        </div>
 
         <SubmitButton />
       </form>

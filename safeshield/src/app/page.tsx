@@ -1,135 +1,126 @@
+"use client";
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, ArrowRight } from "lucide-react";
+import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { useAuth } from "@/context/AuthContext";
 
-const tools = [
+type Tool = {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  href: string;
+  color: string;
+  colorDim: string;
+  colorBorder: string;
+  badge: string;
+};
+
+const sections: { heading: string; sub: string; tools: Tool[] }[] = [
   {
-    icon: Bot,
-    title: "AI Content Detector",
-    description:
-      "Paste any text to detect whether it was written by AI or a human. Uses five statistical signals for an indicative 0–100 confidence score.",
-    href: "/tools/ai-detector",
-    color: "#38BDF8",
-    colorDim: "rgba(56,189,248,0.12)",
-    colorBorder: "rgba(56,189,248,0.25)",
-    badge: "Detection",
+    heading: "Safeguarding & Compliance",
+    sub: "Assess and evidence your school's safeguarding, governance, and statutory compliance obligations.",
+    tools: [
+      { icon: ShieldCheck, title: "Safeguarding Risk Checker", description: "Answer a structured set of questions about your school's digital safeguarding provision and receive an instant risk rating with priority actions.", href: "/tools/safeguarding", color: "#34D399", colorDim: "rgba(52,211,153,0.12)", colorBorder: "rgba(52,211,153,0.25)", badge: "Assessment" },
+      { icon: ClipboardList, title: "Governance Compliance Checker", description: "Check your governance arrangements against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance", color: "#A78BFA", colorDim: "rgba(167,139,250,0.12)", colorBorder: "rgba(167,139,250,0.25)", badge: "Compliance" },
+      { icon: CheckSquare, title: "Ofsted Ready Checker", description: "Self-evaluate your school's readiness across the Ofsted Education Inspection Framework. Identify strengths, areas for improvement, and inspection risks.", href: "/tools/ofsted", color: "#4ADE80", colorDim: "rgba(74,222,128,0.12)", colorBorder: "rgba(74,222,128,0.25)", badge: "Inspection" },
+      { icon: HardHat, title: "Health & Safety Checker", description: "Assess compliance across fire safety, COSHH, premises, policies, staff and pupil welfare, and contractor management. Aligned to HSE and statutory school obligations.", href: "/tools/health-safety", color: "#F97316", colorDim: "rgba(249,115,22,0.12)", colorBorder: "rgba(249,115,22,0.25)", badge: "H&S" },
+    ],
   },
   {
-    icon: ShieldCheck,
-    title: "Safeguarding Risk Checker",
-    description:
-      "Answer a structured set of questions about your school's digital safeguarding provision and receive an instant risk rating with priority actions.",
-    href: "/tools/safeguarding",
-    color: "#34D399",
-    colorDim: "rgba(52,211,153,0.12)",
-    colorBorder: "rgba(52,211,153,0.25)",
-    badge: "Assessment",
+    heading: "Digital & Technology Standards",
+    sub: "Measure compliance with DfE digital standards, data protection requirements, and accessibility obligations.",
+    tools: [
+      { icon: Monitor, title: "Digital & Technology Standards", description: "Assess your school's compliance with DfE digital and technology standards across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", colorDim: "rgba(129,140,248,0.12)", colorBorder: "rgba(129,140,248,0.25)", badge: "Standards" },
+      { icon: FileSearch, title: "DPIA Wizard", description: "Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can print or save.", href: "/tools/dpia", color: "#FCD34D", colorDim: "rgba(251,191,36,0.12)", colorBorder: "rgba(251,191,36,0.25)", badge: "Data Protection" },
+      { icon: Globe, title: "Web Accessibility Checker", description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Identify barriers and generate a prioritised action plan.", href: "/tools/accessibility", color: "#F472B6", colorDim: "rgba(244,114,182,0.12)", colorBorder: "rgba(244,114,182,0.25)", badge: "Accessibility" },
+    ],
   },
   {
-    icon: ClipboardList,
-    title: "Governance Compliance Checker",
-    description:
-      "Check your governance arrangements against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.",
-    href: "/tools/governance",
-    color: "#A78BFA",
-    colorDim: "rgba(167,139,250,0.12)",
-    colorBorder: "rgba(167,139,250,0.25)",
-    badge: "Compliance",
-  },
-  {
-    icon: Cpu,
-    title: "AI Readiness Assessment",
-    description:
-      "Score your school's readiness to adopt AI responsibly. Covers policy, procurement, staff capability, data protection, and safeguarding dimensions.",
-    href: "/tools/ai-readiness",
-    color: "#FB923C",
-    colorDim: "rgba(251,146,60,0.12)",
-    colorBorder: "rgba(251,146,60,0.25)",
-    badge: "Readiness",
-  },
-  {
-    icon: FileSearch,
-    title: "DPIA Wizard",
-    description:
-      "Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can print or save.",
-    href: "/tools/dpia",
-    color: "#FCD34D",
-    colorDim: "rgba(251,191,36,0.12)",
-    colorBorder: "rgba(251,191,36,0.25)",
-    badge: "Data Protection",
+    heading: "Artificial Intelligence",
+    sub: "Evaluate AI use in your school and detect AI-generated content with confidence.",
+    tools: [
+      { icon: Cpu, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly. Covers policy, procurement, staff capability, data protection, and safeguarding dimensions.", href: "/tools/ai-readiness", color: "#FB923C", colorDim: "rgba(251,146,60,0.12)", colorBorder: "rgba(251,146,60,0.25)", badge: "Readiness" },
+      { icon: Bot, title: "AI Content Detector", description: "Paste any text to detect whether it was written by AI or a human. Uses five statistical signals for an indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", colorDim: "rgba(56,189,248,0.12)", colorBorder: "rgba(56,189,248,0.25)", badge: "Detection" },
+    ],
   },
 ];
 
+function ToolCard({ tool }: { tool: Tool }) {
+  const Icon = tool.icon;
+  return (
+    <GlassCard hover className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: tool.colorDim, border: `1px solid ${tool.colorBorder}` }}>
+          <Icon size={20} style={{ color: tool.color }} strokeWidth={1.5} />
+        </div>
+        <span className="text-[0.6rem] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full border" style={{ color: tool.color, background: tool.colorDim, borderColor: tool.colorBorder }}>
+          {tool.badge}
+        </span>
+      </div>
+      <div className="flex-1">
+        <h3 className="font-semibold text-base mb-2" style={{ color: "var(--text)" }}>{tool.title}</h3>
+        <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{tool.description}</p>
+      </div>
+      <Link href={tool.href} className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150" style={{ color: tool.color }}>
+        Open tool <ArrowRight size={13} />
+      </Link>
+    </GlassCard>
+  );
+}
+
 export default function HomePage() {
+  const { enabledTools } = useAuth();
+  const allAccess = enabledTools.includes("*");
+
+  const visibleSections = sections.map(section => ({
+    ...section,
+    tools: section.tools.filter(tool => {
+      const slug = tool.href.split("/").pop()!;
+      return allAccess || enabledTools.includes(slug);
+    }),
+  })).filter(section => section.tools.length > 0);
+
   return (
     <div className="min-h-screen pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
         {/* Hero */}
         <div className="pt-12 pb-16 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-[rgba(56,189,248,0.2)] text-[#38BDF8] text-xs font-medium mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
-            SafeShield Personal Suite
+            SafeShield Tool Suite
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight">
-            Your School Tools,
-            <br />
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-5 leading-tight" style={{ color: "var(--text)" }}>
+            Your School Tools,<br />
             <span className="text-[#38BDF8] glow-text">One Place.</span>
           </h1>
-          <p className="text-[#94A3B8] text-lg max-w-xl mx-auto leading-relaxed">
-            A personal suite of free tools for safeguarding, governance, and AI
-            readiness — designed for school leaders and compliance professionals.
+          <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Professional tools for safeguarding, governance, AI readiness, digital standards, data protection, accessibility, and Ofsted preparation.
           </p>
         </div>
 
-        {/* Tool grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {tools.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <GlassCard key={tool.href} hover className="flex flex-col gap-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: tool.colorDim,
-                      border: `1px solid ${tool.colorBorder}`,
-                    }}
-                  >
-                    <Icon size={20} style={{ color: tool.color }} strokeWidth={1.5} />
-                  </div>
-                  <span
-                    className="text-[0.6rem] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full border"
-                    style={{
-                      color: tool.color,
-                      background: tool.colorDim,
-                      borderColor: tool.colorBorder,
-                    }}
-                  >
-                    {tool.badge}
-                  </span>
-                </div>
-
-                <div className="flex-1">
-                  <h2 className="text-white font-semibold text-base mb-2">{tool.title}</h2>
-                  <p className="text-[#94A3B8] text-sm leading-relaxed">{tool.description}</p>
-                </div>
-
-                <Link
-                  href={tool.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-                  style={{ color: tool.color }}
-                >
-                  Open tool <ArrowRight size={13} />
-                </Link>
-              </GlassCard>
-            );
-          })}
+        {/* Sections */}
+        <div className="flex flex-col gap-14">
+          {visibleSections.map((section) => (
+            <div key={section.heading}>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>{section.heading}</h2>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>{section.sub}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {section.tools.map((tool) => (
+                  <ToolCard key={tool.href} tool={tool} />
+                ))}
+              </div>
+            </div>
+          ))}
+          {visibleSections.length === 0 && (
+            <p className="text-center py-20 text-sm" style={{ color: "var(--text-muted)" }}>
+              No tools have been enabled for your account yet. Contact your administrator to request access.
+            </p>
+          )}
         </div>
 
-        {/* Footer note */}
-        <p className="text-center text-[#475569] text-xs mt-12">
-          All tools run entirely in your browser — no data is sent to any server.
-        </p>
       </div>
     </div>
   );

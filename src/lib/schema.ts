@@ -17,12 +17,22 @@ export function organizationSchema(): SchemaOrg {
       "School compliance intelligence — strategic operational, digital and governance assurance for schools and trusts.",
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+44-1234-567890",
+      email: "hello@winchesterconsultancy.co.uk",
       contactType: "customer support",
       areaServed: "GB",
       availableLanguage: "English",
     },
     sameAs: [],
+    knowsAbout: [
+      "School compliance",
+      "Digital safeguarding",
+      "AI governance for schools",
+      "Governance and leadership",
+      "Cyber resilience for education",
+      "Multi-academy trust governance",
+      "KCSIE compliance",
+      "Data protection in schools",
+    ],
   };
 }
 
@@ -64,10 +74,12 @@ export function serviceSchema(service: Service): SchemaOrg {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.title,
+    serviceType: service.title,
     description: service.detail.intro,
     provider: {
       "@type": "Organization",
       name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
     },
     areaServed: {
       "@type": "Country",
@@ -94,13 +106,78 @@ export function faqSchema(
   };
 }
 
+export function frameworkSchema(): SchemaOrg {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Winchester Digital Assurance Framework",
+    url: "https://winchesterconsultancy.co.uk/framework",
+    description:
+      "A structured intelligence methodology for school compliance — 6 pillars covering Digital Safeguarding, Governance, AI Governance, Cyber Resilience, Data Protection, and Operational Assurance.",
+    publisher: {
+      "@type": "Organization",
+      name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    about: {
+      "@type": "Service",
+      name: "Winchester Digital Assurance Framework",
+      provider: {
+        "@type": "Organization",
+        name: "Winchester Consultancy",
+      },
+      serviceType: "School Compliance Intelligence",
+      areaServed: {
+        "@type": "Country",
+        name: "United Kingdom",
+      },
+    },
+  };
+}
+
+export function articleSchema({
+  title,
+  excerpt,
+  date,
+  href,
+  author,
+}: {
+  title: string;
+  excerpt: string;
+  date: string;
+  href: string;
+  author: string;
+}): SchemaOrg {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description: excerpt.slice(0, 160),
+    datePublished: date,
+    url: `https://winchesterconsultancy.co.uk${href}`,
+    author: {
+      "@type": "Organization",
+      name: author,
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Winchester Consultancy",
+      url: "https://winchesterconsultancy.co.uk",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://winchesterconsultancy.co.uk${href}`,
+    },
+  };
+}
+
 export function localBusinessSchema(): SchemaOrg {
   return {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "ProfessionalService"],
     name: "Winchester Consultancy",
     url: "https://winchesterconsultancy.co.uk",
-    telephone: "+44-1234-567890",
     email: "hello@winchesterconsultancy.co.uk",
     areaServed: {
       "@type": "Country",

@@ -2,6 +2,14 @@
 import { useState } from "react";
 import { CheckCircle2, ChevronRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
+import Certificate from "@/components/report/Certificate";
+import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import { saveSubmission } from "@/lib/submissions";
+
+const defaultMeta: ReportMetaData = {
+  schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
+};
 
 type Answer = 0 | 1 | 2 | 3 | null;
 
@@ -47,12 +55,15 @@ function calcScore(answers: Record<string, Answer>): number {
 }
 
 export default function AiReadiness() {
+  const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [step, setStep] = useState<"meta" | "questions">("meta");
 
   const answered = Object.keys(answers).filter((k) => answers[k] !== null).length;
   const score = calcScore(answers);
+  const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
 
   const readinessLabel = score >= 75 ? "Ready" : score >= 50 ? "Developing" : score >= 25 ? "Early Stage" : "Not Started";
   const ringColor = score >= 75 ? "#22c55e" : score >= 50 ? "#f59e0b" : score >= 25 ? "#fb923c" : "#ef4444";
@@ -61,6 +72,12 @@ export default function AiReadiness() {
     .filter((q) => (answers[q.id] ?? 0) < 3)
     .sort((a, b) => b.weight - a.weight)
     .slice(0, 8);
+
+  const reportGaps: Gap[] = priorities.map((q) => ({
+    category: q.category,
+    text: q.text,
+    priority: q.weight >= 9 ? "high" : q.weight >= 7 ? "medium" : "low",
+  }));
 
   if (submitted) {
     return (
@@ -130,9 +147,32 @@ export default function AiReadiness() {
           </GlassCard>
         )}
 
-        <button onClick={() => { setSubmitted(false); setAnswers({}); }} className="self-start text-[#FB923C] text-sm hover:text-white transition-colors">
+        <Certificate meta={meta} toolName="AI Readiness Assessment" score={score} rating={readinessLabel} ratingColor={ringColor} accentColor="#FB923C" areas={categories.map(cat => {
+          const cqs = questions.filter(q => q.category === cat);
+          const tot = cqs.reduce((s, q) => s + q.weight * 3, 0);
+          const earn = cqs.reduce((s, q) => s + (answers[q.id] ?? 0) * q.weight, 0);
+          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
+        <ImprovementReport meta={meta} toolName="AI Readiness Assessment" score={score} rating={readinessLabel} ratingColor={ringColor} gaps={reportGaps} accentColor="#FB923C" accentDim="rgba(251,146,60,0.12)" accentBorder="rgba(251,146,60,0.25)" />
+
+        <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#FB923C] text-sm hover:text-white transition-colors">
           ← Start again
         </button>
+      </div>
+    );
+  }
+
+  if (step === "meta") {
+    return (
+      <div className="flex flex-col gap-5">
+        <ReportMeta value={meta} onChange={setMeta} accentColor="#FB923C" accentDim="rgba(251,146,60,0.12)" accentBorder="rgba(251,146,60,0.25)" />
+        <div className="flex justify-end">
+          <button onClick={() => setStep("questions")} disabled={!metaValid}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: "rgba(251,146,60,0.12)", border: "1px solid rgba(251,146,60,0.3)", color: "#FB923C" }}>
+            Start Assessment <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
     );
   }
@@ -188,7 +228,7 @@ export default function AiReadiness() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => setSubmitted(true)} disabled={answered < questions.length}
+            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "AI Readiness Assessment", ...meta, score, rating: readinessLabel, ratingColor: ringColor }); }} disabled={answered < questions.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(251,146,60,0.15)] border border-[rgba(251,146,60,0.3)] text-[#FB923C] text-sm font-medium hover:bg-[rgba(251,146,60,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>

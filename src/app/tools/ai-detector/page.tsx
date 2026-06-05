@@ -54,7 +54,8 @@ export default function AiDetectorPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="eyebrow mb-4">Free Tool</p>
           <h1 className="heading-display text-4xl lg:text-5xl mb-6">
-            AI Content Detector
+            AI Content{" "}
+            <span style={{ color: "#C9A84C" }}>Detector</span>
           </h1>
           <p className="font-inter text-[#A7B1BE] text-lg max-w-2xl leading-relaxed mb-4">
             Paste any text to analyse whether it was written by AI or a human. Designed
@@ -114,7 +115,7 @@ export default function AiDetectorPage() {
                 <ul className="flex flex-col gap-2.5">
                   {useCases.map((useCase) => (
                     <li key={useCase} className="flex gap-2.5 items-start">
-                      <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+                      <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[#C9A84C]" aria-hidden="true" />
                       <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
                         {useCase}
                       </p>

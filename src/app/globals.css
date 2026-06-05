@@ -21,21 +21,57 @@
     background-color: rgba(201, 168, 76, 0.30);
     color: #ffffff;
   }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #0B1118; }
+  ::-webkit-scrollbar-thumb { background: #2A3340; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.35); }
+
+  /* Global focus management */
+  :focus-visible {
+    outline: 2px solid rgba(201, 168, 76, 0.7);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-left,
+    .reveal-scale {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .animate-fade-up,
+    .animate-float,
+    .animate-pulse-slow,
+    .animate-glow-pulse,
+    .animate-scale-in,
+    .animate-slide-down {
+      animation: none !important;
+    }
+
+    html {
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
   .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
+    background: rgba(18, 27, 38, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(42, 51, 64, 0.85);
     border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
   }
 
   .divider-gold {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
-    opacity: 0.50;
+    opacity: 0.72;
   }
 
   .eyebrow {
@@ -59,6 +95,7 @@
     opacity: 0;
     transform: translateY(22px);
     transition: opacity 0.65s ease-out, transform 0.65s ease-out;
+    will-change: opacity, transform;
   }
 
   .reveal.is-visible {
@@ -71,10 +108,126 @@
   .reveal-delay-3 { transition-delay: 0.30s; }
   .reveal-delay-4 { transition-delay: 0.40s; }
   .reveal-delay-5 { transition-delay: 0.50s; }
+
+  /* CSS containment for paint isolation */
+  .glass,
+  .glass-subtle,
+  .glass-prominent,
+  .glass-inset {
+    contain: layout style;
+  }
+
+  /* Glass variants */
+  .glass-subtle {
+    background: rgba(17, 26, 35, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(42, 51, 64, 0.50);
+    border-radius: 0.75rem;
+  }
+
+  .glass-prominent {
+    background: rgba(18, 28, 40, 0.90);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(201,168,76,0.06);
+  }
+
+  .glass-inset {
+    background: rgba(11, 17, 24, 0.60);
+    border: 1px solid rgba(42, 51, 64, 0.60);
+    border-radius: 0.5rem;
+  }
+
+  /* Text effects */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #C9A84C 0%, #E8C97A 45%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Status badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-family: var(--font-inter);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-success {
+    background: rgba(34, 197, 94, 0.10);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.22);
+  }
+
+  .badge-warning {
+    background: rgba(234, 179, 8, 0.10);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.22);
+  }
+
+  .badge-error {
+    background: rgba(239, 68, 68, 0.10);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.22);
+  }
+
+  .badge-neutral {
+    background: rgba(167, 177, 190, 0.10);
+    color: #A7B1BE;
+    border: 1px solid rgba(167, 177, 190, 0.20);
+  }
+
+  .badge-gold {
+    background: rgba(201, 168, 76, 0.10);
+    color: #C9A84C;
+    border: 1px solid rgba(201, 168, 76, 0.22);
+  }
+
+  /* Additional reveal variants */
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-22px);
+    transition: opacity 0.65s ease-out, transform 0.65s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .reveal-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .reveal-scale.is-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .reveal-delay-6 { transition-delay: 0.60s; }
+  .reveal-delay-7 { transition-delay: 0.70s; }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .section-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px;
   }
 }

@@ -109,7 +109,7 @@ export default function AboutPage() {
               <p className="eyebrow reveal">Our Background</p>
               <h2 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1">
                 Experience That
-                <br />Understands Education.
+                <br /><span style={{ color: "#C9A84C" }}>Understands Education.</span>
               </h2>
               <p className="font-inter text-[#E6E9ED] leading-relaxed reveal reveal-delay-2">
                 Winchester Consultancy was established by practitioners who have worked
@@ -172,7 +172,8 @@ export default function AboutPage() {
                 id="principles-heading"
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
-                Our Three Principles
+                Our Three{" "}
+                <span style={{ color: "#C9A84C" }}>Principles</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -190,7 +191,7 @@ export default function AboutPage() {
                         border: "1px solid rgba(201,168,76,0.3)",
                       }}
                     >
-                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} />
+                      <Icon size={22} className="text-[#C9A84C]" strokeWidth={1.5} aria-hidden="true" />
                     </div>
                     <h3 className="font-cinzel font-bold text-white text-lg">{p.title}</h3>
                     <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed">
@@ -216,7 +217,8 @@ export default function AboutPage() {
                 id="process-heading"
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
-                Our Four-Stage Process
+                Our Four-Stage{" "}
+                <span style={{ color: "#C9A84C" }}>Process</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -255,7 +257,7 @@ export default function AboutPage() {
                 className="heading-display text-3xl lg:text-4xl reveal reveal-delay-1"
               >
                 What Makes Us
-                <br />Different
+                <br /><span style={{ color: "#C9A84C" }}>Different.</span>
               </h2>
               <p className="font-inter text-[#A7B1BE] leading-relaxed reveal reveal-delay-2">
                 There are many consultancies. There are few that genuinely understand the
@@ -313,7 +315,7 @@ export default function AboutPage() {
                   className="inline-flex items-center gap-2 font-inter text-sm text-[#A7B1BE] hover:text-white transition-colors"
                 >
                   View Services
-                  <ArrowRight size={14} />
+                  <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>
             </div>

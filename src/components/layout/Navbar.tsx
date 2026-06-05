@@ -12,9 +12,10 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "Framework", href: "/framework" },
+  { label: "Insights", href: "/insights" },
   { label: "Resources", href: "/resources" },
   { label: "Tools", href: "/tools" },
-  { label: "Insights", href: "/insights" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -42,9 +43,9 @@ export default function Navbar() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[68px] flex items-center justify-between">
         <Link href="/" aria-label="Winchester Consultancy — Home">
-          <ShieldLogo size={32} />
+          <ShieldLogo size={34} />
         </Link>
 
         <ul className="hidden md:flex items-center gap-7">
@@ -53,9 +54,9 @@ export default function Navbar() {
               <Link
                 href={link.href}
                 className={cn(
-                  "font-inter text-sm tracking-wide transition-colors duration-200",
+                  "relative font-inter text-sm tracking-wide transition-colors duration-200",
                   pathname === link.href
-                    ? "text-white"
+                    ? "text-white after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1px] after:bg-[#C9A84C]"
                     : "text-[#A7B1BE] hover:text-white"
                 )}
               >
