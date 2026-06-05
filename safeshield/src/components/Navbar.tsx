@@ -46,7 +46,7 @@ export default function Navbar() {
   }
 
   // Build visible tool links based on permissions
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
   const toolLinks = ALL_TOOLS.filter(t =>
     isAdmin || enabledTools.includes("*") || enabledTools.includes(t.slug)
   ).map(t => ({ label: t.name.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", ""), href: `/tools/${t.slug}` }));
@@ -114,7 +114,7 @@ export default function Navbar() {
                   <div className="px-3 py-2.5 border-b border-white/5">
                     <p className="text-xs font-medium text-white truncate">{profile?.full_name ?? "User"}</p>
                     <p className="text-[0.65rem] text-[#475569] truncate">{user.email}</p>
-                    {profile?.role === "admin" && (
+                    {isAdmin && (
                       <span className="inline-block mt-1 text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-medium">Admin</span>
                     )}
                   </div>
