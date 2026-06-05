@@ -604,9 +604,39 @@ export default function AdminPage() {
     if (!loading && profile?.role !== "admin") router.replace("/");
   }, [loading, profile, router]);
 
+  const loadSubmissions = useCallback(async () => {
+    // Load from Supabase first, fall back to localStorage for legacy data
+    const { data: remoteReports } = await supabase
+      .from("reports")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (remoteReports && remoteReports.length > 0) {
+      // Map Supabase reports to Submission shape
+      const mapped: Submission[] = remoteReports.map((r) => ({
+        id: r.id,
+        tool: r.tool_name,
+        schoolName: r.school_name,
+        schoolEmail: r.school_email ?? "",
+        consultantName: r.consultant_name ?? "",
+        consultantEmail: r.consultant_email ?? "",
+        staffMember: r.staff_member ?? "",
+        logoDataUrl: r.logo_data_url ?? null,
+        score: r.score,
+        rating: r.rating,
+        ratingColor: r.rating_color,
+        date: r.created_at,
+        areas: r.areas ?? undefined,
+      }));
+      setSubmissions(mapped);
+    } else {
+      setSubmissions(getSubmissions());
+    }
+  }, []);
+
   useEffect(() => {
-    if (profile?.role === "admin") setSubmissions(getSubmissions());
-  }, [profile]);
+    if (profile?.role === "admin") loadSubmissions();
+  }, [profile, loadSubmissions]);
 
   const loadUsers = useCallback(async () => {
     setUsersLoading(true);
@@ -698,9 +728,10 @@ export default function AdminPage() {
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, tools: { ...u.tools, [slug]: enabled } } : u));
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
+    await supabase.from("reports").delete().eq("id", id);
     deleteSubmission(id);
-    setSubmissions(getSubmissions());
+    setSubmissions((prev) => prev.filter((s) => s.id !== id));
   }
 
   if (loading || profile?.role !== "admin") {
