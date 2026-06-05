@@ -14,6 +14,7 @@ export type Submission = {
   ratingColor: string;
   date: string;
   areas?: { name: string; score?: number }[];
+  gaps?: { category: string; text: string; priority: "high" | "medium" | "low" }[];
 };
 
 const KEY = "safeshield_submissions";
@@ -62,6 +63,7 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     rating_color: s.ratingColor,
     logo_data_url: s.logoDataUrl || null,
     areas: s.areas || null,
+    recommendations: s.gaps || null,
     created_by: userId,
     org_id: membership?.org_id || null,
     school_id: membership?.school_id || null,

@@ -132,7 +132,7 @@ export default function DigitalStandardsChecker() {
 
   function submit() {
     setSubmitted(true);
-    saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas });
+    saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps });
   }
 
   const tabItems = items.filter((i) => i.tab === activeTab);

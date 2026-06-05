@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { X, Award, BarChart3 } from "lucide-react";
+import { X, Award, BarChart3, ClipboardList } from "lucide-react";
 import Certificate from "@/components/report/Certificate";
+import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
 import type { ReportMetaData } from "./ReportMeta";
 
 export type ReportViewData = {
@@ -13,11 +14,13 @@ export type ReportViewData = {
   accentColor: string;
   date: string;
   areas?: { name: string; score?: number }[];
+  gaps?: Gap[];
 };
 
 export default function ReportViewModal({ data, onClose }: { data: ReportViewData; onClose: () => void }) {
-  const [tab, setTab] = useState<"certificate" | "report">("certificate");
+  const [tab, setTab] = useState<"certificate" | "report" | "recommendations">("certificate");
   const areas = data.areas ?? [];
+  const gaps = data.gaps ?? [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 backdrop-blur-sm p-4 sm:p-8"
@@ -30,8 +33,8 @@ export default function ReportViewModal({ data, onClose }: { data: ReportViewDat
         </button>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 justify-center">
-          {([["certificate", "Certificate", Award], ["report", "Report Details", BarChart3]] as const).map(([key, label, Icon]) => (
+        <div className="flex gap-2 mb-4 justify-center flex-wrap">
+          {([["certificate", "Certificate", Award], ["report", "Report Details", BarChart3], ["recommendations", "Recommendations", ClipboardList]] as const).map(([key, label, Icon]) => (
             <button key={key} onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${tab === key ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "bg-white/5 border-white/10 text-[#94A3B8] hover:bg-white/10"}`}>
               <Icon size={14} /> {label}
@@ -50,6 +53,23 @@ export default function ReportViewModal({ data, onClose }: { data: ReportViewDat
             date={data.date}
             areas={areas}
           />
+        ) : tab === "recommendations" ? (
+          gaps.length > 0 ? (
+            <ImprovementReport
+              meta={data.meta}
+              toolName={data.toolName}
+              score={data.score}
+              rating={data.rating}
+              ratingColor={data.ratingColor}
+              gaps={gaps}
+              accentColor={data.accentColor}
+            />
+          ) : (
+            <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-8 text-center">
+              <p className="text-sm text-[#64748B]">No improvement recommendations were saved for this assessment.</p>
+              <p className="text-xs text-[#475569] mt-2">Recommendations are captured on assessments completed after this feature was added.</p>
+            </div>
+          )
         ) : (
           <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-6">

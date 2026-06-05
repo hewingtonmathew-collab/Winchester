@@ -85,7 +85,7 @@ export default function DetectorForm() {
     setResult(res);
     const lbl = res.label;
     const rc = res.score > 65 ? "#ef4444" : res.score > 35 ? "#f59e0b" : "#22c55e";
-    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas });
+    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps });
   }
 
   if (step === "meta") {

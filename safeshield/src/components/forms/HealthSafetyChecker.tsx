@@ -130,7 +130,7 @@ export default function HealthSafetyChecker() {
 
   function submit() {
     setSubmitted(true);
-    saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor, areas });
+    saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps });
   }
 
   if (step === "meta") {

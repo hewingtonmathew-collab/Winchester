@@ -87,6 +87,7 @@ export type Report = {
   rating_color: string;
   logo_data_url: string | null;
   areas: { name: string; score?: number }[] | null;
+  recommendations: { category: string; text: string; priority: "high" | "medium" | "low" }[] | null;
   created_by: string | null;
   created_at: string;
 };

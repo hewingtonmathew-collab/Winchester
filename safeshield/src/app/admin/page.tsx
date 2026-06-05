@@ -1188,6 +1188,7 @@ export default function AdminPage() {
         ratingColor: r.rating_color,
         date: r.created_at,
         areas: r.areas ?? undefined,
+        gaps: r.recommendations ?? undefined,
       }));
       setSubmissions(mapped);
     } else {
@@ -1451,6 +1452,7 @@ export default function AdminPage() {
                   accentColor: TOOL_COLORS[viewing.tool] ?? "#38BDF8",
                   date: new Date(viewing.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
                   areas: viewing.areas,
+                  gaps: viewing.gaps,
                 }}
               />
             )}

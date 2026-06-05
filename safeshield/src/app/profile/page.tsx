@@ -228,6 +228,7 @@ export default function ProfilePage() {
             accentColor: TOOL_COLORS[viewing.tool_name] ?? "#38BDF8",
             date: new Date(viewing.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
             areas: viewing.areas ?? undefined,
+            gaps: viewing.recommendations ?? undefined,
           }}
         />
       )}
