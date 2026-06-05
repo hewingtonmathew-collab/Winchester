@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Building2, Mail, Calendar, ShieldCheck, FileText, Loader2, KeyRound, Eye, X } from "lucide-react";
+import { User, Building2, Mail, Calendar, ShieldCheck, FileText, Loader2, KeyRound, Eye } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
-import Certificate from "@/components/report/Certificate";
+import ReportViewModal from "@/components/report/ReportViewModal";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import type { Report, Organisation, School } from "@/lib/supabase";
@@ -210,33 +210,26 @@ export default function ProfilePage() {
       </div>
 
       {viewing && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 backdrop-blur-sm p-4 sm:p-8"
-          onClick={() => setViewing(null)}>
-          <div className="relative w-full max-w-3xl my-8" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setViewing(null)}
-              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-[#0F172A] border border-white/15 hover:bg-white/10 transition-all"
-              title="Close">
-              <X size={16} className="text-white" />
-            </button>
-            <Certificate
-              meta={{
-                schoolName: viewing.school_name,
-                schoolEmail: viewing.school_email ?? "",
-                consultantName: viewing.consultant_name ?? "",
-                consultantEmail: viewing.consultant_email ?? "",
-                staffMember: viewing.staff_member ?? "",
-                logoDataUrl: viewing.logo_data_url,
-              }}
-              toolName={viewing.tool_name}
-              score={viewing.score}
-              rating={viewing.rating}
-              ratingColor={viewing.rating_color}
-              accentColor={TOOL_COLORS[viewing.tool_name] ?? "#38BDF8"}
-              date={new Date(viewing.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-              areas={viewing.areas ?? undefined}
-            />
-          </div>
-        </div>
+        <ReportViewModal
+          onClose={() => setViewing(null)}
+          data={{
+            meta: {
+              schoolName: viewing.school_name,
+              schoolEmail: viewing.school_email ?? "",
+              consultantName: viewing.consultant_name ?? "",
+              consultantEmail: viewing.consultant_email ?? "",
+              staffMember: viewing.staff_member ?? "",
+              logoDataUrl: viewing.logo_data_url,
+            },
+            toolName: viewing.tool_name,
+            score: viewing.score,
+            rating: viewing.rating,
+            ratingColor: viewing.rating_color,
+            accentColor: TOOL_COLORS[viewing.tool_name] ?? "#38BDF8",
+            date: new Date(viewing.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
+            areas: viewing.areas ?? undefined,
+          }}
+        />
       )}
     </div>
   );
