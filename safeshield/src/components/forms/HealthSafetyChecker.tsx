@@ -121,9 +121,16 @@ export default function HealthSafetyChecker() {
       priority: answers[i.id] === "no" && i.weight >= 9 ? "high" : answers[i.id] === "no" ? "medium" : "low",
     }));
 
+  const areas = TABS.map(tab => {
+    const ti = items.filter(i => i.tab === tab);
+    const tot = ti.reduce((s, i) => s + i.weight * 2, 0);
+    const earn = ti.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+    return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+  });
+
   function submit() {
     setSubmitted(true);
-    saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor });
+    saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor, areas });
   }
 
   if (step === "meta") {
@@ -193,12 +200,7 @@ export default function HealthSafetyChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={TABS.map(tab => {
-          const ti = items.filter(i => i.tab === tab);
-          const tot = ti.reduce((s, i) => s + i.weight * 2, 0);
-          const earn = ti.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
-          return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
-        })} />
+        <Certificate meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={areas} />
         {gaps.length > 0 && (
           <ImprovementReport meta={meta} toolName="Health & Safety Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
         )}

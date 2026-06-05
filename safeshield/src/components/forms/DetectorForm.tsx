@@ -69,6 +69,14 @@ export default function DetectorForm() {
         }))
     : [];
 
+  const areas = [
+    { name: "Linguistic Patterns" },
+    { name: "Structural Analysis" },
+    { name: "Vocabulary & Phrasing" },
+    { name: "Sentence Variation" },
+    { name: "Naturalness Signals" },
+  ];
+
   function analyse() {
     setError("");
     if (!text.trim()) { setError("Please paste some text to analyse."); return; }
@@ -77,7 +85,7 @@ export default function DetectorForm() {
     setResult(res);
     const lbl = res.label;
     const rc = res.score > 65 ? "#ef4444" : res.score > 35 ? "#f59e0b" : "#22c55e";
-    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc });
+    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas });
   }
 
   if (step === "meta") {
@@ -183,13 +191,7 @@ export default function DetectorForm() {
             </GlassCard>
           )}
 
-          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" areas={[
-            { name: "Linguistic Patterns" },
-            { name: "Structural Analysis" },
-            { name: "Vocabulary & Phrasing" },
-            { name: "Sentence Variation" },
-            { name: "Naturalness Signals" },
-          ]} />
+          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" areas={areas} />
           {reportGaps.length > 0 && (
             <ImprovementReport meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} gaps={reportGaps} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" />
           )}

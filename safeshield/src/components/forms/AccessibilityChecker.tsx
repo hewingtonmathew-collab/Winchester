@@ -81,6 +81,13 @@ export default function AccessibilityChecker() {
       priority: i.weight >= 9 ? "high" : i.weight >= 7 ? "medium" : "low",
     }));
 
+  const areas = categories.map(cat => {
+    const ci = items.filter(i => i.category === cat);
+    const tot = ci.reduce((s, i) => s + i.weight, 0);
+    const earn = ci.reduce((s, i) => { const a = answers[i.id] ?? null; return s + (a === "yes" ? 1 : a === "partial" ? 0.5 : 0) * i.weight; }, 0);
+    return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+  });
+
   if (submitted) {
     return (
       <div className="flex flex-col gap-5">
@@ -106,12 +113,7 @@ export default function AccessibilityChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={categories.map(cat => {
-          const ci = items.filter(i => i.category === cat);
-          const tot = ci.reduce((s, i) => s + i.weight, 0);
-          const earn = ci.reduce((s, i) => { const a = answers[i.id] ?? null; return s + (a === "yes" ? 1 : a === "partial" ? 0.5 : 0) * i.weight; }, 0);
-          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
-        })} />
+        <Certificate meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={areas} />
         <ImprovementReport meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>
@@ -196,7 +198,7 @@ export default function AccessibilityChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor }); }}
+            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas }); }}
               disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed border"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>

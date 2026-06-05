@@ -85,6 +85,13 @@ export default function SafeguardingChecker() {
 
   const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
 
+  const areas = categories.map(cat => {
+    const cqs = questions.filter(q => q.category === cat);
+    const tot = cqs.reduce((s, q) => s + q.weight, 0);
+    const earn = cqs.reduce((s, q) => s + scoreValue(answers[q.id] ?? null) * q.weight, 0);
+    return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+  });
+
   function handleAnswer(id: string, val: Answer) {
     setAnswers((prev) => ({ ...prev, [id]: val }));
   }
@@ -114,12 +121,7 @@ export default function SafeguardingChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} accentColor="#34D399" areas={categories.map(cat => {
-          const cqs = questions.filter(q => q.category === cat);
-          const tot = cqs.reduce((s, q) => s + q.weight, 0);
-          const earn = cqs.reduce((s, q) => s + scoreValue(answers[q.id] ?? null) * q.weight, 0);
-          return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
-        })} />
+        <Certificate meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} accentColor="#34D399" areas={areas} />
         <ImprovementReport meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} gaps={gaps} accentColor="#34D399" accentDim="rgba(52,211,153,0.12)" accentBorder="rgba(52,211,153,0.25)" />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#34D399] text-sm hover:text-white transition-colors">
@@ -206,7 +208,7 @@ export default function SafeguardingChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Safeguarding Risk Checker", ...meta, score, rating, ratingColor }); }} disabled={answered < questions.length}
+            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Safeguarding Risk Checker", ...meta, score, rating, ratingColor, areas }); }} disabled={answered < questions.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(52,211,153,0.15)] border border-[rgba(52,211,153,0.3)] text-[#34D399] text-sm font-medium hover:bg-[rgba(52,211,153,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>
