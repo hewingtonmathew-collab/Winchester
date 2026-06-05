@@ -2,10 +2,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
-import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember } from "@/lib/supabase";
+import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember, type Report } from "@/lib/supabase";
 
 const TOOL_COLORS: Record<string, string> = {
   "Safeguarding Risk Checker": "#34D399",
@@ -18,6 +18,30 @@ const TOOL_COLORS: Record<string, string> = {
   "Digital Standards Checker": "#818CF8",
   "Health & Safety Checker": "#F97316",
 };
+
+// Reusable tool-access toggle grid. Super admin sets these toggles at the
+// user, org, and school level. `enabled` maps tool_slug -> boolean (absent = off).
+function ToolAccessGrid({ enabled, onToggle }: {
+  enabled: Record<string, boolean>;
+  onToggle: (slug: string, next: boolean) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {ALL_TOOLS.map((tool) => {
+        const on = enabled[tool.slug] ?? false;
+        return (
+          <button key={tool.slug} type="button" onClick={() => onToggle(tool.slug, !on)}
+            className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
+            <span className="text-xs text-[#94A3B8] text-left">{tool.name}</span>
+            {on
+              ? <ToggleRight size={20} className="shrink-0" style={{ color: TOOL_COLORS[tool.name] ?? "#38BDF8" }} />
+              : <ToggleLeft size={20} className="text-[#334155] shrink-0" />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 // ── Assessments tab ──────────────────────────────────────────────────────────
 
@@ -106,13 +130,33 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
 
 type UserWithTools = Profile & { tools: Record<string, boolean> };
 
-function UserCard({ u, onStatusChange, onToolToggle }: {
+type OrgType = "la_school" | "single_school" | "mat";
+
+function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
   u: UserWithTools;
   onStatusChange: (id: string, status: "active" | "suspended" | "pending") => Promise<void>;
   onToolToggle: (userId: string, slug: string, enabled: boolean) => Promise<void>;
+  onProfileSave: (userId: string, fields: { full_name: string | null; org_type: OrgType | null }) => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(u.full_name ?? "");
+  const [editOrgType, setEditOrgType] = useState<OrgType | "">(u.org_type ?? "");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  async function saveProfile() {
+    setSavingProfile(true);
+    await onProfileSave(u.id, { full_name: editName.trim() || null, org_type: editOrgType || null });
+    setSavingProfile(false);
+    setEditing(false);
+  }
+
+  function cancelEdit() {
+    setEditName(u.full_name ?? "");
+    setEditOrgType(u.org_type ?? "");
+    setEditing(false);
+  }
 
   const statusColor = u.status === "active" ? "#22c55e" : u.status === "pending" ? "#f59e0b" : "#ef4444";
   const statusLabel = u.status === "active" ? "Active" : u.status === "pending" ? "Pending" : "Suspended";
@@ -137,11 +181,15 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{u.full_name ?? "—"}</p>
-            <p className="text-xs text-[#64748B] truncate">{u.email}</p>
+            <p className="text-xs text-[#64748B] truncate">{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => setEditing((v) => !v)} title="Edit user"
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            <Pencil size={12} className="text-[#38BDF8]" />
+          </button>
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border"
             style={{ color: statusColor, background: `${statusColor}15`, borderColor: `${statusColor}40` }}>
             {statusLabel}
@@ -173,6 +221,39 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
         </div>
       </div>
 
+      {editing && (
+        <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
+          <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider">Edit User</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-[#64748B]">Full name</label>
+              <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Full name"
+                className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-[#64748B]">Organisation type</label>
+              <select value={editOrgType} onChange={(e) => setEditOrgType(e.target.value as OrgType | "")}
+                className="px-3 py-2 rounded-xl text-sm bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                <option value="">— None —</option>
+                <option value="la_school">Local Authority School</option>
+                <option value="single_school">Independent / Single School</option>
+                <option value="mat">Multi-Academy Trust (MAT)</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={saveProfile} disabled={savingProfile}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+              style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+              {savingProfile ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Save
+            </button>
+            <button onClick={cancelEdit} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10 transition-all" style={{ color: "var(--text-dim)" }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {open && (
         <div className="mt-4 pt-4 border-t border-white/5">
           <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider mb-3">Tool Access</p>
@@ -197,8 +278,6 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
 }
 
 // ── Add User Modal ───────────────────────────────────────────────────────────
-
-type OrgType = "la_school" | "single_school" | "mat";
 
 const ORG_TYPE_OPTIONS: { value: OrgType; label: string; description: string; color: string; icon: React.ReactNode }[] = [
   { value: "la_school", label: "Local Authority School", description: "Single school, managed by the LA", color: "#38BDF8", icon: <School size={16} strokeWidth={1.5} /> },
@@ -399,8 +478,15 @@ type OrgWithDetails = Organisation & {
   members: (OrgMember & { email?: string; full_name?: string | null })[];
 };
 
+function readFileAsDataUrl(f: File, cb: (url: string) => void) {
+  const r = new FileReader();
+  r.onload = () => cb(r.result as string);
+  r.readAsDataURL(f);
+}
+
 function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [orgState, setOrgState] = useState<Organisation>(org);
   const [schools, setSchools] = useState<SchoolType[]>(org.schools);
   const [members, setMembers] = useState(org.members);
   const [deletingSchool, setDeletingSchool] = useState<string | null>(null);
@@ -413,6 +499,159 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [memberRole, setMemberRole] = useState<"admin" | "member">("member");
   const [addingMember, setAddingMember] = useState(false);
   const [memberError, setMemberError] = useState("");
+
+  // Org editing
+  const [editingOrg, setEditingOrg] = useState(false);
+  const [eName, setEName] = useState(org.name);
+  const [eType, setEType] = useState<"school" | "mat">(org.type);
+  const [eManager, setEManager] = useState(org.manager_name ?? "");
+  const [eNotes, setENotes] = useState(org.notes ?? "");
+  const [eLogo, setELogo] = useState<string | null>(org.logo_url);
+  const [savingOrg, setSavingOrg] = useState(false);
+
+  // School editing
+  const [editingSchoolId, setEditingSchoolId] = useState<string | null>(null);
+  const [esName, setEsName] = useState("");
+  const [esEmail, setEsEmail] = useState("");
+  const [esLogo, setEsLogo] = useState<string | null>(null);
+  const [savingSchool, setSavingSchool] = useState(false);
+
+  // Reports
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportsLoaded, setReportsLoaded] = useState(false);
+  const [expandedSchoolReports, setExpandedSchoolReports] = useState<Record<string, boolean>>({});
+
+  // Org-level tool entitlements (org_tools): tool_slug -> enabled
+  const [orgTools, setOrgTools] = useState<Record<string, boolean>>({});
+  const [orgToolsLoaded, setOrgToolsLoaded] = useState(false);
+  // School-level tool entitlements (school_tools): school_id -> tool_slug -> enabled
+  const [schoolTools, setSchoolTools] = useState<Record<string, Record<string, boolean>>>({});
+  // Which school's Tool Access grid is expanded
+  const [expandedSchoolTools, setExpandedSchoolTools] = useState<Record<string, boolean>>({});
+  // Org enable/disable busy flag
+  const [togglingOrgStatus, setTogglingOrgStatus] = useState(false);
+  const [togglingSchoolStatus, setTogglingSchoolStatus] = useState<string | null>(null);
+
+  // Load org_tools + school_tools when the card is first opened.
+  useEffect(() => {
+    if (!open || orgToolsLoaded) return;
+    (async () => {
+      const { data: orgRows, error: orgErr } = await supabase
+        .from("org_tools").select("tool_slug, enabled").eq("org_id", org.id);
+      if (orgErr) { console.error("loadOrgTools:", orgErr); }
+      else {
+        const map: Record<string, boolean> = {};
+        for (const r of orgRows ?? []) map[r.tool_slug] = r.enabled;
+        setOrgTools(map);
+      }
+      const schoolIds = schools.map((s) => s.id);
+      if (schoolIds.length) {
+        const { data: stRows, error: stErr } = await supabase
+          .from("school_tools").select("school_id, tool_slug, enabled").in("school_id", schoolIds);
+        if (stErr) { console.error("loadSchoolTools:", stErr); }
+        else {
+          const map: Record<string, Record<string, boolean>> = {};
+          for (const r of stRows ?? []) {
+            if (!map[r.school_id]) map[r.school_id] = {};
+            map[r.school_id][r.tool_slug] = r.enabled;
+          }
+          setSchoolTools(map);
+        }
+      }
+      setOrgToolsLoaded(true);
+    })();
+  }, [open, orgToolsLoaded, schools, org.id]);
+
+  async function toggleOrgTool(slug: string, enabled: boolean) {
+    const { error } = await supabase.from("org_tools").upsert(
+      { org_id: org.id, tool_slug: slug, enabled },
+      { onConflict: "org_id,tool_slug" }
+    );
+    if (error) { alert(`Failed to save tool access: ${error.message}`); return; }
+    setOrgTools((p) => ({ ...p, [slug]: enabled }));
+  }
+
+  async function toggleSchoolTool(schoolId: string, slug: string, enabled: boolean) {
+    const { error } = await supabase.from("school_tools").upsert(
+      { school_id: schoolId, tool_slug: slug, enabled },
+      { onConflict: "school_id,tool_slug" }
+    );
+    if (error) { alert(`Failed to save tool access: ${error.message}`); return; }
+    setSchoolTools((p) => ({ ...p, [schoolId]: { ...(p[schoolId] ?? {}), [slug]: enabled } }));
+  }
+
+  async function toggleOrgStatus() {
+    const next = orgState.status === "disabled" ? "active" : "disabled";
+    setTogglingOrgStatus(true);
+    const { error } = await supabase.from("organisations").update({ status: next }).eq("id", org.id);
+    setTogglingOrgStatus(false);
+    if (error) { alert(`Failed to update status: ${error.message}`); return; }
+    setOrgState((p) => ({ ...p, status: next }));
+  }
+
+  async function toggleSchoolStatus(s: SchoolType) {
+    const next = s.status === "disabled" ? "active" : "disabled";
+    setTogglingSchoolStatus(s.id);
+    const { error } = await supabase.from("schools").update({ status: next }).eq("id", s.id);
+    setTogglingSchoolStatus(null);
+    if (error) { alert(`Failed to update status: ${error.message}`); return; }
+    setSchools((p) => p.map((x) => x.id === s.id ? { ...x, status: next } : x));
+  }
+
+  useEffect(() => {
+    if (!open || reportsLoaded) return;
+    (async () => {
+      const schoolIds = schools.map((s) => s.id);
+      const orParts: string[] = [`org_id.eq.${org.id}`];
+      if (schoolIds.length) orParts.push(`school_id.in.(${schoolIds.join(",")})`);
+      const { data, error } = await supabase.from("reports").select("*").or(orParts.join(","));
+      if (error) { console.error("loadReports:", error); return; }
+      setReports((data ?? []) as Report[]);
+      setReportsLoaded(true);
+    })();
+  }, [open, reportsLoaded, schools, org.id]);
+
+  async function deleteReport(id: string) {
+    if (!confirm("Delete this report? This cannot be undone.")) return;
+    const { error } = await supabase.from("reports").delete().eq("id", id);
+    if (error) { alert(`Failed to delete: ${error.message}`); return; }
+    setReports((p) => p.filter((r) => r.id !== id));
+  }
+
+  async function saveOrg() {
+    setSavingOrg(true);
+    const fields = { name: eName.trim(), type: eType, manager_name: eManager.trim() || null, notes: eNotes.trim() || null, logo_url: eLogo };
+    const { error } = await supabase.from("organisations").update(fields).eq("id", org.id);
+    setSavingOrg(false);
+    if (error) { alert(`Failed to save: ${error.message}`); return; }
+    setOrgState((p) => ({ ...p, ...fields }));
+    setEditingOrg(false);
+  }
+
+  function cancelOrgEdit() {
+    setEName(orgState.name); setEType(orgState.type); setEManager(orgState.manager_name ?? "");
+    setENotes(orgState.notes ?? ""); setELogo(orgState.logo_url); setEditingOrg(false);
+  }
+
+  function startSchoolEdit(s: SchoolType) {
+    setEditingSchoolId(s.id); setEsName(s.name); setEsEmail(s.email ?? ""); setEsLogo(s.logo_url);
+  }
+
+  async function saveSchool(id: string) {
+    setSavingSchool(true);
+    const fields = { name: esName.trim(), email: esEmail.trim() || null, logo_url: esLogo };
+    const { error } = await supabase.from("schools").update(fields).eq("id", id);
+    setSavingSchool(false);
+    if (error) { alert(`Failed to save: ${error.message}`); return; }
+    setSchools((p) => p.map((s) => s.id === id ? { ...s, ...fields } : s));
+    setEditingSchoolId(null);
+  }
+
+  async function updateMember(id: string, fields: { role?: "admin" | "member"; school_id?: string | null }) {
+    const { error } = await supabase.from("org_members").update(fields).eq("id", id);
+    if (error) { alert(`Failed to update: ${error.message}`); return; }
+    setMembers((p) => p.map((m) => m.id === id ? { ...m, ...fields } : m));
+  }
 
   async function removeSchool(id: string) {
     setDeletingSchool(id);
@@ -450,29 +689,52 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
     setMemberEmail(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
   }
 
-  const typeBadgeColor = org.type === "mat" ? "#A78BFA" : "#38BDF8";
+  const typeBadgeColor = orgState.type === "mat" ? "#A78BFA" : "#38BDF8";
 
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-            <Building2 size={16} className="text-[#38BDF8]" />
-          </div>
+          {orgState.logo_url ? (
+            <img src={orgState.logo_url} alt="" className="w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
+          ) : (
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+              <Building2 size={16} className="text-[#38BDF8]" />
+            </div>
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{org.name}</p>
+              <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{orgState.name}</p>
               <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
                 style={{ color: typeBadgeColor, background: `${typeBadgeColor}18`, borderColor: `${typeBadgeColor}40` }}>
-                {org.type === "mat" ? "MAT" : "School"}
+                {orgState.type === "mat" ? "MAT" : "School"}
               </span>
+              {orgState.status === "disabled" && (
+                <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
+                  style={{ color: "#ef4444", background: "#ef444418", borderColor: "#ef444440" }}>
+                  Disabled
+                </span>
+              )}
             </div>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               {schools.length} school{schools.length !== 1 ? "s" : ""} · {members.length} member{members.length !== 1 ? "s" : ""}
+              {orgState.manager_name ? ` · ${orgState.manager_name}` : ""}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => { setEditingOrg((v) => !v); setOpen(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
+            <Pencil size={12} className="text-[#38BDF8]" />
+          </button>
+          <button onClick={toggleOrgStatus} disabled={togglingOrgStatus}
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+            title={orgState.status === "disabled" ? "Enable organisation" : "Disable organisation"}>
+            {togglingOrgStatus
+              ? <Loader2 size={12} className="animate-spin text-[#475569]" />
+              : orgState.status === "disabled"
+                ? <Power size={12} className="text-green-400" />
+                : <PowerOff size={12} className="text-amber-400" />}
+          </button>
           <button onClick={() => onDelete(org.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
             <Trash2 size={12} className="text-red-400" />
           </button>
@@ -484,22 +746,142 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
       {open && (
         <div className="mt-5 space-y-5">
+          {editingOrg && (
+            <div className="rounded-xl border border-[rgba(56,189,248,0.2)] bg-[rgba(56,189,248,0.04)] p-4 flex flex-col gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Edit Organisation</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Name</label>
+                  <input value={eName} onChange={(e) => setEName(e.target.value)}
+                    className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Type</label>
+                  <select value={eType} onChange={(e) => setEType(e.target.value as "school" | "mat")}
+                    className="px-3 py-2 rounded-xl text-sm bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                    <option value="school">Single School</option>
+                    <option value="mat">MAT</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Manager Name</label>
+                  <input value={eManager} onChange={(e) => setEManager(e.target.value)}
+                    className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Logo</label>
+                  <div className="flex items-center gap-2">
+                    {eLogo ? (
+                      <>
+                        <img src={eLogo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+                        <button type="button" onClick={() => setELogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                      </>
+                    ) : (
+                      <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                        <Plus size={12} /> Upload logo
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setELogo); }} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs" style={{ color: "var(--text-dim)" }}>Notes</label>
+                <textarea value={eNotes} onChange={(e) => setENotes(e.target.value)} rows={2}
+                  className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] resize-none" style={{ color: "var(--text)" }} />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={saveOrg} disabled={savingOrg || !eName.trim()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                  {savingOrg ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Save
+                </button>
+                <button onClick={cancelOrgEdit} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10 transition-all" style={{ color: "var(--text-dim)" }}>Cancel</button>
+              </div>
+            </div>
+          )}
+
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Schools</p>
             {schools.length === 0 && <p className="text-xs mb-2" style={{ color: "var(--text-faint)" }}>No schools yet.</p>}
             <div className="flex flex-col gap-1.5 mb-2">
-              {schools.map((s) => (
-                <div key={s.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
-                  <div>
-                    <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.name}</p>
-                    {s.email && <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{s.email}</p>}
-                  </div>
-                  <button onClick={() => removeSchool(s.id)} disabled={deletingSchool === s.id}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
-                    {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
-                  </button>
+              {schools.map((s) => {
+                const schoolReports = reports.filter((r) => r.school_id === s.id);
+                const reportsOpen = expandedSchoolReports[s.id];
+                return (
+                <div key={s.id} className="rounded-xl bg-white/[0.02] border border-white/5">
+                  {editingSchoolId === s.id ? (
+                    <div className="p-3 flex flex-col gap-2">
+                      <div className="flex flex-wrap gap-2 items-end">
+                        <input value={esName} onChange={(e) => setEsName(e.target.value)} placeholder="School name"
+                          className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+                        <input value={esEmail} onChange={(e) => setEsEmail(e.target.value)} placeholder="Email" type="email"
+                          className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+                        {esLogo ? (
+                          <div className="flex items-center gap-1">
+                            <img src={esLogo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
+                            <button type="button" onClick={() => setEsLogo(null)} className="text-red-400"><X size={11} /></button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20" style={{ color: "var(--text-dim)" }}>
+                            <Plus size={11} /> Logo
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); }} />
+                          </label>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => saveSchool(s.id)} disabled={savingSchool || !esName.trim()}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                          style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                          {savingSchool ? <Loader2 size={11} className="animate-spin" /> : <CheckCircle2 size={11} />} Save
+                        </button>
+                        <button onClick={() => setEditingSchoolId(null)} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10" style={{ color: "var(--text-dim)" }}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2 px-3 py-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {s.logo_url ? (
+                          <img src={s.logo_url} alt="" className="w-6 h-6 object-contain rounded bg-white/10 p-0.5 shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                            <School size={11} className="text-[#38BDF8]" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{s.name}</p>
+                          {s.email && <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>{s.email}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button onClick={() => setExpandedSchoolReports((p) => ({ ...p, [s.id]: !p[s.id] }))}
+                          className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/10 transition-all text-[0.65rem]" style={{ color: "var(--text-dim)" }} title="Reports">
+                          <FileText size={10} className="text-[#38BDF8]" /> {schoolReports.length}
+                        </button>
+                        <button onClick={() => startSchoolEdit(s)} className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit">
+                          <Pencil size={10} className="text-[#38BDF8]" />
+                        </button>
+                        <button onClick={() => removeSchool(s.id)} disabled={deletingSchool === s.id}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
+                          {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {reportsOpen && (
+                    <div className="px-3 pb-3 pt-0">
+                      {schoolReports.length === 0 ? (
+                        <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>No reports for this school.</p>
+                      ) : (
+                        <div className="flex flex-col gap-1.5">
+                          {schoolReports.map((r) => <ReportRow key={r.id} r={r} onDelete={deleteReport} />)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
             <form onSubmit={handleAddSchool} className="flex flex-wrap gap-2 items-end">
               <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
@@ -533,8 +915,17 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
-                        style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}>{m.role}</span>
+                      <select value={m.school_id ?? ""} onChange={(e) => updateMember(m.id, { school_id: e.target.value || null })}
+                        className="px-2 py-1 rounded-lg text-[0.65rem] bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text-dim)" }} title="School">
+                        <option value="">No school</option>
+                        {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                      <select value={m.role} onChange={(e) => updateMember(m.id, { role: e.target.value as "admin" | "member" })}
+                        className="px-2 py-1 rounded-lg text-[0.65rem] bg-[#0F172A] border outline-none focus:border-[rgba(56,189,248,0.4)]"
+                        style={{ color: roleColor, borderColor: `${roleColor}40` }} title="Role">
+                        <option value="member">member</option>
+                        <option value="admin">admin</option>
+                      </select>
                       <button onClick={() => removeMember(m.id)} disabled={deletingMember === m.id}
                         className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
                         {deletingMember === m.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
@@ -567,9 +958,49 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
             </form>
           </div>
+
+          {(() => {
+            const orgOnlyReports = reports.filter((r) => !r.school_id);
+            if (orgOnlyReports.length === 0) return null;
+            return (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>
+                  Org Reports (no school) · {orgOnlyReports.length}
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {orgOnlyReports.map((r) => <ReportRow key={r.id} r={r} onDelete={deleteReport} />)}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </GlassCard>
+  );
+}
+
+function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void }) {
+  const color = TOOL_COLORS[r.tool_name] ?? "#38BDF8";
+  const date = new Date(r.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  return (
+    <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="shrink-0 w-2 h-2 rounded-full" style={{ background: color }} />
+        <div className="min-w-0">
+          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{r.tool_name}</p>
+          <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
+            {date}{r.staff_member ? ` · ${r.staff_member}` : ""}{r.rating ? ` · ${r.rating}` : ""}
+            {r.areas?.length ? ` · ${r.areas.map((a) => a.name).join(", ")}` : ""}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <ScoreBadge score={r.score} color={color} />
+        <button onClick={() => onDelete(r.id)} className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete report">
+          <Trash2 size={10} className="text-red-400" />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -717,6 +1148,12 @@ export default function AdminPage() {
     const { error } = await supabase.from("profiles").update({ status }).eq("id", userId);
     if (error) { console.error("status update failed:", error); return; }
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, status } : u));
+  }
+
+  async function handleProfileSave(userId: string, fields: { full_name: string | null; org_type: OrgType | null }) {
+    const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
+    if (error) { console.error("profile update failed:", error); alert(`Failed to save: ${error.message}`); return; }
+    setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, ...fields } : u));
   }
 
   async function handleToolToggle(userId: string, slug: string, enabled: boolean) {
@@ -899,7 +1336,7 @@ export default function AdminPage() {
                 )}
                 <div className="flex flex-col gap-3">
                   {users.map((u) => (
-                    <UserCard key={u.id} u={u} onStatusChange={handleStatusChange} onToolToggle={handleToolToggle} />
+                    <UserCard key={u.id} u={u} onStatusChange={handleStatusChange} onToolToggle={handleToolToggle} onProfileSave={handleProfileSave} />
                   ))}
                 </div>
               </>
