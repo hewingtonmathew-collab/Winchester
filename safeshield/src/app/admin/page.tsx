@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, School, Network } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
 import { supabase, ALL_TOOLS, type Profile } from "@/lib/supabase";
@@ -196,6 +196,200 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
   );
 }
 
+// ── Add User Modal ───────────────────────────────────────────────────────────
+
+type OrgType = "la_school" | "single_school" | "mat";
+
+const ORG_TYPE_OPTIONS: { value: OrgType; label: string; description: string; color: string; icon: React.ReactNode }[] = [
+  { value: "la_school", label: "Local Authority School", description: "Single school, managed by the LA", color: "#38BDF8", icon: <School size={16} strokeWidth={1.5} /> },
+  { value: "single_school", label: "Independent / Single School", description: "Standalone school", color: "#A78BFA", icon: <Building2 size={16} strokeWidth={1.5} /> },
+  { value: "mat", label: "Multi-Academy Trust (MAT)", description: "Multiple schools under one trust", color: "#34D399", icon: <Network size={16} strokeWidth={1.5} /> },
+];
+
+type ExistingOrg = { id: string; name: string };
+
+function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [orgType, setOrgType] = useState<OrgType | null>(null);
+  const [orgMode, setOrgMode] = useState<"new" | "existing">("new");
+  const [newOrgName, setNewOrgName] = useState("");
+  const [existingOrgs, setExistingOrgs] = useState<ExistingOrg[]>([]);
+  const [selectedOrgId, setSelectedOrgId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    supabase.from("organisations").select("id, name").order("name").then(({ data }) => {
+      setExistingOrgs(data ?? []);
+    });
+  }, []);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!orgType) { setError("Please select an organisation type."); return; }
+    if (orgMode === "new" && !newOrgName.trim()) { setError("Please enter an organisation name."); return; }
+    if (orgMode === "existing" && !selectedOrgId) { setError("Please select an existing organisation."); return; }
+    setError("");
+    setBusy(true);
+
+    try {
+      // Create user via admin API (sign up with temp password)
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } },
+      });
+      if (signUpError) throw signUpError;
+      const userId = authData.user?.id;
+      if (!userId) throw new Error("No user ID returned.");
+
+      // Update profile org_type
+      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
+
+      let orgId: string;
+
+      if (orgMode === "new") {
+        const { data: orgData, error: orgError } = await supabase
+          .from("organisations")
+          .insert({ name: newOrgName.trim(), type: orgType === "mat" ? "mat" : "school", created_by: userId })
+          .select("id")
+          .single();
+        if (orgError) throw orgError;
+        orgId = orgData.id;
+
+        // Create school record
+        const { data: schoolData, error: schoolError } = await supabase
+          .from("schools")
+          .insert({ org_id: orgId, name: newOrgName.trim() })
+          .select("id")
+          .single();
+        if (schoolError) throw schoolError;
+
+        await supabase.from("org_members").insert({ user_id: userId, org_id: orgId, school_id: schoolData.id, role: "admin" });
+      } else {
+        orgId = selectedOrgId;
+        await supabase.from("org_members").insert({ user_id: userId, org_id: orgId, school_id: null, role: "member" });
+      }
+
+      onSuccess();
+      onClose();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-[#0F172A] shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+          <h2 className="text-base font-semibold text-white">Add User</h2>
+          <button onClick={onClose} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all text-[#475569]">
+            <X size={14} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 flex flex-col gap-5">
+          {/* Basic info */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider">User Details</p>
+            <div>
+              <label className="text-xs text-[#64748B] mb-1 block">Full name</label>
+              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Smith" required
+                className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all" />
+            </div>
+            <div>
+              <label className="text-xs text-[#64748B] mb-1 block">Email address</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@school.org" required
+                className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all" />
+            </div>
+            <div>
+              <label className="text-xs text-[#64748B] mb-1 block">Temporary password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" required minLength={8}
+                className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all" />
+            </div>
+          </div>
+
+          {/* Org type */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider">Organisation Type</p>
+            <div className="flex flex-col gap-2">
+              {ORG_TYPE_OPTIONS.map((opt) => {
+                const selected = orgType === opt.value;
+                return (
+                  <button key={opt.value} type="button" onClick={() => setOrgType(opt.value)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl border transition-all text-left"
+                    style={{ background: selected ? `${opt.color}10` : "rgba(255,255,255,0.02)", borderColor: selected ? `${opt.color}50` : "rgba(255,255,255,0.07)" }}>
+                    <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: `${opt.color}15`, color: opt.color, border: `1px solid ${opt.color}25` }}>
+                      {opt.icon}
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-white">{opt.label}</p>
+                      <p className="text-[0.65rem] text-[#64748B]">{opt.description}</p>
+                    </div>
+                    {selected && (
+                      <span className="ml-auto w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ background: opt.color }}>
+                        <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                          <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Org assignment */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider">Organisation</p>
+            <div className="flex gap-2">
+              {(["new", "existing"] as const).map((m) => (
+                <button key={m} type="button" onClick={() => setOrgMode(m)}
+                  className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${orgMode === m ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+                  {m === "new" ? "Create new" : "Assign existing"}
+                </button>
+              ))}
+            </div>
+
+            {orgMode === "new" ? (
+              <div>
+                <label className="text-xs text-[#64748B] mb-1 block">Organisation name</label>
+                <input type="text" value={newOrgName} onChange={(e) => setNewOrgName(e.target.value)} placeholder="Maple Primary School"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all" />
+              </div>
+            ) : (
+              <div>
+                <label className="text-xs text-[#64748B] mb-1 block">Select organisation</label>
+                <select value={selectedOrgId} onChange={(e) => setSelectedOrgId(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm bg-[#0F172A] border border-white/10 text-white outline-none focus:border-[rgba(56,189,248,0.4)] transition-all">
+                  <option value="">-- Choose organisation --</option>
+                  {existingOrgs.map((o) => (
+                    <option key={o.id} value={o.id}>{o.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+
+          <button type="submit" disabled={busy}
+            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+            style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+            {busy ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
+            Add User
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── Main admin page ──────────────────────────────────────────────────────────
 
 type Tab = "assessments" | "users";
@@ -212,6 +406,7 @@ export default function AdminPage() {
   // Users state
   const [users, setUsers] = useState<UserWithTools[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
 
   useEffect(() => {
     if (!loading && profile?.role !== "admin") router.replace("/");
@@ -264,11 +459,18 @@ export default function AdminPage() {
     return <div className="flex items-center justify-center min-h-screen"><Loader2 size={24} className="animate-spin text-[#38BDF8]" /></div>;
   }
 
+  // Modal
+  const addUserModal = showAddUser && (
+    <AddUserModal onClose={() => setShowAddUser(false)} onSuccess={loadUsers} />
+  );
+
   const schools = [...new Set(submissions.map((s) => s.schoolName))];
   const toolCounts = submissions.reduce<Record<string, number>>((acc, s) => { acc[s.tool] = (acc[s.tool] ?? 0) + 1; return acc; }, {});
   const pendingCount = users.filter(u => u.status === "pending").length;
 
   return (
+    <>
+    {addUserModal}
     <div className="min-h-screen pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
@@ -382,6 +584,18 @@ export default function AdminPage() {
         {/* ── Users tab ── */}
         {tab === "users" && (
           <>
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+                {usersLoading ? "Loading…" : `${users.length} user${users.length !== 1 ? "s" : ""}`}
+              </p>
+              <button
+                onClick={() => setShowAddUser(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border"
+                style={{ background: "rgba(56,189,248,0.12)", borderColor: "rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                <UserPlus size={14} /> Add User
+              </button>
+            </div>
+
             {usersLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 size={24} className="animate-spin text-[#38BDF8]" />
@@ -412,5 +626,6 @@ export default function AdminPage() {
 
       </div>
     </div>
+    </>
   );
 }
