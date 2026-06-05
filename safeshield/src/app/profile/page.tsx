@@ -44,11 +44,12 @@ export default function ProfilePage() {
       setReportsLoading(true);
 
       // Load reports
-      const { data: reportRows } = await supabase
+      const { data: reportRows, error: reportErr } = await supabase
         .from("reports")
         .select("*")
         .eq("created_by", user!.id)
         .order("created_at", { ascending: false });
+      if (reportErr) console.error("[Profile] reports fetch error:", reportErr);
       setReports(reportRows ?? []);
 
       // Load org membership
