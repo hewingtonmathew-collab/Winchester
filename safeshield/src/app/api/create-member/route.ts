@@ -66,8 +66,20 @@ export async function POST(req: Request) {
     user_metadata: { full_name: name },
   });
   if (createErr || !created.user) {
+    // Include a safe diagnostic so we can tell whether the service key was
+    // loaded and which key family it belongs to (no secret leaked).
+    const keyKind = serviceKey.startsWith("sb_secret")
+      ? "new-secret"
+      : serviceKey.startsWith("eyJ")
+        ? "legacy-jwt"
+        : "unknown";
     return NextResponse.json(
-      { error: createErr?.message ?? "Could not create user." },
+      {
+        error: createErr?.message ?? "Could not create user.",
+        step: "createUser",
+        keyKind,
+        keyLen: serviceKey.length,
+      },
       { status: 400 }
     );
   }
