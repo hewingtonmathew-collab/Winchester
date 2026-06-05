@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [enabledTools, setEnabledTools] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function loadProfile(userId: string) {
+  async function loadProfile(userId: string, appMeta?: Record<string, unknown>) {
     const { data: prof } = await supabase
       .from("profiles")
       .select("*")
@@ -38,7 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!prof) return;
 
-    if (prof.role === "admin") {
+    // Use JWT app_metadata for admin check — no circular DB query
+    const isAdmin = appMeta?.role === "admin" || prof.role === "admin";
+
+    if (isAdmin) {
       setEnabledTools(["*"]);
     } else if (prof.status === "active") {
       const { data: tools } = await supabase
@@ -53,14 +56,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function refreshProfile() {
-    if (user) await loadProfile(user.id);
+    if (user) await loadProfile(user.id, user.app_metadata);
   }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id).finally(() => setLoading(false));
+        loadProfile(session.user.id, session.user.app_metadata).finally(() => setLoading(false));
       } else {
         setLoading(false);
       }
@@ -69,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id);
+        loadProfile(session.user.id, session.user.app_metadata);
       } else {
         setProfile(null);
         setEnabledTools([]);
