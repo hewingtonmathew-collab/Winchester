@@ -57,6 +57,22 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  async function handleForgotPassword() {
+    if (!email.trim()) { setError("Enter your email address first, then click 'Forgot password'."); return; }
+    setError(""); setSuccess(""); setBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setSuccess("Password reset link sent. Check your email inbox.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Could not send reset email.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   useEffect(() => {
     if (!loading && user) router.replace("/");
   }, [user, loading, router]);
@@ -236,6 +252,13 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
+
+              {mode === "login" && (
+                <button type="button" onClick={handleForgotPassword}
+                  className="text-xs text-[#38BDF8] hover:underline self-end -mt-1">
+                  Forgot password?
+                </button>
+              )}
 
               {error && <p className="text-red-400 text-xs">{error}</p>}
               {success && <p className="text-green-400 text-xs">{success}</p>}

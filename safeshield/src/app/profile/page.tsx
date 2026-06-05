@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Building2, Mail, Calendar, ShieldCheck, FileText, Loader2, Download, Printer } from "lucide-react";
+import { User, Building2, Mail, Calendar, ShieldCheck, FileText, Loader2, KeyRound } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -135,6 +135,9 @@ export default function ProfilePage() {
           </GlassCard>
         </div>
 
+        {/* Change password */}
+        <ChangePasswordCard />
+
         {/* Reports */}
         <div>
           <div className="flex items-center gap-2 mb-4">
@@ -200,5 +203,53 @@ export default function ProfilePage() {
 
       </div>
     </div>
+  );
+}
+
+function ChangePasswordCard() {
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(""); setMsg("");
+    if (password.length < 8) { setErr("Password must be at least 8 characters."); return; }
+    if (password !== confirm) { setErr("Passwords do not match."); return; }
+    setBusy(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setBusy(false);
+    if (error) { setErr(error.message); return; }
+    setMsg("Password updated successfully.");
+    setPassword(""); setConfirm("");
+  }
+
+  return (
+    <GlassCard className="mb-8">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <KeyRound size={16} className="text-[#38BDF8]" />
+          <span className="font-semibold text-sm" style={{ color: "var(--text)" }}>Change Password</span>
+        </div>
+        <span className="text-xs" style={{ color: "var(--text-dim)" }}>{open ? "Cancel" : "Edit"}</span>
+      </button>
+      {open && (
+        <form onSubmit={save} className="mt-4 flex flex-col gap-3">
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" minLength={8} required
+            className="px-3 py-2 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)]" />
+          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm new password" minLength={8} required
+            className="px-3 py-2 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)]" />
+          {err && <p className="text-xs text-red-400">{err}</p>}
+          {msg && <p className="text-xs text-green-400">{msg}</p>}
+          <button type="submit" disabled={busy} className="self-start flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+            style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+            {busy && <Loader2 size={14} className="animate-spin" />} Update Password
+          </button>
+        </form>
+      )}
+    </GlassCard>
   );
 }
