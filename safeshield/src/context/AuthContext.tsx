@@ -136,14 +136,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Force a token refresh on load so the JWT always carries the latest
+    // app_metadata (e.g. role: "admin"). Without this, a session that was
+    // issued before the admin role was granted keeps a stale token, and
+    // RLS policies that check `auth.jwt() -> app_metadata ->> role`
+    // (e.g. reports_admin_all) never activate — admins see no reports.
+    async function init() {
+      let session = (await supabase.auth.getSession()).data.session;
+      if (session) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        if (refreshed.session) session = refreshed.session;
+      }
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id, session.user.app_metadata).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
+        await loadProfile(session.user.id, session.user.app_metadata);
       }
-    });
+      setLoading(false);
+    }
+    init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
