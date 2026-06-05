@@ -28,12 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   async function loadProfile(userId: string, appMeta?: Record<string, unknown>) {
-    const { data: prof } = await supabase
+    const { data: prof, error: profError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId)
       .single();
 
+    if (profError) console.error("[AuthContext] profile fetch error:", profError);
+    console.log("[AuthContext] profile:", prof, "appMeta:", appMeta);
     setProfile(prof);
 
     if (!prof) return;
