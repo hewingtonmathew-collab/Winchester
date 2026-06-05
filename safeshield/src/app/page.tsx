@@ -1,6 +1,8 @@
+"use client";
 import Link from "next/link";
 import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { useAuth } from "@/context/AuthContext";
 
 type Tool = {
   icon: React.ElementType;
@@ -67,6 +69,17 @@ function ToolCard({ tool }: { tool: Tool }) {
 }
 
 export default function HomePage() {
+  const { enabledTools } = useAuth();
+  const allAccess = enabledTools.includes("*");
+
+  const visibleSections = sections.map(section => ({
+    ...section,
+    tools: section.tools.filter(tool => {
+      const slug = tool.href.split("/").pop()!;
+      return allAccess || enabledTools.includes(slug);
+    }),
+  })).filter(section => section.tools.length > 0);
+
   return (
     <div className="min-h-screen pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -88,7 +101,7 @@ export default function HomePage() {
 
         {/* Sections */}
         <div className="flex flex-col gap-14">
-          {sections.map((section) => (
+          {visibleSections.map((section) => (
             <div key={section.heading}>
               <div className="mb-6">
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>{section.heading}</h2>
@@ -101,6 +114,11 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+          {visibleSections.length === 0 && (
+            <p className="text-center py-20 text-sm" style={{ color: "var(--text-muted)" }}>
+              No tools have been enabled for your account yet. Contact your administrator to request access.
+            </p>
+          )}
         </div>
 
         <p className="text-center text-xs mt-14" style={{ color: "var(--text-faint)" }}>
