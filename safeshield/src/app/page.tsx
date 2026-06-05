@@ -95,7 +95,7 @@ export default function HomePage() {
             <span className="text-[#38BDF8] glow-text">One Place.</span>
           </h1>
           <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Free, browser-based tools for safeguarding, governance, AI readiness, digital standards, data protection, accessibility, and Ofsted preparation.
+            Professional tools for safeguarding, governance, AI readiness, digital standards, data protection, accessibility, and Ofsted preparation.
           </p>
         </div>
 
@@ -121,9 +121,6 @@ export default function HomePage() {
           )}
         </div>
 
-        <p className="text-center text-xs mt-14" style={{ color: "var(--text-faint)" }}>
-          All tools run entirely in your browser — no data is sent to any server.
-        </p>
       </div>
     </div>
   );
