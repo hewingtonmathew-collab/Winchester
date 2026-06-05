@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Building2,
   Plus,
@@ -112,6 +113,7 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
 function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: SchoolType) => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [logo, setLogo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -122,46 +124,40 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
     setError("");
     const { data, error: err } = await supabase
       .from("schools")
-      .insert({ org_id: orgId, name: name.trim(), email: email.trim() || null })
+      .insert({ org_id: orgId, name: name.trim(), email: email.trim() || null, logo_url: logo || null })
       .select()
       .single();
-    if (err) {
-      setError(err.message);
-      setBusy(false);
-      return;
-    }
-    setName("");
-    setEmail("");
+    if (err) { setError(err.message); setBusy(false); return; }
+    setName(""); setEmail(""); setLogo(null);
     setBusy(false);
     onAdded(data as SchoolType);
   }
 
+  const inputCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end mt-3">
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="School name"
-        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44"
-        style={{ color: "var(--text)" }}
-        required
-      />
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="School email (optional)"
-        type="email"
-        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52"
-        style={{ color: "var(--text)" }}
-      />
-      <button
-        type="submit"
-        disabled={busy || !name.trim()}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-        style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}
-      >
-        {busy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
-        Add School
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="School name" required className={`${inputCls} w-44`} style={{ color: "var(--text)" }} />
+      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email (optional)" type="email" className={`${inputCls} w-44`} style={{ color: "var(--text)" }} />
+      <div className="flex items-center gap-1.5">
+        {logo ? (
+          <>
+            <img src={logo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
+            <button type="button" onClick={() => setLogo(null)} className="text-red-400"><X size={10} /></button>
+          </>
+        ) : (
+          <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
+            <Plus size={10} /> Logo
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+              const f = e.target.files?.[0]; if (!f) return;
+              const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
+            }} />
+          </label>
+        )}
+      </div>
+      <button type="submit" disabled={busy || !name.trim()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+        style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+        {busy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add School
       </button>
       {error && <p className="text-xs text-red-400 w-full">{error}</p>}
     </form>
@@ -312,8 +308,10 @@ function OrgCard({
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-            <Building2 size={18} className="text-[#38BDF8]" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)] overflow-hidden">
+            {org.logo_url
+              ? <img src={org.logo_url} alt="" className="w-full h-full object-contain p-1" />
+              : <Building2 size={18} className="text-[#38BDF8]" />}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -370,23 +368,33 @@ function OrgCard({
                     key={school.id}
                     className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5"
                   >
-                    <div>
-                      <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{school.name}</p>
-                      {school.email && (
-                        <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{school.email}</p>
-                      )}
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-white/5 border border-white/10 overflow-hidden">
+                        {school.logo_url
+                          ? <img src={school.logo_url} alt="" className="w-full h-full object-contain p-0.5" />
+                          : <SchoolIcon size={12} style={{ color: "var(--text-dim)" }} />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{school.name}</p>
+                        {school.email && <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>{school.email}</p>}
+                      </div>
                     </div>
-                    <button
-                      onClick={() => removeSchool(school.id)}
-                      disabled={deletingSchool === school.id}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
-                    >
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Link href={`/school/${school.id}`} className="text-[0.65rem] px-2 py-0.5 rounded-lg glass border border-white/10 hover:border-[rgba(56,189,248,0.3)] transition-all" style={{ color: "var(--text-dim)" }}>
+                        View Profile
+                      </Link>
+                      <button
+                        onClick={() => removeSchool(school.id)}
+                        disabled={deletingSchool === school.id}
+                        className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                      >
                       {deletingSchool === school.id ? (
                         <Loader2 size={10} className="animate-spin text-red-400" />
                       ) : (
                         <X size={10} className="text-red-400" />
                       )}
-                    </button>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

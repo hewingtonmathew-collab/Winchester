@@ -43,6 +43,7 @@ export type School = {
   org_id: string;
   name: string;
   email: string | null;
+  logo_url: string | null;
   created_at: string;
 };
 
