@@ -2,10 +2,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, School, Network } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
-import { supabase, ALL_TOOLS, type Profile } from "@/lib/supabase";
+import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember } from "@/lib/supabase";
 
 const TOOL_COLORS: Record<string, string> = {
   "Safeguarding Risk Checker": "#34D399",
@@ -392,11 +392,192 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
 
 // ── Main admin page ──────────────────────────────────────────────────────────
 
-type Tab = "assessments" | "users";
+// ── Admin Org Card ───────────────────────────────────────────────────────────
+
+type OrgWithDetails = Organisation & {
+  schools: SchoolType[];
+  members: (OrgMember & { email?: string; full_name?: string | null })[];
+};
+
+function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [schools, setSchools] = useState<SchoolType[]>(org.schools);
+  const [members, setMembers] = useState(org.members);
+  const [deletingSchool, setDeletingSchool] = useState<string | null>(null);
+  const [deletingMember, setDeletingMember] = useState<string | null>(null);
+  const [schoolName, setSchoolName] = useState("");
+  const [schoolEmail, setSchoolEmail] = useState("");
+  const [addingSchool, setAddingSchool] = useState(false);
+  const [memberEmail, setMemberEmail] = useState("");
+  const [memberSchoolId, setMemberSchoolId] = useState("");
+  const [memberRole, setMemberRole] = useState<"admin" | "member">("member");
+  const [addingMember, setAddingMember] = useState(false);
+  const [memberError, setMemberError] = useState("");
+
+  async function removeSchool(id: string) {
+    setDeletingSchool(id);
+    const { error } = await supabase.from("schools").delete().eq("id", id);
+    if (!error) setSchools((p) => p.filter((s) => s.id !== id));
+    setDeletingSchool(null);
+  }
+
+  async function removeMember(id: string) {
+    setDeletingMember(id);
+    const { error } = await supabase.from("org_members").delete().eq("id", id);
+    if (!error) setMembers((p) => p.filter((m) => m.id !== id));
+    setDeletingMember(null);
+  }
+
+  async function handleAddSchool(e: React.FormEvent) {
+    e.preventDefault();
+    if (!schoolName.trim()) return;
+    setAddingSchool(true);
+    const { data, error } = await supabase.from("schools").insert({ org_id: org.id, name: schoolName.trim(), email: schoolEmail.trim() || null }).select().single();
+    if (!error) { setSchools((p) => [...p, data as SchoolType]); setSchoolName(""); setSchoolEmail(""); }
+    setAddingSchool(false);
+  }
+
+  async function handleAddMember(e: React.FormEvent) {
+    e.preventDefault();
+    if (!memberEmail.trim()) return;
+    setAddingMember(true);
+    setMemberError("");
+    const { data: prof, error: profErr } = await supabase.from("profiles").select("id, email, full_name").eq("email", memberEmail.trim().toLowerCase()).single();
+    if (profErr || !prof) { setMemberError("No user found with that email."); setAddingMember(false); return; }
+    const { data: mem, error: memErr } = await supabase.from("org_members").insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole }).select().single();
+    if (memErr) { setMemberError(memErr.message); setAddingMember(false); return; }
+    setMembers((p) => [...p, { ...(mem as OrgMember), email: prof.email, full_name: prof.full_name }]);
+    setMemberEmail(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
+  }
+
+  const typeBadgeColor = org.type === "mat" ? "#A78BFA" : "#38BDF8";
+
+  return (
+    <GlassCard>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+            <Building2 size={16} className="text-[#38BDF8]" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{org.name}</p>
+              <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
+                style={{ color: typeBadgeColor, background: `${typeBadgeColor}18`, borderColor: `${typeBadgeColor}40` }}>
+                {org.type === "mat" ? "MAT" : "School"}
+              </span>
+            </div>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {schools.length} school{schools.length !== 1 ? "s" : ""} · {members.length} member{members.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => onDelete(org.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
+            <Trash2 size={12} className="text-red-400" />
+          </button>
+          <button onClick={() => setOpen(!open)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="mt-5 space-y-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Schools</p>
+            {schools.length === 0 && <p className="text-xs mb-2" style={{ color: "var(--text-faint)" }}>No schools yet.</p>}
+            <div className="flex flex-col gap-1.5 mb-2">
+              {schools.map((s) => (
+                <div key={s.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div>
+                    <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.name}</p>
+                    {s.email && <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{s.email}</p>}
+                  </div>
+                  <button onClick={() => removeSchool(s.id)} disabled={deletingSchool === s.id}
+                    className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
+                    {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleAddSchool} className="flex flex-wrap gap-2 items-end">
+              <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+              <input value={schoolEmail} onChange={(e) => setSchoolEmail(e.target.value)} placeholder="Email (optional)" type="email"
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+              <button type="submit" disabled={addingSchool || !schoolName.trim()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                {addingSchool ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Add School
+              </button>
+            </form>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Members</p>
+            {members.length === 0 && <p className="text-xs mb-2" style={{ color: "var(--text-faint)" }}>No members yet.</p>}
+            <div className="flex flex-col gap-1.5 mb-2">
+              {members.map((m) => {
+                const assignedSchool = schools.find((s) => s.id === m.school_id);
+                const roleColor = m.role === "admin" ? "#38BDF8" : "#94A3B8";
+                return (
+                  <div key={m.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <span className="text-[0.55rem] font-bold text-[#94A3B8]">{(m.full_name ?? m.email ?? "?")[0].toUpperCase()}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{m.full_name ?? m.email ?? m.user_id}</p>
+                        <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{assignedSchool?.name ?? "No school"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
+                        style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}>{m.role}</span>
+                      <button onClick={() => removeMember(m.id)} disabled={deletingMember === m.id}
+                        className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
+                        {deletingMember === m.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
+              <input value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} placeholder="User email" type="email"
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-48" style={{ color: "var(--text)" }} />
+              {schools.length > 0 && (
+                <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                  <option value="">No school</option>
+                  {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              )}
+              <select value={memberRole} onChange={(e) => setMemberRole(e.target.value as "admin" | "member")}
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button type="submit" disabled={addingMember || !memberEmail.trim()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
+              </button>
+              {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
+            </form>
+          </div>
+        </div>
+      )}
+    </GlassCard>
+  );
+}
+
+type Tab = "assessments" | "users" | "organisations";
 
 export default function AdminPage() {
   const router = useRouter();
-  const { profile, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("assessments");
 
   // Assessments state
@@ -407,6 +588,14 @@ export default function AdminPage() {
   const [users, setUsers] = useState<UserWithTools[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
+
+  // Organisations state
+  const [orgs, setOrgs] = useState<OrgWithDetails[]>([]);
+  const [orgsLoading, setOrgsLoading] = useState(false);
+  const [newOrgName, setNewOrgName] = useState("");
+  const [newOrgType, setNewOrgType] = useState<"school" | "mat">("school");
+  const [creatingOrg, setCreatingOrg] = useState(false);
+  const [showOrgForm, setShowOrgForm] = useState(false);
 
   useEffect(() => {
     if (!loading && profile?.role !== "admin") router.replace("/");
@@ -434,6 +623,59 @@ export default function AdminPage() {
   useEffect(() => {
     if (tab === "users" && profile?.role === "admin") loadUsers();
   }, [tab, profile, loadUsers]);
+
+  const loadOrgs = useCallback(async () => {
+    setOrgsLoading(true);
+    const { data: orgRows, error } = await supabase.from("organisations").select("*").order("created_at", { ascending: false });
+    if (error) { console.error("loadOrgs:", error); setOrgsLoading(false); return; }
+    const orgIds = (orgRows ?? []).map((o: Organisation) => o.id);
+    const [{ data: schoolRows }, { data: memberRows }] = await Promise.all([
+      supabase.from("schools").select("*").in("org_id", orgIds.length ? orgIds : [""]),
+      supabase.from("org_members").select("*").in("org_id", orgIds.length ? orgIds : [""]),
+    ]);
+    const memberUserIds = [...new Set((memberRows ?? []).map((m: OrgMember) => m.user_id))];
+    const { data: profileRows } = memberUserIds.length
+      ? await supabase.from("profiles").select("id, email, full_name").in("id", memberUserIds)
+      : { data: [] };
+    const profileMap: Record<string, { email: string; full_name: string | null }> = {};
+    for (const p of profileRows ?? []) profileMap[p.id] = { email: p.email, full_name: p.full_name };
+    setOrgs((orgRows ?? []).map((org: Organisation) => ({
+      ...org,
+      schools: (schoolRows ?? []).filter((s: SchoolType) => s.org_id === org.id),
+      members: (memberRows ?? [])
+        .filter((m: OrgMember) => m.org_id === org.id)
+        .map((m: OrgMember) => ({ ...m, email: profileMap[m.user_id]?.email, full_name: profileMap[m.user_id]?.full_name ?? null })),
+    })));
+    setOrgsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (tab === "organisations" && profile?.role === "admin") loadOrgs();
+  }, [tab, profile, loadOrgs]);
+
+  async function handleCreateOrg(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newOrgName.trim() || !user) return;
+    setCreatingOrg(true);
+    const { data, error } = await supabase
+      .from("organisations")
+      .insert({ name: newOrgName.trim(), type: newOrgType, created_by: user.id })
+      .select()
+      .single();
+    if (error) { alert(`Failed to create: ${error.message}`); setCreatingOrg(false); return; }
+    setOrgs((prev) => [{ ...(data as Organisation), schools: [], members: [] }, ...prev]);
+    setNewOrgName("");
+    setNewOrgType("school");
+    setShowOrgForm(false);
+    setCreatingOrg(false);
+  }
+
+  async function handleDeleteOrg(orgId: string) {
+    if (!confirm("Delete this organisation and all its schools? This cannot be undone.")) return;
+    const { error } = await supabase.from("organisations").delete().eq("id", orgId);
+    if (!error) setOrgs((prev) => prev.filter((o) => o.id !== orgId));
+    else alert(`Failed to delete: ${error.message}`);
+  }
 
   async function handleStatusChange(userId: string, status: "active" | "suspended" | "pending") {
     const { error } = await supabase.from("profiles").update({ status }).eq("id", userId);
@@ -500,6 +742,10 @@ export default function AdminPage() {
             {pendingCount > 0 && (
               <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[0.6rem] font-bold flex items-center justify-center">{pendingCount}</span>
             )}
+          </button>
+          <button onClick={() => setTab("organisations")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "organisations" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <Building2 size={14} /> Organisations
           </button>
         </div>
 
@@ -620,6 +866,92 @@ export default function AdminPage() {
                   ))}
                 </div>
               </>
+            )}
+          </>
+        )}
+
+        {/* ── Organisations tab ── */}
+        {tab === "organisations" && (
+          <>
+            <div className="flex justify-between items-start mb-6 flex-wrap gap-4">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Orgs", value: orgs.length },
+                  { label: "Schools", value: orgs.reduce((a, o) => a + o.schools.length, 0) },
+                  { label: "Members", value: orgs.reduce((a, o) => a + o.members.length, 0) },
+                ].map((stat) => (
+                  <GlassCard key={stat.label} className="text-center py-3 px-4">
+                    <p className="text-xl font-bold text-[#38BDF8]">{stat.value}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-faint)" }}>{stat.label}</p>
+                  </GlassCard>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowOrgForm(!showOrgForm)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border"
+                style={{ background: "rgba(56,189,248,0.15)", borderColor: "rgba(56,189,248,0.3)", color: "#38BDF8" }}
+              >
+                {showOrgForm ? <X size={14} /> : <Plus size={14} />}
+                {showOrgForm ? "Cancel" : "Create Org"}
+              </button>
+            </div>
+
+            {showOrgForm && (
+              <GlassCard className="mb-5">
+                <p className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>New Organisation</p>
+                <form onSubmit={handleCreateOrg} className="flex flex-wrap gap-3 items-end">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Name</label>
+                    <input
+                      value={newOrgName}
+                      onChange={(e) => setNewOrgName(e.target.value)}
+                      placeholder="e.g. Riverside Academy"
+                      className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-64"
+                      style={{ color: "var(--text)" }}
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Type</label>
+                    <select
+                      value={newOrgType}
+                      onChange={(e) => setNewOrgType(e.target.value as "school" | "mat")}
+                      className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]"
+                      style={{ color: "var(--text)" }}
+                    >
+                      <option value="school">School</option>
+                      <option value="mat">MAT</option>
+                    </select>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={creatingOrg || !newOrgName.trim()}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+                    style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}
+                  >
+                    {creatingOrg ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                    Create
+                  </button>
+                </form>
+              </GlassCard>
+            )}
+
+            {orgsLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 size={24} className="animate-spin text-[#38BDF8]" />
+              </div>
+            ) : orgs.length === 0 ? (
+              <GlassCard className="text-center py-16">
+                <Building2 size={32} className="text-[#38BDF8] mx-auto mb-4 opacity-40" />
+                <p className="font-semibold mb-1" style={{ color: "var(--text)" }}>No organisations yet</p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Create one to get started.</p>
+              </GlassCard>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {orgs.map((org) => (
+                  <AdminOrgCard key={org.id} org={org} onDelete={handleDeleteOrg} />
+                ))}
+              </div>
             )}
           </>
         )}
