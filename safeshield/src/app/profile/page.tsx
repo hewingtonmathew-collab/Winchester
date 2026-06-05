@@ -71,11 +71,20 @@ export default function ProfilePage() {
         setSchool(schoolData);
       }
 
-      // Load reports: own reports + all reports for the user's org/school
+      // Org admins see all reports for their school/org; regular members only see their own
+      const isOrgAdmin = memberRow ? await supabase
+        .from("org_members")
+        .select("id")
+        .eq("user_id", user!.id)
+        .eq("role", "admin")
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => !!data) : false;
+
       let query = supabase.from("reports").select("*").order("created_at", { ascending: false });
 
-      if (memberRow?.org_id || memberRow?.school_id) {
-        const orParts: string[] = [`created_by.eq.${user!.id}`];
+      if (isOrgAdmin && (memberRow?.org_id || memberRow?.school_id)) {
+        const orParts: string[] = [];
         if (memberRow?.org_id) orParts.push(`org_id.eq.${memberRow.org_id}`);
         if (memberRow?.school_id) orParts.push(`school_id.eq.${memberRow.school_id}`);
         query = query.or(orParts.join(","));
