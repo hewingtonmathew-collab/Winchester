@@ -324,8 +324,8 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
       const userId = authData.user?.id;
       if (!userId) throw new Error("No user ID returned.");
 
-      // Update profile org_type
-      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
+      // Update profile org_type — admin-created users are active immediately
+      await supabase.from("profiles").update({ org_type: orgType, status: "active" }).eq("id", userId);
 
       let orgId: string;
 
