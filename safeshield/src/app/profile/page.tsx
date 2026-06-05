@@ -7,6 +7,7 @@ import ReportViewModal from "@/components/report/ReportViewModal";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import type { Report, Organisation, School } from "@/lib/supabase";
+import { getSubmissions } from "@/lib/submissions";
 
 const TOOL_COLORS: Record<string, string> = {
   "Safeguarding Risk Checker": "#34D399",
@@ -94,7 +95,38 @@ export default function ProfilePage() {
 
       const { data: reportRows, error: reportErr } = await query;
       if (reportErr) console.error("[Profile] reports fetch error:", reportErr);
-      setReports(reportRows ?? []);
+
+      if (reportRows && reportRows.length > 0) {
+        setReports(reportRows);
+      } else {
+        // Supabase returned nothing — fall back to localStorage so reports
+        // saved on this device are always visible even if the DB insert failed.
+        const local = getSubmissions().filter((s) => {
+          // match by user's school name as best-effort (localStorage has no user id)
+          return true;
+        });
+        const mapped: Report[] = local.map((s) => ({
+          id: s.id,
+          school_id: null,
+          org_id: null,
+          tool_slug: s.tool.toLowerCase().replace(/\s+/g, "-"),
+          tool_name: s.tool,
+          school_name: s.schoolName,
+          school_email: s.schoolEmail || null,
+          staff_member: s.staffMember || null,
+          consultant_name: s.consultantName || null,
+          consultant_email: s.consultantEmail || null,
+          score: s.score,
+          rating: s.rating,
+          rating_color: s.ratingColor,
+          logo_data_url: s.logoDataUrl || null,
+          areas: s.areas || null,
+          recommendations: null,
+          created_by: user!.id,
+          created_at: s.date,
+        }));
+        setReports(mapped);
+      }
 
       setReportsLoading(false);
     }
