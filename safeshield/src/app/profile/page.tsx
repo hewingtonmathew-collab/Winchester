@@ -45,16 +45,7 @@ export default function ProfilePage() {
     async function load() {
       setReportsLoading(true);
 
-      // Load reports
-      const { data: reportRows, error: reportErr } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("created_by", user!.id)
-        .order("created_at", { ascending: false });
-      if (reportErr) console.error("[Profile] reports fetch error:", reportErr);
-      setReports(reportRows ?? []);
-
-      // Load org membership
+      // Load org membership first so we can query reports by org/school
       const { data: memberRow } = await supabase
         .from("org_members")
         .select("org_id, school_id")
@@ -79,6 +70,22 @@ export default function ProfilePage() {
           .single();
         setSchool(schoolData);
       }
+
+      // Load reports: own reports + all reports for the user's org/school
+      let query = supabase.from("reports").select("*").order("created_at", { ascending: false });
+
+      if (memberRow?.org_id || memberRow?.school_id) {
+        const orParts: string[] = [`created_by.eq.${user!.id}`];
+        if (memberRow?.org_id) orParts.push(`org_id.eq.${memberRow.org_id}`);
+        if (memberRow?.school_id) orParts.push(`school_id.eq.${memberRow.school_id}`);
+        query = query.or(orParts.join(","));
+      } else {
+        query = query.eq("created_by", user!.id);
+      }
+
+      const { data: reportRows, error: reportErr } = await query;
+      if (reportErr) console.error("[Profile] reports fetch error:", reportErr);
+      setReports(reportRows ?? []);
 
       setReportsLoading(false);
     }
