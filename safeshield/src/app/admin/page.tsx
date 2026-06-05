@@ -801,6 +801,16 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
             </div>
           )}
 
+          {/* Org-level tool entitlements. Effective access = user_tools AND
+              org_tools AND school_tools (see comment in lib/supabase.ts). */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Tool Access (Organisation)</p>
+            <p className="text-[0.65rem] mb-3" style={{ color: "var(--text-faint)" }}>
+              Tools this organisation is allowed to use. A user sees a tool only if it is enabled for them AND here AND for their school.
+            </p>
+            <ToolAccessGrid enabled={orgTools} onToggle={toggleOrgTool} />
+          </div>
+
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Schools</p>
             {schools.length === 0 && <p className="text-xs mb-2" style={{ color: "var(--text-faint)" }}>No schools yet.</p>}
@@ -854,9 +864,28 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
+                        {s.status === "disabled" && (
+                          <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
+                            style={{ color: "#ef4444", background: "#ef444418", borderColor: "#ef444440" }}>
+                            Disabled
+                          </span>
+                        )}
                         <button onClick={() => setExpandedSchoolReports((p) => ({ ...p, [s.id]: !p[s.id] }))}
                           className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/10 transition-all text-[0.65rem]" style={{ color: "var(--text-dim)" }} title="Reports">
                           <FileText size={10} className="text-[#38BDF8]" /> {schoolReports.length}
+                        </button>
+                        <button onClick={() => setExpandedSchoolTools((p) => ({ ...p, [s.id]: !p[s.id] }))}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Tool access">
+                          <ToggleRight size={11} className="text-[#38BDF8]" />
+                        </button>
+                        <button onClick={() => toggleSchoolStatus(s)} disabled={togglingSchoolStatus === s.id}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+                          title={s.status === "disabled" ? "Enable school" : "Disable school"}>
+                          {togglingSchoolStatus === s.id
+                            ? <Loader2 size={10} className="animate-spin text-[#475569]" />
+                            : s.status === "disabled"
+                              ? <Power size={10} className="text-green-400" />
+                              : <PowerOff size={10} className="text-amber-400" />}
                         </button>
                         <button onClick={() => startSchoolEdit(s)} className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit">
                           <Pencil size={10} className="text-[#38BDF8]" />
@@ -866,6 +895,15 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                           {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
                         </button>
                       </div>
+                    </div>
+                  )}
+                  {expandedSchoolTools[s.id] && (
+                    <div className="px-3 pb-3 pt-0">
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Tool Access (School)</p>
+                      <ToolAccessGrid
+                        enabled={schoolTools[s.id] ?? {}}
+                        onToggle={(slug, next) => toggleSchoolTool(s.id, slug, next)}
+                      />
                     </div>
                   )}
                   {reportsOpen && (

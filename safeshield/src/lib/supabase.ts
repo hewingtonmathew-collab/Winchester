@@ -34,6 +34,7 @@ export type Organisation = {
   manager_name: string | null;
   notes: string | null;
   logo_url: string | null;
+  status: "active" | "disabled";
   created_by: string | null;
   created_at: string;
 };
@@ -44,8 +45,22 @@ export type School = {
   name: string;
   email: string | null;
   logo_url: string | null;
+  status: "active" | "disabled";
   created_at: string;
 };
+
+// Tool entitlements exist at three levels: user, org, and school.
+// A user can SEE a tool only if ALL of the following hold:
+//   1. The super admin enabled it for that user (user_tools).
+//   2. The user's org has it enabled (org_tools) — OR the org has no
+//      org_tools rows at all (no restriction configured).
+//   3. The user's school has it enabled (school_tools) — OR the school
+//      has no school_tools rows at all (no restriction configured).
+// Additionally, if the user's org or school status is 'disabled', the
+// user loses access to all tools. The super admin panel is the single
+// place where every one of these toggles is set.
+export type OrgTool = { id: string; org_id: string; tool_slug: string; enabled: boolean };
+export type SchoolTool = { id: string; school_id: string; tool_slug: string; enabled: boolean };
 
 export type OrgMember = {
   id: string;
