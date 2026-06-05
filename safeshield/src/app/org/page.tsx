@@ -29,6 +29,9 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
   const { user } = useAuth();
   const [name, setName] = useState("");
   const [type, setType] = useState<"school" | "mat">("school");
+  const [manager, setManager] = useState("");
+  const [notes, setNotes] = useState("");
+  const [logo, setLogo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,55 +42,67 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
     setError("");
     const { data, error: err } = await supabase
       .from("organisations")
-      .insert({ name: name.trim(), type, created_by: user?.id ?? null })
+      .insert({ name: name.trim(), type, manager_name: manager.trim() || null, notes: notes.trim() || null, logo_url: logo || null, created_by: user?.id ?? null })
       .select()
       .single();
-    if (err) {
-      setError(err.message);
-      setBusy(false);
-      return;
-    }
-    setName("");
-    setType("school");
+    if (err) { setError(err.message); setBusy(false); return; }
+    setName(""); setType("school"); setManager(""); setNotes(""); setLogo(null);
     setBusy(false);
     onCreated(data as Organisation);
   }
 
+  const inputCls = "px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-end">
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Organisation name</label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Riverside Academy"
-          className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-64"
-          style={{ color: "var(--text)" }}
-          required
-        />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Organisation Name *</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Riverside Academy" required className={inputCls} style={{ color: "var(--text)" }} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Type</label>
+          <select value={type} onChange={(e) => setType(e.target.value as "school" | "mat")} className={inputCls} style={{ color: "var(--text)" }}>
+            <option value="school">Single School</option>
+            <option value="mat">MAT</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Manager Name</label>
+          <input value={manager} onChange={(e) => setManager(e.target.value)} placeholder="e.g. Jane Smith" className={inputCls} style={{ color: "var(--text)" }} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
+          <div className="flex items-center gap-2">
+            {logo ? (
+              <>
+                <img src={logo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+                <button type="button" onClick={() => setLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+              </>
+            ) : (
+              <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                <Plus size={12} /> Upload logo
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0]; if (!f) return;
+                  const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
+                }} />
+              </label>
+            )}
+          </div>
+        </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Type</label>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as "school" | "mat")}
-          className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]"
-          style={{ color: "var(--text)" }}
-        >
-          <option value="school">School</option>
-          <option value="mat">MAT</option>
-        </select>
+        <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Consultant Notes <span className="font-normal opacity-60">(optional)</span></label>
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Internal notes about this organisation..."
+          className={`${inputCls} resize-none`} style={{ color: "var(--text)" }} />
       </div>
-      <button
-        type="submit"
-        disabled={busy || !name.trim()}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
-        style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}
-      >
-        {busy ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-        Create
-      </button>
-      {error && <p className="text-xs text-red-400 w-full">{error}</p>}
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <div className="flex justify-end">
+        <button type="submit" disabled={busy || !name.trim()} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+          style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+          {busy ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Create Organisation
+        </button>
+      </div>
     </form>
   );
 }
