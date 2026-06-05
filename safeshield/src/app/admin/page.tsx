@@ -241,12 +241,17 @@ export default function AdminPage() {
   }, [tab, profile, loadUsers]);
 
   async function handleStatusChange(userId: string, status: "active" | "suspended" | "pending") {
-    await supabase.from("profiles").update({ status }).eq("id", userId);
+    const { error } = await supabase.from("profiles").update({ status }).eq("id", userId);
+    if (error) { console.error("status update failed:", error); return; }
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, status } : u));
   }
 
   async function handleToolToggle(userId: string, slug: string, enabled: boolean) {
-    await supabase.from("user_tools").upsert({ user_id: userId, tool_slug: slug, enabled }, { onConflict: "user_id,tool_slug" });
+    const { error } = await supabase.from("user_tools").upsert(
+      { user_id: userId, tool_slug: slug, enabled },
+      { onConflict: "user_id,tool_slug" }
+    );
+    if (error) { console.error("tool toggle failed:", error); alert(`Failed to save: ${error.message}`); return; }
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, tools: { ...u.tools, [slug]: enabled } } : u));
   }
 
