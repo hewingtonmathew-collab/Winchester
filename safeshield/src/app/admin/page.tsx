@@ -2,8 +2,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Eye } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import Certificate from "@/components/report/Certificate";
 import { useAuth } from "@/context/AuthContext";
 import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember, type Report } from "@/lib/supabase";
 
@@ -63,7 +64,7 @@ function sendCertificateEmail(s: Submission) {
   window.location.href = `mailto:${s.schoolEmail}?subject=${subject}&body=${body}`;
 }
 
-function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[]; onDelete: (id: string) => void }) {
+function GroupedBySchool({ submissions, onDelete, onView }: { submissions: Submission[]; onDelete: (id: string) => void; onView: (s: Submission) => void }) {
   const schools = [...new Set(submissions.map((s) => s.schoolName))];
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   return (
@@ -105,6 +106,9 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <ScoreBadge score={s.score} color={color} />
+                        <button onClick={() => onView(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View certificate">
+                          <Eye size={12} className="text-[#38BDF8]" />
+                        </button>
                         {s.schoolEmail && (
                           <button onClick={() => sendCertificateEmail(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Send certificate">
                             <Mail size={12} className="text-[#38BDF8]" />
@@ -1139,6 +1143,7 @@ export default function AdminPage() {
   // Assessments state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [view, setView] = useState<"schools" | "all">("schools");
+  const [viewing, setViewing] = useState<Submission | null>(null);
 
   // Users state
   const [users, setUsers] = useState<UserWithTools[]>([]);
@@ -1383,7 +1388,7 @@ export default function AdminPage() {
                   ))}
                 </div>
                 {view === "schools" ? (
-                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} />
+                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} onView={setViewing} />
                 ) : (
                   <div className="flex flex-col gap-3">
                     {submissions.map((s) => {
@@ -1404,6 +1409,9 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <ScoreBadge score={s.score} color={color} />
+                            <button onClick={() => setViewing(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View certificate">
+                              <Eye size={14} className="text-[#38BDF8]" />
+                            </button>
                             {s.schoolEmail && (
                               <button onClick={() => sendCertificateEmail(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
                                 <Mail size={14} className="text-[#38BDF8]" />
@@ -1423,6 +1431,36 @@ export default function AdminPage() {
             <p className="text-xs mt-8 text-center" style={{ color: "var(--text-faint)" }}>
               Assessment records are stored locally in your browser.
             </p>
+
+            {viewing && (
+              <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 backdrop-blur-sm p-4 sm:p-8"
+                onClick={() => setViewing(null)}>
+                <div className="relative w-full max-w-3xl my-8" onClick={(e) => e.stopPropagation()}>
+                  <button onClick={() => setViewing(null)}
+                    className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-[#0F172A] border border-white/15 hover:bg-white/10 transition-all"
+                    title="Close">
+                    <X size={16} className="text-white" />
+                  </button>
+                  <Certificate
+                    meta={{
+                      schoolName: viewing.schoolName,
+                      schoolEmail: viewing.schoolEmail,
+                      consultantName: viewing.consultantName,
+                      consultantEmail: viewing.consultantEmail,
+                      staffMember: viewing.staffMember,
+                      logoDataUrl: viewing.logoDataUrl,
+                    }}
+                    toolName={viewing.tool}
+                    score={viewing.score}
+                    rating={viewing.rating}
+                    ratingColor={viewing.ratingColor}
+                    accentColor={TOOL_COLORS[viewing.tool] ?? "#38BDF8"}
+                    date={new Date(viewing.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                    areas={viewing.areas}
+                  />
+                </div>
+              </div>
+            )}
           </>
         )}
 
