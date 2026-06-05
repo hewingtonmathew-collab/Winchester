@@ -41,6 +41,14 @@ export function deleteSubmission(id: string) {
 }
 
 export async function saveReportToSupabase(s: Submission, userId: string) {
+  // Look up the user's org and school membership
+  const { data: membership } = await supabase
+    .from("org_members")
+    .select("org_id, school_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
   const { error } = await supabase.from("reports").insert({
     tool_slug: s.tool.toLowerCase().replace(/\s+/g, "-"),
     tool_name: s.tool,
@@ -55,6 +63,8 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     logo_data_url: s.logoDataUrl || null,
     areas: s.areas || null,
     created_by: userId,
+    org_id: membership?.org_id || null,
+    school_id: membership?.school_id || null,
   });
   if (error) console.error("Failed to save report to Supabase:", error);
 }

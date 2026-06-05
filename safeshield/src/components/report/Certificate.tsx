@@ -1,7 +1,9 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Printer, Mail } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 type Props = {
   meta: ReportMetaData;
@@ -16,8 +18,36 @@ type Props = {
 
 export default function Certificate({ meta, toolName, score, rating, ratingColor, date, accentColor = "#38BDF8", areas }: Props) {
   const certRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: membership } = await supabase
+        .from("org_members")
+        .select("org_id, school_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      if (!membership) return;
+      if (membership.org_id) {
+        const { data: org } = await supabase.from("organisations").select("logo_url").eq("id", membership.org_id).single();
+        if (org?.logo_url) setOrgLogoUrl(org.logo_url);
+      }
+      if (membership.school_id) {
+        const { data: school } = await supabase.from("schools").select("logo_url").eq("id", membership.school_id).single();
+        if (school?.logo_url) setSchoolLogoUrl(school.logo_url);
+      }
+    })();
+  }, [user]);
   const today = date ?? new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const certId = `MH-${Date.now().toString(36).toUpperCase().slice(-5)}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+
+  // Determine which logos to show: school logo (manual upload or DB) + org/MAT logo (DB)
+  const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
+  const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
   function handlePrint() {
     const w = window.open("", "_blank");
@@ -30,9 +60,11 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
           </table>
         </div>`
       : "";
-    const logoHtml = meta.logoDataUrl
-      ? `<img src="${meta.logoDataUrl}" alt="School logo" class="school-logo-img" />`
-      : `<div class="school-logo-placeholder"></div>`;
+    const logoHtml = `<div style="display:flex;align-items:center;gap:10px;">
+      ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" alt="School logo" class="school-logo-img" />` : ""}
+      ${displayOrgLogo ? `<img src="${displayOrgLogo}" alt="Organisation logo" class="school-logo-img" />` : ""}
+      ${!displaySchoolLogo && !displayOrgLogo ? `<div class="school-logo-placeholder"></div>` : ""}
+    </div>`;
 
     w.document.write(`<!DOCTYPE html>
 <html>
@@ -226,11 +258,10 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 
         {/* Top row */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
-          <div>
-            {meta.logoDataUrl
-              ? <img src={meta.logoDataUrl} alt="Logo" style={{ height: 60, objectFit: "contain" }} />
-              : <div style={{ width: 60, height: 60 }} />
-            }
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {displaySchoolLogo && <img src={displaySchoolLogo} alt="School logo" style={{ height: 60, objectFit: "contain" }} />}
+            {displayOrgLogo && <img src={displayOrgLogo} alt="Organisation logo" style={{ height: 60, objectFit: "contain" }} />}
+            {!displaySchoolLogo && !displayOrgLogo && <div style={{ width: 60, height: 60 }} />}
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
             <span style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a" }}>Mathew Hewington</span>

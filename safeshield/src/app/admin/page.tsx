@@ -494,11 +494,13 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [schoolName, setSchoolName] = useState("");
   const [schoolEmail, setSchoolEmail] = useState("");
   const [addingSchool, setAddingSchool] = useState(false);
-  const [memberEmail, setMemberEmail] = useState("");
+  const [memberUserId, setMemberUserId] = useState("");
   const [memberSchoolId, setMemberSchoolId] = useState("");
   const [memberRole, setMemberRole] = useState<"admin" | "member">("member");
   const [addingMember, setAddingMember] = useState(false);
   const [memberError, setMemberError] = useState("");
+  const [availableUsers, setAvailableUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   // Org editing
   const [editingOrg, setEditingOrg] = useState(false);
@@ -531,6 +533,24 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   // Org enable/disable busy flag
   const [togglingOrgStatus, setTogglingOrgStatus] = useState(false);
   const [togglingSchoolStatus, setTogglingSchoolStatus] = useState<string | null>(null);
+
+  // Load available users (active, non-admin) when the card is first opened.
+  useEffect(() => {
+    if (!open || availableUsers.length > 0 || loadingUsers) return;
+    setLoadingUsers(true);
+    (async () => {
+      const existingIds = members.map((m) => m.user_id);
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .eq("status", "active")
+        .neq("role", "admin")
+        .order("full_name");
+      const filtered = (data ?? []).filter((u: { id: string }) => !existingIds.includes(u.id));
+      setAvailableUsers(filtered);
+      setLoadingUsers(false);
+    })();
+  }, [open, availableUsers.length, loadingUsers, members]);
 
   // Load org_tools + school_tools when the card is first opened.
   useEffect(() => {
@@ -678,15 +698,16 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
   async function handleAddMember(e: React.FormEvent) {
     e.preventDefault();
-    if (!memberEmail.trim()) return;
+    if (!memberUserId) return;
     setAddingMember(true);
     setMemberError("");
-    const { data: prof, error: profErr } = await supabase.from("profiles").select("id, email, full_name").eq("email", memberEmail.trim().toLowerCase()).single();
-    if (profErr || !prof) { setMemberError("No user found with that email."); setAddingMember(false); return; }
+    const prof = availableUsers.find((u) => u.id === memberUserId);
+    if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
     const { data: mem, error: memErr } = await supabase.from("org_members").insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole }).select().single();
     if (memErr) { setMemberError(memErr.message); setAddingMember(false); return; }
     setMembers((p) => [...p, { ...(mem as OrgMember), email: prof.email, full_name: prof.full_name }]);
-    setMemberEmail(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
+    setAvailableUsers((p) => p.filter((u) => u.id !== prof.id));
+    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
   }
 
   const typeBadgeColor = orgState.type === "mat" ? "#A78BFA" : "#38BDF8";
@@ -974,8 +995,14 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               })}
             </div>
             <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
-              <input value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} placeholder="User email" type="email"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-48" style={{ color: "var(--text)" }} />
+              <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)}
+                disabled={loadingUsers}
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
+                <option value="">{loadingUsers ? "Loading users…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
+                {availableUsers.map((u) => (
+                  <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
+                ))}
+              </select>
               {schools.length > 0 && (
                 <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
                   className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
@@ -988,7 +1015,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
               </select>
-              <button type="submit" disabled={addingMember || !memberEmail.trim()}
+              <button type="submit" disabled={addingMember || !memberUserId}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
                 style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
                 {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
