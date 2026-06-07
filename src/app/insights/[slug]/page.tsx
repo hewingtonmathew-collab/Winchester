@@ -20,7 +20,7 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   const article = articles.find((a) => a.href === `/insights/${params.slug}`);
   if (!article) return {};
   return {
-    title: `${article.title} | Winchester Consultancy`,
+    title: `${article.title} | SafeShield`,
     description: article.excerpt.slice(0, 160),
     twitter: { card: "summary_large_image" },
     openGraph: {

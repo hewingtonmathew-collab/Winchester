@@ -7,7 +7,7 @@ import ContactCTA from "@/components/sections/ContactCTA";
 import { Shield, Columns2, Cpu, CheckCircle, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Resources | Winchester Consultancy",
+  title: "Resources | SafeShield",
   description:
     "Practical guides, frameworks, and templates to support school compliance, governance, and digital safeguarding across your school or trust.",
   twitter: { card: "summary_large_image" },

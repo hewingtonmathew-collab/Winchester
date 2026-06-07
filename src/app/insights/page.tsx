@@ -9,9 +9,9 @@ import Link from "next/link";
 import { ArrowRight, Clock, Calendar } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Insights | Winchester Consultancy",
+  title: "Insights | SafeShield",
   description:
-    "Expert analysis on school compliance, digital safeguarding, AI governance, and governance from the Winchester Consultancy team.",
+    "Expert analysis on school compliance, digital safeguarding, AI governance, and governance from the SafeShield team.",
   twitter: { card: "summary_large_image" },
 };
 
@@ -189,7 +189,7 @@ export default function InsightsPage() {
                   Stay Ahead of Compliance Changes.
                 </h2>
                 <p className="font-inter text-[#A7B1BE] text-base leading-relaxed max-w-2xl">
-                  Winchester Consultancy publishes regular insights on the latest regulatory
+                  SafeShield publishes regular insights on the latest regulatory
                   developments, statutory guidance updates, and sector best practice. Get in touch
                   to be added to our distribution list.
                 </p>

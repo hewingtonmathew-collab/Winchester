@@ -67,10 +67,7 @@ export default function ShieldLogo({ className, size = 40, variant = "full" }: P
       {variant === "full" && (
         <div className="flex flex-col leading-none gap-[3px]">
           <span className="font-cinzel font-bold text-white tracking-[0.14em] text-[0.82rem] uppercase whitespace-nowrap">
-            Winchester
-          </span>
-          <span className="font-cinzel font-bold text-white tracking-[0.14em] text-[0.82rem] uppercase whitespace-nowrap">
-            Consultancy
+            SafeShield
           </span>
           <span
             className="font-inter text-[0.5rem] tracking-[0.2em] uppercase whitespace-nowrap mt-[1px]"

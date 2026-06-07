@@ -3,9 +3,9 @@ import SectionDivider from "@/components/ui/SectionDivider";
 import GlassCard from "@/components/ui/GlassCard";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Winchester Consultancy",
+  title: "Privacy Policy | SafeShield",
   description:
-    "How Winchester Consultancy collects, uses, and protects your personal data under UK GDPR.",
+    "How SafeShield collects, uses, and protects your personal data under UK GDPR.",
   robots: { index: true, follow: true },
 };
 
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
                 1. Who We Are
               </h2>
               <p className="font-inter text-[#A7B1BE] text-sm leading-relaxed mb-3">
-                Winchester Consultancy Ltd (&quot;Winchester Consultancy&quot;, &quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is the
+                SafeShield Ltd (&quot;SafeShield&quot;, &quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is the
                 data controller responsible for your personal data. We are registered in England
                 and Wales.
               </p>
