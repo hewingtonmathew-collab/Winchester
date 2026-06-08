@@ -2,7 +2,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { FileSearch } from "lucide-react";
+import { IconDPIA } from "@/components/ui/ToolIcons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function DpiaPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={FileSearch}
+            icon={IconDPIA}
             badge="Data Protection"
             title="DPIA Wizard"
             description="Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can save or print."

@@ -2,7 +2,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import HealthSafetyChecker from "@/components/forms/HealthSafetyChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { HardHat } from "lucide-react";
+import { IconHealthSafety } from "@/components/ui/ToolIcons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function HealthSafetyPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={HardHat}
+            icon={IconHealthSafety}
             badge="Health & Safety"
             title="Health & Safety Compliance Checker"
             description="Assess your school's compliance with health and safety legislation across six key areas: fire safety, COSHH, premises, policies and documentation, staff and pupil welfare, and contractor management."

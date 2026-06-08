@@ -2,7 +2,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import OfstedChecker from "@/components/forms/OfstedChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { CheckSquare } from "lucide-react";
+import { IconOfsted } from "@/components/ui/ToolIcons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function OfstedPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={CheckSquare}
+            icon={IconOfsted}
             badge="Inspection"
             title="Ofsted Ready Checker"
             description="Self-evaluate your school's readiness across all four Ofsted EIF judgement areas plus SEND and inclusion. Identify strengths, areas for improvement, and inspection risks."

@@ -2,7 +2,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DigitalStandardsChecker from "@/components/forms/DigitalStandardsChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { Monitor } from "lucide-react";
+import { IconDigitalStandards } from "@/components/ui/ToolIcons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function DigitalStandardsPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={Monitor}
+            icon={IconDigitalStandards}
             badge="Standards"
             title="Digital & Technology Standards"
             description="Assess your school's compliance with DfE digital and technology standards across six key areas: digital safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure."

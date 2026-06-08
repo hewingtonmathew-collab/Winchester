@@ -3,7 +3,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { Bot } from "lucide-react";
+import { IconAIDetector } from "@/components/ui/ToolIcons";
 
 const COLOR = "#38BDF8";
 
@@ -22,7 +22,7 @@ export default function AiDetectorPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={Bot}
+            icon={IconAIDetector}
             badge="Detection"
             title="AI Content Detector"
             description="Paste any text to detect whether it was written by AI or a human. Uses six statistical signals — results are indicative only."

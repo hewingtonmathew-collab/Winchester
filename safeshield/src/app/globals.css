@@ -241,6 +241,33 @@ body::before {
 }
 
 /* ══════════════════════════════════════════
+   3-D GLASS ICON SYSTEM
+   Matches the SafeShield icon reference:
+   dark = deep navy + blue glow
+   light = frosted white + blue accent
+══════════════════════════════════════════ */
+:root, [data-theme="dark"] {
+  --icon-bg-a:      #0B1528;
+  --icon-bg-b:      #060D1E;
+  --icon-border-c:  rgba(80,140,230,0.40);
+  --icon-top-shine: rgba(120,180,255,0.22);
+  --icon-glow-c:    rgba(56,165,248,0.30);
+  --icon-stroke-c:  #60A5FA;
+  --icon-fill-c:    rgba(56,165,248,0.14);
+  --icon-hi:        rgba(200,230,255,0.80);
+}
+[data-theme="light"] {
+  --icon-bg-a:      #EBF2FF;
+  --icon-bg-b:      #D5E4F8;
+  --icon-border-c:  rgba(140,180,240,0.65);
+  --icon-top-shine: rgba(255,255,255,0.90);
+  --icon-glow-c:    rgba(37,99,235,0.12);
+  --icon-stroke-c:  #2563EB;
+  --icon-fill-c:    rgba(37,99,235,0.10);
+  --icon-hi:        rgba(255,255,255,0.95);
+}
+
+/* ══════════════════════════════════════════
    FORM INPUT — adapts to both themes
 ══════════════════════════════════════════ */
 .input-glass {

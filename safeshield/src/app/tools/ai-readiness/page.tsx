@@ -3,7 +3,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import AiReadiness from "@/components/forms/AiReadiness";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { Cpu } from "lucide-react";
+import { IconAIReadiness } from "@/components/ui/ToolIcons";
 
 const COLOR = "#FB923C";
 const DIMS = ["AI policy (staff & student)", "Data protection & DPIAs", "Safeguarding risk awareness", "AI procurement due diligence", "Staff capability & CPD", "Board briefing & risk register"];
@@ -14,7 +14,7 @@ export default function AiReadinessPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={Cpu}
+            icon={IconAIReadiness}
             badge="Readiness Assessment"
             title="AI Readiness Assessment"
             description="Rate your school's current position across five AI governance dimensions. Receive a readiness score and prioritised action list to support responsible AI adoption."

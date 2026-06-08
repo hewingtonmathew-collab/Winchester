@@ -2,7 +2,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { Globe } from "lucide-react";
+import { IconAccessibility } from "@/components/ui/ToolIcons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function AccessibilityPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={Globe}
+            icon={IconAccessibility}
             badge="Accessibility"
             title="Web Accessibility Checker"
             description="Assess your school website against WCAG 2.1 AA and the Public Sector Bodies Accessibility Regulations 2018. Identify barriers and generate a prioritised action plan with certificate."

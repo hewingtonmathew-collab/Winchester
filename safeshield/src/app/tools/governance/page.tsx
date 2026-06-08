@@ -3,7 +3,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import GovernanceChecker from "@/components/forms/GovernanceChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { ClipboardList } from "lucide-react";
+import { IconGovernance } from "@/components/ui/ToolIcons";
 
 const COLOR = "#A78BFA";
 const AREAS = ["Board structure & delegation", "Skills, membership & CPD", "Statutory policy compliance", "Website publication requirements", "Accountability & challenge", "Financial oversight", "Register of interests"];
@@ -14,7 +14,7 @@ export default function GovernancePage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={ClipboardList}
+            icon={IconGovernance}
             badge="Compliance"
             title="Governance Compliance Checker"
             description="Check your governance arrangements against the DfE Governance Handbook. Identify gaps across board structure, skills, statutory compliance, accountability, and financial oversight."

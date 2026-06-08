@@ -3,7 +3,7 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import SafeguardingChecker from "@/components/forms/SafeguardingChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import { ShieldCheck } from "lucide-react";
+import { IconSafeguarding } from "@/components/ui/ToolIcons";
 
 const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
@@ -14,7 +14,7 @@ export default function SafeguardingPage() {
       <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ToolPageHeader
-            icon={ShieldCheck}
+            icon={IconSafeguarding}
             badge="Risk Assessment"
             title="Safeguarding Risk Checker"
             description="Answer 15 structured questions across key safeguarding areas to receive an instant risk rating and prioritised action list aligned to KCSIE expectations."
