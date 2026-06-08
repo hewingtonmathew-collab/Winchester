@@ -54,13 +54,13 @@ export default function Navbar() {
 
   return (
     /* z-[999] ensures nav stays above all page content including glass cards with stacking contexts */
-    <nav className="fixed top-0 inset-x-0 z-[999] glass" style={{ borderBottom: "1px solid var(--glass-stroke)" }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2 shrink-0 mr-1">
-          <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)]">
-            <Shield size={14} className="text-[#38BDF8]" />
+    <nav className="fixed top-0 inset-x-0 z-[999] glass" style={{ borderBottom: "1px solid var(--glass-border)" }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-2">
+          <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.35)]">
+            <Shield size={20} className="text-[#38BDF8]" strokeWidth={1.8} />
           </span>
-          <span className="font-semibold text-sm tracking-wide" style={{ color: "var(--text)" }}>SafeShield</span>
+          <span className="heading-luxury text-base tracking-tight" style={{ color: "var(--text)" }}>SafeShield</span>
         </Link>
 
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
@@ -120,12 +120,12 @@ export default function Navbar() {
                   className="absolute right-0 top-full mt-2 w-52 rounded-2xl overflow-hidden z-[9999]"
                   style={{
                     background: "var(--bg2)",
-                    border: "1px solid var(--glass-stroke)",
-                    borderTopColor: "var(--glass-stroke-top)",
-                    backdropFilter: "blur(24px)",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 var(--glass-stroke-top)",
+                    border: "1px solid var(--glass-border)",
+                    borderTopColor: "var(--glass-border-top)",
+                    backdropFilter: "blur(16px)",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}>
-                  <div className="px-3 py-3 border-b" style={{ borderColor: "var(--glass-stroke)" }}>
+                  <div className="px-3 py-3 border-b" style={{ borderColor: "var(--glass-border)" }}>
                     <p className="text-xs font-semibold truncate" style={{ color: "var(--text)" }}>{profile?.full_name ?? "User"}</p>
                     <p className="text-[0.65rem] truncate mt-0.5" style={{ color: "var(--text-dim)" }}>{user.email}</p>
                     {isAdmin && (

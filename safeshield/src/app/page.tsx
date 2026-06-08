@@ -1,85 +1,189 @@
 "use client";
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+/* ─────────────────────────────────────────
+   Custom modern SVG icons — each has its own
+   character rather than generic Lucide icons.
+───────────────────────────────────────────*/
+function IconSafeguarding({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 3L5 7v7c0 5.25 3.85 10.15 9 11.35C19.15 24.15 23 19.25 23 14V7L14 3Z"
+        stroke={color} strokeWidth="1.6" strokeLinejoin="round" fill={`${color}18`} />
+      <path d="M10 14l2.5 2.5L18 11" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconGovernance({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect x="7" y="5" width="14" height="18" rx="2" stroke={color} strokeWidth="1.6" fill={`${color}12`} />
+      <path d="M11 10h6M11 14h6M11 18h4" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="21" cy="21" r="4" fill={`${color}25`} stroke={color} strokeWidth="1.4" />
+      <path d="M19.5 21l1 1 2-2" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconAIReadiness({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      {/* chip body */}
+      <rect x="8" y="8" width="12" height="12" rx="2" stroke={color} strokeWidth="1.6" fill={`${color}15`} />
+      {/* pins */}
+      <path d="M11 8V5M14 8V5M17 8V5M11 20v3M14 20v3M17 20v3M8 11H5M8 14H5M8 17H5M20 11h3M20 14h3M20 17h3"
+        stroke={color} strokeWidth="1.4" strokeLinecap="round" />
+      {/* AI text */}
+      <text x="14" y="16" textAnchor="middle" fontSize="5" fontWeight="800" fill={color} fontFamily="system-ui">AI</text>
+    </svg>
+  );
+}
+
+function IconAIDetector({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="13" cy="13" r="7" stroke={color} strokeWidth="1.6" fill={`${color}12`} />
+      <path d="M18.5 18.5L23 23" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      {/* scan lines */}
+      <path d="M10 11h6M10 13h4M10 15h5" stroke={color} strokeWidth="1.3" strokeLinecap="round" opacity="0.8" />
+    </svg>
+  );
+}
+
+function IconDPIA({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect x="6" y="4" width="16" height="20" rx="2.5" stroke={color} strokeWidth="1.6" fill={`${color}10`} />
+      <rect x="11" y="13" width="6" height="7" rx="1" stroke={color} strokeWidth="1.4" fill={`${color}20`} />
+      <path d="M11.5 13v-2a2.5 2.5 0 015 0v2" stroke={color} strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="14" cy="16" r="1" fill={color} />
+      <path d="M9 8h4M9 10.5h6" stroke={color} strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconAccessibility({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="6" r="2.2" stroke={color} strokeWidth="1.6" fill={`${color}20`} />
+      <path d="M8 11h16M14 11v9M14 15l-3 5M14 15l3 5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="14" cy="14" r="11" stroke={color} strokeWidth="1.2" strokeDasharray="3 2" opacity="0.35" />
+    </svg>
+  );
+}
+
+function IconDigitalStandards({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect x="4" y="6" width="20" height="13" rx="2" stroke={color} strokeWidth="1.6" fill={`${color}12`} />
+      <path d="M10 23h8M14 19v4" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M9 12l2.5 2.5L19 10" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconOfsted({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 3l2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L14 17.2 8.4 20.3l1.1-6.2L5 9.7l6.2-.9L14 3Z"
+        stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill={`${color}15`} />
+      <path d="M11 14l2 2 4-4" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconHealthSafety({ color }: { color: string }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      {/* hard hat */}
+      <path d="M6 17h16" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8 17v-1a6 6 0 0112 0v1" stroke={color} strokeWidth="1.6" fill={`${color}15`} />
+      <rect x="5" y="17" width="18" height="3" rx="1.5" stroke={color} strokeWidth="1.4" fill={`${color}20`} />
+      {/* cross */}
+      <path d="M13 9v4M11 11h4" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 type Tool = {
-  icon: React.ElementType;
+  Icon: React.ComponentType<{ color: string }>;
   title: string;
   description: string;
   href: string;
   color: string;
-  colorDim: string;
-  colorBorder: string;
   badge: string;
 };
 
-const sections: { heading: string; sub: string; tools: Tool[] }[] = [
+const sections: { heading: string; headingAccent: string; sub: string; tools: Tool[] }[] = [
   {
-    heading: "Safeguarding & Compliance",
+    heading: "Safeguarding",
+    headingAccent: "& Compliance",
     sub: "Assess and evidence your school's safeguarding, governance, and statutory compliance obligations.",
     tools: [
-      { icon: ShieldCheck, title: "Safeguarding Risk Checker", description: "Answer a structured set of questions about your school's digital safeguarding provision and receive an instant risk rating with priority actions.", href: "/tools/safeguarding", color: "#34D399", colorDim: "rgba(52,211,153,0.12)", colorBorder: "rgba(52,211,153,0.25)", badge: "Assessment" },
-      { icon: ClipboardList, title: "Governance Compliance Checker", description: "Check your governance arrangements against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance", color: "#A78BFA", colorDim: "rgba(167,139,250,0.12)", colorBorder: "rgba(167,139,250,0.25)", badge: "Compliance" },
-      { icon: CheckSquare, title: "Ofsted Ready Checker", description: "Self-evaluate your school's readiness across the Ofsted Education Inspection Framework. Identify strengths, areas for improvement, and inspection risks.", href: "/tools/ofsted", color: "#4ADE80", colorDim: "rgba(74,222,128,0.12)", colorBorder: "rgba(74,222,128,0.25)", badge: "Inspection" },
-      { icon: HardHat, title: "Health & Safety Checker", description: "Assess compliance across fire safety, COSHH, premises, policies, staff and pupil welfare, and contractor management. Aligned to HSE and statutory school obligations.", href: "/tools/health-safety", color: "#F97316", colorDim: "rgba(249,115,22,0.12)", colorBorder: "rgba(249,115,22,0.25)", badge: "H&S" },
+      { Icon: IconSafeguarding, title: "Safeguarding Risk Checker", description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding", color: "#34D399", badge: "Assessment" },
+      { Icon: IconGovernance,   title: "Governance Compliance Checker", description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance", color: "#A78BFA", badge: "Compliance" },
+      { Icon: IconOfsted,       title: "Ofsted Ready Checker", description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted", color: "#4ADE80", badge: "Inspection" },
+      { Icon: IconHealthSafety, title: "Health & Safety Checker", description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety", color: "#F97316", badge: "H&S" },
     ],
   },
   {
-    heading: "Digital & Technology Standards",
+    heading: "Digital",
+    headingAccent: "& Technology",
     sub: "Measure compliance with DfE digital standards, data protection requirements, and accessibility obligations.",
     tools: [
-      { icon: Monitor, title: "Digital & Technology Standards", description: "Assess your school's compliance with DfE digital and technology standards across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", colorDim: "rgba(129,140,248,0.12)", colorBorder: "rgba(129,140,248,0.25)", badge: "Standards" },
-      { icon: FileSearch, title: "DPIA Wizard", description: "Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can print or save.", href: "/tools/dpia", color: "#FCD34D", colorDim: "rgba(251,191,36,0.12)", colorBorder: "rgba(251,191,36,0.25)", badge: "Data Protection" },
-      { icon: Globe, title: "Web Accessibility Checker", description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Identify barriers and generate a prioritised action plan.", href: "/tools/accessibility", color: "#F472B6", colorDim: "rgba(244,114,182,0.12)", colorBorder: "rgba(244,114,182,0.25)", badge: "Accessibility" },
+      { Icon: IconDigitalStandards, title: "Digital & Technology Standards", description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
+      { Icon: IconDPIA,             title: "DPIA Wizard", description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia", color: "#FCD34D", badge: "Data Protection" },
+      { Icon: IconAccessibility,    title: "Web Accessibility Checker", description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility", color: "#F472B6", badge: "Accessibility" },
     ],
   },
   {
-    heading: "Artificial Intelligence",
+    heading: "Artificial",
+    headingAccent: "Intelligence",
     sub: "Evaluate AI use in your school and detect AI-generated content with confidence.",
     tools: [
-      { icon: Cpu, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly. Covers policy, procurement, staff capability, data protection, and safeguarding dimensions.", href: "/tools/ai-readiness", color: "#FB923C", colorDim: "rgba(251,146,60,0.12)", colorBorder: "rgba(251,146,60,0.25)", badge: "Readiness" },
-      { icon: Bot, title: "AI Content Detector", description: "Paste any text to detect whether it was written by AI or a human. Uses five statistical signals for an indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", colorDim: "rgba(56,189,248,0.12)", colorBorder: "rgba(56,189,248,0.25)", badge: "Detection" },
+      { Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
+      { Icon: IconAIDetector,  title: "AI Content Detector", description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", badge: "Detection" },
     ],
   },
 ];
 
 function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
-  const Icon = tool.icon;
   const delayClass = ["rise-in", "rise-in-1", "rise-in-2", "rise-in-3", "rise-in-4", "rise-in-5"][Math.min(delay, 5)];
 
   return (
-    <Link href={tool.href} className={`block ${delayClass}`}>
+    <Link href={tool.href} className={`block ${delayClass} group`}>
       <div
-        className="glass glass-hover rounded-2xl p-6 flex flex-col gap-5 h-full cursor-pointer"
-        style={{ "--icon-glow": `${tool.color}40` } as React.CSSProperties}
+        className="glass glass-hover rounded-2xl p-6 flex flex-col gap-5 h-full"
+        style={{ "--icon-glow": `${tool.color}50` } as React.CSSProperties}
       >
-        {/* shimmer bar */}
         <span className="shimmer-run" aria-hidden />
 
-        {/* header row */}
-        <div className="flex items-start justify-between gap-3 relative z-10">
+        {/* icon + badge */}
+        <div className="flex items-start justify-between gap-3">
           <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 icon-pulse"
+            className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 icon-pulse"
             style={{
-              background: tool.colorDim,
-              border: `1px solid ${tool.colorBorder}`,
-              boxShadow: `0 0 18px ${tool.color}30`,
+              background: `${tool.color}14`,
+              border: `1px solid ${tool.color}30`,
+              boxShadow: `0 0 16px ${tool.color}28`,
             }}
           >
-            <Icon size={22} style={{ color: tool.color }} strokeWidth={1.5} />
+            <tool.Icon color={tool.color} />
           </div>
           <span
-            className="text-[0.6rem] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border shrink-0 mt-0.5"
-            style={{ color: tool.color, background: tool.colorDim, borderColor: tool.colorBorder }}
+            className="text-[0.58rem] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full border mt-1 shrink-0"
+            style={{ color: tool.color, background: `${tool.color}14`, borderColor: `${tool.color}35` }}
           >
             {tool.badge}
           </span>
         </div>
 
         {/* text */}
-        <div className="flex-1 relative z-10">
-          <h3 className="heading-luxury text-base mb-2" style={{ color: "var(--text)" }}>
+        <div className="flex-1">
+          <h3 className="heading-luxury text-[1.05rem] mb-2" style={{ color: "var(--text)" }}>
             {tool.title}
           </h3>
           <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -88,9 +192,9 @@ function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
         </div>
 
         {/* cta */}
-        <div className="flex items-center gap-1.5 text-sm font-semibold relative z-10 group/cta" style={{ color: tool.color }}>
+        <div className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: tool.color }}>
           Open tool
-          <ArrowRight size={14} className="transition-transform duration-200 group-hover/cta:translate-x-1" />
+          <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1.5" />
         </div>
       </div>
     </Link>
@@ -107,47 +211,46 @@ export default function HomePage() {
       const slug = tool.href.split("/").pop()!;
       return allAccess || enabledTools.includes(slug);
     }),
-  })).filter(section => section.tools.length > 0);
+  })).filter(s => s.tools.length > 0);
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pt-24 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* Hero */}
-        <div className="pt-12 pb-16 text-center rise-in">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-[rgba(56,189,248,0.22)] text-[#38BDF8] text-xs font-semibold mb-8 relative overflow-hidden">
-            <span className="shimmer-run" aria-hidden />
-            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse shrink-0" />
-            SafeShield Tool Suite
+        <div className="pt-14 pb-20 text-center rise-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse" />
+            <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--accent)" }}>
+              SafeShield Tool Suite
+            </span>
           </div>
 
-          <h1 className="heading-luxury text-4xl sm:text-5xl lg:text-6xl mb-5">
+          <h1 className="heading-luxury text-5xl sm:text-6xl lg:text-7xl mb-6">
             <span style={{ color: "var(--text)" }}>Your School Tools,</span>
             <br />
             <span className="gradient-text">One Place.</span>
           </h1>
 
-          <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Professional tools for safeguarding, governance, AI readiness, digital standards, data protection, accessibility, and Ofsted preparation.
+          <p className="text-lg max-w-lg mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.
           </p>
         </div>
 
         {/* Sections */}
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-20">
           {visibleSections.map((section, si) => (
             <div key={section.heading}>
-              {/* section heading */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles size={13} className="text-[#38BDF8]" />
-                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[#38BDF8]">
-                    {section.heading}
-                  </p>
-                </div>
-                <p className="text-sm leading-relaxed max-w-2xl" style={{ color: "var(--text-muted)" }}>
+              {/* BIG premium section heading */}
+              <div className="mb-10">
+                <h2 className="heading-luxury text-3xl sm:text-4xl mb-3">
+                  <span style={{ color: "var(--text)" }}>{section.heading} </span>
+                  <span className="gradient-text">{section.headingAccent}</span>
+                </h2>
+                <p className="text-sm max-w-xl leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
                   {section.sub}
                 </p>
-                <div className="mt-3 h-px bg-gradient-to-r from-[rgba(56,189,248,0.3)] via-[rgba(129,140,248,0.2)] to-transparent" />
+                <div className="h-px bg-gradient-to-r from-[rgba(56,189,248,0.4)] via-[rgba(129,140,248,0.2)] to-transparent" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -160,11 +263,8 @@ export default function HomePage() {
 
           {visibleSections.length === 0 && (
             <div className="glass rounded-2xl p-16 text-center rise-in">
-              <ShieldCheck size={32} className="mx-auto mb-4 opacity-30 text-[#38BDF8]" />
               <p className="font-semibold mb-1" style={{ color: "var(--text)" }}>No tools available</p>
-              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                Contact your administrator to request access.
-              </p>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>Contact your administrator to request access.</p>
             </div>
           )}
         </div>

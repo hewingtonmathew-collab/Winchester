@@ -18,15 +18,15 @@ export default function ToolPageHeader({ icon: Icon, badge, title, description, 
       {/* Icon + badge row */}
       <div className="flex items-center gap-3 mb-5">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 icon-pulse"
+          className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 icon-pulse"
           style={{
             background: colorDim,
             border: `1px solid ${colorBorder}`,
-            boxShadow: `0 0 22px ${colorGlow}`,
+            boxShadow: `0 0 24px ${colorGlow}`,
             "--icon-glow": colorGlow,
           } as React.CSSProperties}
         >
-          <Icon size={26} style={{ color }} strokeWidth={1.5} />
+          <Icon size={30} style={{ color }} strokeWidth={1.5} />
         </div>
         <span
           className="text-[0.62rem] font-bold uppercase tracking-[0.18em] px-2.5 py-1 rounded-full border"
