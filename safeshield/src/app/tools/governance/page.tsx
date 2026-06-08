@@ -32,7 +32,7 @@ export default function GovernancePage() {
           />
           <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
-              <IconGovernance size={40} color={COLOR} />
+              <IconGovernance size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Compliance</span>
             </div>
             <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Governance Compliance Checker</h1>
@@ -77,6 +77,7 @@ export default function GovernancePage() {
                   ))}
                 </ul>
               </GlassCard>
+
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Aligned to the DfE Governance Handbook, the Academy Trust Handbook, and Ofsted&apos;s school inspection handbook expectations for governance.</p>
