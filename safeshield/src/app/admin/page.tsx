@@ -179,20 +179,20 @@ function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-[#94A3B8]">{(u.full_name ?? u.email)[0].toUpperCase()}</span>
+        <button className="flex items-center gap-3 flex-1 min-w-0 text-left" onClick={() => setEditing((v) => !v)}>
+          <div className="w-12 h-12 rounded-xl bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)] flex items-center justify-center shrink-0">
+            <span className="text-base font-bold" style={{ color: "#38BDF8" }}>{(u.full_name ?? u.email)[0].toUpperCase()}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-white truncate">{u.full_name ?? "—"}</p>
-            <p className="text-xs text-[#64748B] truncate">{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
+            <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{u.full_name ?? "—"}</p>
+            <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setEditing((v) => !v)} title="Edit user"
-            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
-            <Pencil size={12} className="text-[#38BDF8]" />
+          <button onClick={(e) => { e.stopPropagation(); setEditing((v) => !v); }} title="Edit user"
+            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            <Pencil size={13} className="text-[#38BDF8]" />
           </button>
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border"
             style={{ color: statusColor, background: `${statusColor}15`, borderColor: `${statusColor}40` }}>
@@ -205,22 +205,22 @@ function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
             <>
               {u.status !== "active" && (
                 <button onClick={() => changeStatus("active")} title="Approve"
-                  className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-green-500/10 transition-all">
+                  className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-green-500/10 transition-all">
                   <CheckCircle2 size={13} className="text-green-400" />
                 </button>
               )}
               {u.status !== "suspended" && (
                 <button onClick={() => changeStatus("suspended")} title="Suspend"
-                  className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all">
+                  className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all">
                   <XCircle size={13} className="text-red-400" />
                 </button>
               )}
             </>
           )}
 
-          <button onClick={() => setOpen(!open)}
-            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
-            {open ? <ChevronUp size={13} className="text-[#64748B]" /> : <ChevronDown size={13} className="text-[#64748B]" />}
+          <button onClick={() => setOpen(!open)} aria-label={open ? "Collapse" : "Expand"}
+            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
           </button>
         </div>
       </div>
@@ -753,12 +753,12 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+        <button className="flex items-center gap-3 flex-1 min-w-0 text-left" onClick={() => setOpen(!open)}>
           {orgState.logo_url ? (
-            <img src={orgState.logo_url} alt="" className="w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
+            <img src={orgState.logo_url} alt="" className="w-12 h-12 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
           ) : (
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-              <Building2 size={16} className="text-[#38BDF8]" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+              <Building2 size={22} className="text-[#38BDF8]" />
             </div>
           )}
           <div className="min-w-0">
@@ -780,13 +780,13 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               {orgState.manager_name ? ` · ${orgState.manager_name}` : ""}
             </p>
           </div>
-        </div>
+        </button>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => { setEditingOrg((v) => !v); setOpen(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
-            <Pencil size={12} className="text-[#38BDF8]" />
+          <button onClick={(e) => { e.stopPropagation(); setEditingOrg((v) => !v); setOpen(true); }} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
+            <Pencil size={13} className="text-[#38BDF8]" />
           </button>
-          <button onClick={toggleOrgStatus} disabled={togglingOrgStatus}
-            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+          <button onClick={(e) => { e.stopPropagation(); toggleOrgStatus(); }} disabled={togglingOrgStatus}
+            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
             title={orgState.status === "disabled" ? "Enable organisation" : "Disable organisation"}>
             {togglingOrgStatus
               ? <Loader2 size={12} className="animate-spin text-[#475569]" />
@@ -794,10 +794,10 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 ? <Power size={12} className="text-green-400" />
                 : <PowerOff size={12} className="text-amber-400" />}
           </button>
-          <button onClick={() => onDelete(org.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
-            <Trash2 size={12} className="text-red-400" />
+          <button onClick={(e) => { e.stopPropagation(); onDelete(org.id); }} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
+            <Trash2 size={13} className="text-red-400" />
           </button>
-          <button onClick={() => setOpen(!open)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+          <button onClick={() => setOpen(!open)} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" aria-label={open ? "Collapse" : "Expand"}>
             {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
           </button>
         </div>
