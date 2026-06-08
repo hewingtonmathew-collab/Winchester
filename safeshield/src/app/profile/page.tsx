@@ -305,7 +305,7 @@ export default function ProfilePage() {
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full"
-            style={{ objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            style={{ objectFit: "cover", opacity: 0.6 }}
           />
           )}
         {/* Glass overlay */}
