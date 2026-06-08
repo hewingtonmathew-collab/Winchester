@@ -1,4 +1,7 @@
+import ToolIconWrapper from "./ToolIconWrapper";
+
 interface ToolPageHeaderProps {
+  slug: string;
   icon: React.ComponentType<{ size?: number }>;
   badge: string;
   title: string;
@@ -6,14 +9,11 @@ interface ToolPageHeaderProps {
   color: string;
 }
 
-export default function ToolPageHeader({ icon: Icon, badge, title, description, color }: ToolPageHeaderProps) {
+export default function ToolPageHeader({ slug, icon, badge, title, description, color }: ToolPageHeaderProps) {
   return (
     <div className="pt-10 pb-10 rise-in">
       <div className="flex items-center gap-4 mb-5">
-        {/* 3-D glass icon — self-contained SVG */}
-        <div className="shrink-0">
-          <Icon size={72} />
-        </div>
+        <ToolIconWrapper slug={slug} Icon={icon} size={72} />
         <span
           className="text-[0.62rem] font-black uppercase tracking-[0.18em] px-3 py-1.5 rounded-full border"
           style={{ color, background: `${color}14`, borderColor: `${color}35` }}

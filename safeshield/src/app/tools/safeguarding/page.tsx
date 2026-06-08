@@ -8,6 +8,7 @@ import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 
 const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
@@ -49,7 +50,7 @@ export default function SafeguardingPage() {
           />
           <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
-              <IconSafeguarding size={64} />
+              <ToolIconWrapper slug="safeguarding" Icon={IconSafeguarding} size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Risk Assessment</span>
             </div>
             <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>

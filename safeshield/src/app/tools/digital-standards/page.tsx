@@ -8,6 +8,7 @@ import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 
 const COLOR = "#818CF8";
 const ASSESSMENT_AREAS: [string, string][] = [
@@ -62,7 +63,7 @@ export default function DigitalStandardsPage() {
           />
           <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
-              <IconDigitalStandards size={64} />
+              <ToolIconWrapper slug="digital-standards" Icon={IconDigitalStandards} size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Standards</span>
             </div>
             <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>

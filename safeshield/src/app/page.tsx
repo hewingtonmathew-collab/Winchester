@@ -6,12 +6,14 @@ import { useToolBanner } from "@/hooks/useToolBanner";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 import EditableText from "@/components/ui/EditableText";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
 } from "@/components/ui/ToolIcons";
 
 type Tool = {
+  slug: string;
   Icon: React.ComponentType<{ size?: number }>;
   title: string;
   description: string;
@@ -26,10 +28,10 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "& Compliance",
     sub: "Assess and evidence your school's safeguarding, governance, and statutory compliance obligations.",
     tools: [
-      { Icon: IconSafeguarding,    title: "Safeguarding Risk Checker",      description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding",     color: "#34D399", badge: "Assessment" },
-      { Icon: IconGovernance,      title: "Governance Compliance Checker",  description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",       color: "#A78BFA", badge: "Compliance" },
-      { Icon: IconOfsted,          title: "Ofsted Ready Checker",           description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",           color: "#4ADE80", badge: "Inspection" },
-      { Icon: IconHealthSafety,    title: "Health & Safety Checker",        description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",    color: "#F97316", badge: "H&S" },
+      { slug: "safeguarding",     Icon: IconSafeguarding,    title: "Safeguarding Risk Checker",      description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding",     color: "#34D399", badge: "Assessment" },
+      { slug: "governance",       Icon: IconGovernance,      title: "Governance Compliance Checker",  description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",       color: "#A78BFA", badge: "Compliance" },
+      { slug: "ofsted",           Icon: IconOfsted,          title: "Ofsted Ready Checker",           description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",           color: "#4ADE80", badge: "Inspection" },
+      { slug: "health-safety",    Icon: IconHealthSafety,    title: "Health & Safety Checker",        description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",    color: "#F97316", badge: "H&S" },
     ],
   },
   {
@@ -37,9 +39,9 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "& Technology",
     sub: "Measure compliance with DfE digital standards, data protection requirements, and accessibility obligations.",
     tools: [
-      { Icon: IconDigitalStandards, title: "Digital & Technology Standards", description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
-      { Icon: IconDPIA,             title: "DPIA Wizard",                    description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia",             color: "#FCD34D", badge: "Data Protection" },
-      { Icon: IconAccessibility,    title: "Web Accessibility Checker",      description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility",    color: "#F472B6", badge: "Accessibility" },
+      { slug: "digital-standards",  Icon: IconDigitalStandards, title: "Digital & Technology Standards", description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
+      { slug: "dpia",               Icon: IconDPIA,             title: "DPIA Wizard",                    description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia",             color: "#FCD34D", badge: "Data Protection" },
+      { slug: "accessibility",      Icon: IconAccessibility,    title: "Web Accessibility Checker",      description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility",    color: "#F472B6", badge: "Accessibility" },
     ],
   },
   {
@@ -47,8 +49,8 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "Intelligence",
     sub: "Evaluate AI use in your school and detect AI-generated content with confidence.",
     tools: [
-      { Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
-      { Icon: IconAIDetector,  title: "AI Content Detector",    description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", badge: "Detection" },
+      { slug: "ai-readiness",  Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
+      { slug: "ai-detector",   Icon: IconAIDetector,  title: "AI Content Detector",    description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", badge: "Detection" },
     ],
   },
 ];
@@ -64,7 +66,7 @@ function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; logged
 
         {/* icon + badge */}
         <div className="flex items-start justify-between gap-3">
-          <tool.Icon size={60} />
+          <ToolIconWrapper slug={tool.slug} Icon={tool.Icon} size={60} />
           <span
             className="text-[0.58rem] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full border mt-1 shrink-0"
             style={{ color: tool.color, background: `${tool.color}14`, borderColor: `${tool.color}35` }}
