@@ -55,7 +55,7 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
     onCreated(data as Organisation);
   }
 
-  const inputCls = "px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
+  const inputCls = "input-glass text-sm";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -136,7 +136,7 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
     onAdded(data as SchoolType);
   }
 
-  const inputCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
+  const inputCls = "input-glass text-xs py-1.5";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end mt-3">
@@ -241,19 +241,19 @@ function AddMemberForm({
     onAdded({ ...(member as OrgMember), email: profile.email, full_name: profile.full_name ?? null });
   }
 
-  const selectCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
+  const selectCls = "input-glass text-xs py-1.5";
 
   return (
     <div className="border border-white/8 rounded-xl p-3 bg-white/[0.02] mt-3">
       <div className="flex gap-2 mb-3">
         <button type="button" onClick={() => setMode("new")}
           className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-          style={{ background: mode === "new" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "new" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "new" ? "#38BDF8" : "#64748B" }}>
+          style={{ background: mode === "new" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "new" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "new" ? "#38BDF8" : "var(--text-dim)" }}>
           + New person
         </button>
         <button type="button" onClick={() => setMode("existing")}
           className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-          style={{ background: mode === "existing" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "existing" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "existing" ? "#38BDF8" : "#64748B" }}>
+          style={{ background: mode === "existing" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "existing" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "existing" ? "#38BDF8" : "var(--text-dim)" }}>
           Existing user
         </button>
       </div>
@@ -352,7 +352,7 @@ function MemberToolToggles({ userId }: { userId: string }) {
             <span className="text-[0.7rem] text-left" style={{ color: "var(--text-muted)" }}>{tool.name}</span>
             {on
               ? <ToggleRight size={18} className="shrink-0 text-[#34D399]" />
-              : <ToggleLeft size={18} className="shrink-0 text-[#334155]" />}
+              : <ToggleLeft size={18} className="shrink-0" style={{ color: "var(--text-dim)" }} />}
           </button>
         );
       })}
@@ -504,7 +504,7 @@ function OrgCard({
               <div className="flex flex-col gap-1.5">
                 {members.map((member) => {
                   const assignedSchool = schools.find((s) => s.id === member.school_id);
-                  const roleColor = member.role === "admin" ? "#38BDF8" : "#94A3B8";
+                  const roleColor = member.role === "admin" ? "#38BDF8" : "var(--text-dim)";
                   const toolsOpen = expandedMemberTools[member.id] ?? false;
                   return (
                     <div
@@ -514,7 +514,7 @@ function OrgCard({
                       <div className="flex items-center justify-between gap-2 px-3 py-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                            <span className="text-[0.6rem] font-bold text-[#94A3B8]">
+                            <span className="text-[0.6rem] font-bold" style={{ color: "var(--text-dim)" }}>
                               {(member.full_name ?? member.email ?? "?")[0].toUpperCase()}
                             </span>
                           </div>
@@ -538,7 +538,7 @@ function OrgCard({
                             onClick={() => setExpandedMemberTools((p) => ({ ...p, [member.id]: !toolsOpen }))}
                             title="Tool access"
                             className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/5 transition-all"
-                            style={{ color: toolsOpen ? "#38BDF8" : "#94A3B8" }}
+                            style={{ color: toolsOpen ? "#38BDF8" : "var(--text-dim)" }}
                           >
                             <SlidersHorizontal size={11} />
                             <span className="text-[0.6rem] font-medium">Tools</span>
