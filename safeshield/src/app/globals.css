@@ -241,9 +241,85 @@ body::before {
 }
 
 /* ══════════════════════════════════════════
+   FORM INPUT — adapts to both themes
+══════════════════════════════════════════ */
+.input-glass {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  background: rgba(128,128,128,0.08);
+  border: 1px solid var(--glass-border);
+  border-top-color: var(--glass-border-top);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.input-glass::placeholder { color: var(--text-dim); }
+.input-glass:focus {
+  border-color: var(--accent);
+  background: rgba(128,128,128,0.12);
+}
+
+/* ══════════════════════════════════════════
    SCROLLBAR
 ══════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* ══════════════════════════════════════════
+   LIGHT MODE AUTO-ADAPT
+   Glass is transparent — text must always
+   contrast with whatever is behind the card.
+   These rules override hardcoded dark-only
+   Tailwind classes across the whole site.
+══════════════════════════════════════════ */
+
+/* Tell the browser this element is light */
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"]  { color-scheme: dark; }
+
+/* Headings: override hardcoded text-white */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5 { color: var(--text); }
+
+/* The most common offender across all components */
+[data-theme="light"] .text-white { color: var(--text) !important; }
+
+/* Muted grey shades used everywhere in dark mode */
+[data-theme="light"] .text-\[\#94A3B8\],
+[data-theme="light"] .text-\[\#CBD5E1\],
+[data-theme="light"] .text-\[\#64748B\],
+[data-theme="light"] .text-\[\#475569\],
+[data-theme="light"] .text-\[\#334155\] { color: var(--text-muted) !important; }
+
+/* Form inputs — readable on light backgrounds */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  color: var(--text);
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.14);
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder { color: var(--text-dim); }
+
+/* bg-white/5 is nearly invisible in light — bump it */
+[data-theme="light"] .bg-white\/5  { background: rgba(0,0,0,0.04) !important; }
+[data-theme="light"] .bg-white\/10 { background: rgba(0,0,0,0.07) !important; }
+[data-theme="light"] .bg-white\/\[0\.05\] { background: rgba(0,0,0,0.04) !important; }
+
+/* Border overrides */
+[data-theme="light"] .border-white\/5  { border-color: rgba(0,0,0,0.08) !important; }
+[data-theme="light"] .border-white\/10 { border-color: rgba(0,0,0,0.12) !important; }
+
+/* hover:text-white is common in forms — prevent white text on light bg */
+[data-theme="light"] .hover\:text-white:hover { color: var(--text) !important; }
+
+/* Disabled / placeholder opacity */
+[data-theme="light"] .placeholder-\[\#475569\]::placeholder { color: var(--text-dim); }
