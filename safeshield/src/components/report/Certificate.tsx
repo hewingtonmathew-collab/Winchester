@@ -97,13 +97,9 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     /* Large centred score gauge */
     const gaugesvg = `<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="gd" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
-          <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
-        </radialGradient>
         <filter id="gf"><feGaussianBlur stdDeviation="4" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
       </defs>
-      <circle cx="90" cy="90" r="85" fill="url(#gd)"/>
+      <circle cx="90" cy="90" r="85" fill="#0D1117"/>
       <circle cx="90" cy="90" r="85" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
       <circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 90 90)"/>
       <circle cx="90" cy="90" r="${R}" fill="none" stroke="${accentColor}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 90 90)" filter="url(#gf)"/>
