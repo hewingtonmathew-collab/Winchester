@@ -299,65 +299,177 @@ export default function ImprovementReport({
   }
 
   function handlePrint() {
-    const catSections = categories.map((cat) => {
-      const catGaps = gaps.filter((g) => g.category === cat);
-      return `
-        <div style="margin-bottom:16px">
-          <p style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:8px">${cat}</p>
-          ${catGaps.map((g) => `
-            <div style="padding:10px 12px;border-left:3px solid ${g.priority === "high" ? "#ef4444" : g.priority === "medium" ? "#f59e0b" : "#22c55e"};margin-bottom:8px;background:#f8fafc;border-radius:0 6px 6px 0">
-              <span style="font-size:9px;font-weight:700;color:${g.priority === "high" ? "#ef4444" : g.priority === "medium" ? "#f59e0b" : "#22c55e"};text-transform:uppercase">${g.priority} priority</span>
-              <p style="font-size:12px;color:#1e293b;margin-top:3px">${g.text}</p>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }).join("");
-
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(`
-      <html><head><title>Improvement Report — ${toolName}</title>
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; color: #1e293b; padding: 20mm 24mm; font-size: 12px; }
-        h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-        h2 { font-size: 14px; font-weight: 700; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 2px; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
-        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 8px; }
-        .meta-item label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; display: block; margin-bottom: 2px; }
-        .score-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 14px; margin: 12px 0; }
-        .notes { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 14px; margin-top: 8px; white-space: pre-wrap; font-size: 12px; }
-        .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 9px; color: #94a3b8; display: flex; justify-content: space-between; }
-      </style>
-      </head><body>
-        <h1>${toolName}</h1>
-        <p style="color:#64748b;font-size:12px">School Improvement Report · ${today}</p>
-        <div class="meta-grid">
-          <div class="meta-item"><label>School / Trust</label><strong>${meta.schoolName}</strong></div>
-          <div class="meta-item"><label>Rating</label><strong style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:2px 10px;border-radius:4px;display:inline-block">${score}% — ${rating}</strong></div>
-          <div class="meta-item"><label>Staff Member</label>${meta.staffMember}</div>
-          <div class="meta-item"><label>Consultant</label>${meta.consultantName}, SafeShield</div>
-        </div>
 
-        <h2>Executive Summary</h2>
-        <p>This report presents the findings from the ${toolName} completed on ${today} for ${meta.schoolName}. The assessment returned a score of <strong>${score}%</strong>, rated as <strong style="color:${ratingColor}">${rating}</strong>. ${gaps.length} area${gaps.length !== 1 ? "s" : ""} for improvement ${gaps.length !== 1 ? "were" : "was"} identified, of which ${highGaps.length} ${highGaps.length !== 1 ? "are" : "is"} high priority.</p>
+    const priorityColor = (p: string) => p === "high" ? "#ef4444" : p === "medium" ? "#f59e0b" : "#22c55e";
+    const priorityLabel2 = (p: string) => p === "high" ? "High Priority" : p === "medium" ? "Medium Priority" : "Lower Priority";
 
-        <h2>Priority Actions (${gaps.length})</h2>
-        ${catSections || "<p style='color:#64748b'>No gaps identified — excellent compliance.</p>"}
+    const catSections = categories.map((cat) => {
+      const catGaps = gaps.filter((g) => g.category === cat);
+      return `<div class="cat-block">
+        <p class="cat-label">${cat}</p>
+        ${catGaps.map((g) => `
+          <div class="gap-row" style="border-left-color:${priorityColor(g.priority)}">
+            <span class="gap-badge" style="color:${priorityColor(g.priority)};border-color:${priorityColor(g.priority)}55;background:${priorityColor(g.priority)}18">${priorityLabel2(g.priority)}</span>
+            <p class="gap-text">${g.text}</p>
+          </div>`).join("")}
+      </div>`;
+    }).join("");
 
-        ${consultantNotes ? `<h2>Consultant Notes</h2><div class="notes">${consultantNotes}</div>` : ""}
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Improvement Report — ${toolName}</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4 portrait;margin:0}
+html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
+.page{
+  width:210mm;min-height:297mm;
+  background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}14 100%);
+  padding:12mm 14mm 12mm;
+  position:relative;
+}
+.blob-tr{position:fixed;top:-40mm;right:-40mm;width:120mm;height:120mm;border-radius:50%;
+  background:radial-gradient(circle,${accentColor}25 0%,transparent 70%);pointer-events:none}
+.blob-bl{position:fixed;bottom:20mm;left:-30mm;width:90mm;height:90mm;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,250,0.18) 0%,transparent 70%);pointer-events:none}
 
-        <h2>Next Steps</h2>
-        <p>SafeShield recommends that ${meta.schoolName} addresses the high-priority actions within 30 days and schedules a follow-up review within 3 months. The consultant named above is available to provide targeted support across all identified areas.</p>
+/* header */
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;position:relative;z-index:1}
+.report-tag{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
+.report-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.1}
+.report-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
+.header-right{text-align:right}
+.consultant-name{font-size:13px;font-weight:600;color:rgba(255,255,255,0.75)}
+.consultant-role{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 
-        <div class="footer">
-          <span>Generated by SafeShield Tools · SafeShield</span>
-          <span>${today}</span>
-        </div>
-      </body></html>
-    `);
+/* accent rule */
+.accent-rule{height:2px;border-radius:2px;background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent);margin-bottom:7mm;position:relative;z-index:1}
+
+/* meta panel */
+.meta-panel{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  border-top-color:rgba(255,255,255,0.20);border-radius:14px;
+  padding:5mm 6mm;margin-bottom:7mm;
+  display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm;
+  position:relative;z-index:1;
+}
+.meta-field label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.14em;display:block;margin-bottom:3px}
+.meta-field span{font-size:12px;color:rgba(255,255,255,0.78);font-weight:500}
+.score-pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;
+  font-size:12px;font-weight:700;color:${ratingColor};
+  background:${ratingColor}18;border:1.5px solid ${ratingColor}88}
+
+/* section heading */
+.section-heading{
+  font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);
+  letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:4mm;padding-bottom:3mm;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  position:relative;z-index:1;
+}
+
+/* summary panel */
+.summary-panel{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px;padding:4mm 5mm;margin-bottom:7mm;
+  font-size:11px;color:rgba(255,255,255,0.65);line-height:1.65;
+  position:relative;z-index:1;
+}
+.summary-panel strong{color:rgba(255,255,255,0.85);font-weight:600}
+
+/* gap categories */
+.cat-block{margin-bottom:6mm;position:relative;z-index:1}
+.cat-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.16em;text-transform:uppercase;margin-bottom:3mm}
+.gap-row{
+  padding:8px 12px;border-left:3px solid;border-radius:0 10px 10px 0;
+  margin-bottom:4px;background:rgba(255,255,255,0.04);
+}
+.gap-badge{display:inline-block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  padding:2px 8px;border-radius:999px;border:1px solid;margin-bottom:4px}
+.gap-text{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5}
+
+/* notes panel */
+.notes-panel{
+  background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);
+  border-radius:12px;padding:4mm 5mm;margin-bottom:7mm;margin-top:2mm;
+  font-size:11px;color:rgba(255,255,255,0.7);line-height:1.6;white-space:pre-wrap;
+  position:relative;z-index:1;
+}
+
+/* next steps */
+.steps-panel{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);
+  border-radius:12px;padding:4mm 5mm;margin-bottom:7mm;
+  position:relative;z-index:1;
+}
+.step-row{display:flex;gap:10px;margin-bottom:5px;align-items:flex-start}
+.step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#000;background:${accentColor};flex-shrink:0;margin-top:1px}
+.step-text{font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5}
+
+/* footer */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid rgba(255,255,255,0.07);padding-top:4mm;margin-top:6mm;
+  position:relative;z-index:1;
+}
+.footer span{font-size:8px;color:rgba(255,255,255,0.2);letter-spacing:.1em;text-transform:uppercase}
+</style></head><body>
+<div class="page">
+  <div class="blob-tr"></div>
+  <div class="blob-bl"></div>
+
+  <div class="header">
+    <div>
+      <p class="report-tag">School Improvement Report</p>
+      <p class="report-title">${toolName}</p>
+      <p class="report-sub">${today}</p>
+    </div>
+    <div class="header-right">
+      <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
+      <p class="consultant-role">Education Consultant</p>
+    </div>
+  </div>
+
+  <div class="accent-rule"></div>
+
+  <div class="meta-panel">
+    <div class="meta-field"><label>School / Trust</label><span>${meta.schoolName || "—"}</span></div>
+    <div class="meta-field"><label>Assessment Score</label><span class="score-pill">${score}% — ${rating}</span></div>
+    <div class="meta-field"><label>Completed By</label><span>${meta.staffMember || "—"}</span></div>
+    <div class="meta-field"><label>Consultant</label><span>${meta.consultantName || "Mathew Hewington"}</span></div>
+  </div>
+
+  <p class="section-heading">Executive Summary</p>
+  <div class="summary-panel">
+    This report presents findings from the <strong>${toolName}</strong> completed on <strong>${today}</strong> for <strong>${meta.schoolName}</strong>.
+    The assessment returned a score of <strong>${score}%</strong>, rated <strong style="color:${ratingColor}">${rating}</strong>.
+    <strong>${gaps.length}</strong> area${gaps.length !== 1 ? "s" : ""} for improvement ${gaps.length !== 1 ? "were" : "was"} identified,
+    of which <strong style="color:#ef4444">${highGaps.length} high priority</strong>, <strong style="color:#f59e0b">${medGaps.length} medium</strong>, and <strong style="color:#22c55e">${lowGaps.length} lower priority</strong>.
+  </div>
+
+  <p class="section-heading">Priority Actions (${gaps.length})</p>
+  ${catSections || `<div class="summary-panel" style="color:#22c55e">No gaps identified — excellent compliance across all areas.</div>`}
+
+  ${consultantNotes ? `<p class="section-heading">Consultant Notes</p><div class="notes-panel">${consultantNotes}</div>` : ""}
+
+  <p class="section-heading">Recommended Next Steps</p>
+  <div class="steps-panel">
+    <div class="step-row"><span class="step-num">1</span><span class="step-text">Share this report with the senior leadership team and governing board.</span></div>
+    <div class="step-row"><span class="step-num">2</span><span class="step-text">Assign a named lead for each high-priority action with a clear deadline.</span></div>
+    <div class="step-row"><span class="step-num">3</span><span class="step-text">Schedule a follow-up review in ${score < 55 ? "6–8 weeks" : "one term"} to assess progress.</span></div>
+    <div class="step-row"><span class="step-num">4</span><span class="step-text">Contact your SafeShield consultant for targeted support on any of the above areas.</span></div>
+  </div>
+
+  <div class="footer">
+    <span>SafeShield · Verified Assessment Report</span>
+    <span>${today}</span>
+  </div>
+</div>
+</body></html>`);
     w.document.close();
-    w.print();
+    setTimeout(() => w.print(), 400);
   }
 
   return (
