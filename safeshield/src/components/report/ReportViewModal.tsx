@@ -1,9 +1,12 @@
 "use client";
 import { useState } from "react";
-import { X, Award, BarChart3, ClipboardList, Printer, Mail } from "lucide-react";
-import Certificate from "@/components/report/Certificate";
-import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import dynamic from "next/dynamic";
+import { X, Award, BarChart3, ClipboardList, Printer, Mail, Loader2 } from "lucide-react";
+import type { Gap } from "@/components/report/ImprovementReport";
 import type { ReportMetaData } from "./ReportMeta";
+
+const Certificate = dynamic(() => import("@/components/report/Certificate"), { ssr: false, loading: () => <div className="flex items-center justify-center py-20"><Loader2 size={22} className="animate-spin opacity-40" /></div> });
+const ImprovementReport = dynamic(() => import("@/components/report/ImprovementReport"), { ssr: false, loading: () => <div className="flex items-center justify-center py-20"><Loader2 size={22} className="animate-spin opacity-40" /></div> });
 
 export type ReportViewData = {
   meta: ReportMetaData;

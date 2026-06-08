@@ -362,11 +362,11 @@ ${css}
               <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
             </div>
             {displaySchoolLogo && (
-              <img src={displaySchoolLogo} alt="School logo"
+              <img src={displaySchoolLogo} alt="School logo" loading="lazy" decoding="async"
                 style={{ height: 44, objectFit: "contain", maxWidth: 130 }} />
             )}
             {displayOrgLogo && (
-              <img src={displayOrgLogo} alt="Org logo"
+              <img src={displayOrgLogo} alt="Org logo" loading="lazy" decoding="async"
                 style={{ height: 44, objectFit: "contain", maxWidth: 130 }} />
             )}
           </div>

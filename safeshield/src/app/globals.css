@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap');
-
 /* ══════════════════════════════════════════
    DARK MODE  — Apple liquid glass dark
 ══════════════════════════════════════════ */
@@ -143,6 +141,10 @@ body::before {
     radial-gradient(ellipse 60% 50% at 92% 92%,  var(--orb2) 0%, transparent 70%),
     radial-gradient(ellipse 48% 42% at 52% 46%,  var(--orb3) 0%, transparent 70%);
   animation: orbDrift 28s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
 }
 
 @keyframes orbDrift {

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2, Camera, Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getTheme, setTheme, applyTheme, type Theme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
 import { ALL_TOOLS } from "@/lib/supabase";
@@ -57,11 +57,13 @@ export default function Navbar() {
     e.target.value = "";
   }
 
-  const toolLinks = ALL_TOOLS.filter(t =>
-    isAdmin || enabledTools.includes(t.slug)
-  ).map(t => ({ label: t.name.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", ""), href: `/tools/${t.slug}` }));
+  const toolLinks = useMemo(() =>
+    ALL_TOOLS.filter(t => isAdmin || enabledTools.includes(t.slug))
+      .map(t => ({ label: t.name.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", ""), href: `/tools/${t.slug}` })),
+    [isAdmin, enabledTools]
+  );
 
-  const allLinks = [...NAV_LINKS, ...toolLinks];
+  const allLinks = useMemo(() => [...NAV_LINKS, ...toolLinks], [toolLinks]);
 
   return (
     <>
@@ -80,7 +82,7 @@ export default function Navbar() {
                 style={{ cursor: isAdmin ? "pointer" : "default" }}
                 title={isAdmin ? "Upload logo" : undefined}>
                 {logoUrl
-                  ? <img src={logoUrl} alt="logo" className="w-full h-full object-contain" />
+                  ? <img src={logoUrl} alt="logo" className="w-full h-full object-contain" loading="lazy" decoding="async" />
                   : <Shield size={17} className="text-[#38BDF8]" strokeWidth={1.8} />}
                 {/* Camera badge for admin */}
                 {isAdmin && (
