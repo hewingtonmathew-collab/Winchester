@@ -33,7 +33,7 @@ export default function DigitalStandardsPage() {
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
-        <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
+        <div style={{ position: "relative", aspectRatio: "1920 / 400", minHeight: 260, overflow: "hidden" }}>
           {!isVideo(bannerUrl) && (
             <img
               src={bannerUrl}

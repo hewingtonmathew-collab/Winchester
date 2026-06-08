@@ -296,7 +296,7 @@ export default function ProfilePage() {
       {/* ─── Banner ──────────────────────────────────────────────────── */}
       <div
         className="relative overflow-hidden w-full"
-        style={{ minHeight: 280 }}
+        style={{ aspectRatio: "1920 / 400", minHeight: 280 }}
       >
         {/* Background banner — video or image */}
         {!isVideo(bannerUrl) && (
