@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
@@ -18,10 +19,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Apply saved theme before first paint to avoid flash */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('safeshield_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();` }} />
       </head>
-      <body className="relative z-[1]">
+      <body className="relative z-[1] flex flex-col min-h-screen">
         <AuthProvider>
           <Navbar />
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2, Camera, Menu, X } from "lucide-react";
+import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2, Camera, Menu, X, Wrench } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getTheme, setTheme, applyTheme, type Theme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
@@ -16,8 +16,10 @@ export default function Navbar() {
   const { user, profile, enabledTools, isOrgAdmin, signOut } = useAuth();
   const [theme, setThemeState] = useState<Theme>("dark");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const toolsMenuRef = useRef<HTMLDivElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
@@ -30,6 +32,9 @@ export default function Navbar() {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
+      }
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(e.target as Node)) {
+        setToolsMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClick);
@@ -106,20 +111,63 @@ export default function Navbar() {
             <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
           </div>
 
-          {/* Nav links — desktop only, scrollable */}
-          <div className="hidden md:flex items-center gap-0.5 overflow-x-auto no-scrollbar flex-1">
-            {allLinks.map((l) => {
-              const active = l.href === "/" ? path === "/" : path.startsWith(l.href);
-              return (
-                <Link key={l.href} href={l.href}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
-                    active ? "bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.25)]" : "hover:bg-white/5"
+          {/* Nav links — desktop */}
+          <div className="hidden md:flex items-center gap-0.5 flex-1">
+            {/* Dashboard */}
+            <Link href="/"
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
+                path === "/" ? "bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.25)]" : "hover:bg-white/5"
+              }`}
+              style={{ color: path === "/" ? "#38BDF8" : "var(--text-dim)" }}>
+              Dashboard
+            </Link>
+
+            {/* Tools dropdown */}
+            {toolLinks.length > 0 && (
+              <div className="relative" ref={toolsMenuRef}>
+                <button
+                  onClick={() => setToolsMenuOpen(o => !o)}
+                  aria-expanded={toolsMenuOpen}
+                  aria-haspopup="true"
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
+                    toolLinks.some(l => path.startsWith(l.href))
+                      ? "bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.25)]"
+                      : "hover:bg-white/5"
                   }`}
-                  style={{ color: active ? "#38BDF8" : "var(--text-dim)" }}>
-                  {l.label}
-                </Link>
-              );
-            })}
+                  style={{ color: toolLinks.some(l => path.startsWith(l.href)) ? "#38BDF8" : "var(--text-dim)" }}>
+                  <Wrench size={11} />
+                  Tools
+                  <ChevronDown size={10} className={`transition-transform duration-150 ${toolsMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {toolsMenuOpen && (
+                  <div
+                    className="absolute left-0 top-full mt-1 rounded-2xl overflow-hidden z-[9999] min-w-[200px]"
+                    style={{
+                      background: "var(--bg2)",
+                      border: "1px solid var(--glass-border)",
+                      backdropFilter: "blur(16px)",
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
+                    }}>
+                    <div className="p-1.5 flex flex-col gap-0.5">
+                      {toolLinks.map((l) => {
+                        const active = path.startsWith(l.href);
+                        return (
+                          <Link key={l.href} href={l.href}
+                            onClick={() => setToolsMenuOpen(false)}
+                            className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+                              active ? "bg-[rgba(56,189,248,0.12)]" : "hover:bg-white/5"
+                            }`}
+                            style={{ color: active ? "#38BDF8" : "var(--text-muted)" }}>
+                            {l.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Spacer on mobile */}

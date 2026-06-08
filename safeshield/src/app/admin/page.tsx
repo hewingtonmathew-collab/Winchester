@@ -2,7 +2,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2 } from "lucide-react";
+import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
 import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember, type Report } from "@/lib/supabase";
@@ -1083,12 +1084,62 @@ function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void 
   );
 }
 
-type Tab = "assessments" | "users" | "organisations";
+type Tab = "assessments" | "users" | "organisations" | "site";
 
 export default function AdminPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("assessments");
+
+  // Footer links state
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
+  const [newLinkLabel, setNewLinkLabel] = useState("");
+  const [newLinkHref, setNewLinkHref] = useState("");
+  const [savingFooter, setSavingFooter] = useState(false);
+
+  useEffect(() => {
+    if (tab !== "site") return;
+    async function loadFooterLinks() {
+      try {
+        const { data } = await supabase.from("footer_links").select("*").order("sort_order", { ascending: true });
+        if (data) { setFooterLinks(data); return; }
+      } catch { /* ignore */ }
+      try {
+        const stored = localStorage.getItem("safeshield_footer_links");
+        if (stored) setFooterLinks(JSON.parse(stored));
+      } catch { /* ignore */ }
+    }
+    loadFooterLinks();
+  }, [tab]);
+
+  async function addFooterLink() {
+    if (!newLinkLabel.trim() || !newLinkHref.trim()) return;
+    setSavingFooter(true);
+    const newLink: FooterLink = {
+      id: crypto.randomUUID(),
+      label: newLinkLabel.trim(),
+      href: newLinkHref.trim(),
+      sort_order: footerLinks.length,
+    };
+    const updated = [...footerLinks, newLink];
+    try {
+      await supabase.from("footer_links").insert(newLink);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+    setNewLinkLabel("");
+    setNewLinkHref("");
+    setSavingFooter(false);
+  }
+
+  async function deleteFooterLink(id: string) {
+    const updated = footerLinks.filter(l => l.id !== id);
+    try {
+      await supabase.from("footer_links").delete().eq("id", id);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+  }
 
   // Assessments state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -1299,6 +1350,10 @@ export default function AdminPage() {
           <button onClick={() => setTab("organisations")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "organisations" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <Building2 size={14} /> Organisations
+          </button>
+          <button onClick={() => setTab("site")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "site" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <Link2 size={14} /> Site
           </button>
         </div>
 
@@ -1530,6 +1585,65 @@ export default function AdminPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* ── Site tab ── */}
+        {tab === "site" && (
+          <GlassCard>
+            <h2 className="text-white font-semibold text-lg mb-1 flex items-center gap-2"><Link2 size={16} className="text-[#38BDF8]" /> Footer Links</h2>
+            <p className="text-[#64748B] text-xs mb-5">These links appear in the site footer on every page.</p>
+
+            {/* Existing links */}
+            {footerLinks.length === 0 ? (
+              <p className="text-[#475569] text-sm py-4 text-center">No footer links yet.</p>
+            ) : (
+              <div className="flex flex-col gap-2 mb-5">
+                {footerLinks.map((l) => (
+                  <div key={l.id} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-sm text-white font-medium truncate">{l.label}</span>
+                      <span className="text-xs text-[#475569] truncate">{l.href}</span>
+                    </div>
+                    <button
+                      onClick={() => deleteFooterLink(l.id)}
+                      className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-500/10 transition-colors"
+                      title="Delete link">
+                      <Trash2 size={13} className="text-red-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add new link */}
+            <div className="border-t border-white/10 pt-4">
+              <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-widest mb-3">Add Link</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Label (e.g. Privacy Policy)"
+                  value={newLinkLabel}
+                  onChange={(e) => setNewLinkLabel(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                />
+                <input
+                  type="text"
+                  placeholder="URL (e.g. /privacy or https://...)"
+                  value={newLinkHref}
+                  onChange={(e) => setNewLinkHref(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                  onKeyDown={(e) => e.key === "Enter" && addFooterLink()}
+                />
+                <button
+                  onClick={addFooterLink}
+                  disabled={savingFooter || !newLinkLabel.trim() || !newLinkHref.trim()}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40"
+                  style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
+            </div>
+          </GlassCard>
         )}
 
       </div>
