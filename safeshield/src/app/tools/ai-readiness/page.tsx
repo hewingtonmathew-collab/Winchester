@@ -33,7 +33,7 @@ export default function AiReadinessPage() {
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
-        <div style={{ position: "relative", aspectRatio: "1920 / 400", minHeight: 260, overflow: "hidden" }}>
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
           {!isVideo(bannerUrl) && (
             <img
               src={bannerUrl}
@@ -51,7 +51,7 @@ export default function AiReadinessPage() {
               backdropFilter: "blur(2px)",
             }}
           />
-          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
               <ToolIconWrapper slug="ai-readiness" Icon={IconAIReadiness} size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Readiness</span>

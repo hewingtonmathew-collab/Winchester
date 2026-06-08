@@ -296,7 +296,7 @@ export default function ProfilePage() {
       {/* ─── Banner ──────────────────────────────────────────────────── */}
       <div
         className="relative overflow-hidden w-full"
-        style={{ aspectRatio: "1920 / 400", minHeight: 280 }}
+        style={{ paddingTop: "clamp(280px, calc(400 / 1920 * 100%), 400px)" }}
       >
         {/* Background banner — video or image */}
         {!isVideo(bannerUrl) && (
@@ -304,8 +304,7 @@ export default function ProfilePage() {
             src={bannerUrl}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full"
-            style={{ objectFit: "cover", opacity: 0.6 }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
           />
           )}
         {/* Glass overlay */}
@@ -341,7 +340,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-10 flex flex-col items-start gap-4">
+        <div className="absolute inset-0 z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-10 flex flex-col items-start gap-4">
           {/* Avatar */}
           <div className="relative">
             <div

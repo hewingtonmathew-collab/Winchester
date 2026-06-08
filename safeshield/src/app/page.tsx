@@ -121,7 +121,7 @@ export default function HomePage() {
     <div className="min-h-[100dvh] pt-16 pb-24">
 
       {/* ── Hero banner ─────────────────────────────────────────────── */}
-      <div style={{ position: "relative", overflow: "hidden" }}>
+      <div style={{ position: "relative", overflow: "hidden", paddingTop: "clamp(320px, calc(400 / 1920 * 100%), 500px)" }}>
         {/* Background media */}
         {isVideo(bannerUrl) ? (
           <video
@@ -170,7 +170,7 @@ export default function HomePage() {
         {/* Hero content */}
         <div
           className="rise-in max-w-6xl mx-auto px-4 sm:px-6"
-          style={{ position: "relative", zIndex: 1, paddingTop: 72, paddingBottom: 80 }}
+          style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 72, paddingBottom: 80 }}
         >
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10">
