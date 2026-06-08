@@ -1,153 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon, Save, Check } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-
-const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
-  "Online Filtering": [
-    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
-  ],
-  "Online Monitoring": [
-    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
-  ],
-  "Policy": [
-    { label: "UK Council for Internet Safety (UKCIS)", url: "https://www.gov.uk/government/organisations/uk-council-for-internet-safety" },
-    { label: "DfE Online Safety Guidance", url: "https://www.gov.uk/government/publications/teaching-online-safety-in-schools" },
-  ],
-  "DSL & Staff": [
-    { label: "KCSiE 2024 – Safeguarding Roles", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
-  ],
-  "Curriculum": [
-    { label: "Relationships & Sex Education Guidance", url: "https://www.gov.uk/government/publications/relationships-education-relationships-and-sex-education-rse-and-health-education" },
-    { label: "Online Safety Teaching Resources", url: "https://www.gov.uk/government/publications/teaching-online-safety-in-schools" },
-  ],
-  "Governance": [
-    { label: "DfE Governance Handbook", url: "https://www.gov.uk/government/publications/governance-handbook" },
-    { label: "Ofsted School Inspection Handbook", url: "https://www.gov.uk/government/publications/school-inspection-handbook-eif" },
-  ],
-  "Devices": [
-    { label: "DfE Device & Technology Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
-  ],
-  "Data Protection": [
-    { label: "ICO Guide to UK GDPR", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/" },
-    { label: "DfE Data Protection Toolkit", url: "https://www.gov.uk/government/publications/data-protection-toolkit-for-schools" },
-  ],
-  "Safeguarding": [
-    { label: "KCSiE 2024", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
-    { label: "Working Together to Safeguard Children", url: "https://www.gov.uk/government/publications/working-together-to-safeguard-children--2" },
-  ],
-  "Procurement": [
-    { label: "DfE EdTech Procurement Guidance", url: "https://www.gov.uk/guidance/buying-for-schools/digital-devices-and-technology" },
-    { label: "ICO Accountability Framework", url: "https://ico.org.uk/for-organisations/accountability-framework/" },
-  ],
-  "Staff Capability": [
-    { label: "DfE Teacher CPD Standard", url: "https://www.gov.uk/government/publications/standard-for-teachers-professional-development" },
-  ],
-  "Board Structure": [
-    { label: "DfE Governance Handbook", url: "https://www.gov.uk/government/publications/governance-handbook" },
-  ],
-  "Skills & Membership": [
-    { label: "Competency Framework for Governance", url: "https://www.gov.uk/government/publications/governance-handbook" },
-  ],
-  "Statutory Compliance": [
-    { label: "DfE Statutory Policies for Schools", url: "https://www.gov.uk/government/publications/statutory-policies-for-schools-and-academy-trusts" },
-  ],
-  "Accountability": [
-    { label: "Ofsted School Inspection Handbook", url: "https://www.gov.uk/government/publications/school-inspection-handbook-eif" },
-  ],
-  "Financial Oversight": [
-    { label: "DfE Schools Financial Value Standard", url: "https://www.gov.uk/guidance/schools-financial-value-standard-sfvs" },
-  ],
-  "Quality of Education": [
-    { label: "Ofsted EIF – Quality of Education", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
-    { label: "DfE Curriculum Guidance", url: "https://www.gov.uk/government/collections/national-curriculum" },
-  ],
-  "Behaviour & Attitudes": [
-    { label: "DfE Behaviour in Schools Guidance", url: "https://www.gov.uk/government/publications/behaviour-in-schools--2" },
-  ],
-  "Personal Development": [
-    { label: "Ofsted EIF – Personal Development", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
-  ],
-  "Leadership & Management": [
-    { label: "Ofsted EIF – Leadership & Management", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
-  ],
-  "SEND & Inclusion": [
-    { label: "SEND Code of Practice", url: "https://www.gov.uk/government/publications/send-code-of-practice-0-to-25" },
-  ],
-  "Perceivable": [
-    { label: "WCAG 2.1 – Perceivable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/perceivable" },
-  ],
-  "Operable": [
-    { label: "WCAG 2.1 – Operable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/operable" },
-  ],
-  "Understandable": [
-    { label: "WCAG 2.1 – Understandable Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/understandable" },
-  ],
-  "Robust": [
-    { label: "WCAG 2.1 – Robust Principles", url: "https://www.w3.org/WAI/WCAG21/Understanding/robust" },
-  ],
-  "Legal & Compliance": [
-    { label: "Public Sector Bodies Accessibility Regulations", url: "https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps" },
-  ],
-  // H&S categories
-  "Fire Safety": [
-    { label: "Regulatory Reform (Fire Safety) Order 2005", url: "https://www.legislation.gov.uk/uksi/2005/1541/contents/made" },
-    { label: "HSE Fire Safety in Educational Premises", url: "https://www.hse.gov.uk/risk/firesafety.htm" },
-  ],
-  "COSHH": [
-    { label: "HSE COSHH Guidance", url: "https://www.hse.gov.uk/coshh/" },
-    { label: "COSHH Regulations 2002", url: "https://www.legislation.gov.uk/uksi/2002/2677/contents/made" },
-  ],
-  "Premises & Facilities": [
-    { label: "HSE Legionella Guidance", url: "https://www.hse.gov.uk/legionnaires/" },
-    { label: "HSE Asbestos in Schools", url: "https://www.hse.gov.uk/asbestos/schools.htm" },
-    { label: "Electricity at Work Regs 1989", url: "https://www.legislation.gov.uk/uksi/1989/635/contents/made" },
-  ],
-  "Policies & Documentation": [
-    { label: "Health & Safety at Work Act 1974", url: "https://www.legislation.gov.uk/ukpga/1974/37/contents" },
-    { label: "RIDDOR 2013 – HSE Guidance", url: "https://www.hse.gov.uk/riddor/" },
-    { label: "Management of H&S at Work Regs 1999", url: "https://www.legislation.gov.uk/uksi/1999/3242/contents/made" },
-  ],
-  "Staff & Pupil Welfare": [
-    { label: "HSE First Aid at Work", url: "https://www.hse.gov.uk/firstaid/" },
-    { label: "Manual Handling Operations Regs 1992", url: "https://www.hse.gov.uk/pubns/indg143.htm" },
-    { label: "HSE Work-related Stress Guidance", url: "https://www.hse.gov.uk/stress/" },
-  ],
-  "Contractors & Visitors": [
-    { label: "HSE Managing Contractors", url: "https://www.hse.gov.uk/involvement/contractors.htm" },
-    { label: "DfE Keeping Children Safe in Education", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
-  ],
-  // Digital standards categories
-  "Digital Safeguarding": [
-    { label: "DfE Filtering & Monitoring Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/filtering-and-monitoring-standards-for-schools-and-colleges" },
-    { label: "KCSiE 2024 – Online Safety", url: "https://www.gov.uk/government/publications/keeping-children-safe-in-education--2" },
-  ],
-  "Cyber Security": [
-    { label: "DfE Cyber Security Standards for Schools", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges/cyber-security-standards-for-schools-and-colleges" },
-    { label: "NCSC Cyber Security for Schools", url: "https://www.ncsc.gov.uk/section/education-skills/schools" },
-  ],
-  "Data & GDPR": [
-    { label: "ICO Guide to UK GDPR", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/" },
-    { label: "DfE Data Protection Toolkit for Schools", url: "https://www.gov.uk/government/publications/data-protection-toolkit-for-schools" },
-  ],
-  "Ofsted Readiness": [
-    { label: "Ofsted Education Inspection Framework", url: "https://www.gov.uk/government/publications/education-inspection-framework" },
-    { label: "DfE Digital Standards for Schools", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
-  ],
-  "Accessibility": [
-    { label: "Public Sector Bodies Accessibility Regulations", url: "https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps" },
-    { label: "WCAG 2.1 Guidelines", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
-  ],
-  "Infrastructure": [
-    { label: "DfE Digital & Technology Standards", url: "https://www.gov.uk/guidance/meeting-digital-and-technology-standards-in-schools-and-colleges" },
-    { label: "ICO Guidance on Cloud Services", url: "https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/accountability-and-governance/data-protection-by-design-and-default/" },
-  ],
-  "AI Signal": [
-    { label: "DfE Generative AI in Education", url: "https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education" },
-  ],
-};
+import GUIDANCE_LINKS from "@/lib/guidanceLinks";
 
 function generateRecommendations(
   toolName: string,
@@ -236,6 +93,7 @@ type Props = {
   accentColor?: string;
   accentDim?: string;
   accentBorder?: string;
+  reportId?: string;
 };
 
 function priorityLabel(p: Gap["priority"]) {
@@ -254,11 +112,15 @@ export default function ImprovementReport({
   accentColor = "#38BDF8",
   accentDim = "rgba(56,189,248,0.12)",
   accentBorder = "rgba(56,189,248,0.25)",
+  reportId,
 }: Props) {
   const [consultantNotes, setConsultantNotes] = useState("");
   const [expanded, setExpanded] = useState(true);
   const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
   const [emailSending, setEmailSending] = useState(false);
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesSaved, setNotesSaved] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
   const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const { enabledTools, user } = useAuth();
@@ -280,6 +142,34 @@ export default function ImprovementReport({
       }
     });
   }, [user]);
+
+  // Load saved notes for this report
+  useEffect(() => {
+    if (!reportId) return;
+    const key = `report_notes_${reportId}`;
+    supabase.from("site_content").select("value").eq("key", key).maybeSingle().then(({ data }) => {
+      if (data?.value) { setConsultantNotes(data.value); return; }
+      const stored = localStorage.getItem(key);
+      if (stored) setConsultantNotes(stored);
+    });
+  }, [reportId]);
+
+  const saveNotes = useCallback(async () => {
+    if (!reportId) return;
+    setNotesSaving(true);
+    const key = `report_notes_${reportId}`;
+    localStorage.setItem(key, consultantNotes);
+    try {
+      await supabase.from("site_content").upsert(
+        { key, value: consultantNotes, updated_at: new Date().toISOString() },
+        { onConflict: "key" }
+      );
+    } catch { /* graceful fallback */ }
+    setNotesSaving(false);
+    setNotesSaved(true);
+    setTimeout(() => setNotesSaved(false), 2500);
+  }, [reportId, consultantNotes]);
+
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
@@ -422,7 +312,7 @@ html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-co
     }).join("");
 
     const css = dark ? `
-.page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}14 100%)}
+.page{background:linear-gradient(160deg,#1A1C22 0%,#21242D 60%,#1E2028 100%)}
 .report-tag{color:rgba(255,255,255,0.65)}
 .report-title{color:#fff}
 .report-sub{color:rgba(255,255,255,0.70)}
@@ -468,6 +358,8 @@ html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-co
 `;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <title>Improvement Report — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -476,9 +368,13 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
 .page{width:210mm;min-height:297mm;padding:12mm 14mm 12mm}
 .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm}
 .report-tag{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
-.report-title{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.report-title{font-size:32px;font-weight:600;line-height:1.05;font-family:'Cormorant Garant',Georgia,serif;letter-spacing:.01em}
 .report-sub{font-size:11px;margin-top:4px}
 .header-right{text-align:right}
+.wordmark{font-size:12px;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:3px}
+.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#1E293B"}}
+.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#0F172A"}}
+.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;color:${dark ? "rgba(255,255,255,0.4)" : "#475569"}}
 .consultant-name{font-size:13px;font-weight:600}
 .consultant-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 .accent-rule{height:2px;border-radius:2px;margin-bottom:7mm}
@@ -512,8 +408,8 @@ ${css}
     <div class="header-right">
       ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:48px;max-width:120px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
       ${displayOrgLogo ? `<img src="${displayOrgLogo}" style="height:40px;max-width:110px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
-      <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
-      <p class="consultant-role">Education Consultant</p>
+      <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+      <div class="wordmark-tag">Protect · Comply · Assure</div>
     </div>
   </div>
   <div class="accent-rule"></div>
@@ -594,7 +490,7 @@ ${css}
       position: "relative",
       borderRadius: 24,
       overflow: "hidden",
-      background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 50%, ${accentColor}18 100%)`,
+      background: `linear-gradient(145deg, #1A1C22 0%, #21242D 50%, #1E2028 100%)`,
       boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.6), 0 0 50px ${accentColor}18`,
       fontFamily: "system-ui, -apple-system, sans-serif",
     }}>
@@ -611,19 +507,27 @@ ${css}
             <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.75)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
               School Improvement Report
             </p>
-            <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
+            <p style={{ fontSize: 28, fontWeight: 600, color: "#E8EDF2", letterSpacing: "0.01em", lineHeight: 1.1, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{toolName}</p>
             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", marginTop: 3 }}>{today}</p>
           </div>
-          {/* Logos */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 16 }}>
-            {displaySchoolLogo && (
-              <img src={displaySchoolLogo} alt="School logo"
-                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
-            )}
-            {displayOrgLogo && (
-              <img src={displayOrgLogo} alt="Org logo"
-                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
-            )}
+          {/* Logos + wordmark */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0, marginLeft: 16 }}>
+            <div style={{ borderRight: "2px solid rgba(255,255,255,0.25)", paddingRight: 10, textAlign: "right" }}>
+              <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, lineHeight: 1 }}>
+                <span style={{ fontWeight: 300, color: "rgba(255,255,255,0.55)" }}>SAFE</span><span style={{ fontWeight: 700, color: "#fff" }}>SHIELD</span>
+              </div>
+              <div style={{ fontSize: 7, letterSpacing: "0.16em", color: "rgba(255,255,255,0.35)", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {displaySchoolLogo && (
+                <img src={displaySchoolLogo} alt="School logo" loading="lazy" decoding="async"
+                  style={{ height: 44, maxWidth: 130, objectFit: "contain" }} />
+              )}
+              {displayOrgLogo && (
+                <img src={displayOrgLogo} alt="Org logo" loading="lazy" decoding="async"
+                  style={{ height: 44, maxWidth: 130, objectFit: "contain" }} />
+              )}
+            </div>
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
@@ -721,10 +625,132 @@ ${css}
               </p>
               {isSuperAdmin && (
                 <button
-                  onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10, cursor: "pointer",
+                  onClick={async () => {
+                    setGenerating(true);
+                    setConsultantNotes("");
+                    try {
+                      const high = gaps.filter(g => g.priority === "high");
+                      const med = gaps.filter(g => g.priority === "medium");
+                      const low = gaps.filter(g => g.priority === "low");
+
+                      const toolFrameworks: Record<string, { frameworks: string; areas: string }> = {
+                        "Safeguarding Risk Checker": {
+                          frameworks: "KCSIE 2024 (https://www.gov.uk/government/publications/keeping-children-safe-in-education--2), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), UKCIS framework (https://www.gov.uk/government/organisations/uk-council-for-internet-safety), Prevent Duty guidance (https://www.gov.uk/government/publications/prevent-duty-guidance)",
+                          areas: "Online filtering & monitoring, Designated Safeguarding Lead (DSL) training, Acceptable Use Policies (AUPs), KCSIE-aligned curriculum delivery, governor oversight, staff training records, device & BYOD policies, online safety incident reporting",
+                        },
+                        "Governance Compliance Checker": {
+                          frameworks: "DfE Governance Handbook (https://www.gov.uk/government/publications/governance-handbook), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), Academy Trust Handbook (https://www.gov.uk/guidance/academy-trust-handbook), Charity Commission guidance (https://www.gov.uk/government/organisations/charity-commission)",
+                          areas: "Skills audit, committee structure, finance oversight, conflict of interest registers, governor training, strategic planning, headteacher performance management, stakeholder engagement",
+                        },
+                        "AI Readiness Assessment": {
+                          frameworks: "DfE Generative AI in Education (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), UK AI Safety Institute (https://www.gov.uk/government/organisations/ai-safety-institute), ICO AI guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/), JCQ AI malpractice (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/)",
+                          areas: "AI policy, staff AI literacy, student AI use guidelines, assessment integrity, data privacy with AI tools, AI procurement due diligence, ethical AI framework",
+                        },
+                        "DPIA Wizard": {
+                          frameworks: "UK GDPR Article 35 (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/), ICO DPIA guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/), DfE Data Protection (https://www.gov.uk/guidance/data-protection-in-schools), DSPT toolkit (https://www.dsptoolkit.nhs.uk/)",
+                          areas: "Data flows mapping, lawful basis, legitimate interests assessment, data minimisation, third-party processor agreements, subject access requests, data retention schedules, breach reporting",
+                        },
+                        "Web Accessibility Checker": {
+                          frameworks: "WCAG 2.2 AA (https://www.w3.org/TR/WCAG22/), Public Sector Bodies Accessibility Regulations 2018 (https://www.legislation.gov.uk/uksi/2018/952/contents), Equality Act 2010 (https://www.legislation.gov.uk/ukpga/2010/15), DfE accessibility (https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps)",
+                          areas: "Keyboard navigation, colour contrast ratios, alt text for images, ARIA labels, form accessibility, PDF accessibility, video captions, accessibility statement, mobile responsiveness, screen reader compatibility",
+                        },
+                        "Ofsted Ready Checker": {
+                          frameworks: "Ofsted EIF 2024 (https://www.gov.uk/government/publications/education-inspection-framework), School Inspection Handbook (https://www.gov.uk/government/publications/school-inspection-handbook-eif), Ofsted Parent View (https://parentview.ofsted.gov.uk/), Ofsted myths (https://www.gov.uk/government/publications/ofsted-myths)",
+                          areas: "Quality of education, curriculum intent/implementation/impact, behaviour and attitudes, personal development, leadership and management, SEND provision, safeguarding culture, staff workload",
+                        },
+                        "AI Content Detector": {
+                          frameworks: "DfE Generative AI guidance (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), JCQ AI malpractice guidance (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/), Ofsted assessment guidance (https://www.gov.uk/government/publications/education-inspection-framework)",
+                          areas: "AI detection policy, student declaration processes, assessment design to reduce AI dependency, staff training on AI-generated content, academic integrity policy",
+                        },
+                        "Digital Standards Checker": {
+                          frameworks: "DfE Digital & Technology Standards (https://www.gov.uk/guidance/digital-and-technology-standards-for-schools-and-colleges), EdTech Strategy (https://www.gov.uk/government/publications/edtech-strategy), DfE broadband/connectivity (https://www.gov.uk/government/publications/school-network-infrastructure), Cyber essentials (https://www.ncsc.gov.uk/cyberessentials/overview)",
+                          areas: "Network infrastructure, broadband speeds, device ratios, cyber security (NCSC Cyber Essentials), MIS systems, cloud strategy, staff digital skills, EdTech procurement, backup & recovery",
+                        },
+                        "Health & Safety Checker": {
+                          frameworks: "Health and Safety at Work Act 1974 (https://www.legislation.gov.uk/ukpga/1974/37), HSE Schools guidance (https://www.hse.gov.uk/services/education/index.htm), DfE H&S guidance (https://www.gov.uk/government/publications/health-and-safety-advice-for-schools), RIDDOR (https://www.hse.gov.uk/riddor/)",
+                          areas: "Risk assessment records, fire safety, first aid provision, RIDDOR reporting, lone working policy, contractor management, asbestos management, educational visits approvals, DfE indoor environment standards",
+                        },
+                      };
+
+                      const tf = toolFrameworks[toolName] || {
+                        frameworks: "DfE guidance (https://www.gov.uk/government/organisations/department-for-education), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework)",
+                        areas: "Compliance and quality standards relevant to UK schools",
+                      };
+
+                      const consultantName = meta.consultantName || "your SafeShield consultant";
+                      const consultantEmail = meta.consultantEmail || "info@safeshieldtools.co.uk";
+                      const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+                      const gapSection = gaps.length > 0
+                        ? `SPECIFIC GAPS IDENTIFIED IN THIS ASSESSMENT (${gaps.length} total):
+${gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join("\n")}`
+                        : `NOTE: Specific gap data was not recorded for this assessment (completed before gap tracking was enabled).
+Based on the score of ${score}% (${rating}), generate realistic improvement recommendations covering the typical weak areas for this tool at this score level. The typical assessment areas for ${toolName} include: ${tf.areas}`;
+
+                      const prompt = `You are ${consultantName}, a specialist SafeShield education compliance consultant. Write a formal, detailed school improvement report for the headteacher of ${meta.schoolName || "this school"} based on their ${toolName} results.
+
+ASSESSMENT DETAILS:
+- School: ${meta.schoolName || "School"}
+- Assessment: ${toolName}
+- Score: ${score}% — ${rating}
+- Staff member: ${meta.staffMember || "N/A"}
+- Date: ${date}
+- Priority breakdown: ${high.length} HIGH, ${med.length} MEDIUM, ${low.length} lower priority gaps
+
+${gapSection}
+
+RELEVANT UK FRAMEWORKS & OFFICIAL GUIDANCE:
+${tf.frameworks}
+
+Write the full report using EXACTLY this structure. Be highly specific — reference the actual gaps or likely weak areas directly. Do not be generic.
+
+EXECUTIVE SUMMARY
+Write 3-4 sentences: state the score, rating, overall compliance level, and urgency. Be direct about risk to the school if gaps are not addressed.
+
+PRIORITY ACTIONS — IMMEDIATE (0–30 DAYS)
+For each HIGH priority gap (or the top 3 most critical areas if no gaps recorded): write a subsection with the gap name as a heading, specific actions the school must take, the exact UK legislation or standard breached with its URL, and a clear deadline.
+
+PRIORITY ACTIONS — MEDIUM TERM (1–3 TERMS)
+For each MEDIUM priority gap (or next 3 areas): concise actions with relevant standard/guidance URLs.
+
+KEY COMPLIANCE RESOURCES
+List 5–7 official URLs the school must review, with a one-line description of each. Match them directly to the gaps or weak areas identified.
+
+RECOMMENDED NEXT STEPS
+Numbered list of 5 concrete actions for the next 30 days. Be specific to this school and this assessment.
+
+BOOK A CONSULTANCY APPOINTMENT
+Write a compelling, professional paragraph. Explain that SafeShield provides hands-on consultancy to UK schools — including on-site compliance reviews, staff training workshops, policy audits, and Ofsted preparation support. State that ${consultantName} can work directly with the school to implement these improvements. Invite the headteacher to contact ${consultantEmail} to arrange a free 30-minute discovery call. End with: "Consultancy packages are tailored to your school's size, budget, and compliance priorities."`;
+
+                      const res = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+                      });
+                      if (!res.ok) {
+                        const err = await res.text();
+                        throw new Error(`API error ${res.status}: ${err}`);
+                      }
+                      const json = await res.json();
+                      if (json.text) {
+                        setConsultantNotes(json.text);
+                      } else {
+                        throw new Error("No text in response");
+                      }
+                    } catch (err) {
+                      console.error("Generate recommendations failed:", err);
+                      alert(`Could not generate recommendations: ${err instanceof Error ? err.message : "Unknown error"}. Please check ANTHROPIC_API_KEY is set in Vercel environment variables.`);
+                    } finally {
+                      setGenerating(false);
+                    }
+                  }}
+                  disabled={generating}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10,
+                    cursor: generating ? "default" : "pointer", opacity: generating ? 0.7 : 1,
                     background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 11, fontWeight: 600 }}>
-                  <Sparkles size={11} /> Generate Recommendations
+                  {generating
+                    ? <><span style={{ display: "inline-block", width: 10, height: 10, border: `1.5px solid ${accentColor}40`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Generating…</>
+                    : <><Sparkles size={11} /> Generate Recommendations</>}
                 </button>
               )}
             </div>
@@ -738,13 +764,25 @@ ${css}
                 outline: "none", resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
             />
             {consultantNotes.trim() && (
-              <button
-                onClick={handlePrintRecommendations}
-                className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
-                style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
-              >
-                <Printer size={12} /> Print Recommendations
-              </button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {reportId && (
+                  <button
+                    onClick={saveNotes}
+                    disabled={notesSaving}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                    style={{ background: notesSaved ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${notesSaved ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.15)"}`, color: notesSaved ? "#22c55e" : "#CBD5E1", opacity: notesSaving ? 0.6 : 1 }}
+                  >
+                    {notesSaved ? <><Check size={12} /> Saved</> : notesSaving ? "Saving…" : <><Save size={12} /> Save Notes</>}
+                  </button>
+                )}
+                <button
+                  onClick={handlePrintRecommendations}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
+                >
+                  <Printer size={12} /> Print Recommendations
+                </button>
+              </div>
             )}
           </div>
 
