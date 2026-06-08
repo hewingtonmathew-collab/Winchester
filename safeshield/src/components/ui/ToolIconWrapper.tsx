@@ -13,7 +13,7 @@ interface Props {
 export default function ToolIconWrapper({ slug, Icon, size = 64 }: Props) {
   const { profile, enabledTools } = useAuth();
   const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
-  const { iconUrl, saveIcon, clearIcon } = useToolIcon(slug);
+  const { iconUrl, saveIcon, clearIcon, saveStatus } = useToolIcon(slug);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -70,6 +70,18 @@ export default function ToolIconWrapper({ slug, Icon, size = 64 }: Props) {
               }}>
               ✕
             </button>
+          )}
+
+          {/* Save status indicator */}
+          {saveStatus !== "idle" && (
+            <span
+              className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold whitespace-nowrap px-1.5 py-0.5 rounded"
+              style={{
+                background: saveStatus === "saved" ? "rgba(34,197,94,0.9)" : saveStatus === "error" ? "rgba(239,68,68,0.9)" : "rgba(56,189,248,0.9)",
+                color: "#fff",
+              }}>
+              {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved ✓" : "Failed ✗"}
+            </span>
           )}
 
           <input
