@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
-import { Printer, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Printer, Mail, Sun, Moon } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -82,30 +82,32 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     })();
   }, [user]);
 
+  const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
   const today = date ?? new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const certId = `MH-${Date.now().toString(36).toUpperCase().slice(-5)}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
-  /* ── PRINT — dark liquid glass A4 portrait certificate ──────────────── */
+  /* ── PRINT ──────────────────────────────────────────────────────────── */
   function handlePrint() {
     const w = window.open("", "_blank");
     if (!w) return;
 
+    const dark = printMode === "dark";
     const R = 70, C = 2 * Math.PI * R, dash = (score / 100) * C;
 
-    /* Large centred score gauge */
+    const gaugeBg    = dark ? "#0D1117" : "#F1F5F9";
+    const gaugeTrack = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+    const gaugeText  = dark ? "white" : "#0F172A";
+    const gaugeSubText = dark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)";
+
     const gaugesvg = `<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="gf"><feGaussianBlur stdDeviation="4" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
-      </defs>
-      <circle cx="90" cy="90" r="85" fill="#0D1117"/>
-      <circle cx="90" cy="90" r="85" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-      <circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 90 90)"/>
-      <circle cx="90" cy="90" r="${R}" fill="none" stroke="${accentColor}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 90 90)" filter="url(#gf)"/>
-      <circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${dash * 0.28} ${C}" transform="rotate(-90 90 90)"/>
-      <text x="90" y="83" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="38" font-weight="700" font-family="system-ui,sans-serif" letter-spacing="-2">${score}%</text>
-      <text x="90" y="106" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.45)" font-size="12" font-family="system-ui,sans-serif" letter-spacing="3">SCORE</text>
+      <circle cx="90" cy="90" r="85" fill="${gaugeBg}"/>
+      <circle cx="90" cy="90" r="85" fill="none" stroke="${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}" stroke-width="1"/>
+      <circle cx="90" cy="90" r="${R}" fill="none" stroke="${gaugeTrack}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 90 90)"/>
+      <circle cx="90" cy="90" r="${R}" fill="none" stroke="${accentColor}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 90 90)"/>
+      <text x="90" y="83" text-anchor="middle" dominant-baseline="middle" fill="${gaugeText}" font-size="38" font-weight="700" font-family="system-ui,sans-serif" letter-spacing="-2">${score}%</text>
+      <text x="90" y="106" text-anchor="middle" dominant-baseline="middle" fill="${gaugeSubText}" font-size="12" font-family="system-ui,sans-serif" letter-spacing="3">SCORE</text>
     </svg>`;
 
     const areasHtml = areas && areas.length > 0
@@ -117,7 +119,62 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
       : "";
 
     const logoLeft  = displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "";
-    const logoRight = displayOrgLogo    ? `<img src="${displayOrgLogo}" class="logo-img"/>` : "";
+
+    const css = dark ? `
+.page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 55%,${accentColor}18 100%)}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1px solid rgba(255,255,255,0.07)}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+.consultant-name{color:rgba(255,255,255,0.8)}
+.consultant-role{color:rgba(255,255,255,0.35)}
+.tool-pill{background:rgba(255,255,255,0.07);border:1.5px solid ${accentColor}70;color:rgba(255,255,255,0.85)}
+.certifies-label{color:rgba(255,255,255,0.35)}
+.school-name{color:#fff}
+.completed-sub{color:rgba(255,255,255,0.45)}
+.completed-sub strong{color:rgba(255,255,255,0.72)}
+.rating-pill{background:rgba(255,255,255,0.07);border:1.5px solid ${ratingColor}99;color:${ratingColor}}
+.score-label{color:rgba(255,255,255,0.35)}
+.details-panel{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-top-color:rgba(255,255,255,0.20)}
+.field-label{color:rgba(255,255,255,0.3)}
+.field-value{color:rgba(255,255,255,0.78)}
+.areas-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);border-top-color:rgba(255,255,255,0.16)}
+.areas-heading{color:rgba(255,255,255,0.28)}
+.area-cell{border-bottom:1px solid rgba(255,255,255,0.05)}
+.area-name{color:rgba(255,255,255,0.6)}
+.area-score{color:${accentColor}}
+.sig-rule{background:rgba(255,255,255,0.22)}
+.sig-name{color:rgba(255,255,255,0.6)}
+.sig-role{color:rgba(255,255,255,0.28)}
+.footer{border-top:1px solid rgba(255,255,255,0.07)}
+.footer span{color:rgba(255,255,255,0.18)}
+.accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
+` : `
+.page{background:#fff;border:1px solid #E2E8F0}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1.5px solid ${accentColor}55}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid ${accentColor}25}
+.consultant-name{color:#1E293B}
+.consultant-role{color:#64748B}
+.tool-pill{background:${accentColor}12;border:1.5px solid ${accentColor}60;color:#0F172A}
+.certifies-label{color:#64748B}
+.school-name{color:#0F172A}
+.completed-sub{color:#475569}
+.completed-sub strong{color:#1E293B}
+.rating-pill{background:${ratingColor}12;border:1.5px solid ${ratingColor};color:${ratingColor}}
+.score-label{color:#64748B}
+.details-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.field-label{color:#64748B}
+.field-value{color:#1E293B}
+.areas-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.areas-heading{color:#64748B}
+.area-cell{border-bottom:1px solid #E2E8F0}
+.area-name{color:#475569}
+.area-score{color:${accentColor}}
+.sig-rule{background:#CBD5E1}
+.sig-name{color:#475569}
+.sig-role{color:#94A3B8}
+.footer{border-top:1px solid #E2E8F0}
+.footer span{color:#94A3B8}
+.accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
+`;
 
     w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>Certificate — ${toolName}</title>
@@ -125,140 +182,42 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 @page{size:A4 portrait;margin:0}
 html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
-.page{
-  width:210mm;height:297mm;
-  background:linear-gradient(160deg,#060A12 0%,#0C0A1C 55%,${accentColor}18 100%);
-  display:flex;flex-direction:column;align-items:center;
-  padding:12mm 16mm 10mm;
-  position:relative;overflow:hidden;
-}
-/* ambient blobs — hidden in print */
-.blob-tr,.blob-bl,.blob-br{display:none}
-
-/* decorative border ring */
-.border-ring{
-  position:absolute;inset:6mm;border-radius:18px;pointer-events:none;
-  border:1px solid rgba(255,255,255,0.07);
-}
-.border-ring-inner{
-  position:absolute;inset:8mm;border-radius:14px;pointer-events:none;
-  border:1px solid rgba(255,255,255,0.04);
-}
-
-/* top bar */
-.topbar{
-  width:100%;display:flex;justify-content:space-between;align-items:center;
-  position:relative;z-index:2;margin-bottom:6mm;
-}
-.logo-img{height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.06);padding:5px}
+.page{width:210mm;height:297mm;display:flex;flex-direction:column;align-items:center;padding:12mm 16mm 10mm;position:relative;overflow:hidden}
+.topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
+.logo-img{height:52px;object-fit:contain;border-radius:10px;padding:5px}
 .consultant{text-align:right}
-.consultant-name{font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);letter-spacing:.01em}
-.consultant-role{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
-
-/* tool pill */
-.tool-pill{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:7px 20px;border-radius:999px;
-  background:rgba(255,255,255,0.07);
-  border:1.5px solid ${accentColor}70;
-  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.85);
-  margin-bottom:8mm;position:relative;z-index:2;
-}
-.pill-dot{width:7px;height:7px;border-radius:50%;background:${accentColor};box-shadow:0 0 8px ${accentColor}}
-
-/* certifies block */
-.certifies-label{
-  font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);
-  letter-spacing:.18em;text-transform:uppercase;
-  margin-bottom:5mm;position:relative;z-index:2;text-align:center;
-}
-.school-name{
-  font-size:34px;font-weight:700;color:#fff;text-align:center;
-  line-height:1.15;margin-bottom:3mm;position:relative;z-index:2;
-  text-shadow:0 0 40px ${accentColor}44;
-}
-.completed-sub{
-  font-size:13px;color:rgba(255,255,255,0.45);text-align:center;
-  margin-bottom:8mm;position:relative;z-index:2;
-}
-.completed-sub strong{color:rgba(255,255,255,0.72);font-weight:600}
-
-/* accent rule */
-.accent-rule{
-  width:60mm;height:2px;border-radius:2px;
-  background:linear-gradient(90deg,transparent,${accentColor},transparent);
-  margin:0 auto 8mm;position:relative;z-index:2;
-}
-
-/* gauge row */
-.gauge-row{
-  display:flex;align-items:center;gap:10mm;
-  margin-bottom:8mm;position:relative;z-index:2;
-}
-.rating-pill{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:8px 22px;border-radius:999px;
-  background:rgba(255,255,255,0.07);
-  border:1.5px solid ${ratingColor}99;
-  font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:${ratingColor};text-shadow:0 0 12px ${ratingColor}66;
-}
-
-/* details glass panel */
-.details-panel{
-  width:140mm;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  border-top-color:rgba(255,255,255,0.20);
-  border-radius:16px;padding:6mm 8mm;
-  position:relative;z-index:2;margin-bottom:6mm;
-}
+.consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
+.consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.tool-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 20px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8mm}
+.pill-dot{width:7px;height:7px;border-radius:50%;background:${accentColor}}
+.certifies-label{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin-bottom:5mm;text-align:center}
+.school-name{font-size:34px;font-weight:700;text-align:center;line-height:1.15;margin-bottom:3mm}
+.completed-sub{font-size:13px;text-align:center;margin-bottom:8mm}
+.accent-rule{width:60mm;height:2px;border-radius:2px;margin:0 auto 8mm}
+.gauge-row{display:flex;align-items:center;gap:10mm;margin-bottom:8mm}
+.rating-pill{display:inline-flex;align-items:center;justify-content:center;padding:8px 22px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.score-label{font-size:11px;letter-spacing:.06em;margin-top:4px}
+.details-panel{width:140mm;border-radius:16px;padding:6mm 8mm;margin-bottom:6mm}
 .field-row{display:flex;gap:10px;margin-bottom:5px;align-items:baseline}
-.field-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.14em;min-width:26mm}
-.field-value{font-size:12px;color:rgba(255,255,255,0.78);font-weight:500}
-
-/* areas grid */
-.areas-panel{
-  width:140mm;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.10);
-  border-top-color:rgba(255,255,255,0.16);
-  border-radius:14px;padding:5mm 7mm;
-  position:relative;z-index:2;margin-bottom:6mm;
-}
-.areas-heading{font-size:8px;font-weight:700;color:rgba(255,255,255,0.28);letter-spacing:.16em;text-transform:uppercase;margin-bottom:4mm;text-align:center}
+.field-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;min-width:26mm}
+.field-value{font-size:12px;font-weight:500}
+.areas-panel{width:140mm;border-radius:14px;padding:5mm 7mm;margin-bottom:6mm}
+.areas-heading{font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4mm;text-align:center}
 .areas-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 8mm}
-.area-cell{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-.area-name{font-size:9px;color:rgba(255,255,255,0.6);flex:1;padding-right:6px}
-.area-score{font-size:9px;font-weight:700;color:${accentColor};white-space:nowrap}
-
-/* signature */
-.sig-row{
-  width:140mm;display:flex;justify-content:flex-end;
-  position:relative;z-index:2;margin-bottom:auto;
-}
+.area-cell{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.area-name{font-size:9px;flex:1;padding-right:6px}
+.area-score{font-size:9px;font-weight:700;white-space:nowrap}
+.sig-row{width:140mm;display:flex;justify-content:flex-end;margin-bottom:auto}
 .sig-block{text-align:left}
-.sig-rule{width:46mm;height:1px;background:rgba(255,255,255,0.22);margin-bottom:5px}
-.sig-name{font-size:12px;color:rgba(255,255,255,0.6);font-style:italic}
-.sig-role{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-
-/* footer */
-.footer{
-  width:100%;display:flex;justify-content:space-between;align-items:center;
-  border-top:1px solid rgba(255,255,255,0.07);padding-top:4mm;
-  position:relative;z-index:2;margin-top:4mm;
-}
-.footer-brand{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.14em;font-weight:700;text-transform:uppercase}
-.footer-ref{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.1em}
+.sig-rule{width:46mm;height:1px;margin-bottom:5px}
+.sig-name{font-size:12px;font-style:italic}
+.sig-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.footer{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:4mm;margin-top:4mm}
+${css}
 </style></head><body>
 <div class="page">
-  <div class="blob-tr"></div>
-  <div class="blob-bl"></div>
-  <div class="blob-br"></div>
   <div class="border-ring"></div>
   <div class="border-ring-inner"></div>
-
-  <!-- top bar: logos left, consultant right -->
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:8px">${logoLeft || '<div style="width:52px"></div>'}</div>
     <div class="consultant">
@@ -266,35 +225,23 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
       <div class="consultant-role">Education Consultant</div>
     </div>
   </div>
-
-  <!-- tool pill -->
   <span class="tool-pill"><span class="pill-dot"></span>${toolName} · Assessment Certificate</span>
-
-  <!-- certifies -->
   <p class="certifies-label">This is to certify that</p>
   <p class="school-name">${meta.schoolName || "School Name"}</p>
   <p class="completed-sub">has successfully completed the <strong>${toolName}</strong></p>
   <div class="accent-rule"></div>
-
-  <!-- gauge + rating -->
   <div class="gauge-row">
     ${gaugesvg}
     <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
       <span class="rating-pill">${rating}</span>
-      <span style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:.06em">Assessment Score</span>
+      <span class="score-label">Assessment Score</span>
     </div>
   </div>
-
-  <!-- details -->
   <div class="details-panel">
     ${meta.staffMember ? `<div class="field-row"><span class="field-label">Completed by</span><span class="field-value">${meta.staffMember}</span></div>` : ""}
     <div class="field-row"><span class="field-label">Date</span><span class="field-value">${today}</span></div>
-    ${logoRight ? `<div class="field-row"><span class="field-label">Organisation</span><div style="display:flex;align-items:center;gap:6px"><img src="${logoRight.match(/src="([^"]+)"/)?.[1] || ""}" style="height:22px;object-fit:contain;border-radius:4px;background:rgba(255,255,255,0.06);padding:2px"/></div></div>` : ""}
   </div>
-
   ${areasHtml ? `<div class="areas-panel"><p class="areas-heading">Areas Assessed</p>${areasHtml}</div>` : ""}
-
-  <!-- signature -->
   <div class="sig-row">
     <div class="sig-block">
       <div class="sig-rule"></div>
@@ -302,10 +249,9 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
       <p class="sig-role">Education Consultant</p>
     </div>
   </div>
-
   <div class="footer">
-    <span class="footer-brand">SafeShield · Verified Assessment</span>
-    <span class="footer-ref">${certId}</span>
+    <span class="footer-brand" style="font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">SafeShield · Verified Assessment</span>
+    <span class="footer-ref" style="font-size:8px;letter-spacing:.1em">${certId}</span>
   </div>
 </div>
 </body></html>`);
@@ -491,7 +437,21 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
       </div>
 
       {/* ── Action buttons ───────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Print mode toggle */}
+        <div className="flex rounded-xl overflow-hidden border border-white/10 shrink-0">
+          <button onClick={() => setPrintMode("dark")}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+            style={{ background: printMode === "dark" ? "rgba(255,255,255,0.12)" : "transparent", color: printMode === "dark" ? "#fff" : "#64748B" }}>
+            <Moon size={12} /> Dark
+          </button>
+          <button onClick={() => setPrintMode("light")}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+            style={{ background: printMode === "light" ? "rgba(255,255,255,0.12)" : "transparent", color: printMode === "light" ? "#fff" : "#64748B" }}>
+            <Sun size={12} /> Light
+          </button>
+        </div>
+
         <button onClick={handlePrint}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
           style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}>
