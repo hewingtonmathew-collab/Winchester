@@ -4,6 +4,9 @@ import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAccessibility } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#F472B6";
@@ -11,6 +14,8 @@ const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCA
 
 export default function AccessibilityPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("accessibility");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
     <AuthGuard toolSlug="accessibility">
       <div className="min-h-screen pt-16 pb-20">
@@ -48,11 +53,9 @@ export default function AccessibilityPage() {
               <IconAccessibility size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Accessibility</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Web Accessibility Checker</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Assess your school website against WCAG 2.1 AA and the Public Sector Bodies Accessibility Regulations 2018. Identify barriers and generate a prioritised action plan with certificate.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -63,21 +66,12 @@ export default function AccessibilityPage() {
               <AccessibilityChecker />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: Website Accessibility</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>What the Public Sector Bodies Accessibility Regulations require from schools and how to comply.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="accessibility"
+                color={COLOR}
+                defaultTitle="Watch: Website Accessibility"
+                defaultDescription="What the Public Sector Bodies Accessibility Regulations require from schools and how to comply."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>

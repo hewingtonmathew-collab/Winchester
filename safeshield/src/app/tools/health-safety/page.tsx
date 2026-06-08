@@ -4,6 +4,9 @@ import HealthSafetyChecker from "@/components/forms/HealthSafetyChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconHealthSafety } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#F97316";
@@ -26,6 +29,8 @@ const LEGISLATION = [
 
 export default function HealthSafetyPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("health-safety");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("health-safety-title", "Health & Safety Checker");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("health-safety-desc", "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.");
   return (
     <AuthGuard toolSlug="health-safety">
       <div className="min-h-screen pt-16 pb-20">
@@ -63,11 +68,9 @@ export default function HealthSafetyPage() {
               <IconHealthSafety size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Health &amp; Safety</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Health &amp; Safety Compliance Checker</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Assess your school&apos;s compliance with health and safety legislation across six key areas: fire safety, COSHH, premises, policies and documentation, staff and pupil welfare, and contractor management.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -78,21 +81,12 @@ export default function HealthSafetyPage() {
               <HealthSafetyChecker />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: H&amp;S in Schools</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Key health and safety obligations for school leaders and what a compliant school looks like.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="health-safety"
+                color={COLOR}
+                defaultTitle="Watch: H&S in Schools"
+                defaultDescription="Key health and safety obligations for school leaders and what a compliant school looks like."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Assessment Areas</h2>

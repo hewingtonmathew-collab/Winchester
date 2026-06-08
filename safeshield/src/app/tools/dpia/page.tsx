@@ -4,6 +4,9 @@ import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDPIA } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#FCD34D";
@@ -25,6 +28,8 @@ const TRIGGERS = [
 
 export default function DpiaPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("dpia");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("dpia-title", "DPIA Wizard");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("dpia-desc", "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.");
   return (
     <AuthGuard toolSlug="dpia">
       <div className="min-h-screen pt-16 pb-20">
@@ -62,11 +67,9 @@ export default function DpiaPage() {
               <IconDPIA size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Data Protection</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">DPIA Wizard</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can save or print.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -77,21 +80,12 @@ export default function DpiaPage() {
               <DpiaWizard />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: What is a DPIA?</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>When a DPIA is legally required, how to complete one, and what the ICO expects from schools.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="dpia"
+                color={COLOR}
+                defaultTitle="Watch: What is a DPIA?"
+                defaultDescription="When a DPIA is legally required, how to complete one, and what the ICO expects from schools."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>6 Guided Steps</h2>

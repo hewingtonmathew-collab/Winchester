@@ -4,6 +4,9 @@ import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAIDetector } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#38BDF8";
@@ -18,6 +21,8 @@ const SIGNALS: [string, string][] = [
 
 export default function AiDetectorPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-detector");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
     <AuthGuard toolSlug="ai-detector">
       <div className="min-h-screen pt-16 pb-20">
@@ -55,11 +60,9 @@ export default function AiDetectorPage() {
               <IconAIDetector size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Detection</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">AI Content Detector</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Paste any text to detect whether it was written by AI or a human. Uses six statistical signals &mdash; results are indicative only.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -70,21 +73,12 @@ export default function AiDetectorPage() {
               <DetectorForm />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: AI Detection Explained</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>How statistical signals can indicate AI-generated content and the limitations of automated detection.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="ai-detector"
+                color={COLOR}
+                defaultTitle="Watch: AI Detection Explained"
+                defaultDescription="How statistical signals can indicate AI-generated content and the limitations of automated detection."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>How It Works</h2>

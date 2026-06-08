@@ -4,6 +4,9 @@ import AiReadiness from "@/components/forms/AiReadiness";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAIReadiness } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#FB923C";
@@ -24,6 +27,8 @@ const RATINGS: [string, string, string][] = [
 
 export default function AiReadinessPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-readiness");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-readiness-title", "AI Readiness Assessment");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-readiness-desc", "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.");
   return (
     <AuthGuard toolSlug="ai-readiness">
       <div className="min-h-screen pt-16 pb-20">
@@ -61,11 +66,9 @@ export default function AiReadinessPage() {
               <IconAIReadiness size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Readiness</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">AI Readiness Assessment</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Rate your school&apos;s current position across five AI governance dimensions. Receive a readiness score and prioritised action list to support responsible AI adoption.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -76,21 +79,12 @@ export default function AiReadinessPage() {
               <AiReadiness />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: AI in Schools</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>A short overview of AI adoption in UK education and what responsible readiness looks like.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="ai-readiness"
+                color={COLOR}
+                defaultTitle="Watch: AI in Schools"
+                defaultDescription="A short overview of AI adoption in UK education and what responsible readiness looks like."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Dimensions Assessed</h2>

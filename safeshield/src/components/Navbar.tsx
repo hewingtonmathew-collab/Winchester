@@ -159,6 +159,7 @@ export default function Navbar() {
               style={{ color: "var(--accent)" }}>
               Sign in
             </Link>
+
           )}
         </div>
       </div>

@@ -3,7 +3,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import EditableText from "@/components/ui/EditableText";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
@@ -96,6 +98,9 @@ function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; logged
 export default function HomePage() {
   const { user, enabledTools, profile } = useAuth();
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("home");
+  const { value: heroLine1, save: saveHeroLine1 } = useEditableContent("home-hero-line1", "Your School Tools,");
+  const { value: heroLine2, save: saveHeroLine2 } = useEditableContent("home-hero-line2", "One Place.");
+  const { value: heroSub, save: saveHeroSub } = useEditableContent("home-hero-sub", "Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.");
 
   const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
   const loggedIn = !!user;
@@ -175,15 +180,29 @@ export default function HomePage() {
             </div>
 
             <h1 className="heading-luxury text-5xl sm:text-6xl lg:text-7xl mb-6">
-              <span style={{ color: "var(--text)" }}>Your School Tools,</span>
-              <br />
-              <span className="gradient-text">One Place.</span>
+              <EditableText
+                as="span"
+                value={heroLine1}
+                onSave={saveHeroLine1}
+                style={{ color: "var(--text)", display: "block" }}
+              />
+              <EditableText
+                as="span"
+                value={heroLine2}
+                onSave={saveHeroLine2}
+                className="gradient-text"
+                style={{ display: "block" }}
+              />
             </h1>
 
-            <p className="text-lg max-w-lg mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              Professional compliance tools for safeguarding, governance, AI,{" "}
-              digital standards, data protection, accessibility, and Ofsted.
-            </p>
+            <EditableText
+              as="p"
+              value={heroSub}
+              onSave={saveHeroSub}
+              multiline
+              className="text-lg max-w-lg mx-auto leading-relaxed"
+              style={{ color: "var(--text-muted)" }}
+            />
 
             {!loggedIn && (
               <div className="flex items-center justify-center gap-3 mt-8">

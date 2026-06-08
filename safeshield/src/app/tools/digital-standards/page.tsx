@@ -4,6 +4,9 @@ import DigitalStandardsChecker from "@/components/forms/DigitalStandardsChecker"
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDigitalStandards } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#818CF8";
@@ -24,6 +27,8 @@ const RATINGS: [string, string][] = [
 
 export default function DigitalStandardsPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("digital-standards");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("digital-standards-title", "Digital & Technology Standards");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("digital-standards-desc", "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.");
   return (
     <AuthGuard toolSlug="digital-standards">
       <div className="min-h-screen pt-16 pb-20">
@@ -61,11 +66,9 @@ export default function DigitalStandardsPage() {
               <IconDigitalStandards size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Standards</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Digital &amp; Technology Standards</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Assess your school&apos;s compliance with DfE digital and technology standards across six key areas: digital safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -76,21 +79,12 @@ export default function DigitalStandardsPage() {
               <DigitalStandardsChecker />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: DfE Digital Standards</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>An overview of the DfE digital and technology standards for schools and what compliance requires.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="digital-standards"
+                color={COLOR}
+                defaultTitle="Watch: DfE Digital Standards"
+                defaultDescription="An overview of the DfE digital and technology standards for schools and what compliance requires."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Assessment Areas</h2>

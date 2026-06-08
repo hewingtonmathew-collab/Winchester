@@ -4,6 +4,9 @@ import GovernanceChecker from "@/components/forms/GovernanceChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconGovernance } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#A78BFA";
@@ -11,6 +14,8 @@ const AREAS = ["Board structure & delegation", "Skills, membership & CPD", "Stat
 
 export default function GovernancePage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("governance");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("governance-title", "Governance Compliance Checker");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("governance-desc", "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.");
   return (
     <AuthGuard toolSlug="governance">
       <div className="min-h-screen pt-16 pb-20">
@@ -48,11 +53,9 @@ export default function GovernancePage() {
               <IconGovernance size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Compliance</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Governance Compliance Checker</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Check your governance arrangements against the DfE Governance Handbook. Identify gaps across board structure, skills, statutory compliance, accountability, and financial oversight.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -63,21 +66,12 @@ export default function GovernancePage() {
               <GovernanceChecker />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: School Governance</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>What good governance looks like in UK schools and how to evidence it for Ofsted.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="governance"
+                color={COLOR}
+                defaultTitle="Watch: School Governance"
+                defaultDescription="What good governance looks like in UK schools and how to evidence it for Ofsted."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>

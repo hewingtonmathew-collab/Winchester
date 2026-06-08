@@ -4,6 +4,9 @@ import OfstedChecker from "@/components/forms/OfstedChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconOfsted } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#4ADE80";
@@ -17,6 +20,8 @@ const RATINGS: [string, string][] = [
 
 export default function OfstedPage() {
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ofsted");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ofsted-title", "Ofsted Ready Checker");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ofsted-desc", "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement before inspection.");
   return (
     <AuthGuard toolSlug="ofsted">
       <div className="min-h-screen pt-16 pb-20">
@@ -54,11 +59,9 @@ export default function OfstedPage() {
               <IconOfsted size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Inspection</span>
             </div>
-            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg">Ofsted Ready Checker</h1>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
             <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
-            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}>
-              Self-evaluate your school&apos;s readiness across all four Ofsted EIF judgement areas plus SEND and inclusion. Identify strengths, areas for improvement, and inspection risks.
-            </p>
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
         </div>
 
@@ -69,21 +72,12 @@ export default function OfstedPage() {
               <OfstedChecker />
             </div>
             <div className="flex flex-col gap-4">
-              {/* Info video card */}
-              <GlassCard className="p-0 overflow-hidden">
-                <video
-                  src="/ai-readiness-intro.mp4"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full rounded-2xl"
-                  style={{ display: "block" }}
-                />
-                <div className="px-4 py-3">
-                  <p className="text-xs font-bold mb-1" style={{ color: COLOR }}>Watch: Ofsted EIF Overview</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>A summary of the Education Inspection Framework and what inspectors look for in each judgement area.</p>
-                </div>
-              </GlassCard>
+              <SidebarVideoCard
+                toolSlug="ofsted"
+                color={COLOR}
+                defaultTitle="Watch: Ofsted EIF Overview"
+                defaultDescription="A summary of the Education Inspection Framework and what inspectors look for in each judgement area."
+              />
 
               <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>EIF Framework Areas</h2>
