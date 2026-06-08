@@ -6,11 +6,13 @@ interface GlassCardProps {
   hover?: boolean;
   glow?: boolean;
   shimmer?: boolean;
+  onClick?: () => void;
 }
 
-export default function GlassCard({ children, className, hover, glow, shimmer }: GlassCardProps) {
+export default function GlassCard({ children, className, hover, glow, shimmer, onClick }: GlassCardProps) {
   return (
     <div
+      onClick={onClick}
       className={cn(
         "glass rounded-2xl p-6 relative overflow-hidden",
         hover && "glass-hover cursor-default",

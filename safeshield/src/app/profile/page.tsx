@@ -434,6 +434,7 @@ export default function ProfilePage() {
               icon: <FileText size={16} />,
               label: "Reports",
               value: reportsLoading ? "—" : String(reports.length),
+              onClick: () => document.getElementById("reports-section")?.scrollIntoView({ behavior: "smooth" }),
             },
             {
               icon: <BarChart2 size={16} />,
@@ -443,19 +444,26 @@ export default function ProfilePage() {
                 : avgScore !== null
                 ? `${avgScore}%`
                 : "—",
+              onClick: () => document.getElementById("reports-section")?.scrollIntoView({ behavior: "smooth" }),
             },
             {
               icon: <Wrench size={16} />,
               label: "Tools Used",
               value: reportsLoading ? "—" : String(uniqueTools),
+              onClick: () => router.push("/"),
             },
             {
               icon: <Building2 size={16} />,
               label: "Organisation",
               value: org ? org.name : "—",
+              onClick: () => router.push("/org"),
             },
-          ].map(({ icon, label, value }) => (
-            <GlassCard key={label} className="text-center py-4">
+          ].map(({ icon, label, value, onClick }) => (
+            <GlassCard
+              key={label}
+              className="text-center py-4 cursor-pointer transition-transform hover:-translate-y-0.5 active:scale-95"
+              onClick={onClick}
+            >
               <div
                 className="flex justify-center mb-1"
                 style={{ color: "var(--accent)" }}
@@ -594,7 +602,7 @@ export default function ProfilePage() {
         <ChangePasswordCard />
 
         {/* ─── My Reports ───────────────────────────────────────────────── */}
-        <div className="mt-8">
+        <div id="reports-section" className="mt-8">
           <div className="flex items-center gap-2 mb-4">
             <FileText size={16} style={{ color: "var(--accent)" }} />
             <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
