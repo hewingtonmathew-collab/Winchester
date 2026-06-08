@@ -275,7 +275,7 @@ ${css}
   const glassPanel: React.CSSProperties = {
     background: "linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%)",
     border: "1px solid rgba(255,255,255,0.14)",
-    borderTop: "1px solid rgba(255,255,255,0.26)",
+    borderTop: "1px solid rgba(255,255,255,0.26)" as unknown as string,
     borderRadius: 16,
     backdropFilter: "blur(20px) saturate(180%)",
     WebkitBackdropFilter: "blur(20px) saturate(180%)",
