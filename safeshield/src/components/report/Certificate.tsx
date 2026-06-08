@@ -83,17 +83,14 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   }, [user]);
 
   const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
+  const [emailSending, setEmailSending] = useState(false);
   const today = date ?? new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const certId = `MH-${Date.now().toString(36).toUpperCase().slice(-5)}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
   /* ── PRINT ──────────────────────────────────────────────────────────── */
-  function handlePrint() {
-    const w = window.open("", "_blank");
-    if (!w) return;
-
-    const dark = printMode === "dark";
+  function buildHtml(dark: boolean) {
     const R = 70, C = 2 * Math.PI * R, dash = (score / 100) * C;
 
     const gaugeBg    = dark ? "#0D1117" : "#F1F5F9";
@@ -176,7 +173,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 .accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
 `;
 
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>Certificate — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -254,21 +251,43 @@ ${css}
     <span class="footer-ref" style="font-size:8px;letter-spacing:.1em">${certId}</span>
   </div>
 </div>
-</body></html>`);
+</body></html>`;
+  }
+
+  function handlePrint() {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(buildHtml(printMode === "dark"));
     w.document.close();
     setTimeout(() => w.print(), 600);
   }
 
-  /* ── EMAIL ──────────────────────────────────────────────────────────── */
-  function handleEmail() {
-    const subject = encodeURIComponent(`${toolName} Certificate — ${meta.schoolName}`);
-    const areasLine = areas && areas.length > 0
-      ? `\nAudit areas:\n${areas.map(a => `  • ${a.name}${a.score !== undefined ? ` — ${a.score}%` : ""}`).join("\n")}` : "";
-    const body = encodeURIComponent(
-      `Dear ${meta.schoolName},\n\nPlease find your ${toolName} assessment certificate below.\n\nAssessment Summary\n──────────────────\nSchool:       ${meta.schoolName}\nCompleted by: ${meta.staffMember}\nConsultant:   ${meta.consultantName}\nScore:        ${score}% — ${rating}${areasLine}\nDate:         ${today}\nRef:          ${certId}\n\nKind regards,\n${meta.consultantName || "Mathew Hewington"}\nEducation Consultant`
-    );
-    const recipients = [meta.schoolEmail, meta.consultantEmail].filter(Boolean).join(",");
-    window.location.href = `mailto:${recipients}?subject=${subject}&body=${body}`;
+  async function handleEmail() {
+    const recipients = [meta.schoolEmail, meta.consultantEmail].filter(Boolean) as string[];
+    if (recipients.length === 0) {
+      alert("No email addresses on file. Add a school or consultant email first.");
+      return;
+    }
+    setEmailSending(true);
+    try {
+      const res = await fetch("/api/send-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: recipients,
+          subject: `${toolName} Certificate — ${meta.schoolName}`,
+          html: buildHtml(false),
+          type: "certificate",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Send failed");
+      alert(`Certificate emailed to ${recipients.join(", ")}`);
+    } catch (err: unknown) {
+      alert(`Failed to send: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setEmailSending(false);
+    }
   }
 
   /* ── ON-SCREEN CRISP GLASS PREVIEW ──────────────────────────────────── */
@@ -454,17 +473,12 @@ ${css}
           style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}>
           <Printer size={14} /> Print / Save PDF
         </button>
-        {(meta.schoolEmail || meta.consultantEmail) && (
-          <button onClick={handleEmail}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all bg-white/5 border border-white/10"
-            style={{ color: "#94A3B8" }}>
-            <Mail size={14} /> Email Certificate
-          </button>
-        )}
+        <button onClick={handleEmail} disabled={emailSending}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all bg-white/5 border border-white/10"
+          style={{ color: emailSending ? "#64748B" : "#94A3B8", cursor: emailSending ? "default" : "pointer" }}>
+          <Mail size={14} /> {emailSending ? "Sending…" : "Email Certificate"}
+        </button>
       </div>
-      <p className="text-[0.7rem]" style={{ color: "var(--text-dim)" }}>
-        To email the PDF: use "Print / Save PDF" first, then attach the saved file.
-      </p>
     </div>
   );
 }
