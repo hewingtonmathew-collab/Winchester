@@ -87,76 +87,178 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
-  /* ── PRINT ──────────────────────────────────────────────────────────── */
+  /* ── PRINT — dark liquid glass A4 ───────────────────────────────────── */
   function handlePrint() {
     const w = window.open("", "_blank");
     if (!w) return;
-    const areasHtml = areas && areas.length > 0
-      ? `<div class="areas-block">
-          <p class="areas-heading">Audit areas covered</p>
-          <table class="areas-table">
-            ${areas.map(a => `<tr><td class="area-name">${a.name}</td>${a.score !== undefined ? `<td class="area-score">${a.score}%</td>` : "<td></td>"}</tr>`).join("")}
-          </table>
-        </div>`
+
+    const C = 2 * Math.PI * 52;
+    const dash = (score / 100) * C;
+
+    const gaugesvg = `<svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="gt" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.07)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+        </radialGradient>
+        <filter id="gg"><feGaussianBlur stdDeviation="3" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+      </defs>
+      <circle cx="65" cy="65" r="60" fill="url(#gt)"/>
+      <circle cx="65" cy="65" r="60" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 65 65)"/>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="${accentColor}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 65 65)" filter="url(#gg)"/>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="2" stroke-linecap="round" stroke-dasharray="${dash * 0.3} ${C}" transform="rotate(-90 65 65)"/>
+      <text x="65" y="60" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="26" font-weight="700" font-family="system-ui,sans-serif" letter-spacing="-1">${score}</text>
+      <text x="65" y="79" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-family="system-ui,sans-serif" letter-spacing="2">SCORE</text>
+    </svg>`;
+
+    const areasRows = areas && areas.length > 0
+      ? areas.slice(0, 8).map(a => `
+          <div class="area-row">
+            <span class="area-name">${a.name}</span>
+            ${a.score !== undefined ? `<span class="area-score">${a.score}%</span>` : ""}
+          </div>`).join("")
       : "";
-    const logoHtml = `<div style="display:flex;align-items:center;gap:10px;">
-      ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="school-logo-img" />` : ""}
-      ${displayOrgLogo ? `<img src="${displayOrgLogo}" class="school-logo-img" />` : ""}
-      ${!displaySchoolLogo && !displayOrgLogo ? `<div class="school-logo-placeholder"></div>` : ""}
-    </div>`;
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Certificate — ${toolName}</title>
+
+    const logoHtml = [
+      displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "",
+      displayOrgLogo   ? `<img src="${displayOrgLogo}"   class="logo-img"/>` : "",
+    ].join("");
+
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Certificate — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 @page{size:A4 portrait;margin:0}
-html,body{width:210mm;height:297mm;background:#fff;font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.page{width:210mm;height:297mm;padding:18mm 20mm 14mm;background:#fff;display:flex;flex-direction:column}
-.top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14mm}
-.school-logo-img{height:64px;object-fit:contain}.school-logo-placeholder{width:64px;height:64px}
-.consultant-brand{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.consultant-name{font-size:16px;font-weight:600;color:#1a1a1a;letter-spacing:.3px}
-.consultant-title{font-size:10px;color:#888;letter-spacing:.5px}
-.cert-body{flex:1;display:flex;gap:14mm}
-.cert-main{flex:1}
-.the-text{font-size:14px;color:#1a1a1a;margin-bottom:6px}
-.cert-title{font-size:22px;font-weight:600;text-transform:uppercase;letter-spacing:1px;line-height:1.3;color:#1a1a1a;margin-bottom:8mm;max-width:120mm}
-.completed-line{font-size:14px;font-style:italic;color:#555;margin-bottom:5mm}
-.school-name{font-size:30px;font-style:italic;font-weight:600;color:#1a1a1a;margin-bottom:6mm}
-.detail-line{font-size:13px;color:#444;margin-bottom:4px}
-.label{color:#888}
-.score-wrap{font-size:13px;color:#444;margin-bottom:8mm;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.score-badge{color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:3px 12px;border-radius:5px;font-weight:700;font-size:13px;display:inline-block}
-.date-line{font-size:13px;color:#1a1a1a;margin-top:8mm}
-.areas-block{width:62mm;flex-shrink:0;border-left:3px solid #e5e7eb;padding-left:8mm;padding-top:2mm}
-.areas-heading{font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;font-family:Arial,sans-serif;margin-bottom:5mm}
-.areas-table{border-collapse:collapse;width:100%}
-.areas-table tr{border-bottom:1px solid #f0f0f0}
-.areas-table tr:last-child{border-bottom:none}
-.area-name{font-size:11px;color:#333;padding:3px 0}
-.area-score{font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;padding:3px 0;white-space:nowrap}
-.sig-section{display:flex;justify-content:flex-end;margin-top:10mm}
-.sig-block{text-align:left;min-width:52mm}
-.sig-rule{width:52mm;height:1px;background:#1a1a1a;margin-bottom:4px}
-.sig-name{font-size:12px;font-style:italic;color:#1a1a1a}
-.sig-role{font-size:10px;color:#888;margin-top:2px}
-.cert-ref{text-align:right;font-size:9px;color:#bbb;letter-spacing:1px;font-family:Arial,sans-serif;margin-top:auto;padding-top:8mm}
+html,body{
+  width:210mm;height:297mm;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.page{
+  width:210mm;height:297mm;
+  background:linear-gradient(145deg,#060A12 0%,#0D0A1A 50%,${accentColor}1A 100%);
+  padding:14mm 14mm 10mm;
+  display:flex;flex-direction:column;gap:8mm;
+  position:relative;overflow:hidden;
+}
+/* ambient glows */
+.page::before{
+  content:'';position:absolute;top:-40mm;right:-40mm;
+  width:120mm;height:120mm;border-radius:50%;
+  background:radial-gradient(circle,${accentColor}28 0%,transparent 70%);
+  pointer-events:none;
+}
+.page::after{
+  content:'';position:absolute;bottom:-30mm;left:-30mm;
+  width:100mm;height:100mm;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,250,0.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* top bar */
+.topbar{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.logo-img{height:48px;object-fit:contain;border-radius:8px;background:rgba(255,255,255,0.06);padding:4px;margin-right:8px}
+.tool-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  border:1.5px solid ${accentColor}88;
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:${accentColor};display:inline-block}
+
+/* body row */
+.body{display:flex;gap:8mm;flex:1;position:relative;z-index:1;align-items:flex-start}
+
+/* glass info panel */
+.info-panel{
+  flex:1;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.14);
+  border-top-color:rgba(255,255,255,0.22);
+  border-radius:16px;
+  padding:7mm 8mm;
+  position:relative;
+}
+.certifies{font-size:9px;font-weight:600;color:rgba(255,255,255,0.38);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.school-name{font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px}
+.tool-sub{font-size:11px;color:rgba(255,255,255,0.48);margin-bottom:6mm}
+.tool-sub strong{color:rgba(255,255,255,0.75);font-weight:600}
+.field-row{display:flex;gap:8px;margin-bottom:4px;align-items:baseline}
+.field-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:.12em;min-width:22mm}
+.field-value{font-size:11px;color:rgba(255,255,255,0.78);font-weight:500}
+.divider{height:1px;background:rgba(255,255,255,0.08);margin:5mm 0}
+.sig-rule{width:40mm;height:1px;background:rgba(255,255,255,0.25);margin-bottom:4px}
+.sig-name{font-size:11px;color:rgba(255,255,255,0.6);font-style:italic}
+.sig-role{font-size:8px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+/* right column */
+.right-col{display:flex;flex-direction:column;align-items:center;gap:5mm;width:48mm}
+.rating-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:5px 14px;border-radius:999px;width:100%;
+  background:rgba(255,255,255,0.08);
+  border:1.5px solid ${ratingColor}99;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:${ratingColor};
+}
+
+/* areas panel */
+.areas-panel{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-top-color:rgba(255,255,255,0.18);
+  border-radius:14px;
+  padding:5mm 5mm;
+  width:100%;
+}
+.areas-heading{font-size:8px;font-weight:700;color:rgba(255,255,255,0.32);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4mm}
+.area-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.area-row:last-child{border-bottom:none}
+.area-name{font-size:9px;color:rgba(255,255,255,0.65);flex:1;padding-right:4px}
+.area-score{font-size:9px;font-weight:700;color:${accentColor};white-space:nowrap}
+
+/* footer */
+.footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:4mm;position:relative;z-index:1}
+.footer-brand{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.12em;font-weight:600;text-transform:uppercase}
+.footer-ref{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.1em}
 </style></head><body>
 <div class="page">
-<div class="top-bar"><div>${logoHtml}</div>
-<div class="consultant-brand"><span class="consultant-name">Mathew Hewington</span><span class="consultant-title">Education Consultant</span></div></div>
-<div class="cert-body"><div class="cert-main">
-<p class="the-text">The</p>
-<p class="cert-title">${toolName}<br/>Assessment Certificate</p>
-<p class="completed-line">has been completed by</p>
-<p class="school-name">${meta.schoolName || "School Name"}</p>
-<p class="detail-line"><span class="label">Completed by: </span>${meta.staffMember || "—"}</p>
-<div class="score-wrap"><span class="label">Assessment score:</span><span class="score-badge">${score}% — ${rating}</span></div>
-<p class="date-line">${today}</p>
-</div>${areasHtml}</div>
-<div class="sig-section"><div class="sig-block"><div class="sig-rule"></div>
-<p class="sig-name">${meta.consultantName || "Mathew Hewington"}</p>
-<p class="sig-role">Education Consultant</p></div></div>
-<p class="cert-ref">${certId}</p>
-</div></body></html>`);
+  <div class="topbar">
+    <div style="display:flex;align-items:center">${logoHtml || '<div style="width:48px;height:48px"></div>'}</div>
+    <span class="tool-pill"><span class="dot"></span>${toolName} · Assessment Certificate</span>
+  </div>
+
+  <div class="body">
+    <div class="info-panel">
+      <p class="certifies">This is to certify that</p>
+      <p class="school-name">${meta.schoolName || "School Name"}</p>
+      <p class="tool-sub">has completed the <strong>${toolName}</strong></p>
+
+      <div class="field-row"><span class="field-label">Completed by</span><span class="field-value">${meta.staffMember || "—"}</span></div>
+      <div class="field-row"><span class="field-label">Consultant</span><span class="field-value">${meta.consultantName || "Mathew Hewington"}</span></div>
+      <div class="field-row"><span class="field-label">Date</span><span class="field-value">${today}</span></div>
+
+      <div class="divider"></div>
+      <div class="sig-rule"></div>
+      <p class="sig-name">${meta.consultantName || "Mathew Hewington"}</p>
+      <p class="sig-role">Education Consultant</p>
+    </div>
+
+    <div class="right-col">
+      ${gaugesvg}
+      <span class="rating-pill">${rating}</span>
+      ${areasRows ? `<div class="areas-panel"><p class="areas-heading">Areas assessed</p>${areasRows}</div>` : ""}
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-brand">SafeShield · Verified Assessment</span>
+    <span class="footer-ref">${certId}</span>
+  </div>
+</div>
+</body></html>`);
     w.document.close();
     setTimeout(() => w.print(), 600);
   }
