@@ -46,7 +46,7 @@ export default function Navbar() {
     router.push("/login");
   }
 
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
   const { iconUrl: logoUrl, saveIcon: saveLogo, clearIcon: clearLogo } = useToolIcon("safeshield-logo");
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -62,7 +62,7 @@ export default function Navbar() {
   }
 
   // Build visible tool links based on permissions
-  const hasAllAccess = isAdmin || enabledTools.includes("*");
+  const hasAllAccess = isAdmin;
   const toolLinks = ALL_TOOLS.filter(t =>
     hasAllAccess || enabledTools.includes(t.slug)
   ).map(t => ({ label: t.name.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", ""), href: `/tools/${t.slug}` }));
