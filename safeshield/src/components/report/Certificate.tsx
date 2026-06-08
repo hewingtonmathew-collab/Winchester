@@ -362,40 +362,40 @@ ${css}
             <div style={{ position: "absolute", top: 0, left: "15%", right: "15%", height: 1,
               background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)", borderRadius: 1 }} />
 
-            <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
               This is to certify that
             </p>
             <p style={{ fontSize: 26, fontWeight: 700, color: "#fff", marginBottom: 4, lineHeight: 1.2 }}>
               {meta.schoolName || "School Name"}
             </p>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 20 }}>
-              has completed the <span style={{ color: "rgba(255,255,255,0.8)", fontWeight: 600 }}>{toolName}</span>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", marginBottom: 20 }}>
+              has completed the <span style={{ color: "#fff", fontWeight: 600 }}>{toolName}</span>
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {meta.staffMember && (
                 <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Completed by</span>
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{meta.staffMember}</span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Completed by</span>
+                  <span style={{ fontSize: 13, color: "#fff", fontWeight: 500 }}>{meta.staffMember}</span>
                 </div>
               )}
               {(meta.consultantName) && (
                 <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Consultant</span>
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{meta.consultantName || "Mathew Hewington"}</span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Consultant</span>
+                  <span style={{ fontSize: 13, color: "#fff", fontWeight: 500 }}>{meta.consultantName || "Mathew Hewington"}</span>
                 </div>
               )}
               <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Date</span>
-                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{today}</span>
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", minWidth: 80 }}>Date</span>
+                <span style={{ fontSize: 13, color: "#fff", fontWeight: 500 }}>{today}</span>
               </div>
             </div>
 
             {/* Signature line */}
-            <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-              <div style={{ height: 1, width: 120, background: "rgba(255,255,255,0.25)", marginBottom: 6 }} />
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}>{meta.consultantName || "Mathew Hewington"}</p>
-              <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.08em" }}>Education Consultant</p>
+            <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+              <div style={{ height: 1, width: 120, background: "rgba(255,255,255,0.35)", marginBottom: 6 }} />
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontStyle: "italic" }}>{meta.consultantName || "Mathew Hewington"}</p>
+              <p style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.08em" }}>Education Consultant</p>
             </div>
           </div>
 
@@ -411,13 +411,13 @@ ${css}
             {/* Areas glass panel */}
             {areas && areas.length > 0 && (
               <div style={{ ...glassPanel, padding: "14px 16px", width: "100%", minWidth: 160 }}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>
                   Areas assessed
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {areas.slice(0, 7).map(a => (
                     <div key={a.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.65)", flex: 1, paddingRight: 8, lineHeight: 1.3 }}>{a.name}</span>
+                      <span style={{ fontSize: 11, color: "#fff", flex: 1, paddingRight: 8, lineHeight: 1.3 }}>{a.name}</span>
                       {a.score !== undefined && (
                         <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, whiteSpace: "nowrap" }}>{a.score}%</span>
                       )}
@@ -430,9 +430,9 @@ ${css}
         </div>
 
         {/* Bottom ref */}
-        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment</span>
-          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.1em" }}>{certId}</span>
+        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.12)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
+          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment</span>
+          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em" }}>{certId}</span>
         </div>
       </div>
 
