@@ -36,6 +36,7 @@ export default function DigitalStandardsPage() {
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
             <video
+              key={bannerUrl}
               src={bannerUrl}
               autoPlay
               muted

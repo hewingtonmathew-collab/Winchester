@@ -125,7 +125,8 @@ export default function HomePage() {
         {/* Background media */}
         {isVideo(bannerUrl) ? (
           <video
-            src={bannerUrl}
+            key={bannerUrl}
+              src={bannerUrl}
             autoPlay
             muted
             loop
