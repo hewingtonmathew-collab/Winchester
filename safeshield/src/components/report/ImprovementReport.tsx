@@ -627,82 +627,119 @@ ${css}
                 <button
                   onClick={async () => {
                     setGenerating(true);
+                    setConsultantNotes("");
                     try {
                       const high = gaps.filter(g => g.priority === "high");
                       const med = gaps.filter(g => g.priority === "medium");
                       const low = gaps.filter(g => g.priority === "low");
-                      const gapText = gaps.length > 0
-                        ? gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join("\n")
-                        : "No specific gaps were recorded for this assessment.";
 
-                      const toolFrameworks: Record<string, string> = {
-                        "Safeguarding Risk Checker": "KCSIE 2024 (https://www.gov.uk/government/publications/keeping-children-safe-in-education--2), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), UK Council for Internet Safety (https://www.gov.uk/government/organisations/uk-council-for-internet-safety)",
-                        "Governance Compliance Checker": "DfE Governance Handbook (https://www.gov.uk/government/publications/governance-handbook), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), Academy Trust Handbook (https://www.gov.uk/guidance/academy-trust-handbook)",
-                        "AI Readiness Assessment": "DfE Generative AI in Education (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), UK AI Safety Institute (https://www.gov.uk/government/organisations/ai-safety-institute), DfE Digital Strategy (https://www.gov.uk/government/publications/realising-the-potential-of-technology-in-education)",
-                        "DPIA Wizard": "UK GDPR (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/), ICO DPIA guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/), DfE Data Protection guidance (https://www.gov.uk/guidance/data-protection-in-schools)",
-                        "Web Accessibility Checker": "WCAG 2.2 (https://www.w3.org/TR/WCAG22/), Public Sector Bodies Accessibility Regulations 2018 (https://www.legislation.gov.uk/uksi/2018/952/contents), DfE accessibility guidance (https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps)",
-                        "Ofsted Ready Checker": "Ofsted EIF 2024 (https://www.gov.uk/government/publications/education-inspection-framework), Ofsted School Inspection Handbook (https://www.gov.uk/government/publications/school-inspection-handbook-eif), Ofsted myths (https://www.gov.uk/government/publications/ofsted-myths)",
-                        "AI Content Detector": "DfE Generative AI guidance (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), JCQ AI guidance (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/)",
-                        "Digital Standards Checker": "DfE Digital and Technology Standards (https://www.gov.uk/guidance/digital-and-technology-standards-for-schools-and-colleges), EdTech Strategy (https://www.gov.uk/government/publications/edtech-strategy), DfE broadband guidance (https://www.gov.uk/government/publications/school-network-infrastructure)",
-                        "Health & Safety Checker": "Health and Safety at Work Act 1974 (https://www.legislation.gov.uk/ukpga/1974/37), HSE School guidance (https://www.hse.gov.uk/services/education/index.htm), DfE Health and Safety guidance (https://www.gov.uk/government/publications/health-and-safety-advice-for-schools)",
+                      const toolFrameworks: Record<string, { frameworks: string; areas: string }> = {
+                        "Safeguarding Risk Checker": {
+                          frameworks: "KCSIE 2024 (https://www.gov.uk/government/publications/keeping-children-safe-in-education--2), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), UKCIS framework (https://www.gov.uk/government/organisations/uk-council-for-internet-safety), Prevent Duty guidance (https://www.gov.uk/government/publications/prevent-duty-guidance)",
+                          areas: "Online filtering & monitoring, Designated Safeguarding Lead (DSL) training, Acceptable Use Policies (AUPs), KCSIE-aligned curriculum delivery, governor oversight, staff training records, device & BYOD policies, online safety incident reporting",
+                        },
+                        "Governance Compliance Checker": {
+                          frameworks: "DfE Governance Handbook (https://www.gov.uk/government/publications/governance-handbook), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), Academy Trust Handbook (https://www.gov.uk/guidance/academy-trust-handbook), Charity Commission guidance (https://www.gov.uk/government/organisations/charity-commission)",
+                          areas: "Skills audit, committee structure, finance oversight, conflict of interest registers, governor training, strategic planning, headteacher performance management, stakeholder engagement",
+                        },
+                        "AI Readiness Assessment": {
+                          frameworks: "DfE Generative AI in Education (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), UK AI Safety Institute (https://www.gov.uk/government/organisations/ai-safety-institute), ICO AI guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/), JCQ AI malpractice (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/)",
+                          areas: "AI policy, staff AI literacy, student AI use guidelines, assessment integrity, data privacy with AI tools, AI procurement due diligence, ethical AI framework",
+                        },
+                        "DPIA Wizard": {
+                          frameworks: "UK GDPR Article 35 (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/), ICO DPIA guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/), DfE Data Protection (https://www.gov.uk/guidance/data-protection-in-schools), DSPT toolkit (https://www.dsptoolkit.nhs.uk/)",
+                          areas: "Data flows mapping, lawful basis, legitimate interests assessment, data minimisation, third-party processor agreements, subject access requests, data retention schedules, breach reporting",
+                        },
+                        "Web Accessibility Checker": {
+                          frameworks: "WCAG 2.2 AA (https://www.w3.org/TR/WCAG22/), Public Sector Bodies Accessibility Regulations 2018 (https://www.legislation.gov.uk/uksi/2018/952/contents), Equality Act 2010 (https://www.legislation.gov.uk/ukpga/2010/15), DfE accessibility (https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps)",
+                          areas: "Keyboard navigation, colour contrast ratios, alt text for images, ARIA labels, form accessibility, PDF accessibility, video captions, accessibility statement, mobile responsiveness, screen reader compatibility",
+                        },
+                        "Ofsted Ready Checker": {
+                          frameworks: "Ofsted EIF 2024 (https://www.gov.uk/government/publications/education-inspection-framework), School Inspection Handbook (https://www.gov.uk/government/publications/school-inspection-handbook-eif), Ofsted Parent View (https://parentview.ofsted.gov.uk/), Ofsted myths (https://www.gov.uk/government/publications/ofsted-myths)",
+                          areas: "Quality of education, curriculum intent/implementation/impact, behaviour and attitudes, personal development, leadership and management, SEND provision, safeguarding culture, staff workload",
+                        },
+                        "AI Content Detector": {
+                          frameworks: "DfE Generative AI guidance (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), JCQ AI malpractice guidance (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/), Ofsted assessment guidance (https://www.gov.uk/government/publications/education-inspection-framework)",
+                          areas: "AI detection policy, student declaration processes, assessment design to reduce AI dependency, staff training on AI-generated content, academic integrity policy",
+                        },
+                        "Digital Standards Checker": {
+                          frameworks: "DfE Digital & Technology Standards (https://www.gov.uk/guidance/digital-and-technology-standards-for-schools-and-colleges), EdTech Strategy (https://www.gov.uk/government/publications/edtech-strategy), DfE broadband/connectivity (https://www.gov.uk/government/publications/school-network-infrastructure), Cyber essentials (https://www.ncsc.gov.uk/cyberessentials/overview)",
+                          areas: "Network infrastructure, broadband speeds, device ratios, cyber security (NCSC Cyber Essentials), MIS systems, cloud strategy, staff digital skills, EdTech procurement, backup & recovery",
+                        },
+                        "Health & Safety Checker": {
+                          frameworks: "Health and Safety at Work Act 1974 (https://www.legislation.gov.uk/ukpga/1974/37), HSE Schools guidance (https://www.hse.gov.uk/services/education/index.htm), DfE H&S guidance (https://www.gov.uk/government/publications/health-and-safety-advice-for-schools), RIDDOR (https://www.hse.gov.uk/riddor/)",
+                          areas: "Risk assessment records, fire safety, first aid provision, RIDDOR reporting, lone working policy, contractor management, asbestos management, educational visits approvals, DfE indoor environment standards",
+                        },
                       };
-                      const frameworks = toolFrameworks[toolName] || "DfE guidance (https://www.gov.uk/government/organisations/department-for-education), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework)";
+
+                      const tf = toolFrameworks[toolName] || {
+                        frameworks: "DfE guidance (https://www.gov.uk/government/organisations/department-for-education), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework)",
+                        areas: "Compliance and quality standards relevant to UK schools",
+                      };
+
                       const consultantName = meta.consultantName || "your SafeShield consultant";
                       const consultantEmail = meta.consultantEmail || "info@safeshieldtools.co.uk";
                       const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
-                      const prompt = `You are ${consultantName}, a specialist SafeShield education consultant, writing a formal improvement report for a UK school following completion of a digital compliance assessment.
+                      const gapSection = gaps.length > 0
+                        ? `SPECIFIC GAPS IDENTIFIED IN THIS ASSESSMENT (${gaps.length} total):
+${gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join("\n")}`
+                        : `NOTE: Specific gap data was not recorded for this assessment (completed before gap tracking was enabled).
+Based on the score of ${score}% (${rating}), generate realistic improvement recommendations covering the typical weak areas for this tool at this score level. The typical assessment areas for ${toolName} include: ${tf.areas}`;
 
-ASSESSMENT DATA:
-- Tool: ${toolName}
+                      const prompt = `You are ${consultantName}, a specialist SafeShield education compliance consultant. Write a formal, detailed school improvement report for the headteacher of ${meta.schoolName || "this school"} based on their ${toolName} results.
+
+ASSESSMENT DETAILS:
 - School: ${meta.schoolName || "School"}
-- Staff completing: ${meta.staffMember || "N/A"}
+- Assessment: ${toolName}
 - Score: ${score}% — ${rating}
+- Staff member: ${meta.staffMember || "N/A"}
 - Date: ${date}
-- Total gaps: ${gaps.length} (${high.length} HIGH priority, ${med.length} MEDIUM priority, ${low.length} lower priority)
+- Priority breakdown: ${high.length} HIGH, ${med.length} MEDIUM, ${low.length} lower priority gaps
 
-SPECIFIC GAPS IDENTIFIED:
-${gapText}
+${gapSection}
 
-RELEVANT FRAMEWORKS & STANDARDS FOR THIS ASSESSMENT:
-${frameworks}
+RELEVANT UK FRAMEWORKS & OFFICIAL GUIDANCE:
+${tf.frameworks}
 
-Write a professional, detailed improvement report addressed to the headteacher. Structure it EXACTLY as follows:
+Write the full report using EXACTLY this structure. Be highly specific — reference the actual gaps or likely weak areas directly. Do not be generic.
 
 EXECUTIVE SUMMARY
-2-3 sentences summarising the assessment outcome, overall risk level, and urgency. Reference the score and rating directly.
+Write 3-4 sentences: state the score, rating, overall compliance level, and urgency. Be direct about risk to the school if gaps are not addressed.
 
-IMMEDIATE PRIORITY ACTIONS (HIGH PRIORITY GAPS)
-For EACH high priority gap listed above, write a dedicated subsection with:
-- The specific gap clearly stated
-- Exactly what needs to be done (concrete, actionable steps)
-- The specific UK framework, legislation or standard it must comply with (include the URL)
-- A realistic implementation timeline
+PRIORITY ACTIONS — IMMEDIATE (0–30 DAYS)
+For each HIGH priority gap (or the top 3 most critical areas if no gaps recorded): write a subsection with the gap name as a heading, specific actions the school must take, the exact UK legislation or standard breached with its URL, and a clear deadline.
 
-MEDIUM-TERM IMPROVEMENTS
-For EACH medium priority gap, write a concise action with the relevant standard/guidance URL.
+PRIORITY ACTIONS — MEDIUM TERM (1–3 TERMS)
+For each MEDIUM priority gap (or next 3 areas): concise actions with relevant standard/guidance URLs.
 
-COMPLIANCE STANDARDS & RESOURCES
-List 4-6 specific official URLs the school should bookmark and review, matched to their actual gaps.
+KEY COMPLIANCE RESOURCES
+List 5–7 official URLs the school must review, with a one-line description of each. Match them directly to the gaps or weak areas identified.
 
 RECOMMENDED NEXT STEPS
-Numbered list of 4-5 specific actions the school should take in the next 30 days.
+Numbered list of 5 concrete actions for the next 30 days. Be specific to this school and this assessment.
 
 BOOK A CONSULTANCY APPOINTMENT
-Write a professional call-to-action paragraph explaining that SafeShield consultants can provide hands-on support to implement these improvements, conduct on-site or virtual reviews, and provide tailored training for staff. Invite the school to contact ${consultantName} directly at ${consultantEmail} to arrange a free initial consultation. Mention that consultancy packages are available for schools at all stages of their compliance journey.
-
-IMPORTANT: Be highly specific to the actual gaps listed — do not write generic advice. Every action must link directly to one of the identified gaps. Include real URLs where specified.`;
-
+Write a compelling, professional paragraph. Explain that SafeShield provides hands-on consultancy to UK schools — including on-site compliance reviews, staff training workshops, policy audits, and Ofsted preparation support. State that ${consultantName} can work directly with the school to implement these improvements. Invite the headteacher to contact ${consultantEmail} to arrange a free 30-minute discovery call. End with: "Consultancy packages are tailored to your school's size, budget, and compliance priorities."`;
 
                       const res = await fetch("/api/chat", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
                       });
+                      if (!res.ok) {
+                        const err = await res.text();
+                        throw new Error(`API error ${res.status}: ${err}`);
+                      }
                       const json = await res.json();
-                      if (json.text) setConsultantNotes(json.text);
-                    } catch {
-                      setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps));
+                      if (json.text) {
+                        setConsultantNotes(json.text);
+                      } else {
+                        throw new Error("No text in response");
+                      }
+                    } catch (err) {
+                      console.error("Generate recommendations failed:", err);
+                      alert(`Could not generate recommendations: ${err instanceof Error ? err.message : "Unknown error"}. Please check ANTHROPIC_API_KEY is set in Vercel environment variables.`);
                     } finally {
                       setGenerating(false);
                     }
