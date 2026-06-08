@@ -26,10 +26,14 @@ export function useToolIcon(slug: string) {
 
   const saveIcon = useCallback(async (dataUrl: string) => {
     setIconUrl(dataUrl);
-    localStorage.setItem(LS_PREFIX + slug, dataUrl);
-    await supabase
+    try { localStorage.setItem(LS_PREFIX + slug, dataUrl); } catch {}
+    const { error } = await supabase
       .from("tool_settings")
       .upsert({ tool_slug: slug, icon_url: dataUrl, updated_at: new Date().toISOString() }, { onConflict: "tool_slug" });
+    if (error) {
+      console.error("Icon save failed:", error.message);
+      alert(`Icon could not be saved to the database: ${error.message}\n\nMake sure the tool_settings table has an icon_url column.`);
+    }
   }, [slug]);
 
   const clearIcon = useCallback(async () => {
