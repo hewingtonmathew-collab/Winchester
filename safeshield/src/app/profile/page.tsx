@@ -188,29 +188,16 @@ export default function ProfilePage() {
     try {
       const reader = new FileReader();
       reader.onload = async () => {
-        const base64 = reader.result as string;
-        // Convert base64 data URL to blob for upload
-        const res = await fetch(base64);
-        const blob = await res.blob();
-        const filePath = `avatars/${user.id}.jpg`;
-        const { error: uploadErr } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, blob, { upsert: true, contentType: "image/jpeg" });
-        if (uploadErr) {
-          console.error("[Avatar] upload error:", uploadErr);
-          setAvatarUploading(false);
-          return;
-        }
-        const { data: urlData } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(filePath);
-        const publicUrl = urlData?.publicUrl ?? null;
-        if (publicUrl) {
-          await supabase
-            .from("profiles")
-            .update({ avatar_url: publicUrl })
-            .eq("id", user.id);
-          setAvatarUrl(publicUrl);
+        const dataUrl = reader.result as string;
+        // Store base64 data URL directly in profiles table — no Storage bucket needed
+        const { error } = await supabase
+          .from("profiles")
+          .update({ avatar_url: dataUrl })
+          .eq("id", user.id);
+        if (error) {
+          console.error("[Avatar] save error:", error);
+        } else {
+          setAvatarUrl(dataUrl);
         }
         setAvatarUploading(false);
       };

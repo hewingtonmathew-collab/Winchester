@@ -3,6 +3,20 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 const DEFAULT_BANNER = "/banner-bg.mp4";
+const LS_KEY = (slug: string) => `safeshield_banner_${slug}`;
+
+function isVideo(url: string) {
+  return /\.(mp4|webm|mov|ogv)$/i.test(url) || url === DEFAULT_BANNER;
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
 
 export function useToolBanner(toolSlug: string) {
   const [bannerUrl, setBannerUrl] = useState<string>(DEFAULT_BANNER);
@@ -10,69 +24,62 @@ export function useToolBanner(toolSlug: string) {
 
   useEffect(() => {
     async function load() {
-      // Try Supabase tool_settings first
+      // 1. Try tool_settings table
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("tool_settings")
           .select("banner_url")
           .eq("tool_slug", toolSlug)
-          .single();
-        if (!error && data?.banner_url) {
+          .maybeSingle();
+        if (data?.banner_url) {
           setBannerUrl(data.banner_url);
           return;
         }
-      } catch {
-        // ignore
-      }
-      // Fall back to localStorage
+      } catch { /* ignore */ }
+
+      // 2. Fall back to localStorage (large data URLs stored here)
       if (typeof window !== "undefined") {
-        const stored = localStorage.getItem(`safeshield_banner_${toolSlug}`);
-        if (stored) {
-          setBannerUrl(stored);
-          return;
-        }
+        const stored = localStorage.getItem(LS_KEY(toolSlug));
+        if (stored) { setBannerUrl(stored); return; }
       }
-      // Fall back to default
+
       setBannerUrl(DEFAULT_BANNER);
     }
     load();
   }, [toolSlug]);
 
-  const uploadBanner = useCallback(
-    async (file: File) => {
-      setUploading(true);
+  const uploadBanner = useCallback(async (file: File): Promise<string> => {
+    setUploading(true);
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const isVid = file.type.startsWith("video/");
+
+      if (isVid) {
+        // Videos are too large for DB — store in localStorage only
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LS_KEY(toolSlug), dataUrl);
+        }
+        setBannerUrl(dataUrl);
+        return dataUrl;
+      }
+
+      // Images / GIFs — try to save to tool_settings, also localStorage
       try {
-        const ext = file.name.split(".").pop() ?? "mp4";
-        const path = `${toolSlug}/banner.${ext}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("banners")
-          .upload(path, file, { upsert: true, contentType: file.type });
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage.from("banners").getPublicUrl(path);
-        const publicUrl = urlData.publicUrl;
-
-        // Upsert to tool_settings
         await supabase.from("tool_settings").upsert(
-          { tool_slug: toolSlug, banner_url: publicUrl, updated_at: new Date().toISOString() },
+          { tool_slug: toolSlug, banner_url: dataUrl, updated_at: new Date().toISOString() },
           { onConflict: "tool_slug" }
         );
+      } catch { /* table may not exist yet — falls back to localStorage */ }
 
-        // Save to localStorage
-        if (typeof window !== "undefined") {
-          localStorage.setItem(`safeshield_banner_${toolSlug}`, publicUrl);
-        }
-
-        setBannerUrl(publicUrl);
-        return publicUrl;
-      } finally {
-        setUploading(false);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(LS_KEY(toolSlug), dataUrl);
       }
-    },
-    [toolSlug]
-  );
+      setBannerUrl(dataUrl);
+      return dataUrl;
+    } finally {
+      setUploading(false);
+    }
+  }, [toolSlug]);
 
-  return { bannerUrl, setBannerUrl, uploadBanner, uploading };
+  return { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading };
 }
