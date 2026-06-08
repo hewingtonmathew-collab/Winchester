@@ -54,7 +54,7 @@ export default function Navbar() {
   const allLinks = [...NAV_LINKS, ...toolLinks];
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--border)" }}>
+    <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--liquid-border)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2 shrink-0 mr-1">
           <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)]">
@@ -82,24 +82,20 @@ export default function Navbar() {
 
         <div className="flex items-center gap-1 shrink-0">
           <button onClick={toggleTheme}
-            className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
+            className="glass-btn w-8 h-8 flex items-center justify-center"
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-dim)" }} /> : <Moon size={14} style={{ color: "var(--text-dim)" }} />}
+            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-muted)" }} /> : <Moon size={14} style={{ color: "var(--text-muted)" }} />}
           </button>
 
           {(isAdmin || isOrgAdmin) && (
-            <Link href="/org"
-              className={`w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all ${path.startsWith("/org") ? "border border-[rgba(56,189,248,0.3)]" : ""}`}
-              title="Organisations">
-              <Building2 size={14} style={{ color: path.startsWith("/org") ? "#38BDF8" : "var(--text-dim)" }} />
+            <Link href="/org" className="glass-btn w-8 h-8 flex items-center justify-center" title="Organisations">
+              <Building2 size={14} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
 
           {isAdmin && (
-            <Link href="/admin"
-              className={`w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all ${path.startsWith("/admin") ? "border border-[rgba(56,189,248,0.3)]" : ""}`}
-              title="Admin Panel">
-              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "#38BDF8" : "var(--text-dim)" }} />
+            <Link href="/admin" className="glass-btn w-8 h-8 flex items-center justify-center" title="Admin Panel">
+              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
 

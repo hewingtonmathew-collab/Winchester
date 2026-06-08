@@ -15,10 +15,11 @@ export default function GlassCard({ children, className, hover, glow, shimmer }:
         "glass rounded-2xl p-6",
         hover && "glass-hover",
         shimmer && "glass-shimmer",
-        glow && "shadow-[0_0_48px_var(--accent-glow)]",
+        glow && "[box-shadow:var(--liquid-shadow),0_0_48px_var(--accent-glow)]",
         className
       )}
     >
+      {shimmer && <span className="shimmer-bar" aria-hidden />}
       {children}
     </div>
   );
