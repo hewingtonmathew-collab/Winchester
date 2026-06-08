@@ -145,32 +145,35 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 .footer span{color:#8A6420}
 .accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
 ` : `
-.page{background:linear-gradient(160deg,#FFFEF8 0%,#FFF8E8 60%,#FFF4D6 100%);border:1px solid #E8D5A0}
-.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1.5px solid #C49A3C88}
-.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid #C49A3C44}
-.consultant-name{color:#7C5A1A}
-.consultant-role{color:#9E7530}
-.tool-pill{background:#FFF8E6;border:1.5px solid #C49A3C;color:#7C5A1A}
-.certifies-label{color:#9E7530}
-.school-name{color:#3D2800}
-.completed-sub{color:#7C5A1A}
-.completed-sub strong{color:#3D2800}
+.page{background:#fff;border:1px solid #E8D5A0}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1.5px solid #C49A3C66}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid #C49A3C33}
+.consultant-name{color:#B8860B}
+.consultant-role{color:#C49A3C}
+.wordmark-safe{color:#C49A3C;font-weight:300}
+.wordmark-shield{color:#8A6420;font-weight:700}
+.wordmark-tag{color:#C49A3C}
+.tool-pill{background:#FFF8E6;border:1.5px solid #C49A3C;color:#8A6420}
+.certifies-label{color:#C49A3C;font-style:italic}
+.school-name{color:#7C5A1A}
+.completed-sub{color:#C49A3C;font-style:italic}
+.completed-sub strong{color:#8A6420;font-style:normal}
 .rating-pill{background:${ratingColor}12;border:1.5px solid ${ratingColor};color:${ratingColor}}
-.score-label{color:#9E7530}
-.details-panel{background:#FFFDF5;border:1px solid #E8D5A0}
-.field-label{color:#9E7530}
-.field-value{color:#3D2800}
-.areas-panel{background:#FFFDF5;border:1px solid #E8D5A0}
-.areas-heading{color:#9E7530}
+.score-label{color:#C49A3C}
+.details-panel{background:#FDFAF0;border:1px solid #E8D5A0}
+.field-label{color:#C49A3C}
+.field-value{color:#8A6420}
+.areas-panel{background:#FDFAF0;border:1px solid #E8D5A0}
+.areas-heading{color:#C49A3C}
 .area-cell{border-bottom:1px solid #EDE0B8}
-.area-name{color:#5C3F0A}
+.area-name{color:#8A6420}
 .area-score{color:#B8860B}
 .sig-rule{background:#C49A3C}
-.sig-name{color:#3D2800}
-.sig-role{color:#9E7530}
+.sig-name{color:#8A6420;font-style:italic}
+.sig-role{color:#C49A3C}
 .footer{border-top:1px solid #E8D5A0}
-.footer span{color:#9E7530}
-.accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
+.footer span{color:#C49A3C}
+.accent-rule{background:linear-gradient(90deg,transparent,#C49A3C,transparent)}
 `;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
@@ -185,9 +188,9 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
 .logo-img{height:52px;object-fit:contain;max-width:140px}
 .wordmark{font-family:system-ui,-apple-system,sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;line-height:1}
-.wordmark-safe{font-weight:300}
-.wordmark-shield{font-weight:700}
-.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px}
+.wordmark-safe{font-weight:300;color:#A07828}
+.wordmark-shield{font-weight:700;color:#D4A843}
+.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:#8A6420}
 .consultant{text-align:right;font-family:system-ui,-apple-system,sans-serif}
 .consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
 .consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
@@ -223,15 +226,27 @@ ${css}
   <div class="border-ring-inner"></div>
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="border-left:2px solid ${accentColor};padding-left:10px">
-        <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
-        <div class="wordmark-tag">Protect · Comply · Assure</div>
-      </div>
-      ${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : ""}
+      ${dark
+        ? `<div style="border-left:2px solid rgba(212,168,67,0.6);padding-left:10px">
+            <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+            <div class="wordmark-tag">Protect · Comply · Assure</div>
+           </div>
+           ${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : ""}`
+        : `${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : '<div style="width:8px"></div>'}`
+      }
     </div>
-    <div class="consultant">
-      <div class="consultant-name">${meta.consultantName || "Mathew Hewington"}</div>
-      <div class="consultant-role">Education Consultant</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      ${!dark
+        ? `<div style="border-right:2px solid #C49A3C;padding-right:10px;text-align:right">
+            <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+            <div class="wordmark-tag" style="text-align:right">Protect · Comply · Assure</div>
+           </div>`
+        : ""
+      }
+      <div class="consultant">
+        <div class="consultant-name">${meta.consultantName || "Mathew Hewington"}</div>
+        <div class="consultant-role">Education Consultant</div>
+      </div>
     </div>
   </div>
   <span class="tool-pill"><span class="pill-dot"></span>${toolName} · Assessment Certificate</span>
