@@ -13,14 +13,25 @@ const COLOR = "#A78BFA";
 const AREAS = ["Board structure & delegation", "Skills, membership & CPD", "Statutory policy compliance", "Website publication requirements", "Accountability & challenge", "Financial oversight", "Register of interests"];
 
 export default function GovernancePage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("governance");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("governance");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("governance-title", "Governance Compliance Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("governance-desc", "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

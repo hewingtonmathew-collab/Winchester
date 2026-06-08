@@ -26,14 +26,25 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function DigitalStandardsPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("digital-standards");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("digital-standards");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("digital-standards-title", "Digital & Technology Standards");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("digital-standards-desc", "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

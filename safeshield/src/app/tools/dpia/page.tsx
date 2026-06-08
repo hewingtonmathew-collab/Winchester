@@ -27,14 +27,25 @@ const TRIGGERS = [
 ];
 
 export default function DpiaPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("dpia");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("dpia");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("dpia-title", "DPIA Wizard");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("dpia-desc", "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

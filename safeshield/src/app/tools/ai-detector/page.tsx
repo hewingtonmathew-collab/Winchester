@@ -20,14 +20,25 @@ const SIGNALS: [string, string][] = [
 ];
 
 export default function AiDetectorPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ai-detector");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-detector");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

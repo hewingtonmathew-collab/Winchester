@@ -13,14 +13,25 @@ const COLOR = "#F472B6";
 const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("accessibility");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("accessibility");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

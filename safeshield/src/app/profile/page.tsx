@@ -56,7 +56,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading: bannerUploading } = useToolBanner("profile");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading: bannerUploading } = useToolBanner("profile");
   const [reports, setReports] = useState<Report[]>([]);
   const [org, setOrg] = useState<Organisation | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -299,7 +299,19 @@ export default function ProfilePage() {
         style={{ minHeight: 280 }}
       >
         {/* Background banner — video or image */}
-        {bannerUrl && (
+        {isVideo(bannerUrl) ? (
+          <video
+            key={bannerUrl}
+            src={bannerUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full"
+            style={{ objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+          />
+        ) : (
           <img
             src={bannerUrl}
             alt=""

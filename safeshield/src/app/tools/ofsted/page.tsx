@@ -19,14 +19,25 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function OfstedPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ofsted");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ofsted");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ofsted-title", "Ofsted Ready Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ofsted-desc", "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement before inspection.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""

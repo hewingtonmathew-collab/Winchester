@@ -13,14 +13,25 @@ const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
 
 export default function SafeguardingPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("safeguarding");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("safeguarding");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("safeguarding-title", "Safeguarding Risk Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("safeguarding-desc", "Answer 15 structured questions across key safeguarding areas to receive an instant risk rating and prioritised action list aligned to KCSIE expectations.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl && (
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
+            />
+          ) : (
             <img
               src={bannerUrl}
               alt=""
