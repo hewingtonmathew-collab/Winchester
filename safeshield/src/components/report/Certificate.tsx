@@ -401,13 +401,13 @@ ${css}
         {areas && areas.length > 0 && (
           <div style={{ ...glassPanel, padding: "16px 20px", marginBottom: 20, position: "relative", zIndex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
               <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(255,255,255,0.15), transparent)" }} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 20px" }}>
               {areas.slice(0, 8).map(a => (
                 <div key={a.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", lineHeight: 1.3 }}>{a.name}</span>
+                  <span style={{ fontSize: 11, color: "#fff", lineHeight: 1.3 }}>{a.name}</span>
                   {a.score !== undefined && (
                     <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, whiteSpace: "nowrap", paddingLeft: 8 }}>{a.score}%</span>
                   )}
@@ -421,15 +421,15 @@ ${css}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, position: "relative", zIndex: 1 }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ height: 1, width: 140, background: "rgba(255,255,255,0.30)", marginBottom: 6, marginLeft: "auto" }} />
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontStyle: "italic", margin: 0 }}>{meta.consultantName || "Mathew Hewington"}</p>
-            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Education Consultant</p>
+            <p style={{ fontSize: 13, color: "#fff", fontStyle: "italic", margin: 0 }}>{meta.consultantName || "Mathew Hewington"}</p>
+            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.70)", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Education Consultant</p>
           </div>
         </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
         <div style={{ paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
-          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.1em" }}>{certId}</span>
+          <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.70)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
+          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.70)", letterSpacing: "0.1em" }}>{certId}</span>
         </div>
       </div>
 

@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const GUIDANCE_LINKS: Record<string, { label: string; url: string }[]> = {
   "Online Filtering": [
@@ -257,9 +258,30 @@ export default function ImprovementReport({
   const [consultantNotes, setConsultantNotes] = useState("");
   const [expanded, setExpanded] = useState(true);
   const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
-  const { enabledTools } = useAuth();
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
+  const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
+  const { enabledTools, user } = useAuth();
   const isSuperAdmin = enabledTools.includes("*");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("org_members").select("org_id, school_id").eq("user_id", user.id).maybeSingle().then(({ data: membership }) => {
+      if (!membership) return;
+      if (membership.org_id) {
+        supabase.from("organisations").select("logo_url").eq("id", membership.org_id).single().then(({ data: org }) => {
+          if (org?.logo_url) setOrgLogoUrl(org.logo_url);
+        });
+      }
+      if (membership.school_id) {
+        supabase.from("schools").select("logo_url").eq("id", membership.school_id).single().then(({ data: school }) => {
+          if (school?.logo_url) setSchoolLogoUrl(school.logo_url);
+        });
+      }
+    });
+  }, [user]);
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
+  const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
   const highGaps = gaps.filter((g) => g.priority === "high");
   const medGaps = gaps.filter((g) => g.priority === "medium");
@@ -407,26 +429,26 @@ html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-co
 
     const css = dark ? `
 .page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}14 100%)}
-.report-tag{color:rgba(255,255,255,0.35)}
+.report-tag{color:rgba(255,255,255,0.65)}
 .report-title{color:#fff}
-.report-sub{color:rgba(255,255,255,0.4)}
-.consultant-name{color:rgba(255,255,255,0.75)}
-.consultant-role{color:rgba(255,255,255,0.3)}
+.report-sub{color:rgba(255,255,255,0.70)}
+.consultant-name{color:#fff}
+.consultant-role{color:rgba(255,255,255,0.65)}
 .accent-rule{background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent)}
 .meta-panel{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-top-color:rgba(255,255,255,0.20)}
-.meta-field label{color:rgba(255,255,255,0.28)}
-.meta-field span{color:rgba(255,255,255,0.78)}
-.section-heading{color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.07)}
-.summary-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.65)}
-.summary-panel strong{color:rgba(255,255,255,0.85)}
-.cat-label{color:rgba(255,255,255,0.35)}
+.meta-field label{color:rgba(255,255,255,0.65)}
+.meta-field span{color:#fff}
+.section-heading{color:rgba(255,255,255,0.70);border-bottom:1px solid rgba(255,255,255,0.12)}
+.summary-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.85)}
+.summary-panel strong{color:#fff}
+.cat-label{color:rgba(255,255,255,0.70)}
 .gap-row{background:rgba(255,255,255,0.04)}
-.gap-text{color:rgba(255,255,255,0.7)}
-.notes-panel{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);color:rgba(255,255,255,0.7)}
+.gap-text{color:rgba(255,255,255,0.85)}
+.notes-panel{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);color:rgba(255,255,255,0.85)}
 .steps-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09)}
-.step-text{color:rgba(255,255,255,0.65)}
-.footer{border-top:1px solid rgba(255,255,255,0.07)}
-.footer span{color:rgba(255,255,255,0.2)}
+.step-text{color:rgba(255,255,255,0.85)}
+.footer{border-top:1px solid rgba(255,255,255,0.12)}
+.footer span{color:rgba(255,255,255,0.65)}
 ` : `
 .page{background:#fff}
 .report-tag{color:#64748B}
@@ -494,6 +516,8 @@ ${css}
       <p class="report-sub">${today}</p>
     </div>
     <div class="header-right">
+      ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:48px;max-width:120px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
+      ${displayOrgLogo ? `<img src="${displayOrgLogo}" style="height:40px;max-width:110px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
       <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
       <p class="consultant-role">Education Consultant</p>
     </div>
@@ -583,16 +607,27 @@ ${css}
       {/* Header */}
       <div style={{ padding: "28px 28px 0", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-          <div>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.75)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
               School Improvement Report
             </p>
             <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 3 }}>{today}</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", marginTop: 3 }}>{today}</p>
+          </div>
+          {/* Logos */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 16 }}>
+            {displaySchoolLogo && (
+              <img src={displaySchoolLogo} alt="School logo"
+                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
+            )}
+            {displayOrgLogo && (
+              <img src={displayOrgLogo} alt="Org logo"
+                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
+            )}
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
-            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.75)", flexShrink: 0 }}>
+            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.85)", flexShrink: 0, marginLeft: 12 }}>
             {expanded ? <><ChevronUp size={14} /> Collapse</> : <><ChevronDown size={14} /> Expand</>}
           </button>
         </div>
@@ -613,7 +648,7 @@ ${css}
               { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
             ].map((item) => (
               <div key={item.label}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
+                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
                 {item.pill ? (
                   <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
                     fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
@@ -628,7 +663,7 @@ ${css}
 
           {/* Executive summary */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.80)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
               Executive Summary
             </p>
             <div style={{ ...glassPanel, padding: "14px 18px", fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}>
@@ -642,7 +677,7 @@ ${css}
 
           {/* Priority actions */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.80)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
               Priority Actions ({gaps.length})
             </p>
             {categories.length > 0 ? (
@@ -715,7 +750,7 @@ ${css}
 
           {/* Recommended next steps */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.80)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
               Recommended Next Steps
             </p>
             <div style={{ ...glassPanel, padding: "14px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
@@ -760,7 +795,7 @@ ${css}
             {(meta.schoolEmail || meta.consultantEmail) && (
               <button onClick={handleEmail}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
-                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 600 }}>
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 600 }}>
                 <Mail size={14} /> Email Report
               </button>
             )}
@@ -768,8 +803,8 @@ ${css}
 
           {/* Footer ref */}
           <div style={{ paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.10)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>{today}</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.70)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.70)", letterSpacing: "0.08em" }}>{today}</span>
           </div>
         </div>
       )}
