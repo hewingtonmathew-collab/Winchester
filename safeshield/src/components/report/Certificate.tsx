@@ -87,169 +87,228 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
 
-  /* ── PRINT — dark liquid glass A4 ───────────────────────────────────── */
+  /* ── PRINT — dark liquid glass A4 portrait certificate ──────────────── */
   function handlePrint() {
     const w = window.open("", "_blank");
     if (!w) return;
 
-    const C = 2 * Math.PI * 52;
-    const dash = (score / 100) * C;
+    const R = 70, C = 2 * Math.PI * R, dash = (score / 100) * C;
 
-    const gaugesvg = `<svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+    /* Large centred score gauge */
+    const gaugesvg = `<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="gt" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.07)"/>
+        <radialGradient id="gd" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
           <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
         </radialGradient>
-        <filter id="gg"><feGaussianBlur stdDeviation="3" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+        <filter id="gf"><feGaussianBlur stdDeviation="4" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
       </defs>
-      <circle cx="65" cy="65" r="60" fill="url(#gt)"/>
-      <circle cx="65" cy="65" r="60" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
-      <circle cx="65" cy="65" r="52" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 65 65)"/>
-      <circle cx="65" cy="65" r="52" fill="none" stroke="${accentColor}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 65 65)" filter="url(#gg)"/>
-      <circle cx="65" cy="65" r="52" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="2" stroke-linecap="round" stroke-dasharray="${dash * 0.3} ${C}" transform="rotate(-90 65 65)"/>
-      <text x="65" y="60" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="26" font-weight="700" font-family="system-ui,sans-serif" letter-spacing="-1">${score}</text>
-      <text x="65" y="79" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-family="system-ui,sans-serif" letter-spacing="2">SCORE</text>
+      <circle cx="90" cy="90" r="85" fill="url(#gd)"/>
+      <circle cx="90" cy="90" r="85" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 90 90)"/>
+      <circle cx="90" cy="90" r="${R}" fill="none" stroke="${accentColor}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 90 90)" filter="url(#gf)"/>
+      <circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${dash * 0.28} ${C}" transform="rotate(-90 90 90)"/>
+      <text x="90" y="83" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="38" font-weight="700" font-family="system-ui,sans-serif" letter-spacing="-2">${score}%</text>
+      <text x="90" y="106" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.45)" font-size="12" font-family="system-ui,sans-serif" letter-spacing="3">SCORE</text>
     </svg>`;
 
-    const areasRows = areas && areas.length > 0
-      ? areas.slice(0, 8).map(a => `
-          <div class="area-row">
+    const areasHtml = areas && areas.length > 0
+      ? `<div class="areas-grid">${areas.slice(0, 8).map(a => `
+          <div class="area-cell">
             <span class="area-name">${a.name}</span>
             ${a.score !== undefined ? `<span class="area-score">${a.score}%</span>` : ""}
-          </div>`).join("")
+          </div>`).join("")}</div>`
       : "";
 
-    const logoHtml = [
-      displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "",
-      displayOrgLogo   ? `<img src="${displayOrgLogo}"   class="logo-img"/>` : "",
-    ].join("");
+    const logoLeft  = displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "";
+    const logoRight = displayOrgLogo    ? `<img src="${displayOrgLogo}" class="logo-img"/>` : "";
 
     w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>Certificate — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 @page{size:A4 portrait;margin:0}
-html,body{
-  width:210mm;height:297mm;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact;
-  font-family:system-ui,-apple-system,sans-serif;
-}
+html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
 .page{
   width:210mm;height:297mm;
-  background:linear-gradient(145deg,#060A12 0%,#0D0A1A 50%,${accentColor}1A 100%);
-  padding:14mm 14mm 10mm;
-  display:flex;flex-direction:column;gap:8mm;
+  background:linear-gradient(160deg,#060A12 0%,#0C0A1C 55%,${accentColor}18 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:12mm 16mm 10mm;
   position:relative;overflow:hidden;
 }
-/* ambient glows */
-.page::before{
-  content:'';position:absolute;top:-40mm;right:-40mm;
-  width:120mm;height:120mm;border-radius:50%;
-  background:radial-gradient(circle,${accentColor}28 0%,transparent 70%);
-  pointer-events:none;
+/* ambient blobs */
+.blob-tr{position:absolute;top:-50mm;right:-50mm;width:150mm;height:150mm;border-radius:50%;
+  background:radial-gradient(circle,${accentColor}30 0%,transparent 68%);pointer-events:none}
+.blob-bl{position:absolute;bottom:-40mm;left:-40mm;width:120mm;height:120mm;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,250,0.20) 0%,transparent 68%);pointer-events:none}
+.blob-br{position:absolute;bottom:20mm;right:-30mm;width:90mm;height:90mm;border-radius:50%;
+  background:radial-gradient(circle,${accentColor}18 0%,transparent 68%);pointer-events:none}
+
+/* decorative border ring */
+.border-ring{
+  position:absolute;inset:6mm;border-radius:18px;pointer-events:none;
+  border:1px solid rgba(255,255,255,0.07);
 }
-.page::after{
-  content:'';position:absolute;bottom:-30mm;left:-30mm;
-  width:100mm;height:100mm;border-radius:50%;
-  background:radial-gradient(circle,rgba(167,139,250,0.18) 0%,transparent 70%);
-  pointer-events:none;
+.border-ring-inner{
+  position:absolute;inset:8mm;border-radius:14px;pointer-events:none;
+  border:1px solid rgba(255,255,255,0.04);
 }
 
 /* top bar */
-.topbar{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
-.logo-img{height:48px;object-fit:contain;border-radius:8px;background:rgba(255,255,255,0.06);padding:4px;margin-right:8px}
+.topbar{
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  position:relative;z-index:2;margin-bottom:6mm;
+}
+.logo-img{height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.06);padding:5px}
+.consultant{text-align:right}
+.consultant-name{font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);letter-spacing:.01em}
+.consultant-role{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+
+/* tool pill */
 .tool-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 14px;border-radius:999px;
-  background:rgba(255,255,255,0.08);
-  border:1.5px solid ${accentColor}88;
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;
-}
-.dot{width:6px;height:6px;border-radius:50%;background:${accentColor};display:inline-block}
-
-/* body row */
-.body{display:flex;gap:8mm;flex:1;position:relative;z-index:1;align-items:flex-start}
-
-/* glass info panel */
-.info-panel{
-  flex:1;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 20px;border-radius:999px;
   background:rgba(255,255,255,0.07);
-  border:1px solid rgba(255,255,255,0.14);
-  border-top-color:rgba(255,255,255,0.22);
-  border-radius:16px;
-  padding:7mm 8mm;
-  position:relative;
+  border:1.5px solid ${accentColor}70;
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.85);
+  margin-bottom:8mm;position:relative;z-index:2;
 }
-.certifies{font-size:9px;font-weight:600;color:rgba(255,255,255,0.38);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
-.school-name{font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px}
-.tool-sub{font-size:11px;color:rgba(255,255,255,0.48);margin-bottom:6mm}
-.tool-sub strong{color:rgba(255,255,255,0.75);font-weight:600}
-.field-row{display:flex;gap:8px;margin-bottom:4px;align-items:baseline}
-.field-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:.12em;min-width:22mm}
-.field-value{font-size:11px;color:rgba(255,255,255,0.78);font-weight:500}
-.divider{height:1px;background:rgba(255,255,255,0.08);margin:5mm 0}
-.sig-rule{width:40mm;height:1px;background:rgba(255,255,255,0.25);margin-bottom:4px}
-.sig-name{font-size:11px;color:rgba(255,255,255,0.6);font-style:italic}
-.sig-role{font-size:8px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.pill-dot{width:7px;height:7px;border-radius:50%;background:${accentColor};box-shadow:0 0 8px ${accentColor}}
 
-/* right column */
-.right-col{display:flex;flex-direction:column;align-items:center;gap:5mm;width:48mm}
+/* certifies block */
+.certifies-label{
+  font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);
+  letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:5mm;position:relative;z-index:2;text-align:center;
+}
+.school-name{
+  font-size:34px;font-weight:700;color:#fff;text-align:center;
+  line-height:1.15;margin-bottom:3mm;position:relative;z-index:2;
+  text-shadow:0 0 40px ${accentColor}44;
+}
+.completed-sub{
+  font-size:13px;color:rgba(255,255,255,0.45);text-align:center;
+  margin-bottom:8mm;position:relative;z-index:2;
+}
+.completed-sub strong{color:rgba(255,255,255,0.72);font-weight:600}
+
+/* accent rule */
+.accent-rule{
+  width:60mm;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,${accentColor},transparent);
+  margin:0 auto 8mm;position:relative;z-index:2;
+}
+
+/* gauge row */
+.gauge-row{
+  display:flex;align-items:center;gap:10mm;
+  margin-bottom:8mm;position:relative;z-index:2;
+}
 .rating-pill{
   display:inline-flex;align-items:center;justify-content:center;
-  padding:5px 14px;border-radius:999px;width:100%;
-  background:rgba(255,255,255,0.08);
+  padding:8px 22px;border-radius:999px;
+  background:rgba(255,255,255,0.07);
   border:1.5px solid ${ratingColor}99;
-  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:${ratingColor};
+  font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:${ratingColor};text-shadow:0 0 12px ${ratingColor}66;
 }
 
-/* areas panel */
-.areas-panel{
+/* details glass panel */
+.details-panel{
+  width:140mm;
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
-  border-top-color:rgba(255,255,255,0.18);
-  border-radius:14px;
-  padding:5mm 5mm;
-  width:100%;
+  border-top-color:rgba(255,255,255,0.20);
+  border-radius:16px;padding:6mm 8mm;
+  position:relative;z-index:2;margin-bottom:6mm;
 }
-.areas-heading{font-size:8px;font-weight:700;color:rgba(255,255,255,0.32);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4mm}
-.area-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-.area-row:last-child{border-bottom:none}
-.area-name{font-size:9px;color:rgba(255,255,255,0.65);flex:1;padding-right:4px}
+.field-row{display:flex;gap:10px;margin-bottom:5px;align-items:baseline}
+.field-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.14em;min-width:26mm}
+.field-value{font-size:12px;color:rgba(255,255,255,0.78);font-weight:500}
+
+/* areas grid */
+.areas-panel{
+  width:140mm;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.10);
+  border-top-color:rgba(255,255,255,0.16);
+  border-radius:14px;padding:5mm 7mm;
+  position:relative;z-index:2;margin-bottom:6mm;
+}
+.areas-heading{font-size:8px;font-weight:700;color:rgba(255,255,255,0.28);letter-spacing:.16em;text-transform:uppercase;margin-bottom:4mm;text-align:center}
+.areas-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 8mm}
+.area-cell{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.area-name{font-size:9px;color:rgba(255,255,255,0.6);flex:1;padding-right:6px}
 .area-score{font-size:9px;font-weight:700;color:${accentColor};white-space:nowrap}
 
+/* signature */
+.sig-row{
+  width:140mm;display:flex;justify-content:flex-end;
+  position:relative;z-index:2;margin-bottom:auto;
+}
+.sig-block{text-align:left}
+.sig-rule{width:46mm;height:1px;background:rgba(255,255,255,0.22);margin-bottom:5px}
+.sig-name{font-size:12px;color:rgba(255,255,255,0.6);font-style:italic}
+.sig-role{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+
 /* footer */
-.footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:4mm;position:relative;z-index:1}
-.footer-brand{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.12em;font-weight:600;text-transform:uppercase}
+.footer{
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid rgba(255,255,255,0.07);padding-top:4mm;
+  position:relative;z-index:2;margin-top:4mm;
+}
+.footer-brand{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.14em;font-weight:700;text-transform:uppercase}
 .footer-ref{font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:.1em}
 </style></head><body>
 <div class="page">
+  <div class="blob-tr"></div>
+  <div class="blob-bl"></div>
+  <div class="blob-br"></div>
+  <div class="border-ring"></div>
+  <div class="border-ring-inner"></div>
+
+  <!-- top bar: logos left, consultant right -->
   <div class="topbar">
-    <div style="display:flex;align-items:center">${logoHtml || '<div style="width:48px;height:48px"></div>'}</div>
-    <span class="tool-pill"><span class="dot"></span>${toolName} · Assessment Certificate</span>
+    <div style="display:flex;align-items:center;gap:8px">${logoLeft || '<div style="width:52px"></div>'}</div>
+    <div class="consultant">
+      <div class="consultant-name">${meta.consultantName || "Mathew Hewington"}</div>
+      <div class="consultant-role">Education Consultant</div>
+    </div>
   </div>
 
-  <div class="body">
-    <div class="info-panel">
-      <p class="certifies">This is to certify that</p>
-      <p class="school-name">${meta.schoolName || "School Name"}</p>
-      <p class="tool-sub">has completed the <strong>${toolName}</strong></p>
+  <!-- tool pill -->
+  <span class="tool-pill"><span class="pill-dot"></span>${toolName} · Assessment Certificate</span>
 
-      <div class="field-row"><span class="field-label">Completed by</span><span class="field-value">${meta.staffMember || "—"}</span></div>
-      <div class="field-row"><span class="field-label">Consultant</span><span class="field-value">${meta.consultantName || "Mathew Hewington"}</span></div>
-      <div class="field-row"><span class="field-label">Date</span><span class="field-value">${today}</span></div>
+  <!-- certifies -->
+  <p class="certifies-label">This is to certify that</p>
+  <p class="school-name">${meta.schoolName || "School Name"}</p>
+  <p class="completed-sub">has successfully completed the <strong>${toolName}</strong></p>
+  <div class="accent-rule"></div>
 
-      <div class="divider"></div>
+  <!-- gauge + rating -->
+  <div class="gauge-row">
+    ${gaugesvg}
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      <span class="rating-pill">${rating}</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:.06em">Assessment Score</span>
+    </div>
+  </div>
+
+  <!-- details -->
+  <div class="details-panel">
+    ${meta.staffMember ? `<div class="field-row"><span class="field-label">Completed by</span><span class="field-value">${meta.staffMember}</span></div>` : ""}
+    <div class="field-row"><span class="field-label">Date</span><span class="field-value">${today}</span></div>
+    ${logoRight ? `<div class="field-row"><span class="field-label">Organisation</span><div style="display:flex;align-items:center;gap:6px"><img src="${logoRight.match(/src="([^"]+)"/)?.[1] || ""}" style="height:22px;object-fit:contain;border-radius:4px;background:rgba(255,255,255,0.06);padding:2px"/></div></div>` : ""}
+  </div>
+
+  ${areasHtml ? `<div class="areas-panel"><p class="areas-heading">Areas Assessed</p>${areasHtml}</div>` : ""}
+
+  <!-- signature -->
+  <div class="sig-row">
+    <div class="sig-block">
       <div class="sig-rule"></div>
       <p class="sig-name">${meta.consultantName || "Mathew Hewington"}</p>
       <p class="sig-role">Education Consultant</p>
-    </div>
-
-    <div class="right-col">
-      ${gaugesvg}
-      <span class="rating-pill">${rating}</span>
-      ${areasRows ? `<div class="areas-panel"><p class="areas-heading">Areas assessed</p>${areasRows}</div>` : ""}
     </div>
   </div>
 
