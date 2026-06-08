@@ -4,7 +4,6 @@ import DigitalStandardsChecker from "@/components/forms/DigitalStandardsChecker"
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDigitalStandards } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
-import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -27,30 +26,19 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function DigitalStandardsPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("digital-standards");
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("digital-standards");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("digital-standards-title", "Digital & Technology Standards");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("digital-standards-desc", "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
+        {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+          {bannerUrl && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
             />
           )}
           <BannerUploadButton toolSlug="digital-standards" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
@@ -81,14 +69,7 @@ export default function DigitalStandardsPage() {
               <DigitalStandardsChecker />
             </div>
             <div className="flex flex-col gap-4">
-              <SidebarVideoCard
-                toolSlug="digital-standards"
-                color={COLOR}
-                defaultTitle="Watch: DfE Digital Standards"
-                defaultDescription="An overview of the DfE digital and technology standards for schools and what compliance requires."
-              />
-
-              <GlassCard>
+<GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">
                   {ASSESSMENT_AREAS.map(([label, dotColor]) => (

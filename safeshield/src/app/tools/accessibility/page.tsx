@@ -4,7 +4,6 @@ import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAccessibility } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
-import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -14,30 +13,19 @@ const COLOR = "#F472B6";
 const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("accessibility");
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("accessibility");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
+        {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+          {bannerUrl && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
             />
           )}
           <BannerUploadButton toolSlug="accessibility" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
@@ -68,14 +56,7 @@ export default function AccessibilityPage() {
               <AccessibilityChecker />
             </div>
             <div className="flex flex-col gap-4">
-              <SidebarVideoCard
-                toolSlug="accessibility"
-                color={COLOR}
-                defaultTitle="Watch: Website Accessibility"
-                defaultDescription="What the Public Sector Bodies Accessibility Regulations require from schools and how to comply."
-              />
-
-              <GlassCard>
+<GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
                 <ul className="flex flex-col gap-2">
                   {AREAS.map((a) => (

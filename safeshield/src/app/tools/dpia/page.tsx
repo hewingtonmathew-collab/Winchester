@@ -4,7 +4,6 @@ import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDPIA } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
-import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -28,30 +27,19 @@ const TRIGGERS = [
 ];
 
 export default function DpiaPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("dpia");
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("dpia");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("dpia-title", "DPIA Wizard");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("dpia-desc", "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
+        {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+          {bannerUrl && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
             />
           )}
           <BannerUploadButton toolSlug="dpia" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
@@ -82,14 +70,7 @@ export default function DpiaPage() {
               <DpiaWizard />
             </div>
             <div className="flex flex-col gap-4">
-              <SidebarVideoCard
-                toolSlug="dpia"
-                color={COLOR}
-                defaultTitle="Watch: What is a DPIA?"
-                defaultDescription="When a DPIA is legally required, how to complete one, and what the ICO expects from schools."
-              />
-
-              <GlassCard>
+<GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>6 Guided Steps</h2>
                 <ol className="flex flex-col gap-2">
                   {STEPS.map((step, i) => (

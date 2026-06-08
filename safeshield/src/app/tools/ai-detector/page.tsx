@@ -4,7 +4,6 @@ import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAIDetector } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
-import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -21,30 +20,19 @@ const SIGNALS: [string, string][] = [
 ];
 
 export default function AiDetectorPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-detector");
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ai-detector");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
+        {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+          {bannerUrl && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
             />
           )}
           <BannerUploadButton toolSlug="ai-detector" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
@@ -75,14 +63,7 @@ export default function AiDetectorPage() {
               <DetectorForm />
             </div>
             <div className="flex flex-col gap-4">
-              <SidebarVideoCard
-                toolSlug="ai-detector"
-                color={COLOR}
-                defaultTitle="Watch: AI Detection Explained"
-                defaultDescription="How statistical signals can indicate AI-generated content and the limitations of automated detection."
-              />
-
-              <GlassCard>
+<GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>How It Works</h2>
                 <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-muted)" }}>Six statistical signals are scored and combined into a 0&ndash;100 AI likelihood score.</p>
                 <ol className="flex flex-col gap-3">
