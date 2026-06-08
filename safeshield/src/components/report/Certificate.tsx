@@ -188,9 +188,9 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
 .logo-img{height:52px;object-fit:contain;max-width:140px}
 .wordmark{font-family:system-ui,-apple-system,sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;line-height:1}
-.wordmark-safe{font-weight:300;color:#A07828}
-.wordmark-shield{font-weight:700;color:#D4A843}
-.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:#8A6420}
+.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#C49A3C"}}
+.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#8A6420"}}
+.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:${dark ? "rgba(255,255,255,0.4)" : "#C49A3C"}}
 .consultant{text-align:right;font-family:system-ui,-apple-system,sans-serif}
 .consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
 .consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
@@ -227,12 +227,12 @@ ${css}
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
       ${dark
-        ? `<div style="border-left:2px solid rgba(212,168,67,0.6);padding-left:10px">
+        ? `<div style="border-left:2px solid rgba(255,255,255,0.35);padding-left:10px">
             <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
             <div class="wordmark-tag">Protect · Comply · Assure</div>
            </div>
-           ${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : ""}`
-        : `${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : '<div style="width:8px"></div>'}`
+           ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:44px;max-width:130px;object-fit:contain"/>` : ""}`
+        : `${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:44px;max-width:130px;object-fit:contain"/>` : '<div style="width:8px"></div>'}`
       }
     </div>
     <div style="display:flex;align-items:center;gap:12px">
@@ -377,17 +377,17 @@ ${css}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: 10 }}>
               <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase" as const, lineHeight: 1 }}>
-                <span style={{ fontWeight: 300, color: "#A07828" }}>SAFE</span><span style={{ fontWeight: 700, color: "#D4A843" }}>SHIELD</span>
+                <span style={{ fontWeight: 300, color: "rgba(255,255,255,0.6)" }}>SAFE</span><span style={{ fontWeight: 700, color: "#fff" }}>SHIELD</span>
               </div>
-              <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "#8A6420", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
+              <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
             </div>
             {displaySchoolLogo && (
               <img src={displaySchoolLogo} alt="School logo"
-                style={{ height: 40, objectFit: "contain", borderRadius: 8, maxWidth: 120 }} />
+                style={{ height: 44, objectFit: "contain", maxWidth: 130 }} />
             )}
             {displayOrgLogo && (
               <img src={displayOrgLogo} alt="Org logo"
-                style={{ height: 40, objectFit: "contain", borderRadius: 8, maxWidth: 120 }} />
+                style={{ height: 44, objectFit: "contain", maxWidth: 130 }} />
             )}
           </div>
           {/* Tool name iridescent pill */}

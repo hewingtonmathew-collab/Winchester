@@ -482,9 +482,9 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
 .report-sub{font-size:11px;margin-top:4px}
 .header-right{text-align:right}
 .wordmark{font-size:12px;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:3px}
-.wordmark-safe{font-weight:300}
-.wordmark-shield{font-weight:700}
-.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#C49A3C"}}
+.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#8A6420"}}
+.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;color:${dark ? "rgba(255,255,255,0.4)" : "#C49A3C"}}
 .consultant-name{font-size:13px;font-weight:600}
 .consultant-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 .accent-rule{height:2px;border-radius:2px;margin-bottom:7mm}
@@ -622,16 +622,24 @@ ${css}
             <p style={{ fontSize: 28, fontWeight: 600, color: "#E8EDF2", letterSpacing: "0.01em", lineHeight: 1.1, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{toolName}</p>
             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", marginTop: 3 }}>{today}</p>
           </div>
-          {/* Logos */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 16 }}>
-            {displaySchoolLogo && (
-              <img src={displaySchoolLogo} alt="School logo"
-                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
-            )}
-            {displayOrgLogo && (
-              <img src={displayOrgLogo} alt="Org logo"
-                style={{ height: 44, maxWidth: 110, objectFit: "contain" }} />
-            )}
+          {/* Logos + wordmark */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0, marginLeft: 16 }}>
+            <div style={{ borderRight: "2px solid rgba(255,255,255,0.25)", paddingRight: 10, textAlign: "right" }}>
+              <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" as const, lineHeight: 1 }}>
+                <span style={{ fontWeight: 300, color: "rgba(255,255,255,0.55)" }}>SAFE</span><span style={{ fontWeight: 700, color: "#fff" }}>SHIELD</span>
+              </div>
+              <div style={{ fontSize: 7, letterSpacing: "0.16em", color: "rgba(255,255,255,0.35)", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {displaySchoolLogo && (
+                <img src={displaySchoolLogo} alt="School logo"
+                  style={{ height: 44, maxWidth: 130, objectFit: "contain" }} />
+              )}
+              {displayOrgLogo && (
+                <img src={displayOrgLogo} alt="Org logo"
+                  style={{ height: 44, maxWidth: 130, objectFit: "contain" }} />
+              )}
+            </div>
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
