@@ -39,7 +39,7 @@ export default function BannerUploadButton({
   }
 
   return (
-    <div style={{ position: "absolute", top: 12, right: 12, zIndex: 10 }}>
+    <div style={{ position: "absolute", top: 12, right: 12, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
       <input
         ref={inputRef}
         type="file"
@@ -84,13 +84,36 @@ export default function BannerUploadButton({
             Uploading…
           </>
         ) : saved ? (
-          "Saved"
+          "✓ Saved"
         ) : (
           <>
             <span>&#128249;</span> Update Banner
           </>
         )}
       </button>
+
+      {/* Spec hint — only shown when not uploading/saved */}
+      {!uploading && !saved && (
+        <div
+          style={{
+            background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: 8,
+            padding: "6px 10px",
+            fontSize: 10,
+            lineHeight: 1.6,
+            color: "rgba(255,255,255,0.7)",
+            textAlign: "right",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ color: "#38BDF8", fontWeight: 700 }}>Video</span> MP4/WebM · 1920×400px · max 15 MB (stored locally)
+          <br />
+          <span style={{ color: "#A78BFA", fontWeight: 700 }}>Image/GIF</span> JPG/PNG/GIF · 1920×400px · max 2 MB
+        </div>
+      )}
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
