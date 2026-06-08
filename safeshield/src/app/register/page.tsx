@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import GlassCard from "@/components/ui/GlassCard";
 
+type Mode = "login" | "register";
 type OrgType = "la_school" | "single_school" | "mat";
 type Step = "credentials" | "org_type";
 
@@ -20,6 +21,7 @@ const ORG_TYPE_COLORS: Record<OrgType, string> = { la_school: "#38BDF8", single_
 export default function RegisterPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const [mode, setMode] = useState<Mode>("register");
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,11 +35,34 @@ export default function RegisterPage() {
 
   useEffect(() => { if (!loading && user) router.replace("/"); }, [user, loading, router]);
 
+  function resetForm() {
+    setEmail(""); setPassword(""); setFullName(""); setOrgName("");
+    setOrgType(null); setStep("credentials"); setError(""); setSuccess("");
+  }
+
+  async function handleForgotPassword() {
+    if (!email.trim()) { setError("Enter your email address first."); return; }
+    setError(""); setSuccess(""); setBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
+      if (error) throw error;
+      setSuccess("Password reset link sent. Check your email.");
+    } catch (err: unknown) { setError(err instanceof Error ? err.message : "Could not send reset email."); }
+    finally { setBusy(false); }
+  }
+
   async function handleCredentialsSubmit(e: React.FormEvent) {
     e.preventDefault(); setError("");
-    if (!fullName.trim()) { setError("Please enter your full name."); return; }
-    if (!orgName.trim()) { setError("Please enter your organisation name."); return; }
-    setStep("org_type");
+    if (mode === "login") {
+      setBusy(true);
+      try { const { error } = await supabase.auth.signInWithPassword({ email, password }); if (error) throw error; router.replace("/"); }
+      catch (err: unknown) { setError(err instanceof Error ? err.message : "Something went wrong"); }
+      finally { setBusy(false); }
+    } else {
+      if (!fullName.trim()) { setError("Please enter your full name."); return; }
+      if (!orgName.trim()) { setError("Please enter your organisation name."); return; }
+      setStep("org_type");
+    }
   }
 
   async function handleOrgTypeSubmit() {
@@ -55,12 +80,14 @@ export default function RegisterPage() {
       if (schoolError) throw schoolError;
       await supabase.from("org_members").insert({ user_id: userId, org_id: orgData.id, school_id: schoolData.id, role: "admin" });
       setSuccess("Account created! Pending admin approval — you'll be notified when access is granted.");
-      setTimeout(() => router.replace("/login"), 3000);
+      resetForm(); setMode("login");
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Something went wrong"); }
     finally { setBusy(false); }
   }
 
   if (loading) return null;
+
+  const inputCls = "input-glass pr-4";
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -73,26 +100,32 @@ export default function RegisterPage() {
           </div>
           <h1 className="heading-luxury text-2xl mb-1" style={{ color: "var(--text)" }}>SafeShield</h1>
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            {step === "credentials" ? "Request access" : "Tell us about your organisation"}
+            {mode === "login" ? "Sign in to your account" : step === "credentials" ? "Request access" : "Tell us about your organisation"}
           </p>
         </div>
 
         {/* Credentials form */}
-        {step === "credentials" && (
+        {(mode === "login" || step === "credentials") && (
           <GlassCard className="rise-in-1">
             <form onSubmit={handleCredentialsSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Full name</label>
-                <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Jane Smith" required className="input-glass" />
-              </div>
-              <div>
-                <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Organisation name</label>
-                <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="Maple Primary School" required className="input-glass" />
-              </div>
+              {mode === "register" && (
+                <>
+                  <div>
+                    <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Full name</label>
+                    <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Jane Smith" required className={inputCls} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Organisation name</label>
+                    <input type="text" value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="Maple Primary School" required className={inputCls} />
+                  </div>
+                </>
+              )}
+
               <div>
                 <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Email address</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@school.org" required className="input-glass" />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@school.org" required className={inputCls} />
               </div>
+
               <div>
                 <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Password</label>
                 <div className="relative">
@@ -105,19 +138,27 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {error && <p className="text-red-400 text-xs">{error}</p>}
+              {mode === "login" && (
+                <button type="button" onClick={handleForgotPassword} className="text-xs self-end -mt-1" style={{ color: "var(--accent)" }}>
+                  Forgot password?
+                </button>
+              )}
+
+              {error   && <p className="text-red-400 text-xs">{error}</p>}
+              {success && <p className="text-green-400 text-xs">{success}</p>}
 
               <button type="submit" disabled={busy}
                 className="w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 style={{ background: "rgba(56,189,248,0.14)", border: "1px solid rgba(56,189,248,0.3)", color: "var(--accent)" }}>
-                Continue
+                {busy && <Loader2 size={14} className="animate-spin" />}
+                {mode === "login" ? "Sign In" : "Continue"}
               </button>
             </form>
           </GlassCard>
         )}
 
         {/* Org type picker */}
-        {step === "org_type" && (
+        {mode === "register" && step === "org_type" && (
           <div className="flex flex-col gap-4 rise-in">
             {ORG_TYPE_OPTIONS.map(opt => {
               const selected = orgType === opt.value;
@@ -143,8 +184,7 @@ export default function RegisterPage() {
               );
             })}
 
-            {error   && <p className="text-red-400 text-xs">{error}</p>}
-            {success && <p className="text-green-400 text-xs">{success}</p>}
+            {error && <p className="text-red-400 text-xs">{error}</p>}
 
             <button type="button" onClick={handleOrgTypeSubmit} disabled={busy || !orgType}
               className="w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
@@ -161,9 +201,10 @@ export default function RegisterPage() {
         )}
 
         <p className="text-center text-xs mt-5" style={{ color: "var(--text-dim)" }}>
-          Already have an account?{" "}
-          <button onClick={() => router.push("/login")} className="font-medium" style={{ color: "var(--accent)" }}>
-            Sign in
+          {mode === "login" ? "Don't have an account? " : "Already have an account? "}
+          <button onClick={() => { resetForm(); setMode(mode === "login" ? "register" : "login"); }}
+            className="font-medium" style={{ color: "var(--accent)" }}>
+            {mode === "login" ? "Request access" : "Sign in"}
           </button>
         </p>
       </div>

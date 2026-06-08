@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Mail, Printer, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import React, { useState } from "react";
+import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 
@@ -257,6 +256,7 @@ export default function ImprovementReport({
 }: Props) {
   const [consultantNotes, setConsultantNotes] = useState("");
   const [expanded, setExpanded] = useState(true);
+  const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
   const { enabledTools } = useAuth();
   const isSuperAdmin = enabledTools.includes("*");
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -298,176 +298,481 @@ export default function ImprovementReport({
     window.location.href = `mailto:${recipients}?subject=${subject}&body=${buildEmailBody()}`;
   }
 
-  function handlePrint() {
-    const catSections = categories.map((cat) => {
-      const catGaps = gaps.filter((g) => g.category === cat);
-      return `
-        <div style="margin-bottom:16px">
-          <p style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:8px">${cat}</p>
-          ${catGaps.map((g) => `
-            <div style="padding:10px 12px;border-left:3px solid ${g.priority === "high" ? "#ef4444" : g.priority === "medium" ? "#f59e0b" : "#22c55e"};margin-bottom:8px;background:#f8fafc;border-radius:0 6px 6px 0">
-              <span style="font-size:9px;font-weight:700;color:${g.priority === "high" ? "#ef4444" : g.priority === "medium" ? "#f59e0b" : "#22c55e"};text-transform:uppercase">${g.priority} priority</span>
-              <p style="font-size:12px;color:#1e293b;margin-top:3px">${g.text}</p>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }).join("");
-
+  function handlePrintRecommendations() {
+    if (!consultantNotes.trim()) return;
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(`
-      <html><head><title>Improvement Report — ${toolName}</title>
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; color: #1e293b; padding: 20mm 24mm; font-size: 12px; }
-        h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-        h2 { font-size: 14px; font-weight: 700; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 2px; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
-        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 8px; }
-        .meta-item label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; display: block; margin-bottom: 2px; }
-        .score-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 14px; margin: 12px 0; }
-        .notes { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 14px; margin-top: 8px; white-space: pre-wrap; font-size: 12px; }
-        .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 9px; color: #94a3b8; display: flex; justify-content: space-between; }
-      </style>
-      </head><body>
-        <h1>${toolName}</h1>
-        <p style="color:#64748b;font-size:12px">School Improvement Report · ${today}</p>
-        <div class="meta-grid">
-          <div class="meta-item"><label>School / Trust</label><strong>${meta.schoolName}</strong></div>
-          <div class="meta-item"><label>Rating</label><strong style="color:${ratingColor};background:#000;border:2px solid ${ratingColor};padding:2px 10px;border-radius:4px;display:inline-block">${score}% — ${rating}</strong></div>
-          <div class="meta-item"><label>Staff Member</label>${meta.staffMember}</div>
-          <div class="meta-item"><label>Consultant</label>${meta.consultantName}, SafeShield</div>
-        </div>
+    const dark = printMode === "dark";
+    const bg = dark ? "linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,rgba(56,189,248,0.08) 100%)" : "#fff";
+    const textColor = dark ? "rgba(255,255,255,0.9)" : "#1E293B";
+    const mutedColor = dark ? "rgba(255,255,255,0.5)" : "#64748B";
+    const panelBg = dark ? "rgba(255,255,255,0.05)" : "#F8FAFC";
+    const panelBorder = dark ? "rgba(255,255,255,0.10)" : "#E2E8F0";
+    const footerColor = dark ? "rgba(255,255,255,0.25)" : "#94A3B8";
 
-        <h2>Executive Summary</h2>
-        <p>This report presents the findings from the ${toolName} completed on ${today} for ${meta.schoolName}. The assessment returned a score of <strong>${score}%</strong>, rated as <strong style="color:${ratingColor}">${rating}</strong>. ${gaps.length} area${gaps.length !== 1 ? "s" : ""} for improvement ${gaps.length !== 1 ? "were" : "was"} identified, of which ${highGaps.length} ${highGaps.length !== 1 ? "are" : "is"} high priority.</p>
+    // Format the plain text into paragraphs/sections
+    const formatted = consultantNotes
+      .split("\n")
+      .map(line => {
+        if (!line.trim()) return `<div style="height:8px"></div>`;
+        if (/^[A-Z][A-Z\s&()]+$/.test(line.trim()) && line.trim().length < 80) {
+          return `<p style="font-size:9px;font-weight:800;color:${accentColor};letter-spacing:0.18em;text-transform:uppercase;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid ${accentColor}40">${line.trim()}</p>`;
+        }
+        if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+          return `<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:${accentColor};flex-shrink:0">•</span><span style="font-size:12px;color:${textColor};line-height:1.6">${line.trim().replace(/^[•\-]\s*/, "")}</span></div>`;
+        }
+        if (/^\d+\./.test(line.trim())) {
+          const num = line.trim().match(/^(\d+)\./)?.[1];
+          const text = line.trim().replace(/^\d+\.\s*/, "");
+          return `<div style="display:flex;gap:8px;margin-bottom:4px;align-items:flex-start"><span style="flex-shrink:0;width:18px;height:18px;border-radius:50%;background:${accentColor};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#000">${num}</span><span style="font-size:12px;color:${textColor};line-height:1.6">${text}</span></div>`;
+        }
+        if (line.trim().startsWith("→")) {
+          return `<div style="margin-left:16px;margin-bottom:3px;font-size:11px;color:${mutedColor};line-height:1.5">${line.trim()}</div>`;
+        }
+        return `<p style="font-size:12px;color:${textColor};line-height:1.7;margin-bottom:4px">${line.trim()}</p>`;
+      })
+      .join("");
 
-        <h2>Priority Actions (${gaps.length})</h2>
-        ${catSections || "<p style='color:#64748b'>No gaps identified — excellent compliance.</p>"}
-
-        ${consultantNotes ? `<h2>Consultant Notes</h2><div class="notes">${consultantNotes}</div>` : ""}
-
-        <h2>Next Steps</h2>
-        <p>SafeShield recommends that ${meta.schoolName} addresses the high-priority actions within 30 days and schedules a follow-up review within 3 months. The consultant named above is available to provide targeted support across all identified areas.</p>
-
-        <div class="footer">
-          <span>Generated by SafeShield Tools · SafeShield</span>
-          <span>${today}</span>
-        </div>
-      </body></html>
-    `);
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Recommendations — ${toolName}</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4 portrait;margin:0}
+html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
+.page{width:210mm;min-height:297mm;background:${bg};padding:14mm 16mm 12mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm}
+.title-block p:first-child{font-size:9px;font-weight:700;color:${accentColor};letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.title-block p:last-child{font-size:24px;font-weight:700;color:${dark ? "#fff" : "#0F172A"};letter-spacing:-.3px}
+.right-block{text-align:right}
+.right-block p:first-child{font-size:12px;font-weight:600;color:${dark ? "rgba(255,255,255,0.8)" : "#1E293B"}}
+.right-block p:last-child{font-size:9px;color:${mutedColor};text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.rule{height:2px;border-radius:2px;background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.5),transparent);margin-bottom:6mm}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:3mm 8mm;padding:4mm 5mm;border-radius:12px;background:${panelBg};border:1px solid ${panelBorder};margin-bottom:6mm}
+.meta-field p:first-child{font-size:8px;font-weight:700;color:${mutedColor};text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px}
+.meta-field p:last-child{font-size:12px;color:${dark ? "#fff" : "#1E293B"};font-weight:500}
+.section-label{font-size:9px;font-weight:800;color:${accentColor};letter-spacing:.18em;text-transform:uppercase;margin-bottom:4mm;padding-bottom:3mm;border-bottom:1px solid ${accentColor}30}
+.content{font-size:12px;line-height:1.7}
+.footer{display:flex;justify-content:space-between;align-items:center;padding-top:4mm;margin-top:8mm;border-top:1px solid ${dark ? "rgba(255,255,255,0.07)" : "#E2E8F0"}}
+.footer span{font-size:8px;color:${footerColor};letter-spacing:.1em;text-transform:uppercase}
+</style></head><body>
+<div class="page">
+  <div class="header">
+    <div class="title-block">
+      <p>Consultant Recommendations</p>
+      <p>${toolName}</p>
+    </div>
+    <div class="right-block">
+      <p>${meta.consultantName || "Mathew Hewington"}</p>
+      <p>Education Consultant</p>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">
+    <div class="meta-field"><p>School / Trust</p><p>${meta.schoolName || "—"}</p></div>
+    <div class="meta-field"><p>Score</p><p style="color:${ratingColor};font-weight:700">${score}% — ${rating}</p></div>
+    <div class="meta-field"><p>Completed By</p><p>${meta.staffMember || "—"}</p></div>
+    <div class="meta-field"><p>Date</p><p>${today}</p></div>
+  </div>
+  <p class="section-label">Recommendations & Guidance</p>
+  <div class="content">${formatted}</div>
+  <div class="footer">
+    <span>SafeShield · Consultant Recommendations</span>
+    <span>${today}</span>
+  </div>
+</div>
+</body></html>`);
     w.document.close();
-    w.print();
+    setTimeout(() => w.print(), 400);
   }
 
+  function handlePrint() {
+    const w = window.open("", "_blank");
+    if (!w) return;
+
+    const dark = printMode === "dark";
+    const pc = (p: string) => p === "high" ? "#ef4444" : p === "medium" ? "#f59e0b" : "#22c55e";
+    const pl = (p: string) => p === "high" ? "High Priority" : p === "medium" ? "Medium Priority" : "Lower Priority";
+
+    const catSections = categories.map((cat) => {
+      const catGaps = gaps.filter((g) => g.category === cat);
+      return `<div class="cat-block">
+        <p class="cat-label">${cat}</p>
+        ${catGaps.map((g) => `
+          <div class="gap-row" style="border-left-color:${pc(g.priority)}">
+            <span class="gap-badge" style="color:${pc(g.priority)};border-color:${pc(g.priority)}55;background:${pc(g.priority)}18">${pl(g.priority)}</span>
+            <p class="gap-text">${g.text}</p>
+          </div>`).join("")}
+      </div>`;
+    }).join("");
+
+    const css = dark ? `
+.page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}14 100%)}
+.report-tag{color:rgba(255,255,255,0.35)}
+.report-title{color:#fff}
+.report-sub{color:rgba(255,255,255,0.4)}
+.consultant-name{color:rgba(255,255,255,0.75)}
+.consultant-role{color:rgba(255,255,255,0.3)}
+.accent-rule{background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent)}
+.meta-panel{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-top-color:rgba(255,255,255,0.20)}
+.meta-field label{color:rgba(255,255,255,0.28)}
+.meta-field span{color:rgba(255,255,255,0.78)}
+.section-heading{color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.07)}
+.summary-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.65)}
+.summary-panel strong{color:rgba(255,255,255,0.85)}
+.cat-label{color:rgba(255,255,255,0.35)}
+.gap-row{background:rgba(255,255,255,0.04)}
+.gap-text{color:rgba(255,255,255,0.7)}
+.notes-panel{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);color:rgba(255,255,255,0.7)}
+.steps-panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09)}
+.step-text{color:rgba(255,255,255,0.65)}
+.footer{border-top:1px solid rgba(255,255,255,0.07)}
+.footer span{color:rgba(255,255,255,0.2)}
+` : `
+.page{background:#fff}
+.report-tag{color:#64748B}
+.report-title{color:#0F172A}
+.report-sub{color:#64748B}
+.consultant-name{color:#1E293B}
+.consultant-role{color:#64748B}
+.accent-rule{background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.5),transparent)}
+.meta-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.meta-field label{color:#64748B}
+.meta-field span{color:#1E293B}
+.section-heading{color:#475569;border-bottom:1px solid #E2E8F0}
+.summary-panel{background:#F8FAFC;border:1px solid #E2E8F0;color:#334155}
+.summary-panel strong{color:#0F172A}
+.cat-label{color:#475569}
+.gap-row{background:#F8FAFC}
+.gap-text{color:#334155}
+.notes-panel{background:#FFFBEB;border:1px solid #FDE68A;color:#334155}
+.steps-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.step-text{color:#334155}
+.footer{border-top:1px solid #E2E8F0}
+.footer span{color:#94A3B8}
+`;
+
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Improvement Report — ${toolName}</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4 portrait;margin:0}
+html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
+.page{width:210mm;min-height:297mm;padding:12mm 14mm 12mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm}
+.report-tag{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
+.report-title{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.report-sub{font-size:11px;margin-top:4px}
+.header-right{text-align:right}
+.consultant-name{font-size:13px;font-weight:600}
+.consultant-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.accent-rule{height:2px;border-radius:2px;margin-bottom:7mm}
+.meta-panel{border-radius:14px;padding:5mm 6mm;margin-bottom:7mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm}
+.meta-field label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;display:block;margin-bottom:3px}
+.meta-field span{font-size:12px;font-weight:500}
+.score-pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;color:${ratingColor};background:${ratingColor}18;border:1.5px solid ${ratingColor}88}
+.section-heading{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4mm;padding-bottom:3mm}
+.summary-panel{border-radius:12px;padding:4mm 5mm;margin-bottom:7mm;font-size:11px;line-height:1.65}
+.cat-block{margin-bottom:6mm}
+.cat-label{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3mm}
+.gap-row{padding:8px 12px;border-left:3px solid;border-radius:0 10px 10px 0;margin-bottom:4px}
+.gap-badge{display:inline-block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:2px 8px;border-radius:999px;border:1px solid;margin-bottom:4px}
+.gap-text{font-size:11px;line-height:1.5}
+.notes-panel{border-radius:12px;padding:4mm 5mm;margin-bottom:7mm;margin-top:2mm;font-size:11px;line-height:1.6;white-space:pre-wrap}
+.steps-panel{border-radius:12px;padding:4mm 5mm;margin-bottom:7mm}
+.step-row{display:flex;gap:10px;margin-bottom:5px;align-items:flex-start}
+.step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000;background:${accentColor};flex-shrink:0;margin-top:1px}
+.step-text{font-size:11px;line-height:1.5}
+.footer{display:flex;justify-content:space-between;align-items:center;padding-top:4mm;margin-top:6mm}
+.footer span{font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+${css}
+</style></head><body>
+<div class="page">
+  <div class="header">
+    <div>
+      <p class="report-tag">School Improvement Report</p>
+      <p class="report-title">${toolName}</p>
+      <p class="report-sub">${today}</p>
+    </div>
+    <div class="header-right">
+      <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
+      <p class="consultant-role">Education Consultant</p>
+    </div>
+  </div>
+  <div class="accent-rule"></div>
+  <div class="meta-panel">
+    <div class="meta-field"><label>School / Trust</label><span>${meta.schoolName || "—"}</span></div>
+    <div class="meta-field"><label>Assessment Score</label><span class="score-pill">${score}% — ${rating}</span></div>
+    <div class="meta-field"><label>Completed By</label><span>${meta.staffMember || "—"}</span></div>
+    <div class="meta-field"><label>Consultant</label><span>${meta.consultantName || "Mathew Hewington"}</span></div>
+  </div>
+  <p class="section-heading">Executive Summary</p>
+  <div class="summary-panel">
+    This report presents findings from the <strong>${toolName}</strong> completed on <strong>${today}</strong> for <strong>${meta.schoolName}</strong>.
+    The assessment returned a score of <strong>${score}%</strong>, rated <strong style="color:${ratingColor}">${rating}</strong>.
+    <strong>${gaps.length}</strong> area${gaps.length !== 1 ? "s" : ""} for improvement ${gaps.length !== 1 ? "were" : "was"} identified,
+    of which <strong style="color:#ef4444">${highGaps.length} high priority</strong>, <strong style="color:#f59e0b">${medGaps.length} medium</strong>, and <strong style="color:#22c55e">${lowGaps.length} lower priority</strong>.
+  </div>
+  <p class="section-heading">Priority Actions (${gaps.length})</p>
+  ${catSections || `<div class="summary-panel" style="color:#22c55e">No gaps identified — excellent compliance across all areas.</div>`}
+  ${consultantNotes ? `<p class="section-heading">Consultant Notes</p><div class="notes-panel">${consultantNotes}</div>` : ""}
+  <p class="section-heading">Recommended Next Steps</p>
+  <div class="steps-panel">
+    <div class="step-row"><span class="step-num">1</span><span class="step-text">Share this report with the senior leadership team and governing board.</span></div>
+    <div class="step-row"><span class="step-num">2</span><span class="step-text">Assign a named lead for each high-priority action with a clear deadline.</span></div>
+    <div class="step-row"><span class="step-num">3</span><span class="step-text">Schedule a follow-up review in ${score < 55 ? "6–8 weeks" : "one term"} to assess progress.</span></div>
+    <div class="step-row"><span class="step-num">4</span><span class="step-text">Contact your SafeShield consultant for targeted support on any of the above areas.</span></div>
+  </div>
+  <div class="footer">
+    <span>SafeShield · Verified Assessment Report</span>
+    <span>${today}</span>
+  </div>
+</div>
+</body></html>`);
+    w.document.close();
+    setTimeout(() => w.print(), 400);
+  }
+
+  const glassPanel: React.CSSProperties = {
+    background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderTopColor: "rgba(255,255,255,0.20)",
+    borderRadius: 16,
+    backdropFilter: "blur(20px) saturate(180%)",
+    WebkitBackdropFilter: "blur(20px) saturate(180%)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 20px rgba(0,0,0,0.3)",
+  };
+
+  const pillStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "5px 14px",
+    borderRadius: 999,
+    background: `linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.04)) padding-box,
+      conic-gradient(from 130deg at 50% 50%,
+        rgba(56,189,248,0.8), rgba(167,139,250,0.7),
+        rgba(52,211,153,0.6), rgba(251,146,60,0.5),
+        rgba(244,114,182,0.6), rgba(56,189,248,0.8)
+      ) border-box`,
+    border: "1.5px solid transparent",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    color: "#fff",
+    textTransform: "uppercase" as const,
+  };
+
+  const priorityColor = (p: string) => p === "high" ? "#ef4444" : p === "medium" ? "#f59e0b" : "#22c55e";
+  const priorityText = (p: string) => p === "high" ? "High Priority" : p === "medium" ? "Medium Priority" : "Lower Priority";
+
   return (
-    <GlassCard>
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between mb-1"
-      >
-        <h3 className="text-white font-semibold text-sm uppercase tracking-wider">
-          Improvement Report
-        </h3>
-        {expanded ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
-      </button>
-      <p className="text-[#475569] text-xs mb-4">Tailored recommendations for {meta.schoolName || "this school"}.</p>
+    <div style={{
+      position: "relative",
+      borderRadius: 24,
+      overflow: "hidden",
+      background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 50%, ${accentColor}18 100%)`,
+      boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.6), 0 0 50px ${accentColor}18`,
+      fontFamily: "system-ui, -apple-system, sans-serif",
+    }}>
+      {/* Ambient glow blobs */}
+      <div style={{ position: "absolute", top: -80, right: -80, width: 280, height: 280, borderRadius: "50%",
+        background: `radial-gradient(circle, ${accentColor}20 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: -60, left: -60, width: 220, height: 220, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+      {/* Header */}
+      <div style={{ padding: "28px 28px 0", position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+          <div>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+              School Improvement Report
+            </p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 3 }}>{today}</p>
+          </div>
+          <button
+            onClick={() => setExpanded(v => !v)}
+            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.75)", flexShrink: 0 }}>
+            {expanded ? <><ChevronUp size={14} /> Collapse</> : <><ChevronDown size={14} /> Expand</>}
+          </button>
+        </div>
+
+        {/* Accent rule */}
+        <div style={{ height: 2, borderRadius: 2, background: `linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent)`, marginBottom: 20 }} />
+      </div>
 
       {expanded && (
-        <div className="flex flex-col gap-4">
-          {/* Meta summary */}
-          <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+        <div style={{ padding: "0 28px 28px", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+
+          {/* Meta grid */}
+          <div style={{ ...glassPanel, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 20px" }}>
             {[
-              { label: "School", value: meta.schoolName || "—" },
-              { label: "Score", value: `${score}% — ${rating}`, color: ratingColor, pill: true },
-              { label: "Staff Member", value: meta.staffMember || "—" },
-              { label: "Consultant", value: meta.consultantName || "—" },
+              { label: "School / Trust", value: meta.schoolName || "—" },
+              { label: "Assessment Score", value: null, pill: true },
+              { label: "Completed By", value: meta.staffMember || "—" },
+              { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
             ].map((item) => (
               <div key={item.label}>
-                <p className="text-[#475569] text-[0.6rem] uppercase tracking-wider mb-0.5">{item.label}</p>
-                {(item as { pill?: boolean }).pill && item.color ? (
-                  <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md"
-                    style={{ color: item.color, background: "#000", border: `2px solid ${item.color}` }}>
-                    {item.value}
+                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
+                {item.pill ? (
+                  <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
+                    fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
+                    {score}% — {rating}
                   </span>
                 ) : (
-                  <p className="text-xs font-medium" style={{ color: item.color ?? "#CBD5E1" }}>{item.value}</p>
+                  <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{item.value}</p>
                 )}
               </div>
             ))}
           </div>
 
-          {/* Gaps by category */}
-          {categories.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {categories.map((cat) => (
-                <div key={cat}>
-                  <p className="text-[#475569] text-[0.6rem] uppercase tracking-widest font-semibold mb-2">{cat}</p>
-                  <div className="flex flex-col gap-2">
-                    {gaps.filter((g) => g.category === cat).map((g, i) => {
-                      const p = priorityLabel(g.priority);
-                      return (
-                        <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border ${p.bg} ${p.border}`}>
-                          <span className={`shrink-0 text-[0.6rem] font-bold px-1.5 py-0.5 rounded uppercase ${p.bg} ${p.text} border ${p.border}`}>
-                            {p.label}
-                          </span>
-                          <p className="text-[#94A3B8] text-xs leading-relaxed">{g.text}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+          {/* Executive summary */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              Executive Summary
+            </p>
+            <div style={{ ...glassPanel, padding: "14px 18px", fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}>
+              Assessment completed for <strong style={{ color: "rgba(255,255,255,0.85)" }}>{meta.schoolName}</strong> on {today}.
+              Score: <strong style={{ color: "rgba(255,255,255,0.85)" }}>{score}%</strong> — <strong style={{ color: ratingColor }}>{rating}</strong>.{" "}
+              <strong style={{ color: "#ef4444" }}>{highGaps.length} high</strong>,{" "}
+              <strong style={{ color: "#f59e0b" }}>{medGaps.length} medium</strong>, and{" "}
+              <strong style={{ color: "#22c55e" }}>{lowGaps.length} lower</strong> priority areas identified.
             </div>
-          ) : (
-            <p className="text-[#34D399] text-sm">No gaps identified — excellent compliance across all areas.</p>
-          )}
+          </div>
+
+          {/* Priority actions */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              Priority Actions ({gaps.length})
+            </p>
+            {categories.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {categories.map((cat) => (
+                  <div key={cat}>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 6 }}>{cat}</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {gaps.filter(g => g.category === cat).map((g, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px",
+                          borderLeft: `3px solid ${priorityColor(g.priority)}`,
+                          borderRadius: "0 12px 12px 0",
+                          background: `${priorityColor(g.priority)}0A` }}>
+                          <span style={{ flexShrink: 0, fontSize: 8, fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase",
+                            padding: "2px 8px", borderRadius: 999,
+                            color: priorityColor(g.priority),
+                            background: `${priorityColor(g.priority)}18`,
+                            border: `1px solid ${priorityColor(g.priority)}55`,
+                            whiteSpace: "nowrap", marginTop: 1 }}>
+                            {priorityText(g.priority)}
+                          </span>
+                          <p style={{ fontSize: 13, color: "#fff", lineHeight: 1.6, margin: 0 }}>{g.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ ...glassPanel, padding: "14px 18px", color: "#22c55e", fontSize: 12 }}>
+                No gaps identified — excellent compliance across all areas.
+              </div>
+            )}
+          </div>
 
           {/* Consultant notes */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-[#CBD5E1] text-sm">Consultant Notes <span className="text-[#475569] font-normal">(optional)</span></label>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                Consultant Notes <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>(optional)</span>
+              </p>
               {isSuperAdmin && (
                 <button
                   onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}
-                >
-                  <Sparkles size={12} /> Generate Recommendations
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10, cursor: "pointer",
+                    background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 11, fontWeight: 600 }}>
+                  <Sparkles size={11} /> Generate Recommendations
                 </button>
               )}
             </div>
-            <p className="text-[#475569] text-xs mb-2">Auto-generate recommendations with guidance links, or write your own notes below.</p>
             <textarea
               value={consultantNotes}
               onChange={(e) => setConsultantNotes(e.target.value)}
-              rows={8}
-              placeholder="Click 'Generate Recommendations' to auto-fill based on the assessment gaps, or type your own consultant notes here..."
-              className="w-full px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none transition-colors resize-none placeholder:text-[#475569]"
-              style={{ borderColor: consultantNotes ? accentBorder : undefined }}
+              rows={6}
+              placeholder="Click 'Generate Recommendations' to auto-fill, or type your own notes here..."
+              style={{ width: "100%", padding: "12px 14px", borderRadius: 12, fontSize: 12, color: "#fff",
+                background: "rgba(255,255,255,0.04)", border: `1px solid ${consultantNotes ? accentBorder : "rgba(255,255,255,0.10)"}`,
+                outline: "none", resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
             />
+            {consultantNotes.trim() && (
+              <button
+                onClick={handlePrintRecommendations}
+                className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
+              >
+                <Printer size={12} /> Print Recommendations
+              </button>
+            )}
+          </div>
+
+          {/* Recommended next steps */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              Recommended Next Steps
+            </p>
+            <div style={{ ...glassPanel, padding: "14px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+              {[
+                "Share this report with the senior leadership team and governing board.",
+                "Assign a named lead for each high-priority action with a clear deadline.",
+                `Schedule a follow-up review in ${score < 55 ? "6–8 weeks" : "one term"} to assess progress.`,
+                "Contact your SafeShield consultant for targeted support on any of the above areas.",
+              ].map((step, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <span style={{ flexShrink: 0, width: 20, height: 20, borderRadius: "50%", background: accentColor,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, fontWeight: 700, color: "#000", marginTop: 1 }}>{i + 1}</span>
+                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", lineHeight: 1.6, margin: 0 }}>{step}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{ background: accentDim, border: `1px solid ${accentBorder}`, color: accentColor }}
-            >
-              <Printer size={14} /> Print / Save Report
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, paddingTop: 4 }}>
+            {/* Print mode toggle */}
+            <div style={{ display: "flex", borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.10)", flexShrink: 0 }}>
+              <button onClick={() => setPrintMode("dark")}
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", cursor: "pointer", border: "none",
+                  background: printMode === "dark" ? "rgba(255,255,255,0.12)" : "transparent",
+                  color: printMode === "dark" ? "#fff" : "#64748B", fontSize: 11, fontWeight: 600 }}>
+                <Moon size={11} /> Dark
+              </button>
+              <button onClick={() => setPrintMode("light")}
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", cursor: "pointer", border: "none",
+                  background: printMode === "light" ? "rgba(255,255,255,0.12)" : "transparent",
+                  color: printMode === "light" ? "#fff" : "#64748B", fontSize: 11, fontWeight: 600 }}>
+                <Sun size={11} /> Light
+              </button>
+            </div>
+            <button onClick={handlePrint}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
+                background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 13, fontWeight: 600 }}>
+              <Printer size={14} /> Print / Save PDF
             </button>
             {(meta.schoolEmail || meta.consultantEmail) && (
-              <button
-                onClick={handleEmail}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 border border-white/10 text-[#94A3B8] hover:text-white hover:border-white/20 transition-all"
-              >
+              <button onClick={handleEmail}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 600 }}>
                 <Mail size={14} /> Email Report
               </button>
             )}
           </div>
+
+          {/* Footer ref */}
+          <div style={{ paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.10)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>{today}</span>
+          </div>
         </div>
       )}
-    </GlassCard>
+    </div>
   );
 }

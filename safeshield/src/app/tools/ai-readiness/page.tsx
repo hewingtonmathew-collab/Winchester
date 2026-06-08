@@ -2,61 +2,122 @@
 import AuthGuard from "@/components/ui/AuthGuard";
 import AiReadiness from "@/components/forms/AiReadiness";
 import GlassCard from "@/components/ui/GlassCard";
-import ToolPageIcon from "@/components/ui/ToolPageIcon";
-import { Cpu } from "lucide-react";
+import { IconAIReadiness } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
+
+const COLOR = "#FB923C";
+const AREAS = [
+  "AI policy (staff & student)",
+  "Data protection & DPIAs",
+  "Safeguarding risk awareness",
+  "AI procurement due diligence",
+  "Staff capability & CPD",
+  "Board briefing & risk register",
+];
+const RATINGS: [string, string, string][] = [
+  ["Not started", "#ef4444", "Nothing is in place yet."],
+  ["Planned", "#f97316", "Identified but not yet begun."],
+  ["Partial", "#f59e0b", "Exists but incomplete or underdeveloped."],
+  ["Fully in place", "#22c55e", "Robust, documented, and reviewed."],
+];
 
 export default function AiReadinessPage() {
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-readiness");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-readiness-title", "AI Readiness Assessment");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-readiness-desc", "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.");
   return (
-    <AuthGuard toolSlug="ai-readiness">
-    <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="pt-10 pb-10 flex items-start gap-4">
-            <ToolPageIcon slug="ai-readiness" DefaultIcon={Cpu} color="#FB923C" colorDim="rgba(251,146,60,0.1)" colorBorder="rgba(251,146,60,0.2)" />
-            <div>
-              <p className="text-[#FB923C] text-xs font-medium uppercase tracking-widest mb-1">Readiness Assessment</p>
-              <h1 className="text-white text-3xl font-bold mb-2">AI Readiness Assessment</h1>
-              <p className="text-[#94A3B8] text-sm max-w-xl leading-relaxed">
-                Rate your school's current position across five AI governance dimensions. Receive a readiness score and prioritised action list to support responsible AI adoption.
-              </p>
+    <div className="min-h-[100dvh] pt-16 pb-20">
+        {/* Full-width video banner */}
+        <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
+          {isVideo(bannerUrl) ? (
+            <video
+              key={bannerUrl}
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="ai-readiness" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.52) 100%)",
+              backdropFilter: "blur(2px)",
+            }}
+          />
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
+            <div className="flex items-center gap-3 mb-4">
+              <ToolIconWrapper slug="ai-readiness" Icon={IconAIReadiness} size={64} />
+              <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Readiness</span>
             </div>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
+            <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
-  
+        </div>
+
+        {/* Page content */}
+        <AuthGuard toolSlug="ai-readiness">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <AiReadiness />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="ai-readiness"
+                color={COLOR}
+                defaultTitle="Watch: AI in Schools"
+                defaultDescription="A short overview of AI adoption in UK education and what responsible readiness looks like."
+              />
+
               <GlassCard>
-                <h2 className="text-white font-semibold text-sm uppercase tracking-wider mb-3">Dimensions Assessed</h2>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Dimensions Assessed</h2>
                 <ul className="flex flex-col gap-2">
-                  {["AI policy (staff & student)", "Data protection & DPIAs", "Safeguarding risk awareness", "AI procurement due diligence", "Staff capability & CPD", "Board briefing & risk register"].map((a) => (
-                    <li key={a} className="flex items-center gap-2 text-[#64748B] text-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FB923C] shrink-0" />
+                  {AREAS.map((a) => (
+                    <li key={a} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR }} />
                       {a}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
+
               <GlassCard>
-                <h2 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Rating Scale</h2>
-                <div className="flex flex-col gap-2">
-                  {[
-                    ["Not started", "text-red-400", "Nothing is in place yet."],
-                    ["Planned", "text-orange-400", "Work has been identified but not begun."],
-                    ["Partial", "text-amber-400", "Something exists but is incomplete or underdeveloped."],
-                    ["Fully in place", "text-green-400", "Robust, documented, and reviewed."],
-                  ].map(([label, color, desc]) => (
-                    <div key={label as string}>
-                      <span className={`text-xs font-semibold ${color}`}>{label}</span>
-                      <span className="text-[#475569] text-xs"> — {desc}</span>
-                    </div>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Rating Scale</h2>
+                <ul className="flex flex-col gap-3">
+                  {RATINGS.map(([label, dotColor, desc]) => (
+                    <li key={label} className="flex items-start gap-2 text-xs">
+                      <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: dotColor }} />
+                      <span>
+                        <span className="font-bold" style={{ color: "var(--text-primary)" }}>{label}</span>
+                        <span className="block" style={{ color: "var(--text-muted)" }}>{desc}</span>
+                      </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

@@ -12,6 +12,7 @@ export type Profile = {
   role: "admin" | "user";
   status: "pending" | "active" | "suspended";
   org_type: "la_school" | "single_school" | "mat" | null;
+  avatar_url: string | null;
   created_at: string;
 };
 

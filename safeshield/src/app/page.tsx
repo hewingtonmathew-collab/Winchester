@@ -1,165 +1,271 @@
 "use client";
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import ToolIconUpload from "@/components/ui/ToolIconUpload";
-import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useToolIcon } from "@/hooks/useToolIcon";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import { useEditableContent } from "@/hooks/useEditableContent";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import EditableText from "@/components/ui/EditableText";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
+import {
+  IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
+  IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
+} from "@/components/ui/ToolIcons";
 
 type Tool = {
   slug: string;
-  icon: React.ElementType;
+  Icon: React.ComponentType<{ size?: number }>;
   title: string;
   description: string;
   href: string;
   color: string;
-  colorDim: string;
-  colorBorder: string;
   badge: string;
 };
 
-const sections: { heading: string; sub: string; tools: Tool[] }[] = [
+const sections: { heading: string; headingAccent: string; sub: string; tools: Tool[] }[] = [
   {
-    heading: "Safeguarding & Compliance",
+    heading: "Safeguarding",
+    headingAccent: "& Compliance",
     sub: "Assess and evidence your school's safeguarding, governance, and statutory compliance obligations.",
     tools: [
-      { slug: "safeguarding", icon: ShieldCheck, title: "Safeguarding Risk Checker", description: "Answer a structured set of questions about your school's digital safeguarding provision and receive an instant risk rating with priority actions.", href: "/tools/safeguarding", color: "#34D399", colorDim: "rgba(52,211,153,0.12)", colorBorder: "rgba(52,211,153,0.25)", badge: "Assessment" },
-      { slug: "governance", icon: ClipboardList, title: "Governance Compliance Checker", description: "Check your governance arrangements against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance", color: "#A78BFA", colorDim: "rgba(167,139,250,0.12)", colorBorder: "rgba(167,139,250,0.25)", badge: "Compliance" },
-      { slug: "ofsted", icon: CheckSquare, title: "Ofsted Ready Checker", description: "Self-evaluate your school's readiness across the Ofsted Education Inspection Framework. Identify strengths, areas for improvement, and inspection risks.", href: "/tools/ofsted", color: "#4ADE80", colorDim: "rgba(74,222,128,0.12)", colorBorder: "rgba(74,222,128,0.25)", badge: "Inspection" },
-      { slug: "health-safety", icon: HardHat, title: "Health & Safety Checker", description: "Assess compliance across fire safety, COSHH, premises, policies, staff and pupil welfare, and contractor management. Aligned to HSE and statutory school obligations.", href: "/tools/health-safety", color: "#F97316", colorDim: "rgba(249,115,22,0.12)", colorBorder: "rgba(249,115,22,0.25)", badge: "H&S" },
+      { slug: "safeguarding",     Icon: IconSafeguarding,    title: "Safeguarding Risk Checker",      description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding",     color: "#34D399", badge: "Assessment" },
+      { slug: "governance",       Icon: IconGovernance,      title: "Governance Compliance Checker",  description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",       color: "#A78BFA", badge: "Compliance" },
+      { slug: "ofsted",           Icon: IconOfsted,          title: "Ofsted Ready Checker",           description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",           color: "#4ADE80", badge: "Inspection" },
+      { slug: "health-safety",    Icon: IconHealthSafety,    title: "Health & Safety Checker",        description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",    color: "#F97316", badge: "H&S" },
     ],
   },
   {
-    heading: "Digital & Technology Standards",
+    heading: "Digital",
+    headingAccent: "& Technology",
     sub: "Measure compliance with DfE digital standards, data protection requirements, and accessibility obligations.",
     tools: [
-      { slug: "digital-standards", icon: Monitor, title: "Digital & Technology Standards", description: "Assess your school's compliance with DfE digital and technology standards across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", colorDim: "rgba(129,140,248,0.12)", colorBorder: "rgba(129,140,248,0.25)", badge: "Standards" },
-      { slug: "dpia", icon: FileSearch, title: "DPIA Wizard", description: "Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary you can print or save.", href: "/tools/dpia", color: "#FCD34D", colorDim: "rgba(251,191,36,0.12)", colorBorder: "rgba(251,191,36,0.25)", badge: "Data Protection" },
-      { slug: "accessibility", icon: Globe, title: "Web Accessibility Checker", description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Identify barriers and generate a prioritised action plan.", href: "/tools/accessibility", color: "#F472B6", colorDim: "rgba(244,114,182,0.12)", colorBorder: "rgba(244,114,182,0.25)", badge: "Accessibility" },
+      { slug: "digital-standards",  Icon: IconDigitalStandards, title: "Digital & Technology Standards", description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
+      { slug: "dpia",               Icon: IconDPIA,             title: "DPIA Wizard",                    description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia",             color: "#FCD34D", badge: "Data Protection" },
+      { slug: "accessibility",      Icon: IconAccessibility,    title: "Web Accessibility Checker",      description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility",    color: "#F472B6", badge: "Accessibility" },
     ],
   },
   {
-    heading: "Artificial Intelligence",
+    heading: "Artificial",
+    headingAccent: "Intelligence",
     sub: "Evaluate AI use in your school and detect AI-generated content with confidence.",
     tools: [
-      { slug: "ai-readiness", icon: Cpu, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly. Covers policy, procurement, staff capability, data protection, and safeguarding dimensions.", href: "/tools/ai-readiness", color: "#FB923C", colorDim: "rgba(251,146,60,0.12)", colorBorder: "rgba(251,146,60,0.25)", badge: "Readiness" },
-      { slug: "ai-detector", icon: Bot, title: "AI Content Detector", description: "Paste any text to detect whether it was written by AI or a human. Uses five statistical signals for an indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", colorDim: "rgba(56,189,248,0.12)", colorBorder: "rgba(56,189,248,0.25)", badge: "Detection" },
+      { slug: "ai-readiness",  Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
+      { slug: "ai-detector",   Icon: IconAIDetector,  title: "AI Content Detector",    description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", badge: "Detection" },
     ],
   },
 ];
 
-function ToolCard({ tool, index }: { tool: Tool; index: number }) {
-  const Icon = tool.icon;
-  const { iconUrl, saveIcon, clearIcon } = useToolIcon(tool.slug);
+function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; loggedIn: boolean }) {
+  const delayClass = ["rise-in", "rise-in-1", "rise-in-2", "rise-in-3", "rise-in-4", "rise-in-5"][Math.min(delay, 5)];
+  const href = tool.href;  // always go to the tool page; guests see the preview panel
 
   return (
-    <Link href={tool.href}
-      className={cn(
-        "glass glass-hover glass-shimmer rounded-2xl p-6 flex flex-col gap-4 group",
-        "animate-float-in-delay-" + Math.min(index + 1, 3)
-      )}
-      style={{ textDecoration: "none" }}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="relative w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 overflow-visible"
-          style={{ background: tool.colorDim, border: `1px solid ${tool.colorBorder}`, boxShadow: `0 0 20px ${tool.color}20` }}
-          onClick={e => { e.preventDefault(); e.stopPropagation(); }}>
-          {iconUrl ? (
-            <img src={iconUrl} alt={tool.title} className="w-7 h-7 object-contain rounded-lg" />
-          ) : (
-            <Icon size={22} style={{ color: tool.color }} strokeWidth={1.5} />
-          )}
-          <ToolIconUpload
-            hasCustom={!!iconUrl}
-            onUpload={saveIcon}
-            onClear={clearIcon}
-          />
+    <Link href={href} className={`block ${delayClass} group`}>
+      <div className="glass glass-hover rounded-2xl p-6 flex flex-col gap-5 h-full overflow-hidden">
+        <span className="shimmer-run" aria-hidden />
+
+        {/* icon + badge */}
+        <div className="flex items-start justify-between gap-3">
+          <ToolIconWrapper slug={tool.slug} Icon={tool.Icon} size={60} />
+          <span
+            className="text-[0.58rem] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full border mt-1 shrink-0"
+            style={{ color: tool.color, background: `${tool.color}14`, borderColor: `${tool.color}35` }}
+          >
+            {tool.badge}
+          </span>
         </div>
-        <span className="text-[0.6rem] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border"
-          style={{ color: tool.color, background: tool.colorDim, borderColor: tool.colorBorder }}>
-          {tool.badge}
-        </span>
-      </div>
-      <div className="flex-1">
-        <h3 className="font-bold text-base mb-2 tracking-tight" style={{ color: "var(--text)" }}>{tool.title}</h3>
-        <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{tool.description}</p>
-      </div>
-      <div className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 group-hover:gap-2.5"
-        style={{ color: tool.color }}>
-        Open tool <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" />
+
+        {/* text */}
+        <div className="flex-1">
+          <h3 className="heading-luxury text-[1.05rem] mb-2" style={{ color: "var(--text)" }}>
+            {tool.title}
+          </h3>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            {tool.description}
+          </p>
+        </div>
+
+        {/* cta */}
+        <div className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: tool.color }}>
+          {loggedIn ? "Open tool" : "Get started"}
+          <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1.5" />
+        </div>
       </div>
     </Link>
   );
 }
 
 export default function HomePage() {
-  const { enabledTools, profile } = useAuth();
-  const isAdmin = profile?.role === "admin";
-  const allAccess = isAdmin || enabledTools.includes("*");
+  const { user, enabledTools, profile } = useAuth();
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("home");
+  const { value: heroLine1, save: saveHeroLine1 } = useEditableContent("home-hero-line1", "Your School Tools,");
+  const { value: heroLine2, save: saveHeroLine2 } = useEditableContent("home-hero-line2", "One Place.");
+  const { value: heroSub, save: saveHeroSub } = useEditableContent("home-hero-sub", "Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.");
+
+  const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
+  const loggedIn = !!user;
+
+  // Show all tools to unauthenticated visitors; filter by entitlement when logged in
+  const allAccess = !loggedIn || enabledTools.includes("*");
 
   const visibleSections = sections.map(section => ({
     ...section,
-    tools: section.tools.filter(tool => allAccess || enabledTools.includes(tool.slug)),
-  })).filter(section => section.tools.length > 0);
-
-  // Show all tools for unauthenticated/no-access visitors so they can see the preview
-  const displaySections = visibleSections.length > 0 ? visibleSections : sections;
+    tools: section.tools.filter(tool => {
+      if (allAccess) return true;
+      const slug = tool.href.split("/").pop()!;
+      return enabledTools.includes(slug);
+    }),
+  })).filter(s => s.tools.length > 0);
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="min-h-[100dvh] pt-16 pb-24">
 
-        {/* Hero */}
-        <div className="pt-14 pb-20 text-center">
-          <div className="animate-float-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8"
-            style={{ border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse-dot" />
-            <span className="text-xs font-semibold tracking-widest uppercase">SafeShield Tool Suite</span>
-          </div>
-          <h1 className="animate-float-in-delay-1 heading-luxury text-4xl sm:text-5xl lg:text-6xl mb-6 leading-[1.1]"
-            style={{ color: "var(--text)" }}>
-            Your School Tools,<br />
-            <span style={{
-              background: "linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #A78BFA 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: "drop-shadow(0 0 30px rgba(56,189,248,0.4))"
-            }}>
-              One Place.
-            </span>
-          </h1>
-          <p className="animate-float-in-delay-2 text-lg max-w-2xl mx-auto leading-relaxed"
-            style={{ color: "var(--text-muted)" }}>
-            Professional tools for safeguarding, governance, AI readiness, digital standards,<br className="hidden sm:block" />
-            data protection, accessibility, and Ofsted preparation.
-          </p>
-        </div>
+      {/* ── Hero banner ─────────────────────────────────────────────── */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        {/* Background media */}
+        {isVideo(bannerUrl) ? (
+          <video
+            key={bannerUrl}
+              src={bannerUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: 0.22,
+            }}
+          />
+        ) : (
+          <img
+            src={bannerUrl}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: 0.32,
+            }}
+          />
+        )}
 
-        {/* Sections */}
-        <div className="flex flex-col gap-16 animate-float-in-delay-3">
-          {displaySections.map((section) => (
-            <div key={section.heading}>
-              <div className="mb-8 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--accent)" }}>
-                    {section.heading}
-                  </p>
-                  <p className="text-sm max-w-xl" style={{ color: "var(--text-muted)" }}>{section.sub}</p>
-                </div>
-                <div className="h-px flex-1 max-w-[160px]" style={{
-                  background: "linear-gradient(90deg, var(--glass-border), transparent)"
-                }} />
+        {/* Subtle gradient overlay so text stays readable */}
+        <div
+          style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.38) 100%)",
+          }}
+        />
+
+        {/* Admin upload button */}
+        {isAdmin && (
+          <BannerUploadButton
+            toolSlug="home"
+            onUploaded={(url) => setBannerUrl(url)}
+            uploadBanner={uploadBanner}
+            uploading={uploading}
+          />
+        )}
+
+        {/* Hero content */}
+        <div
+          className="rise-in max-w-6xl mx-auto px-4 sm:px-6"
+          style={{ position: "relative", zIndex: 1, paddingTop: 72, paddingBottom: 80 }}
+        >
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse" />
+              <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--accent)" }}>
+                SafeShield Tool Suite
+              </span>
+            </div>
+
+            <h1 className="heading-luxury text-5xl sm:text-6xl lg:text-7xl mb-6">
+              <EditableText
+                as="span"
+                value={heroLine1}
+                onSave={saveHeroLine1}
+                style={{ color: "var(--text)", display: "block" }}
+              />
+              <EditableText
+                as="span"
+                value={heroLine2}
+                onSave={saveHeroLine2}
+                className="gradient-text"
+                style={{ display: "block" }}
+              />
+            </h1>
+
+            <EditableText
+              as="p"
+              value={heroSub}
+              onSave={saveHeroSub}
+              multiline
+              className="text-lg max-w-lg mx-auto leading-relaxed"
+              style={{ color: "var(--text-muted)" }}
+            />
+
+            {!loggedIn && (
+              <div className="flex items-center justify-center gap-3 mt-8">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: "var(--accent)",
+                    color: "#000",
+                  }}
+                >
+                  Get started free <ArrowRight size={15} />
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "var(--text)",
+                  }}
+                >
+                  Sign in
+                </Link>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Tool sections ────────────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16">
+        <div className="flex flex-col gap-20">
+          {visibleSections.map((section, si) => (
+            <div key={section.heading}>
+              <div className="mb-10">
+                <h2 className="heading-luxury text-3xl sm:text-4xl mb-3">
+                  <span style={{ color: "var(--text)" }}>{section.heading} </span>
+                  <span className="gradient-text">{section.headingAccent}</span>
+                </h2>
+                <p className="text-sm max-w-xl leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
+                  {section.sub}
+                </p>
+                <div className="h-px bg-gradient-to-r from-[rgba(56,189,248,0.4)] via-[rgba(129,140,248,0.2)] to-transparent" />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {section.tools.map((tool, i) => (
-                  <ToolCard key={tool.href} tool={tool} index={i} />
+                {section.tools.map((tool, ti) => (
+                  <ToolCard key={tool.href} tool={tool} delay={si * 3 + ti} loggedIn={loggedIn} />
                 ))}
               </div>
             </div>
           ))}
-        </div>
 
+          {/* Should only show to logged-in users with genuinely no entitlements */}
+          {loggedIn && visibleSections.length === 0 && (
+            <div className="glass rounded-2xl p-16 text-center rise-in">
+              <p className="font-semibold mb-1" style={{ color: "var(--text)" }}>No tools available</p>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>Contact your administrator to request access.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
