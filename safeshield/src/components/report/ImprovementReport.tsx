@@ -635,24 +635,64 @@ ${css}
                         ? gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join("\n")
                         : "No specific gaps were recorded for this assessment.";
 
-                      const prompt = `You are a SafeShield education consultant writing a formal improvement report for a UK school.
+                      const toolFrameworks: Record<string, string> = {
+                        "Safeguarding Risk Checker": "KCSIE 2024 (https://www.gov.uk/government/publications/keeping-children-safe-in-education--2), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), UK Council for Internet Safety (https://www.gov.uk/government/organisations/uk-council-for-internet-safety)",
+                        "Governance Compliance Checker": "DfE Governance Handbook (https://www.gov.uk/government/publications/governance-handbook), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework), Academy Trust Handbook (https://www.gov.uk/guidance/academy-trust-handbook)",
+                        "AI Readiness Assessment": "DfE Generative AI in Education (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), UK AI Safety Institute (https://www.gov.uk/government/organisations/ai-safety-institute), DfE Digital Strategy (https://www.gov.uk/government/publications/realising-the-potential-of-technology-in-education)",
+                        "DPIA Wizard": "UK GDPR (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/), ICO DPIA guidance (https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/), DfE Data Protection guidance (https://www.gov.uk/guidance/data-protection-in-schools)",
+                        "Web Accessibility Checker": "WCAG 2.2 (https://www.w3.org/TR/WCAG22/), Public Sector Bodies Accessibility Regulations 2018 (https://www.legislation.gov.uk/uksi/2018/952/contents), DfE accessibility guidance (https://www.gov.uk/guidance/accessibility-requirements-for-public-sector-websites-and-apps)",
+                        "Ofsted Ready Checker": "Ofsted EIF 2024 (https://www.gov.uk/government/publications/education-inspection-framework), Ofsted School Inspection Handbook (https://www.gov.uk/government/publications/school-inspection-handbook-eif), Ofsted myths (https://www.gov.uk/government/publications/ofsted-myths)",
+                        "AI Content Detector": "DfE Generative AI guidance (https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education), JCQ AI guidance (https://www.jcq.org.uk/exams-office/malpractice/artificial-intelligence/)",
+                        "Digital Standards Checker": "DfE Digital and Technology Standards (https://www.gov.uk/guidance/digital-and-technology-standards-for-schools-and-colleges), EdTech Strategy (https://www.gov.uk/government/publications/edtech-strategy), DfE broadband guidance (https://www.gov.uk/government/publications/school-network-infrastructure)",
+                        "Health & Safety Checker": "Health and Safety at Work Act 1974 (https://www.legislation.gov.uk/ukpga/1974/37), HSE School guidance (https://www.hse.gov.uk/services/education/index.htm), DfE Health and Safety guidance (https://www.gov.uk/government/publications/health-and-safety-advice-for-schools)",
+                      };
+                      const frameworks = toolFrameworks[toolName] || "DfE guidance (https://www.gov.uk/government/organisations/department-for-education), Ofsted EIF (https://www.gov.uk/government/publications/education-inspection-framework)";
+                      const consultantName = meta.consultantName || "your SafeShield consultant";
+                      const consultantEmail = meta.consultantEmail || "info@safeshieldtools.co.uk";
+                      const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
-Assessment: ${toolName}
-School: ${meta.schoolName || "School"}
-Score: ${score}% — ${rating}
-Staff member: ${meta.staffMember || "N/A"}
-Date: ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                      const prompt = `You are ${consultantName}, a specialist SafeShield education consultant, writing a formal improvement report for a UK school following completion of a digital compliance assessment.
 
-Identified gaps (${gaps.length} total — ${high.length} high, ${med.length} medium, ${low.length} lower priority):
+ASSESSMENT DATA:
+- Tool: ${toolName}
+- School: ${meta.schoolName || "School"}
+- Staff completing: ${meta.staffMember || "N/A"}
+- Score: ${score}% — ${rating}
+- Date: ${date}
+- Total gaps: ${gaps.length} (${high.length} HIGH priority, ${med.length} MEDIUM priority, ${low.length} lower priority)
+
+SPECIFIC GAPS IDENTIFIED:
 ${gapText}
 
-Write a professional improvement report for the headteacher. Include:
-1. A brief executive summary of findings
-2. Key priority actions for each HIGH priority gap (with specific, actionable steps referencing relevant UK frameworks — KCSIE, EIF, DfE standards, UK GDPR as appropriate)
-3. Medium-term improvements for MEDIUM priority gaps
-4. Recommended next steps (3-4 bullet points)
+RELEVANT FRAMEWORKS & STANDARDS FOR THIS ASSESSMENT:
+${frameworks}
 
-Keep the tone professional but accessible. Be specific to the gaps listed. Do not use generic filler. Format with clear headings using ALL CAPS section titles.`;
+Write a professional, detailed improvement report addressed to the headteacher. Structure it EXACTLY as follows:
+
+EXECUTIVE SUMMARY
+2-3 sentences summarising the assessment outcome, overall risk level, and urgency. Reference the score and rating directly.
+
+IMMEDIATE PRIORITY ACTIONS (HIGH PRIORITY GAPS)
+For EACH high priority gap listed above, write a dedicated subsection with:
+- The specific gap clearly stated
+- Exactly what needs to be done (concrete, actionable steps)
+- The specific UK framework, legislation or standard it must comply with (include the URL)
+- A realistic implementation timeline
+
+MEDIUM-TERM IMPROVEMENTS
+For EACH medium priority gap, write a concise action with the relevant standard/guidance URL.
+
+COMPLIANCE STANDARDS & RESOURCES
+List 4-6 specific official URLs the school should bookmark and review, matched to their actual gaps.
+
+RECOMMENDED NEXT STEPS
+Numbered list of 4-5 specific actions the school should take in the next 30 days.
+
+BOOK A CONSULTANCY APPOINTMENT
+Write a professional call-to-action paragraph explaining that SafeShield consultants can provide hands-on support to implement these improvements, conduct on-site or virtual reviews, and provide tailored training for staff. Invite the school to contact ${consultantName} directly at ${consultantEmail} to arrange a free initial consultation. Mention that consultancy packages are available for schools at all stages of their compliance journey.
+
+IMPORTANT: Be highly specific to the actual gaps listed — do not write generic advice. Every action must link directly to one of the identified gaps. Include real URLs where specified.`;
+
 
                       const res = await fetch("/api/chat", {
                         method: "POST",
