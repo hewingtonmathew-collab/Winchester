@@ -163,23 +163,16 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
             areas={areas}
           />
         ) : tab === "recommendations" ? (
-          gaps.length > 0 ? (
-            <ImprovementReport
-              meta={data.meta}
-              toolName={data.toolName}
-              score={data.score}
-              rating={data.rating}
-              ratingColor={data.ratingColor}
-              gaps={gaps}
-              accentColor={data.accentColor}
-              reportId={data.reportId}
-            />
-          ) : (
-            <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-8 text-center">
-              <p className="text-sm text-[#64748B]">No improvement recommendations were saved for this assessment.</p>
-              <p className="text-xs text-[#475569] mt-2">Recommendations are captured on assessments completed after this feature was added.</p>
-            </div>
-          )
+          <ImprovementReport
+            meta={data.meta}
+            toolName={data.toolName}
+            score={data.score}
+            rating={data.rating}
+            ratingColor={data.ratingColor}
+            gaps={gaps}
+            accentColor={data.accentColor}
+            reportId={data.reportId}
+          />
         ) : (
           <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-6 sm:p-8">
             {/* Header */}
