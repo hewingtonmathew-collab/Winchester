@@ -2,7 +2,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2 } from "lucide-react";
+import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye } from "lucide-react";
 import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -64,7 +65,7 @@ function sendCertificateEmail(s: Submission) {
   window.location.href = `mailto:${s.schoolEmail}?subject=${subject}&body=${body}`;
 }
 
-function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[]; onDelete: (id: string) => void }) {
+function GroupedBySchool({ submissions, onDelete, onView }: { submissions: Submission[]; onDelete: (id: string) => void; onView: (s: Submission) => void }) {
   const schools = [...new Set(submissions.map((s) => s.schoolName))];
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   return (
@@ -106,6 +107,9 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <ScoreBadge score={s.score} color={color} />
+                        <button onClick={() => onView(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
+                          <Eye size={12} className="text-[#38BDF8]" />
+                        </button>
                         {s.schoolEmail && (
                           <button onClick={() => sendCertificateEmail(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Send certificate">
                             <Mail size={12} className="text-[#38BDF8]" />
@@ -1090,6 +1094,29 @@ export default function AdminPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("assessments");
+  const [viewing, setViewing] = useState<ReportViewData | null>(null);
+
+  function openReport(s: Submission) {
+    setViewing({
+      reportId: s.id,
+      meta: {
+        schoolName: s.schoolName,
+        schoolEmail: s.schoolEmail,
+        consultantName: s.consultantName,
+        consultantEmail: s.consultantEmail,
+        staffMember: s.staffMember,
+        logoDataUrl: s.logoDataUrl,
+      },
+      toolName: s.tool,
+      score: s.score,
+      rating: s.rating,
+      ratingColor: s.ratingColor,
+      accentColor: TOOL_COLORS[s.tool] ?? "#38BDF8",
+      date: new Date(s.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
+      areas: s.areas,
+      gaps: s.gaps,
+    });
+  }
 
   // Footer links state
   const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
@@ -1188,6 +1215,7 @@ export default function AdminPage() {
         ratingColor: r.rating_color,
         date: r.created_at,
         areas: r.areas ?? undefined,
+        gaps: r.recommendations ?? undefined,
       }));
       setSubmissions(mapped);
     } else {
@@ -1392,7 +1420,7 @@ export default function AdminPage() {
                   ))}
                 </div>
                 {view === "schools" ? (
-                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} />
+                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} onView={openReport} />
                 ) : (
                   <div className="flex flex-col gap-3">
                     {submissions.map((s) => {
@@ -1413,6 +1441,9 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <ScoreBadge score={s.score} color={color} />
+                            <button onClick={() => openReport(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
+                              <Eye size={14} className="text-[#38BDF8]" />
+                            </button>
                             {s.schoolEmail && (
                               <button onClick={() => sendCertificateEmail(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
                                 <Mail size={14} className="text-[#38BDF8]" />
@@ -1648,6 +1679,10 @@ export default function AdminPage() {
 
       </div>
     </div>
+
+    {viewing && (
+      <ReportViewModal data={viewing} onClose={() => setViewing(null)} />
+    )}
     </>
   );
 }
