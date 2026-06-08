@@ -45,7 +45,6 @@ export default function Navbar() {
     router.push("/login");
   }
 
-  // Build visible tool links based on permissions
   const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
   const toolLinks = ALL_TOOLS.filter(t =>
     isAdmin || enabledTools.includes("*") || enabledTools.includes(t.slug)
@@ -54,7 +53,8 @@ export default function Navbar() {
   const allLinks = [...NAV_LINKS, ...toolLinks];
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--glass-stroke)" }}>
+    /* z-[999] ensures nav stays above all page content including glass cards with stacking contexts */
+    <nav className="fixed top-0 inset-x-0 z-[999] glass" style={{ borderBottom: "1px solid var(--glass-stroke)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2 shrink-0 mr-1">
           <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)]">
@@ -84,57 +84,63 @@ export default function Navbar() {
           <button onClick={toggleTheme}
             className="glass-btn w-8 h-8 flex items-center justify-center"
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-dim)" }} /> : <Moon size={14} style={{ color: "var(--text-dim)" }} />}
+            {theme === "dark"
+              ? <Sun size={14} style={{ color: "var(--text-muted)" }} />
+              : <Moon size={14} style={{ color: "var(--text-muted)" }} />}
           </button>
 
           {(isAdmin || isOrgAdmin) && (
-            <Link href="/org"
-              className={`glass-btn w-8 h-8 flex items-center justify-center ${path.startsWith("/org") ? "border-[rgba(56,189,248,0.4)]!" : ""}`}
-              title="Organisations">
-              <Building2 size={14} style={{ color: path.startsWith("/org") ? "#38BDF8" : "var(--text-dim)" }} />
+            <Link href="/org" className="glass-btn w-8 h-8 flex items-center justify-center" title="Organisations">
+              <Building2 size={14} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-dim)" }} />
             </Link>
           )}
 
           {isAdmin && (
-            <Link href="/admin"
-              className={`glass-btn w-8 h-8 flex items-center justify-center ${path.startsWith("/admin") ? "border-[rgba(56,189,248,0.4)]!" : ""}`}
-              title="Admin Panel">
-              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "#38BDF8" : "var(--text-dim)" }} />
+            <Link href="/admin" className="glass-btn w-8 h-8 flex items-center justify-center" title="Admin Panel">
+              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-dim)" }} />
             </Link>
           )}
 
           {user ? (
             <div className="relative" ref={menuRef}>
               <button onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass hover:bg-white/10 transition-all">
-                <div className="w-5 h-5 rounded-full bg-[rgba(56,189,248,0.2)] flex items-center justify-center">
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl glass-btn">
+                <div className="w-5 h-5 rounded-full bg-[rgba(56,189,248,0.2)] flex items-center justify-center shrink-0">
                   <User size={10} className="text-[#38BDF8]" />
                 </div>
-                <span className="text-xs max-w-[80px] truncate" style={{ color: "var(--text-dim)" }}>
+                <span className="text-xs max-w-[80px] truncate" style={{ color: "var(--text-muted)" }}>
                   {profile?.full_name?.split(" ")[0] ?? user.email?.split("@")[0]}
                 </span>
                 <ChevronDown size={10} style={{ color: "var(--text-dim)" }} />
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-white/10 shadow-xl z-[200]"
-                  style={{ background: "var(--bg2)", backdropFilter: "blur(24px)" }}>
-                  <div className="px-3 py-2.5 border-b border-white/5">
-                    <p className="text-xs font-medium text-white truncate">{profile?.full_name ?? "User"}</p>
-                    <p className="text-[0.65rem] text-[#475569] truncate">{user.email}</p>
+                /* Fixed position so it escapes any parent stacking context */
+                <div
+                  className="absolute right-0 top-full mt-2 w-52 rounded-2xl overflow-hidden z-[9999]"
+                  style={{
+                    background: "var(--bg2)",
+                    border: "1px solid var(--glass-stroke)",
+                    borderTopColor: "var(--glass-stroke-top)",
+                    backdropFilter: "blur(24px)",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 var(--glass-stroke-top)",
+                  }}>
+                  <div className="px-3 py-3 border-b" style={{ borderColor: "var(--glass-stroke)" }}>
+                    <p className="text-xs font-semibold truncate" style={{ color: "var(--text)" }}>{profile?.full_name ?? "User"}</p>
+                    <p className="text-[0.65rem] truncate mt-0.5" style={{ color: "var(--text-dim)" }}>{user.email}</p>
                     {isAdmin && (
-                      <span className="inline-block mt-1 text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-medium">Admin</span>
+                      <span className="inline-block mt-1.5 text-[0.6rem] px-2 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-semibold border border-[rgba(56,189,248,0.25)]">Super Admin</span>
                     )}
                   </div>
-                  <div className="p-1">
+                  <div className="p-1.5 flex flex-col gap-0.5">
                     <Link href="/profile"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-white/5 transition-all"
-                      style={{ color: "var(--text-dim)" }}>
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-white/5"
+                      style={{ color: "var(--text-muted)" }}>
                       <User size={12} /> My Profile & Reports
                     </Link>
                     <button onClick={handleSignOut}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 transition-all">
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors w-full text-left">
                       <LogOut size={12} /> Sign out
                     </button>
                   </div>
@@ -143,8 +149,8 @@ export default function Navbar() {
             </div>
           ) : (
             <Link href="/login"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-              style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+              className="glass-btn px-3 py-1.5 text-xs font-medium"
+              style={{ color: "var(--accent)" }}>
               Sign in
             </Link>
           )}
