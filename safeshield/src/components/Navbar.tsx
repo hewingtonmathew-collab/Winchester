@@ -54,7 +54,13 @@ export default function Navbar() {
 
   return (
     /* z-[999] ensures nav stays above all page content including glass cards with stacking contexts */
-    <nav className="fixed top-0 inset-x-0 z-[999] glass" style={{ borderBottom: "1px solid var(--glass-border)" }}>
+    <nav
+      className="fixed top-0 inset-x-0 z-[999] glass"
+      style={{
+        borderBottom: "1px solid var(--glass-border)",
+        paddingTop: "env(safe-area-inset-top)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-2">
           <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.35)]">

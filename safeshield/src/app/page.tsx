@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
@@ -49,17 +51,19 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
   },
 ];
 
-function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
+function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; loggedIn: boolean }) {
   const delayClass = ["rise-in", "rise-in-1", "rise-in-2", "rise-in-3", "rise-in-4", "rise-in-5"][Math.min(delay, 5)];
+  // Unauthenticated users get redirected to /register by AuthGuard on each tool page,
+  // but we can hint them directly for a cleaner UX.
+  const href = loggedIn ? tool.href : "/register";
 
   return (
-    <Link href={tool.href} className={`block ${delayClass} group`}>
+    <Link href={href} className={`block ${delayClass} group`}>
       <div className="glass glass-hover rounded-2xl p-6 flex flex-col gap-5 h-full overflow-hidden">
         <span className="shimmer-run" aria-hidden />
 
         {/* icon + badge */}
         <div className="flex items-start justify-between gap-3">
-          {/* Icon is self-contained 3D glass SVG — no extra wrapper needed */}
           <tool.Icon size={60} />
           <span
             className="text-[0.58rem] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full border mt-1 shrink-0"
@@ -81,7 +85,7 @@ function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
 
         {/* cta */}
         <div className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: tool.color }}>
-          Open tool
+          {loggedIn ? "Open tool" : "Get started"}
           <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1.5" />
         </div>
       </div>
@@ -90,42 +94,128 @@ function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
 }
 
 export default function HomePage() {
-  const { enabledTools } = useAuth();
-  const allAccess = enabledTools.includes("*");
+  const { user, enabledTools, profile } = useAuth();
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("home");
+
+  const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
+  const loggedIn = !!user;
+
+  // Show all tools to unauthenticated visitors; filter by entitlement when logged in
+  const allAccess = !loggedIn || enabledTools.includes("*");
 
   const visibleSections = sections.map(section => ({
     ...section,
     tools: section.tools.filter(tool => {
+      if (allAccess) return true;
       const slug = tool.href.split("/").pop()!;
-      return allAccess || enabledTools.includes(slug);
+      return enabledTools.includes(slug);
     }),
   })).filter(s => s.tools.length > 0);
 
   return (
-    <div className="min-h-screen pt-24 pb-24">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="min-h-[100dvh] pt-16 pb-24">
 
-        {/* Hero */}
-        <div className="pt-14 pb-20 text-center rise-in">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse" />
-            <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--accent)" }}>
-              SafeShield Tool Suite
-            </span>
+      {/* ── Hero banner ─────────────────────────────────────────────── */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        {/* Background media */}
+        {isVideo(bannerUrl) ? (
+          <video
+            src={bannerUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: 0.22,
+            }}
+          />
+        ) : (
+          <img
+            src={bannerUrl}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: 0.32,
+            }}
+          />
+        )}
+
+        {/* Subtle gradient overlay so text stays readable */}
+        <div
+          style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.38) 100%)",
+          }}
+        />
+
+        {/* Admin upload button */}
+        {isAdmin && (
+          <BannerUploadButton
+            toolSlug="home"
+            onUploaded={(url) => setBannerUrl(url)}
+            uploadBanner={uploadBanner}
+            uploading={uploading}
+          />
+        )}
+
+        {/* Hero content */}
+        <div
+          className="rise-in max-w-6xl mx-auto px-4 sm:px-6"
+          style={{ position: "relative", zIndex: 1, paddingTop: 72, paddingBottom: 80 }}
+        >
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse" />
+              <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--accent)" }}>
+                SafeShield Tool Suite
+              </span>
+            </div>
+
+            <h1 className="heading-luxury text-5xl sm:text-6xl lg:text-7xl mb-6">
+              <span style={{ color: "var(--text)" }}>Your School Tools,</span>
+              <br />
+              <span className="gradient-text">One Place.</span>
+            </h1>
+
+            <p className="text-lg max-w-lg mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              Professional compliance tools for safeguarding, governance, AI,{" "}
+              digital standards, data protection, accessibility, and Ofsted.
+            </p>
+
+            {!loggedIn && (
+              <div className="flex items-center justify-center gap-3 mt-8">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: "var(--accent)",
+                    color: "#000",
+                  }}
+                >
+                  Get started free <ArrowRight size={15} />
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "var(--text)",
+                  }}
+                >
+                  Sign in
+                </Link>
+              </div>
+            )}
           </div>
-
-          <h1 className="heading-luxury text-5xl sm:text-6xl lg:text-7xl mb-6">
-            <span style={{ color: "var(--text)" }}>Your School Tools,</span>
-            <br />
-            <span className="gradient-text">One Place.</span>
-          </h1>
-
-          <p className="text-lg max-w-lg mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.
-          </p>
         </div>
+      </div>
 
-        {/* Sections */}
+      {/* ── Tool sections ────────────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16">
         <div className="flex flex-col gap-20">
           {visibleSections.map((section, si) => (
             <div key={section.heading}>
@@ -142,13 +232,14 @@ export default function HomePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {section.tools.map((tool, ti) => (
-                  <ToolCard key={tool.href} tool={tool} delay={si * 3 + ti} />
+                  <ToolCard key={tool.href} tool={tool} delay={si * 3 + ti} loggedIn={loggedIn} />
                 ))}
               </div>
             </div>
           ))}
 
-          {visibleSections.length === 0 && (
+          {/* Should only show to logged-in users with genuinely no entitlements */}
+          {loggedIn && visibleSections.length === 0 && (
             <div className="glass rounded-2xl p-16 text-center rise-in">
               <p className="font-semibold mb-1" style={{ color: "var(--text)" }}>No tools available</p>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>Contact your administrator to request access.</p>

@@ -80,7 +80,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.3s ease, color 0.3s ease;
@@ -350,3 +350,20 @@ body::before {
 
 /* Disabled / placeholder opacity */
 [data-theme="light"] .placeholder-\[\#475569\]::placeholder { color: var(--text-dim); }
+
+/* ══════════════════════════════════════════
+   MOBILE / iOS SAFE AREA
+══════════════════════════════════════════ */
+
+/* Use dynamic viewport height everywhere min-h-screen is needed */
+.min-h-screen { min-height: 100dvh; }
+
+/* Compensate for iOS notch / Dynamic Island in navbar height.
+   Pages use pt-16 (64px) which matches the navbar h-16.
+   On notched iPhones the navbar gets extra top padding via
+   env(safe-area-inset-top), so we add matching page padding. */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .pt-16 {
+    padding-top: calc(4rem + env(safe-area-inset-top));
+  }
+}
