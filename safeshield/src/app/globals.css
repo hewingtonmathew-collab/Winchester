@@ -112,6 +112,7 @@ body::before {
    - Faint left-edge specular
    - Inner radial highlight (light entering from above)
    - Deep drop shadow below + inner bottom shadow
+   - Iridescent chromatic border (subtle rainbow edge)
 ───────────────────────────────────────────── */
 .glass {
   background: var(--liquid-bg);
@@ -197,6 +198,89 @@ body::before {
 
 .glass-btn:hover  { transform: translateY(-1px) scale(1.02); box-shadow: var(--liquid-shadow-hover); }
 .glass-btn:active { transform: translateY(0) scale(0.98); transition-duration: 60ms; }
+
+/* ─────────────────────────────────────────────
+   Liquid Glass PILL — iridescent chromatic border
+   Uses background-clip technique so border-radius
+   works with the gradient border.
+   Use for score badges, labels, hero pills.
+───────────────────────────────────────────── */
+.glass-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0.4em 1.1em;
+  border-radius: 999px;
+  backdrop-filter: blur(24px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.08);
+
+  /* Iridescent border via background-clip */
+  background:
+    linear-gradient(var(--liquid-bg), var(--liquid-bg)) padding-box,
+    conic-gradient(
+      from 130deg at 50% 50%,
+      rgba(56,189,248,0.80),
+      rgba(167,139,250,0.70),
+      rgba(52,211,153,0.60),
+      rgba(251,146,60,0.50),
+      rgba(244,114,182,0.60),
+      rgba(56,189,248,0.80)
+    ) border-box;
+  border: 1.5px solid transparent;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 4px 16px rgba(0,0,0,0.30),
+    0 1px 3px rgba(0,0,0,0.20);
+  overflow: hidden;
+}
+
+/* Specular sheen on pill */
+.glass-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.06) 40%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   Liquid glass CERTIFICATE canvas
+   Full dark canvas with translucent glass panels
+───────────────────────────────────────────── */
+.glass-cert-canvas {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+/* iridescent border for the cert canvas itself */
+.glass-cert-canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(transparent, transparent) padding-box,
+    conic-gradient(
+      from 200deg,
+      rgba(56,189,248,0.6),
+      rgba(167,139,250,0.5),
+      rgba(52,211,153,0.4),
+      rgba(56,189,248,0.6)
+    ) border-box;
+  pointer-events: none;
+  z-index: 10;
+}
 
 /* ─────────────────────────────────────────────
    Shimmer sweep (optional, on cards)
