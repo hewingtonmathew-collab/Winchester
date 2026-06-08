@@ -63,7 +63,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
       <div className="flex items-start justify-between gap-3">
         <div className="relative w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
           style={{ background: tool.colorDim, border: `1px solid ${tool.colorBorder}`, boxShadow: `0 0 20px ${tool.color}20` }}
-          onClick={e => e.preventDefault()}>
+          onClick={e => { e.preventDefault(); e.stopPropagation(); }}>
           {iconUrl ? (
             <img src={iconUrl} alt={tool.title} className="w-7 h-7 object-contain rounded-lg" />
           ) : (

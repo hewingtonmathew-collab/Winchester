@@ -32,7 +32,7 @@ export default function ToolIconUpload({ onUpload, onClear, hasCustom }: Props) 
   return (
     <div className="absolute -bottom-1 -right-1 flex gap-0.5 z-10">
       <button
-        onClick={() => inputRef.current?.click()}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); inputRef.current?.click(); }}
         title="Upload custom icon"
         className="w-5 h-5 rounded-full flex items-center justify-center"
         style={{ background: "rgba(56,189,248,0.9)", border: "1px solid rgba(56,189,248,0.5)" }}>
@@ -40,14 +40,14 @@ export default function ToolIconUpload({ onUpload, onClear, hasCustom }: Props) 
       </button>
       {hasCustom && onClear && (
         <button
-          onClick={onClear}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClear(); }}
           title="Remove custom icon"
           className="w-5 h-5 rounded-full flex items-center justify-center"
           style={{ background: "rgba(239,68,68,0.85)", border: "1px solid rgba(239,68,68,0.4)" }}>
           <X size={10} color="#fff" />
         </button>
       )}
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} onClick={e => e.stopPropagation()} />
     </div>
   );
 }
