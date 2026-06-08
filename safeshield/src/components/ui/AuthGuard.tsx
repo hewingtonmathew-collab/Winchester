@@ -15,7 +15,7 @@ export default function AuthGuard({ toolSlug, children }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/login");
+    if (!loading && !user) router.replace("/register");
   }, [loading, user, router]);
 
   if (loading) {
