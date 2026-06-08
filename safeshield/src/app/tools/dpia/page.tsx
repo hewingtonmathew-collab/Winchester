@@ -1,14 +1,9 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { FileSearch } from "lucide-react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "DPIA Wizard | SafeShield",
-  description:
-    "Step-by-step Data Protection Impact Assessment wizard aligned to UK GDPR Article 35. Free tool for schools and trusts.",
-};
 
 export default function DpiaPage() {
   return (
@@ -16,9 +11,7 @@ export default function DpiaPage() {
     <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.2)]">
-              <FileSearch size={22} className="text-amber-400" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="dpia" DefaultIcon={FileSearch} color="#FCD34D" colorDim="rgba(251,191,36,0.1)" colorBorder="rgba(251,191,36,0.2)" />
             <div>
               <p className="text-amber-400 text-xs font-medium uppercase tracking-widest mb-1">Data Protection</p>
               <h1 className="text-white text-3xl font-bold mb-2">DPIA Wizard</h1>

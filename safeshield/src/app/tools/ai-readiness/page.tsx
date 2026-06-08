@@ -2,6 +2,7 @@
 import AuthGuard from "@/components/ui/AuthGuard";
 import AiReadiness from "@/components/forms/AiReadiness";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { Cpu } from "lucide-react";
 
 export default function AiReadinessPage() {
@@ -10,9 +11,7 @@ export default function AiReadinessPage() {
     <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(251,146,60,0.1)] border border-[rgba(251,146,60,0.2)]">
-              <Cpu size={22} className="text-[#FB923C]" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="ai-readiness" DefaultIcon={Cpu} color="#FB923C" colorDim="rgba(251,146,60,0.1)" colorBorder="rgba(251,146,60,0.2)" />
             <div>
               <p className="text-[#FB923C] text-xs font-medium uppercase tracking-widest mb-1">Readiness Assessment</p>
               <h1 className="text-white text-3xl font-bold mb-2">AI Readiness Assessment</h1>

@@ -2,6 +2,7 @@
 import AuthGuard from "@/components/ui/AuthGuard";
 import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { Bot } from "lucide-react";
 
 const signals = [
@@ -20,9 +21,7 @@ export default function AiDetectorPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Header */}
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-              <Bot size={22} className="text-[#38BDF8]" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="ai-detector" DefaultIcon={Bot} color="#38BDF8" colorDim="rgba(56,189,248,0.1)" colorBorder="rgba(56,189,248,0.2)" />
             <div>
               <p className="text-[#38BDF8] text-xs font-medium uppercase tracking-widest mb-1">Detection Tool</p>
               <h1 className="text-white text-3xl font-bold mb-2">AI Content Detector</h1>

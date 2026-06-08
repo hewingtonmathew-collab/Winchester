@@ -1,13 +1,9 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import OfstedChecker from "@/components/forms/OfstedChecker";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { CheckSquare } from "lucide-react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Ofsted Ready Checker | SafeShield",
-  description: "Self-evaluate your school's readiness across the Ofsted Education Inspection Framework. Free tool for school leaders.",
-};
 
 export default function OfstedPage() {
   return (
@@ -15,9 +11,7 @@ export default function OfstedPage() {
     <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.2)]">
-              <CheckSquare size={22} className="text-[#4ADE80]" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="ofsted" DefaultIcon={CheckSquare} color="#4ADE80" colorDim="rgba(74,222,128,0.1)" colorBorder="rgba(74,222,128,0.2)" />
             <div>
               <p className="text-[#4ADE80] text-xs font-medium uppercase tracking-widest mb-1">Inspection</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Ofsted Ready Checker</h1>
@@ -26,7 +20,7 @@ export default function OfstedPage() {
               </p>
             </div>
           </div>
-  
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <OfstedChecker />

@@ -1,13 +1,9 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import DigitalStandardsChecker from "@/components/forms/DigitalStandardsChecker";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { Monitor } from "lucide-react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Digital & Technology Standards Checker | SafeShield",
-  description: "Assess your school's compliance with DfE digital and technology standards across safeguarding, cyber security, data protection, Ofsted readiness, accessibility and infrastructure.",
-};
 
 export default function DigitalStandardsPage() {
   return (
@@ -15,9 +11,7 @@ export default function DigitalStandardsPage() {
     <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(129,140,248,0.1)] border border-[rgba(129,140,248,0.2)]">
-              <Monitor size={22} className="text-[#818CF8]" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="digital-standards" DefaultIcon={Monitor} color="#818CF8" colorDim="rgba(129,140,248,0.1)" colorBorder="rgba(129,140,248,0.2)" />
             <div>
               <p className="text-[#818CF8] text-xs font-medium uppercase tracking-widest mb-1">Standards</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Digital &amp; Technology Standards</h1>

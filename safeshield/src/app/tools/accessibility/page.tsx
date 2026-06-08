@@ -1,13 +1,9 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPageIcon from "@/components/ui/ToolPageIcon";
 import { Globe } from "lucide-react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Web Accessibility Checker | SafeShield",
-  description: "Check your school website against WCAG 2.1 and Public Sector Accessibility Regulations. Free tool for schools.",
-};
 
 export default function AccessibilityPage() {
   return (
@@ -15,9 +11,7 @@ export default function AccessibilityPage() {
     <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(244,114,182,0.1)] border border-[rgba(244,114,182,0.2)]">
-              <Globe size={22} className="text-[#F472B6]" strokeWidth={1.5} />
-            </div>
+            <ToolPageIcon slug="accessibility" DefaultIcon={Globe} color="#F472B6" colorDim="rgba(244,114,182,0.1)" colorBorder="rgba(244,114,182,0.2)" />
             <div>
               <p className="text-[#F472B6] text-xs font-medium uppercase tracking-widest mb-1">Accessibility</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Web Accessibility Checker</h1>
