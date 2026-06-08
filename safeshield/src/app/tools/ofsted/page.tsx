@@ -3,6 +3,8 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import OfstedChecker from "@/components/forms/OfstedChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconOfsted } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#4ADE80";
 const AREAS = ["Quality of Education", "Behaviour & Attitudes", "Personal Development", "Leadership & Management", "SEND & Inclusion"];
@@ -14,20 +16,31 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function OfstedPage() {
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ofsted");
   return (
     <AuthGuard toolSlug="ofsted">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          <video
-            src="/banner-bg.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-          />
+          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+            <video
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="ofsted" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
           <div
             style={{
               position: "absolute",

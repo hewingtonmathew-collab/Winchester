@@ -3,25 +3,38 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAccessibility } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#F472B6";
 const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("accessibility");
   return (
     <AuthGuard toolSlug="accessibility">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          <video
-            src="/banner-bg.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-          />
+          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+            <video
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="accessibility" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
           <div
             style={{
               position: "absolute",

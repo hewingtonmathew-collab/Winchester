@@ -3,6 +3,8 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import HealthSafetyChecker from "@/components/forms/HealthSafetyChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconHealthSafety } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#F97316";
 const ASSESSMENT_AREAS: [string, string][] = [
@@ -23,20 +25,31 @@ const LEGISLATION = [
 ];
 
 export default function HealthSafetyPage() {
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("health-safety");
   return (
     <AuthGuard toolSlug="health-safety">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          <video
-            src="/banner-bg.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-          />
+          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+            <video
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="health-safety" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
           <div
             style={{
               position: "absolute",

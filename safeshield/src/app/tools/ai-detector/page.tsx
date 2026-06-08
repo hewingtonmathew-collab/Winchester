@@ -3,6 +3,8 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAIDetector } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
 
 const COLOR = "#38BDF8";
 const SIGNALS: [string, string][] = [
@@ -15,20 +17,31 @@ const SIGNALS: [string, string][] = [
 ];
 
 export default function AiDetectorPage() {
+  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ai-detector");
   return (
     <AuthGuard toolSlug="ai-detector">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          <video
-            src="/banner-bg.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-          />
+          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+            <video
+              src={bannerUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="ai-detector" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
           <div
             style={{
               position: "absolute",
