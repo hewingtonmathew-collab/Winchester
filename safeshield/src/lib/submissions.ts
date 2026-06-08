@@ -51,6 +51,7 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     .maybeSingle();
 
   const { error } = await supabase.from("reports").insert({
+    id: s.id,
     tool_slug: s.tool.toLowerCase().replace(/\s+/g, "-"),
     tool_name: s.tool,
     school_name: s.schoolName,
@@ -63,6 +64,7 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     rating_color: s.ratingColor,
     logo_data_url: s.logoDataUrl || null,
     areas: s.areas || null,
+    recommendations: s.gaps || null,
     created_by: userId,
     org_id: membership?.org_id || null,
     school_id: membership?.school_id || null,

@@ -54,6 +54,7 @@ export default function GovernanceChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [step, setStep] = useState<"meta" | "questions">("meta");
 
@@ -145,7 +146,7 @@ export default function GovernanceChecker() {
         )}
 
         <Certificate meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} accentColor="#A78BFA" areas={areas} />
-        <ImprovementReport meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} gaps={reportGaps} accentColor="#A78BFA" accentDim="rgba(167,139,250,0.12)" accentBorder="rgba(167,139,250,0.25)" />
+        <ImprovementReport meta={meta} toolName="Governance Compliance Checker" score={score} rating={label} ratingColor={ringColor} gaps={reportGaps} accentColor="#A78BFA" accentDim="rgba(167,139,250,0.12)" accentBorder="rgba(167,139,250,0.25)" reportId={submissionId ?? undefined} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#A78BFA] text-sm hover:text-white transition-colors">
           ← Start again
@@ -225,7 +226,7 @@ export default function GovernanceChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { const lbl = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement"; const rc = score >= 80 ? "#22c55e" : score >= 55 ? "#f59e0b" : "#ef4444"; setSubmitted(true); saveSubmission({ tool: "Governance Compliance Checker", ...meta, score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }); }} disabled={answered < items.length}
+            <button onClick={() => { const lbl = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement"; const rc = score >= 80 ? "#22c55e" : score >= 55 ? "#f59e0b" : "#ef4444"; setSubmitted(true); setSubmissionId(saveSubmission({ tool: "Governance Compliance Checker", ...meta, score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }).id); }} disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(167,139,250,0.15)] border border-[rgba(167,139,250,0.3)] text-[#A78BFA] text-sm font-medium hover:bg-[rgba(167,139,250,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>
