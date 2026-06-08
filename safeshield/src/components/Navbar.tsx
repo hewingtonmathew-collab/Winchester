@@ -46,10 +46,9 @@ export default function Navbar() {
     router.push("/login");
   }
 
-  const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
+  const isAdmin = profile?.role === "admin";
   const { iconUrl: logoUrl, saveIcon: saveLogo, clearIcon: clearLogo } = useToolIcon("safeshield-logo");
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const [logoHovered, setLogoHovered] = useState(false);
 
   function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -63,55 +62,60 @@ export default function Navbar() {
   }
 
   // Build visible tool links based on permissions
+  const hasAllAccess = isAdmin || enabledTools.includes("*");
   const toolLinks = ALL_TOOLS.filter(t =>
-    isAdmin || enabledTools.includes("*") || enabledTools.includes(t.slug)
+    hasAllAccess || enabledTools.includes(t.slug)
   ).map(t => ({ label: t.name.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", ""), href: `/tools/${t.slug}` }));
 
   const allLinks = [...NAV_LINKS, ...toolLinks];
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--liquid-border)" }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
-        <div className="flex items-center gap-2 shrink-0 mr-1">
-          <div
-            className="relative w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)] overflow-visible"
-            onMouseEnter={() => isAdmin && setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}>
-            {logoUrl
-              ? <img src={logoUrl} alt="SafeShield logo" className="w-5 h-5 object-contain rounded" />
-              : <Shield size={14} className="text-[#38BDF8]" />}
-            {isAdmin && logoHovered && (
-              <div
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); logoInputRef.current?.click(); }}
-                className="absolute inset-0 rounded-lg flex items-center justify-center cursor-pointer z-10"
-                style={{ background: "rgba(0,0,0,0.6)" }}>
-                <Camera size={10} color="#fff" />
-              </div>
-            )}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-12 flex items-center gap-2">
+
+        {/* Logo + wordmark */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Logo icon — tap/click opens upload for admin */}
+          <div className="relative shrink-0">
+            <button
+              onClick={() => isAdmin && logoInputRef.current?.click()}
+              className="w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)] relative overflow-hidden"
+              style={{ cursor: isAdmin ? "pointer" : "default" }}
+              title={isAdmin ? "Upload logo (super admin)" : undefined}>
+              {logoUrl
+                ? <img src={logoUrl} alt="logo" className="w-full h-full object-cover rounded-lg" />
+                : <Shield size={14} className="text-[#38BDF8]" />}
+              {/* Persistent camera badge for admin */}
+              {isAdmin && (
+                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full flex items-center justify-center"
+                  style={{ background: "rgba(56,189,248,0.9)" }}>
+                  <Camera size={7} color="#fff" />
+                </span>
+              )}
+            </button>
+            {/* Remove custom logo */}
             {isAdmin && logoUrl && (
               <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); clearLogo(); }}
-                title="Remove custom logo"
-                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full flex items-center justify-center z-20"
-                style={{ background: "rgba(239,68,68,0.9)" }}>
-                <span style={{ color: "#fff", fontSize: 8, lineHeight: 1 }}>✕</span>
-              </button>
+                onClick={(e) => { e.stopPropagation(); clearLogo(); }}
+                className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center z-10 text-white"
+                style={{ background: "rgba(239,68,68,0.9)", fontSize: 8 }}>✕</button>
             )}
           </div>
-          <Link href="/">
-            <span className="font-semibold text-sm tracking-wide" style={{ color: "var(--text)" }}>SafeShield</span>
+          <Link href="/" className="font-semibold text-sm tracking-wide hidden sm:block" style={{ color: "var(--text)" }}>
+            SafeShield
           </Link>
           <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
+        {/* Nav links — scrollable, hidden on very small screens */}
+        <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar flex-1 min-w-0">
           {allLinks.map((l) => {
             const active = l.href === "/" ? path === "/" : path.startsWith(l.href);
             return (
               <Link key={l.href} href={l.href}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
                   active
-                    ? "bg-[rgba(56,189,248,0.15)] text-[#38BDF8] border border-[rgba(56,189,248,0.25)]"
+                    ? "bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.25)]"
                     : "hover:bg-white/5"
                 }`}
                 style={{ color: active ? "#38BDF8" : "var(--text-dim)" }}>
@@ -121,23 +125,29 @@ export default function Navbar() {
           })}
         </div>
 
+        {/* Right-side actions */}
         <div className="flex items-center gap-1 shrink-0">
           <button onClick={toggleTheme}
-            className="glass-btn w-9 h-9 flex items-center justify-center"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-muted)" }} /> : <Moon size={14} style={{ color: "var(--text-muted)" }} />}
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+            {theme === "dark"
+              ? <Sun size={13} style={{ color: "var(--text-muted)" }} />
+              : <Moon size={13} style={{ color: "var(--text-muted)" }} />}
           </button>
 
           {(isAdmin || isOrgAdmin) && (
-            <Link href="/org" className="glass-btn w-9 h-9 flex items-center justify-center" title="Organisations" aria-label="Organisations">
-              <Building2 size={14} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-muted)" }} />
+            <Link href="/org"
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+              title="Organisations">
+              <Building2 size={13} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
 
           {isAdmin && (
-            <Link href="/admin" className="glass-btn w-9 h-9 flex items-center justify-center" title="Admin Panel" aria-label="Admin panel">
-              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-muted)" }} />
+            <Link href="/admin"
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+              title="Admin Panel">
+              <LayoutDashboard size={13} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
 
@@ -146,11 +156,11 @@ export default function Navbar() {
               <button onClick={() => setUserMenuOpen(!userMenuOpen)}
                 aria-label="Open user menu"
                 aria-expanded={userMenuOpen}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[36px] rounded-lg glass hover:bg-white/10 transition-all">
-                <div className="w-5 h-5 rounded-full bg-[rgba(56,189,248,0.2)] flex items-center justify-center">
-                  <User size={10} className="text-[#38BDF8]" />
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-white/10 transition-all">
+                <div className="w-6 h-6 rounded-full bg-[rgba(56,189,248,0.2)] flex items-center justify-center shrink-0">
+                  <User size={11} className="text-[#38BDF8]" />
                 </div>
-                <span className="text-xs max-w-[80px] truncate" style={{ color: "var(--text-dim)" }}>
+                <span className="text-xs max-w-[60px] truncate hidden sm:block" style={{ color: "var(--text-dim)" }}>
                   {profile?.full_name?.split(" ")[0] ?? user.email?.split("@")[0]}
                 </span>
                 <ChevronDown size={10} style={{ color: "var(--text-dim)" }} />
@@ -163,7 +173,7 @@ export default function Navbar() {
                     <p className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>{profile?.full_name ?? "User"}</p>
                     <p className="text-[0.65rem] truncate" style={{ color: "var(--text-muted)" }}>{user.email}</p>
                     {isAdmin && (
-                      <span className="inline-block mt-1 text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-medium">Admin</span>
+                      <span className="inline-block mt-1 text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-medium">Super Admin</span>
                     )}
                   </div>
                   <div className="p-1">

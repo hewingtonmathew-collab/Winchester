@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Camera, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -12,7 +12,6 @@ interface Props {
 export default function ToolIconUpload({ onUpload, onClear, hasCustom }: Props) {
   const { profile } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [hovered, setHovered] = useState(false);
 
   if (profile?.role !== "admin") return null;
 
@@ -32,32 +31,23 @@ export default function ToolIconUpload({ onUpload, onClear, hasCustom }: Props) 
 
   return (
     <>
-      {/* Full overlay on hover */}
-      <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+      {/* Persistent camera badge — tap/click to upload (works on mobile) */}
+      <button
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); inputRef.current?.click(); }}
-        title="Upload custom icon (admin)"
-        className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-150 z-10"
-        style={{
-          background: hovered ? "rgba(0,0,0,0.55)" : "transparent",
-        }}>
-        {hovered && (
-          <>
-            <Camera size={14} color="#fff" />
-            <span className="text-[9px] text-white mt-0.5 font-medium">Upload</span>
-          </>
-        )}
-      </div>
+        title="Upload icon (super admin)"
+        className="absolute bottom-0 right-0 w-4 h-4 rounded-full flex items-center justify-center z-10"
+        style={{ background: "rgba(56,189,248,0.95)", border: "1.5px solid rgba(0,0,0,0.3)" }}>
+        <Camera size={8} color="#fff" />
+      </button>
 
-      {/* Remove button — only when custom icon set */}
+      {/* Remove button — only when custom icon is set */}
       {hasCustom && onClear && (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClear(); }}
           title="Remove custom icon"
-          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center z-20"
-          style={{ background: "rgba(239,68,68,0.9)", border: "1px solid rgba(239,68,68,0.5)" }}>
-          <X size={8} color="#fff" />
+          className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center z-20 text-white"
+          style={{ background: "rgba(239,68,68,0.9)", border: "1.5px solid rgba(0,0,0,0.3)", fontSize: 8 }}>
+          ✕
         </button>
       )}
 
