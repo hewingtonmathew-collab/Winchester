@@ -120,6 +120,7 @@ export default function ImprovementReport({
   const [emailSending, setEmailSending] = useState(false);
   const [notesSaving, setNotesSaving] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
   const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const { enabledTools, user } = useAuth();
@@ -624,10 +625,55 @@ ${css}
               </p>
               {isSuperAdmin && (
                 <button
-                  onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10, cursor: "pointer",
+                  onClick={async () => {
+                    setGenerating(true);
+                    try {
+                      const high = gaps.filter(g => g.priority === "high");
+                      const med = gaps.filter(g => g.priority === "medium");
+                      const low = gaps.filter(g => g.priority === "low");
+                      const gapText = gaps.length > 0
+                        ? gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join("\n")
+                        : "No specific gaps were recorded for this assessment.";
+
+                      const prompt = `You are a SafeShield education consultant writing a formal improvement report for a UK school.
+
+Assessment: ${toolName}
+School: ${meta.schoolName || "School"}
+Score: ${score}% — ${rating}
+Staff member: ${meta.staffMember || "N/A"}
+Date: ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+
+Identified gaps (${gaps.length} total — ${high.length} high, ${med.length} medium, ${low.length} lower priority):
+${gapText}
+
+Write a professional improvement report for the headteacher. Include:
+1. A brief executive summary of findings
+2. Key priority actions for each HIGH priority gap (with specific, actionable steps referencing relevant UK frameworks — KCSIE, EIF, DfE standards, UK GDPR as appropriate)
+3. Medium-term improvements for MEDIUM priority gaps
+4. Recommended next steps (3-4 bullet points)
+
+Keep the tone professional but accessible. Be specific to the gaps listed. Do not use generic filler. Format with clear headings using ALL CAPS section titles.`;
+
+                      const res = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+                      });
+                      const json = await res.json();
+                      if (json.text) setConsultantNotes(json.text);
+                    } catch {
+                      setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps));
+                    } finally {
+                      setGenerating(false);
+                    }
+                  }}
+                  disabled={generating}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10,
+                    cursor: generating ? "default" : "pointer", opacity: generating ? 0.7 : 1,
                     background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 11, fontWeight: 600 }}>
-                  <Sparkles size={11} /> Generate Recommendations
+                  {generating
+                    ? <><span style={{ display: "inline-block", width: 10, height: 10, border: `1.5px solid ${accentColor}40`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Generating…</>
+                    : <><Sparkles size={11} /> Generate Recommendations</>}
                 </button>
               )}
             </div>
