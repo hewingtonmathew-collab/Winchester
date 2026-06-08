@@ -14,7 +14,7 @@ const COLOR = "#F472B6";
 const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("accessibility");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("accessibility");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
@@ -29,7 +29,7 @@ export default function AccessibilityPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="accessibility" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="accessibility" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

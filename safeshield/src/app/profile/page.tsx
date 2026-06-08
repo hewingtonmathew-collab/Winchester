@@ -56,7 +56,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading: bannerUploading } = useToolBanner("profile");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading: bannerUploading } = useToolBanner("profile");
   const [reports, setReports] = useState<Report[]>([]);
   const [org, setOrg] = useState<Organisation | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -315,7 +315,7 @@ export default function ProfilePage() {
               "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%)",
           }}
         />
-        <BannerUploadButton toolSlug="profile" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={bannerUploading} />
+        <BannerUploadButton toolSlug="profile" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={bannerUploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
 
         {/* Status badge */}
         <div className="absolute top-4 right-4 z-10">

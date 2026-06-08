@@ -14,7 +14,7 @@ const COLOR = "#A78BFA";
 const AREAS = ["Board structure & delegation", "Skills, membership & CPD", "Statutory policy compliance", "Website publication requirements", "Accountability & challenge", "Financial oversight", "Register of interests"];
 
 export default function GovernancePage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("governance");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("governance");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("governance-title", "Governance Compliance Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("governance-desc", "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.");
   return (
@@ -29,7 +29,7 @@ export default function GovernancePage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="governance" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="governance" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

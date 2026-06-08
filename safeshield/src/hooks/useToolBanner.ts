@@ -81,5 +81,20 @@ export function useToolBanner(toolSlug: string) {
     }
   }, [toolSlug]);
 
-  return { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading };
+  const clearBanner = useCallback(async () => {
+    // Remove from Supabase
+    try {
+      await supabase.from("tool_settings").upsert(
+        { tool_slug: toolSlug, banner_url: null, updated_at: new Date().toISOString() },
+        { onConflict: "tool_slug" }
+      );
+    } catch { /* ignore */ }
+    // Remove from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(LS_KEY(toolSlug));
+    }
+    setBannerUrl(DEFAULT_BANNER);
+  }, [toolSlug]);
+
+  return { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading };
 }

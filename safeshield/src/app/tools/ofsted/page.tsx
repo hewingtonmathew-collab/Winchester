@@ -20,7 +20,7 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function OfstedPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ofsted");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("ofsted");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ofsted-title", "Ofsted Ready Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ofsted-desc", "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement before inspection.");
   return (
@@ -35,7 +35,7 @@ export default function OfstedPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="ofsted" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="ofsted" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

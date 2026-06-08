@@ -27,7 +27,7 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function DigitalStandardsPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("digital-standards");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("digital-standards");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("digital-standards-title", "Digital & Technology Standards");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("digital-standards-desc", "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.");
   return (
@@ -42,7 +42,7 @@ export default function DigitalStandardsPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="digital-standards" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="digital-standards" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

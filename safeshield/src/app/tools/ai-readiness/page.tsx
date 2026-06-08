@@ -27,7 +27,7 @@ const RATINGS: [string, string, string][] = [
 ];
 
 export default function AiReadinessPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-readiness");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("ai-readiness");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-readiness-title", "AI Readiness Assessment");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-readiness-desc", "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.");
   return (
@@ -42,7 +42,7 @@ export default function AiReadinessPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="ai-readiness" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="ai-readiness" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

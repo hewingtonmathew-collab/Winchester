@@ -14,7 +14,7 @@ const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
 
 export default function SafeguardingPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("safeguarding");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("safeguarding");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("safeguarding-title", "Safeguarding Risk Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("safeguarding-desc", "Answer 15 structured questions across key safeguarding areas to receive an instant risk rating and prioritised action list aligned to KCSIE expectations.");
   return (
@@ -29,7 +29,7 @@ export default function SafeguardingPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="safeguarding" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="safeguarding" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

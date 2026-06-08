@@ -29,7 +29,7 @@ const LEGISLATION = [
 ];
 
 export default function HealthSafetyPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("health-safety");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("health-safety");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("health-safety-title", "Health & Safety Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("health-safety-desc", "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.");
   return (
@@ -44,7 +44,7 @@ export default function HealthSafetyPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="health-safety" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="health-safety" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

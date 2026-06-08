@@ -21,7 +21,7 @@ const SIGNALS: [string, string][] = [
 ];
 
 export default function AiDetectorPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-detector");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("ai-detector");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
@@ -36,7 +36,7 @@ export default function AiDetectorPage() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="ai-detector" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="ai-detector" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",

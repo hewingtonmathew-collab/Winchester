@@ -97,7 +97,7 @@ function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; logged
 
 export default function HomePage() {
   const { user, enabledTools, profile } = useAuth();
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("home");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("home");
   const { value: heroLine1, save: saveHeroLine1 } = useEditableContent("home-hero-line1", "Your School Tools,");
   const { value: heroLine2, save: saveHeroLine2 } = useEditableContent("home-hero-line2", "One Place.");
   const { value: heroSub, save: saveHeroSub } = useEditableContent("home-hero-sub", "Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.");
@@ -163,7 +163,9 @@ export default function HomePage() {
             toolSlug="home"
             onUploaded={(url) => setBannerUrl(url)}
             uploadBanner={uploadBanner}
+            clearBanner={clearBanner}
             uploading={uploading}
+            hasCustomBanner={bannerUrl !== "/banner-bg.mp4"}
           />
         )}
 

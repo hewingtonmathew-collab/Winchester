@@ -6,13 +6,17 @@ interface BannerUploadButtonProps {
   toolSlug: string;
   onUploaded: (url: string) => void;
   uploadBanner: (file: File) => Promise<string | undefined>;
+  clearBanner?: () => Promise<void>;
   uploading: boolean;
+  hasCustomBanner?: boolean;
 }
 
 export default function BannerUploadButton({
   onUploaded,
   uploadBanner,
+  clearBanner,
   uploading,
+  hasCustomBanner,
 }: BannerUploadButtonProps) {
   const { profile } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -91,6 +95,30 @@ export default function BannerUploadButton({
           </>
         )}
       </button>
+
+      {/* Remove banner button — only when a custom banner is set */}
+      {hasCustomBanner && clearBanner && !uploading && !saved && (
+        <button
+          type="button"
+          onClick={clearBanner}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "5px 12px",
+            borderRadius: 999,
+            border: "1px solid rgba(239,68,68,0.5)",
+            background: "rgba(239,68,68,0.15)",
+            backdropFilter: "blur(8px)",
+            color: "#FCA5A5",
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          ✕ Remove Banner
+        </button>
+      )}
 
       {/* Spec hint — only shown when not uploading/saved */}
       {!uploading && !saved && (
