@@ -11,6 +11,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Apply saved theme before first paint to avoid flash */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('safeshield_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();` }} />
+      </head>
       <body className="relative z-[1]">
         <AuthProvider>
           <Navbar />
