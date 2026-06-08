@@ -4,6 +4,7 @@ import SafeguardingChecker from "@/components/forms/SafeguardingChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconSafeguarding } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -79,7 +80,14 @@ export default function SafeguardingPage() {
                   </ul>
                 </GlassCard>
 
-                <GlassCard>
+                <SidebarVideoCard
+                  toolSlug="safeguarding"
+                  color={COLOR}
+                  defaultTitle="Watch: Safeguarding in Schools"
+                  defaultDescription="An overview of digital safeguarding expectations and KCSIE requirements for school leaders."
+                />
+
+                                <GlassCard>
                   <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
                   <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Questions are aligned to KCSIE, the UK Council for Internet Safety (UKCIS) framework, and Ofsted inspection expectations.</p>
                 </GlassCard>

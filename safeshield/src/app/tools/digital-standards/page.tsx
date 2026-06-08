@@ -4,6 +4,7 @@ import DigitalStandardsChecker from "@/components/forms/DigitalStandardsChecker"
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDigitalStandards } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -80,6 +81,13 @@ export default function DigitalStandardsPage() {
               <DigitalStandardsChecker />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="digital-standards"
+                color={COLOR}
+                defaultTitle="Watch: DfE Digital Standards"
+                defaultDescription="An overview of the DfE digital and technology standards for schools and what compliance requires."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">

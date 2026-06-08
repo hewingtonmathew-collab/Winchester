@@ -4,6 +4,7 @@ import GovernanceChecker from "@/components/forms/GovernanceChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconGovernance } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -67,6 +68,13 @@ export default function GovernancePage() {
               <GovernanceChecker />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="governance"
+                color={COLOR}
+                defaultTitle="Watch: School Governance"
+                defaultDescription="What good governance looks like in UK schools and how to evidence it for Ofsted."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
                 <ul className="flex flex-col gap-2">

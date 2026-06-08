@@ -4,6 +4,7 @@ import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAccessibility } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -67,6 +68,13 @@ export default function AccessibilityPage() {
               <AccessibilityChecker />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="accessibility"
+                color={COLOR}
+                defaultTitle="Watch: Website Accessibility"
+                defaultDescription="What the Public Sector Bodies Accessibility Regulations require from schools and how to comply."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
                 <ul className="flex flex-col gap-2">

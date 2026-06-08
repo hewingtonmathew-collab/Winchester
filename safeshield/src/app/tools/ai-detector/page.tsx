@@ -4,6 +4,7 @@ import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconAIDetector } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -74,6 +75,13 @@ export default function AiDetectorPage() {
               <DetectorForm />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="ai-detector"
+                color={COLOR}
+                defaultTitle="Watch: AI Detection Explained"
+                defaultDescription="How statistical signals can indicate AI-generated content and the limitations of automated detection."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>How It Works</h2>
                 <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-muted)" }}>Six statistical signals are scored and combined into a 0&ndash;100 AI likelihood score.</p>

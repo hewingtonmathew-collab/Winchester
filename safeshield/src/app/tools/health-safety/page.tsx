@@ -4,6 +4,7 @@ import HealthSafetyChecker from "@/components/forms/HealthSafetyChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconHealthSafety } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -82,6 +83,13 @@ export default function HealthSafetyPage() {
               <HealthSafetyChecker />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="health-safety"
+                color={COLOR}
+                defaultTitle="Watch: H&S in Schools"
+                defaultDescription="Key health and safety obligations for school leaders and what a compliant school looks like."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">

@@ -4,6 +4,7 @@ import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconDPIA } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -81,6 +82,13 @@ export default function DpiaPage() {
               <DpiaWizard />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="dpia"
+                color={COLOR}
+                defaultTitle="Watch: What is a DPIA?"
+                defaultDescription="When a DPIA is legally required, how to complete one, and what the ICO expects from schools."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>6 Guided Steps</h2>
                 <ol className="flex flex-col gap-2">

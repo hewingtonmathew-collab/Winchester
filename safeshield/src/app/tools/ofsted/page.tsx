@@ -4,6 +4,7 @@ import OfstedChecker from "@/components/forms/OfstedChecker";
 import GlassCard from "@/components/ui/GlassCard";
 import { IconOfsted } from "@/components/ui/ToolIcons";
 import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
 import EditableText from "@/components/ui/EditableText";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
@@ -73,6 +74,13 @@ export default function OfstedPage() {
               <OfstedChecker />
             </div>
             <div className="flex flex-col gap-4">
+              <SidebarVideoCard
+                toolSlug="ofsted"
+                color={COLOR}
+                defaultTitle="Watch: Ofsted EIF Overview"
+                defaultDescription="A summary of the Education Inspection Framework and what inspectors look for in each judgement area."
+              />
+
 <GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>EIF Framework Areas</h2>
                 <ul className="flex flex-col gap-2">
