@@ -76,11 +76,11 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => isAdmin && logoInputRef.current?.click()}
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.35)] overflow-hidden relative"
+                className={`w-8 h-8 rounded-xl flex items-center justify-center border border-[rgba(56,189,248,0.35)] overflow-hidden relative ${logoUrl ? "" : "bg-[rgba(56,189,248,0.15)]"}`}
                 style={{ cursor: isAdmin ? "pointer" : "default" }}
                 title={isAdmin ? "Upload logo" : undefined}>
                 {logoUrl
-                  ? <img src={logoUrl} alt="logo" className="w-full h-full object-cover" />
+                  ? <img src={logoUrl} alt="logo" className="w-full h-full object-contain" />
                   : <Shield size={17} className="text-[#38BDF8]" strokeWidth={1.8} />}
                 {/* Camera badge for admin */}
                 {isAdmin && (

@@ -33,7 +33,7 @@ export default function ToolIconWrapper({ slug, Icon, size = 64 }: Props) {
         <img
           src={iconUrl}
           alt=""
-          style={{ width: size, height: size, objectFit: "contain", borderRadius: size * 0.22 }}
+          style={{ width: size, height: size, objectFit: "contain" }}
         />
       ) : (
         <Icon size={size} />

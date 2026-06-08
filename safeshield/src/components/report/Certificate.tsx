@@ -184,7 +184,7 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
 .page{width:210mm;height:297mm;display:flex;flex-direction:column;align-items:center;padding:12mm 16mm 10mm;position:relative;overflow:hidden}
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
-.logo-img{height:52px;object-fit:contain;border-radius:10px;padding:5px}
+.logo-img{height:52px;object-fit:contain;border-radius:10px;max-width:140px}
 .consultant{text-align:right}
 .consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
 .consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
@@ -334,11 +334,11 @@ ${css}
             </div>
             {displaySchoolLogo && (
               <img src={displaySchoolLogo} alt="School logo"
-                style={{ height: 40, objectFit: "contain", borderRadius: 8, background: "rgba(255,255,255,0.06)", padding: 4 }} />
+                style={{ height: 40, objectFit: "contain", borderRadius: 8, maxWidth: 120 }} />
             )}
             {displayOrgLogo && (
               <img src={displayOrgLogo} alt="Org logo"
-                style={{ height: 40, objectFit: "contain", borderRadius: 8, background: "rgba(255,255,255,0.06)", padding: 4 }} />
+                style={{ height: 40, objectFit: "contain", borderRadius: 8, maxWidth: 120 }} />
             )}
           </div>
           {/* Tool name iridescent pill */}
