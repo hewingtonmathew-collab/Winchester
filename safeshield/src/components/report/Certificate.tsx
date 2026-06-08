@@ -118,31 +118,31 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     const logoLeft  = displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "";
 
     const css = dark ? `
-.page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 55%,${accentColor}18 100%)}
-.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1px solid rgba(255,255,255,0.07)}
-.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
-.consultant-name{color:#D8E4F0}
-.consultant-role{color:#8A9BB0}
-.tool-pill{background:rgba(200,220,240,0.08);border:1.5px solid ${accentColor}70;color:#C8D8E8}
-.certifies-label{color:#9AAABB}
-.school-name{color:#E8EDF2}
-.completed-sub{color:#9AAABB}
-.completed-sub strong{color:#C8D8E8}
-.rating-pill{background:rgba(255,255,255,0.07);border:1.5px solid ${ratingColor}99;color:${ratingColor}}
-.score-label{color:#8A9BB0}
-.details-panel{background:rgba(200,220,240,0.06);border:1px solid rgba(200,220,240,0.15);border-top-color:rgba(200,220,240,0.25)}
-.field-label{color:#8A9BB0}
-.field-value{color:#D8E4F0}
-.areas-panel{background:rgba(200,220,240,0.05);border:1px solid rgba(200,220,240,0.12);border-top-color:rgba(200,220,240,0.20)}
-.areas-heading{color:#8A9BB0}
-.area-cell{border-bottom:1px solid rgba(200,220,240,0.08)}
-.area-name{color:#C8D8E8}
-.area-score{color:${accentColor}}
-.sig-rule{background:rgba(180,200,220,0.40)}
-.sig-name{color:#D8E4F0}
-.sig-role{color:#8A9BB0}
-.footer{border-top:1px solid rgba(200,220,240,0.15)}
-.footer span{color:#8A9BB0}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1px solid rgba(212,168,67,0.20)}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(212,168,67,0.10)}
+.page{background:linear-gradient(160deg,#0F1018 0%,#181420 55%,#1C1508 100%)}
+.consultant-name{color:#D4A843}
+.consultant-role{color:#8A6420}
+.tool-pill{background:rgba(212,168,67,0.08);border:1.5px solid rgba(212,168,67,0.45);color:#D4A843}
+.certifies-label{color:#A07828}
+.school-name{color:#F0D080}
+.completed-sub{color:#8A6420}
+.completed-sub strong{color:#D4A843}
+.rating-pill{background:rgba(212,168,67,0.07);border:1.5px solid ${ratingColor}99;color:${ratingColor}}
+.score-label{color:#8A6420}
+.details-panel{background:rgba(212,168,67,0.05);border:1px solid rgba(212,168,67,0.15);border-top-color:rgba(212,168,67,0.25)}
+.field-label{color:#8A6420}
+.field-value{color:#D4A843}
+.areas-panel{background:rgba(212,168,67,0.04);border:1px solid rgba(212,168,67,0.12);border-top-color:rgba(212,168,67,0.20)}
+.areas-heading{color:#8A6420}
+.area-cell{border-bottom:1px solid rgba(212,168,67,0.08)}
+.area-name{color:#C8A040}
+.area-score{color:#D4A843}
+.sig-rule{background:rgba(212,168,67,0.50)}
+.sig-name{color:#D4A843}
+.sig-role{color:#8A6420}
+.footer{border-top:1px solid rgba(212,168,67,0.18)}
+.footer span{color:#8A6420}
 .accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
 ` : `
 .page{background:linear-gradient(160deg,#FFFEF8 0%,#FFF8E8 60%,#FFF4D6 100%);border:1px solid #E8D5A0}
@@ -344,17 +344,17 @@ ${css}
         position: "relative",
         borderRadius: 28,
         overflow: "hidden",
-        background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 45%, ${accentColor}1A 100%)`,
-        boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 24px 80px rgba(0,0,0,0.7), 0 0 60px ${accentColor}22`,
+        background: `linear-gradient(145deg, #0F1018 0%, #181420 50%, #1C1508 100%)`,
+        boxShadow: `0 0 0 1px rgba(212,168,67,0.18), 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(212,168,67,0.08)`,
         padding: "32px 36px 28px",
         fontFamily: "'Cormorant Garant', Georgia, serif",
       }}>
 
         {/* Ambient glow blobs */}
         <div style={{ position: "absolute", top: -80, right: -80, width: 300, height: 300, borderRadius: "50%",
-          background: `radial-gradient(circle, ${accentColor}25 0%, transparent 70%)`, pointerEvents: "none" }} />
+          background: "radial-gradient(circle, rgba(212,168,67,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -60, left: -60, width: 240, height: 240, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+          background: "radial-gradient(circle, rgba(180,130,40,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* ── Top bar ─────────────────────────────────────────────────── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, position: "relative", zIndex: 1 }}>
@@ -362,9 +362,9 @@ ${css}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: 10 }}>
               <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase" as const, lineHeight: 1 }}>
-                <span style={{ fontWeight: 300, color: "#8A9BB0" }}>SAFE</span><span style={{ fontWeight: 700, color: "#C8D8E8" }}>SHIELD</span>
+                <span style={{ fontWeight: 300, color: "#A07828" }}>SAFE</span><span style={{ fontWeight: 700, color: "#D4A843" }}>SHIELD</span>
               </div>
-              <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "#6A7E94", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
+              <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "#8A6420", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
             </div>
             {displaySchoolLogo && (
               <img src={displaySchoolLogo} alt="School logo"
@@ -387,22 +387,22 @@ ${css}
 
         {/* ── Certifies label ─────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 10, position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: "#B8C4D0", letterSpacing: "0.14em", fontFamily: "'Cormorant Garant', Georgia, serif" }}>
+          <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: "#A07828", letterSpacing: "0.14em", fontFamily: "'Cormorant Garant', Georgia, serif" }}>
             This is to certify that
           </span>
         </div>
 
         {/* ── School name ─────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 8, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 40, fontWeight: 600, color: "#E8EDF2", lineHeight: 1.1, margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", letterSpacing: "0.02em" }}>
+          <p style={{ fontSize: 40, fontWeight: 600, color: "#F0D080", lineHeight: 1.1, margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", letterSpacing: "0.02em" }}>
             {meta.schoolName || "School Name"}
           </p>
         </div>
 
         {/* ── Subtitle ────────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 28, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 15, color: "#9AAABB", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", fontStyle: "italic" }}>
-            has successfully completed the <span style={{ color: "#C8D8E8", fontStyle: "normal", fontWeight: 600 }}>{toolName}</span>
+          <p style={{ fontSize: 15, color: "#8A6420", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", fontStyle: "italic" }}>
+            has successfully completed the <span style={{ color: "#D4A843", fontStyle: "normal", fontWeight: 600 }}>{toolName}</span>
           </p>
         </div>
 
@@ -415,7 +415,7 @@ ${css}
         </div>
 
         {/* Horizontal divider */}
-        <div style={{ height: 1, background: "rgba(255,255,255,0.10)", marginBottom: 20, position: "relative", zIndex: 1 }} />
+        <div style={{ height: 1, background: "rgba(212,168,67,0.20)", marginBottom: 20, position: "relative", zIndex: 1 }} />
 
         {/* ── 3-column details row ─────────────────────────────────────── */}
         <div style={{ ...glassPanel, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "4px 16px", marginBottom: 16, position: "relative", zIndex: 1 }}>
@@ -425,8 +425,8 @@ ${css}
             { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
           ].map((col) => (
             <div key={col.label} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A9BB0", textTransform: "uppercase" as const, letterSpacing: "0.14em" }}>{col.label}</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: "#D8E4F0", lineHeight: 1.2 }}>{col.value}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A6420", textTransform: "uppercase" as const, letterSpacing: "0.14em" }}>{col.label}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#D4A843", lineHeight: 1.2, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{col.value}</span>
             </div>
           ))}
         </div>
@@ -435,13 +435,13 @@ ${css}
         {areas && areas.length > 0 && (
           <div style={{ ...glassPanel, padding: "16px 20px", marginBottom: 20, position: "relative", zIndex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A9BB0", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
-              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(200,220,240,0.25), transparent)" }} />
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A6420", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(212,168,67,0.30), transparent)" }} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 20px" }}>
               {areas.slice(0, 8).map(a => (
                 <div key={a.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontSize: 11, color: "#C8D8E8", lineHeight: 1.3 }}>{a.name}</span>
+                  <span style={{ fontSize: 11, color: "#C8A040", lineHeight: 1.3 }}>{a.name}</span>
                   {a.score !== undefined && (
                     <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, whiteSpace: "nowrap", paddingLeft: 8 }}>{a.score}%</span>
                   )}
@@ -454,16 +454,16 @@ ${css}
         {/* ── Signature line ───────────────────────────────────────────── */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, position: "relative", zIndex: 1 }}>
           <div style={{ textAlign: "right" }}>
-            <div style={{ height: 1, width: 140, background: "rgba(180,200,220,0.45)", marginBottom: 6, marginLeft: "auto" }} />
-            <p style={{ fontSize: 13, color: "#D8E4F0", fontStyle: "italic", margin: 0 }}>{meta.consultantName || "Mathew Hewington"}</p>
-            <p style={{ fontSize: 10, color: "#8A9BB0", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Education Consultant</p>
+            <div style={{ height: 1, width: 140, background: "rgba(212,168,67,0.50)", marginBottom: 6, marginLeft: "auto" }} />
+            <p style={{ fontSize: 15, color: "#D4A843", fontStyle: "italic", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{meta.consultantName || "Mathew Hewington"}</p>
+            <p style={{ fontSize: 9, color: "#8A6420", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.12em", fontFamily: "system-ui, sans-serif" }}>Education Consultant</p>
           </div>
         </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
-        <div style={{ paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 9, fontWeight: 600, color: "#8A9BB0", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
-          <span style={{ fontSize: 9, color: "#8A9BB0", letterSpacing: "0.1em" }}>{certId}</span>
+        <div style={{ paddingTop: 14, borderTop: "1px solid rgba(212,168,67,0.20)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
+          <span style={{ fontSize: 9, fontWeight: 600, color: "#8A6420", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
+          <span style={{ fontSize: 9, color: "#8A6420", letterSpacing: "0.1em" }}>{certId}</span>
         </div>
       </div>
 
