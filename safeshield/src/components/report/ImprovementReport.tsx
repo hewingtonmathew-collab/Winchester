@@ -422,7 +422,7 @@ html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-co
     }).join("");
 
     const css = dark ? `
-.page{background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}14 100%)}
+.page{background:linear-gradient(160deg,#1A1C22 0%,#21242D 60%,#1E2028 100%)}
 .report-tag{color:rgba(255,255,255,0.65)}
 .report-title{color:#fff}
 .report-sub{color:rgba(255,255,255,0.70)}
@@ -482,9 +482,9 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
 .report-sub{font-size:11px;margin-top:4px}
 .header-right{text-align:right}
 .wordmark{font-size:12px;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:3px}
-.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#C49A3C"}}
-.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#8A6420"}}
-.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;color:${dark ? "rgba(255,255,255,0.4)" : "#C49A3C"}}
+.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#1E293B"}}
+.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#0F172A"}}
+.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;color:${dark ? "rgba(255,255,255,0.4)" : "#475569"}}
 .consultant-name{font-size:13px;font-weight:600}
 .consultant-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 .accent-rule{height:2px;border-radius:2px;margin-bottom:7mm}
@@ -520,8 +520,6 @@ ${css}
       ${displayOrgLogo ? `<img src="${displayOrgLogo}" style="height:40px;max-width:110px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
       <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
       <div class="wordmark-tag">Protect · Comply · Assure</div>
-      <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
-      <p class="consultant-role">Education Consultant</p>
     </div>
   </div>
   <div class="accent-rule"></div>
@@ -602,7 +600,7 @@ ${css}
       position: "relative",
       borderRadius: 24,
       overflow: "hidden",
-      background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 50%, ${accentColor}18 100%)`,
+      background: `linear-gradient(145deg, #1A1C22 0%, #21242D 50%, #1E2028 100%)`,
       boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.6), 0 0 50px ${accentColor}18`,
       fontFamily: "system-ui, -apple-system, sans-serif",
     }}>

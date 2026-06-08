@@ -118,62 +118,58 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
     const logoLeft  = displaySchoolLogo ? `<img src="${displaySchoolLogo}" class="logo-img"/>` : "";
 
     const css = dark ? `
-.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1px solid rgba(212,168,67,0.20)}
-.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(212,168,67,0.10)}
-.page{background:linear-gradient(160deg,#0F1018 0%,#181420 55%,#1C1508 100%)}
-.consultant-name{color:#D4A843}
-.consultant-role{color:#8A6420}
-.tool-pill{background:rgba(212,168,67,0.08);border:1.5px solid rgba(212,168,67,0.45);color:#D4A843}
-.certifies-label{color:#A07828}
-.school-name{color:#F0D080}
-.completed-sub{color:#8A6420}
-.completed-sub strong{color:#D4A843}
-.rating-pill{background:rgba(212,168,67,0.07);border:1.5px solid ${ratingColor}99;color:${ratingColor}}
-.score-label{color:#8A6420}
-.details-panel{background:rgba(212,168,67,0.05);border:1px solid rgba(212,168,67,0.15);border-top-color:rgba(212,168,67,0.25)}
-.field-label{color:#8A6420}
-.field-value{color:#D4A843}
-.areas-panel{background:rgba(212,168,67,0.04);border:1px solid rgba(212,168,67,0.12);border-top-color:rgba(212,168,67,0.20)}
-.areas-heading{color:#8A6420}
-.area-cell{border-bottom:1px solid rgba(212,168,67,0.08)}
-.area-name{color:#C8A040}
-.area-score{color:#D4A843}
-.sig-rule{background:rgba(212,168,67,0.50)}
-.sig-name{color:#D4A843}
-.sig-role{color:#8A6420}
-.footer{border-top:1px solid rgba(212,168,67,0.18)}
-.footer span{color:#8A6420}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1px solid rgba(160,175,195,0.18)}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(160,175,195,0.09)}
+.page{background:linear-gradient(160deg,#1A1C22 0%,#21242D 55%,#1E2028 100%)}
+.tool-pill{background:rgba(160,175,195,0.08);border:1.5px solid rgba(160,175,195,0.40);color:#B8C8D8}
+.certifies-label{color:#8A9AAA}
+.school-name{color:#D8E4F0}
+.completed-sub{color:#6A7A8C}
+.completed-sub strong{color:#B8C8D8}
+.rating-pill{background:rgba(160,175,195,0.07);border:1.5px solid ${ratingColor}99;color:${ratingColor}}
+.score-label{color:#6A7A8C}
+.details-panel{background:rgba(160,175,195,0.05);border:1px solid rgba(160,175,195,0.14);border-top-color:rgba(160,175,195,0.22)}
+.field-label{color:#6A7A8C}
+.field-value{color:#B8C8D8}
+.areas-panel{background:rgba(160,175,195,0.04);border:1px solid rgba(160,175,195,0.11);border-top-color:rgba(160,175,195,0.18)}
+.areas-heading{color:#6A7A8C}
+.area-cell{border-bottom:1px solid rgba(160,175,195,0.08)}
+.area-name{color:#A8B8C8}
+.area-score{color:#B8C8D8}
+.sig-rule{background:rgba(160,175,195,0.45)}
+.sig-name{color:#B8C8D8}
+.sig-role{color:#6A7A8C}
+.footer{border-top:1px solid rgba(160,175,195,0.15)}
+.footer span{color:#6A7A8C}
 .accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
 ` : `
-.page{background:#fff;border:1px solid #E8D5A0}
-.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1.5px solid #C49A3C66}
-.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid #C49A3C33}
-.consultant-name{color:#B8860B}
-.consultant-role{color:#C49A3C}
-.wordmark-safe{color:#C49A3C;font-weight:300}
-.wordmark-shield{color:#8A6420;font-weight:700}
-.wordmark-tag{color:#C49A3C}
-.tool-pill{background:#FFF8E6;border:1.5px solid #C49A3C;color:#8A6420}
-.certifies-label{color:#C49A3C;font-style:italic}
-.school-name{color:#7C5A1A}
-.completed-sub{color:#C49A3C;font-style:italic}
-.completed-sub strong{color:#8A6420;font-style:normal}
+.page{background:#fff;border:1px solid #E2E8F0}
+.border-ring{position:absolute;inset:6mm;border-radius:18px;border:1.5px solid rgba(15,23,42,0.12)}
+.border-ring-inner{position:absolute;inset:8mm;border-radius:14px;border:1px solid rgba(15,23,42,0.06)}
+.wordmark-safe{color:#1E293B;font-weight:300}
+.wordmark-shield{color:#0F172A;font-weight:700}
+.wordmark-tag{color:#475569}
+.tool-pill{background:#F1F5F9;border:1.5px solid rgba(15,23,42,0.25);color:#0F172A}
+.certifies-label{color:#334155;font-style:italic}
+.school-name{color:#0F172A}
+.completed-sub{color:#334155;font-style:italic}
+.completed-sub strong{color:#0F172A;font-style:normal}
 .rating-pill{background:${ratingColor}12;border:1.5px solid ${ratingColor};color:${ratingColor}}
-.score-label{color:#C49A3C}
-.details-panel{background:#FDFAF0;border:1px solid #E8D5A0}
-.field-label{color:#C49A3C}
-.field-value{color:#8A6420}
-.areas-panel{background:#FDFAF0;border:1px solid #E8D5A0}
-.areas-heading{color:#C49A3C}
-.area-cell{border-bottom:1px solid #EDE0B8}
-.area-name{color:#8A6420}
-.area-score{color:#B8860B}
-.sig-rule{background:#C49A3C}
-.sig-name{color:#8A6420;font-style:italic}
-.sig-role{color:#C49A3C}
-.footer{border-top:1px solid #E8D5A0}
-.footer span{color:#C49A3C}
-.accent-rule{background:linear-gradient(90deg,transparent,#C49A3C,transparent)}
+.score-label{color:#475569}
+.details-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.field-label{color:#475569}
+.field-value{color:#0F172A}
+.areas-panel{background:#F8FAFC;border:1px solid #E2E8F0}
+.areas-heading{color:#475569}
+.area-cell{border-bottom:1px solid #E2E8F0}
+.area-name{color:#1E293B}
+.area-score{color:#0F172A}
+.sig-rule{background:#334155}
+.sig-name{color:#0F172A;font-style:italic}
+.sig-role{color:#475569}
+.footer{border-top:1px solid #E2E8F0}
+.footer span{color:#475569}
+.accent-rule{background:linear-gradient(90deg,transparent,${accentColor},transparent)}
 `;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
@@ -188,9 +184,9 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
 .logo-img{height:52px;object-fit:contain;max-width:140px}
 .wordmark{font-family:system-ui,-apple-system,sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;line-height:1}
-.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#C49A3C"}}
-.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#8A6420"}}
-.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:${dark ? "rgba(255,255,255,0.4)" : "#C49A3C"}}
+.wordmark-safe{font-weight:300;color:${dark ? "rgba(255,255,255,0.55)" : "#1E293B"}}
+.wordmark-shield{font-weight:700;color:${dark ? "#fff" : "#0F172A"}}
+.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:${dark ? "rgba(255,255,255,0.4)" : "#475569"}}
 .consultant{text-align:right;font-family:system-ui,-apple-system,sans-serif}
 .consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
 .consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
@@ -226,27 +222,11 @@ ${css}
   <div class="border-ring-inner"></div>
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
-      ${dark
-        ? `<div style="border-left:2px solid rgba(255,255,255,0.35);padding-left:10px">
-            <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
-            <div class="wordmark-tag">Protect · Comply · Assure</div>
-           </div>
-           ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:44px;max-width:130px;object-fit:contain"/>` : ""}`
-        : `${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:44px;max-width:130px;object-fit:contain"/>` : '<div style="width:8px"></div>'}`
-      }
+      ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:44px;max-width:130px;object-fit:contain"/>` : '<div style="width:8px"></div>'}
     </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      ${!dark
-        ? `<div style="border-right:2px solid #C49A3C;padding-right:10px;text-align:right">
-            <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
-            <div class="wordmark-tag" style="text-align:right">Protect · Comply · Assure</div>
-           </div>`
-        : ""
-      }
-      <div class="consultant">
-        <div class="consultant-name">${meta.consultantName || "Mathew Hewington"}</div>
-        <div class="consultant-role">Education Consultant</div>
-      </div>
+    <div style="text-align:right">
+      <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+      <div class="wordmark-tag" style="text-align:right">Protect · Comply · Assure</div>
     </div>
   </div>
   <span class="tool-pill"><span class="pill-dot"></span>${toolName} · Assessment Certificate</span>
@@ -359,17 +339,17 @@ ${css}
         position: "relative",
         borderRadius: 28,
         overflow: "hidden",
-        background: `linear-gradient(145deg, #0F1018 0%, #181420 50%, #1C1508 100%)`,
-        boxShadow: `0 0 0 1px rgba(212,168,67,0.18), 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(212,168,67,0.08)`,
+        background: `linear-gradient(145deg, #1A1C22 0%, #21242D 50%, #1E2028 100%)`,
+        boxShadow: `0 0 0 1px rgba(160,175,195,0.15), 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(160,175,195,0.06)`,
         padding: "32px 36px 28px",
         fontFamily: "'Cormorant Garant', Georgia, serif",
       }}>
 
         {/* Ambient glow blobs */}
         <div style={{ position: "absolute", top: -80, right: -80, width: 300, height: 300, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(212,168,67,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+          background: "radial-gradient(circle, rgba(150,170,195,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -60, left: -60, width: 240, height: 240, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(180,130,40,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
+          background: "radial-gradient(circle, rgba(130,155,185,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* ── Top bar ─────────────────────────────────────────────────── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, position: "relative", zIndex: 1 }}>
@@ -402,22 +382,22 @@ ${css}
 
         {/* ── Certifies label ─────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 10, position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: "#A07828", letterSpacing: "0.14em", fontFamily: "'Cormorant Garant', Georgia, serif" }}>
+          <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: "#8A9AAA", letterSpacing: "0.14em", fontFamily: "'Cormorant Garant', Georgia, serif" }}>
             This is to certify that
           </span>
         </div>
 
         {/* ── School name ─────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 8, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 40, fontWeight: 600, color: "#F0D080", lineHeight: 1.1, margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", letterSpacing: "0.02em" }}>
+          <p style={{ fontSize: 40, fontWeight: 600, color: "#D8E4F0", lineHeight: 1.1, margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", letterSpacing: "0.02em" }}>
             {meta.schoolName || "School Name"}
           </p>
         </div>
 
         {/* ── Subtitle ────────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 28, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 15, color: "#8A6420", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", fontStyle: "italic" }}>
-            has successfully completed the <span style={{ color: "#D4A843", fontStyle: "normal", fontWeight: 600 }}>{toolName}</span>
+          <p style={{ fontSize: 15, color: "#6A7A8C", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", fontStyle: "italic" }}>
+            has successfully completed the <span style={{ color: "#B8C8D8", fontStyle: "normal", fontWeight: 600 }}>{toolName}</span>
           </p>
         </div>
 
@@ -430,7 +410,7 @@ ${css}
         </div>
 
         {/* Horizontal divider */}
-        <div style={{ height: 1, background: "rgba(212,168,67,0.20)", marginBottom: 20, position: "relative", zIndex: 1 }} />
+        <div style={{ height: 1, background: "rgba(160,175,195,0.20)", marginBottom: 20, position: "relative", zIndex: 1 }} />
 
         {/* ── 3-column details row ─────────────────────────────────────── */}
         <div style={{ ...glassPanel, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "4px 16px", marginBottom: 16, position: "relative", zIndex: 1 }}>
@@ -440,8 +420,8 @@ ${css}
             { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
           ].map((col) => (
             <div key={col.label} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A6420", textTransform: "uppercase" as const, letterSpacing: "0.14em" }}>{col.label}</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#D4A843", lineHeight: 1.2, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{col.value}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#6A7A8C", textTransform: "uppercase" as const, letterSpacing: "0.14em" }}>{col.label}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#B8C8D8", lineHeight: 1.2, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{col.value}</span>
             </div>
           ))}
         </div>
@@ -450,13 +430,13 @@ ${css}
         {areas && areas.length > 0 && (
           <div style={{ ...glassPanel, padding: "16px 20px", marginBottom: 20, position: "relative", zIndex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "#8A6420", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
-              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(212,168,67,0.30), transparent)" }} />
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#6A7A8C", letterSpacing: "0.16em", textTransform: "uppercase" as const }}>Areas Assessed</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(160,175,195,0.30), transparent)" }} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 20px" }}>
               {areas.slice(0, 8).map(a => (
                 <div key={a.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontSize: 11, color: "#C8A040", lineHeight: 1.3 }}>{a.name}</span>
+                  <span style={{ fontSize: 11, color: "#A8B8C8", lineHeight: 1.3 }}>{a.name}</span>
                   {a.score !== undefined && (
                     <span style={{ fontSize: 10, fontWeight: 700, color: accentColor, whiteSpace: "nowrap", paddingLeft: 8 }}>{a.score}%</span>
                   )}
@@ -469,16 +449,16 @@ ${css}
         {/* ── Signature line ───────────────────────────────────────────── */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, position: "relative", zIndex: 1 }}>
           <div style={{ textAlign: "right" }}>
-            <div style={{ height: 1, width: 140, background: "rgba(212,168,67,0.50)", marginBottom: 6, marginLeft: "auto" }} />
-            <p style={{ fontSize: 15, color: "#D4A843", fontStyle: "italic", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{meta.consultantName || "Mathew Hewington"}</p>
-            <p style={{ fontSize: 9, color: "#8A6420", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.12em", fontFamily: "system-ui, sans-serif" }}>Education Consultant</p>
+            <div style={{ height: 1, width: 140, background: "rgba(160,175,195,0.45)", marginBottom: 6, marginLeft: "auto" }} />
+            <p style={{ fontSize: 15, color: "#B8C8D8", fontStyle: "italic", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{meta.consultantName || "Mathew Hewington"}</p>
+            <p style={{ fontSize: 9, color: "#6A7A8C", marginTop: 2, textTransform: "uppercase" as const, letterSpacing: "0.12em", fontFamily: "system-ui, sans-serif" }}>Education Consultant</p>
           </div>
         </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
-        <div style={{ paddingTop: 14, borderTop: "1px solid rgba(212,168,67,0.20)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 9, fontWeight: 600, color: "#8A6420", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
-          <span style={{ fontSize: 9, color: "#8A6420", letterSpacing: "0.1em" }}>{certId}</span>
+        <div style={{ paddingTop: 14, borderTop: "1px solid rgba(160,175,195,0.15)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 1 }}>
+          <span style={{ fontSize: 9, fontWeight: 600, color: "#6A7A8C", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>SafeShield · Verified Assessment</span>
+          <span style={{ fontSize: 9, color: "#6A7A8C", letterSpacing: "0.1em" }}>{certId}</span>
         </div>
       </div>
 
