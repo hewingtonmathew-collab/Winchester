@@ -10,13 +10,13 @@ const COLOR = "#F472B6";
 const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("accessibility");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("accessibility");
   return (
     <AuthGuard toolSlug="accessibility">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

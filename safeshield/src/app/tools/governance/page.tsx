@@ -10,13 +10,13 @@ const COLOR = "#A78BFA";
 const AREAS = ["Board structure & delegation", "Skills, membership & CPD", "Statutory policy compliance", "Website publication requirements", "Accountability & challenge", "Financial oversight", "Register of interests"];
 
 export default function GovernancePage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("governance");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("governance");
   return (
     <AuthGuard toolSlug="governance">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

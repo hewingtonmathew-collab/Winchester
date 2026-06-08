@@ -6,7 +6,7 @@ const DEFAULT_BANNER = "/banner-bg.mp4";
 const LS_KEY = (slug: string) => `safeshield_banner_${slug}`;
 
 function isVideo(url: string) {
-  return /\.(mp4|webm|mov|ogv)$/i.test(url) || url === DEFAULT_BANNER;
+  return /\.(mp4|webm|mov|ogv)$/i.test(url) || url === DEFAULT_BANNER || url.startsWith("data:video/");
 }
 
 function fileToDataUrl(file: File): Promise<string> {

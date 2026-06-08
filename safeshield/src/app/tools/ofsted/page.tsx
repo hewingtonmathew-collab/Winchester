@@ -16,13 +16,13 @@ const RATINGS: [string, string][] = [
 ];
 
 export default function OfstedPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ofsted");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ofsted");
   return (
     <AuthGuard toolSlug="ofsted">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

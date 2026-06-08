@@ -24,13 +24,13 @@ const TRIGGERS = [
 ];
 
 export default function DpiaPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("dpia");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("dpia");
   return (
     <AuthGuard toolSlug="dpia">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

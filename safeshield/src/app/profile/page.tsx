@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ReportViewModal from "@/components/report/ReportViewModal";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import { useToolBanner } from "@/hooks/useToolBanner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import type { Report, Organisation, School } from "@/lib/supabase";
@@ -54,6 +56,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading: bannerUploading } = useToolBanner("profile");
   const [reports, setReports] = useState<Report[]>([]);
   const [org, setOrg] = useState<Organisation | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -295,16 +298,27 @@ export default function ProfilePage() {
         className="relative overflow-hidden w-full"
         style={{ minHeight: 280 }}
       >
-        {/* Background video */}
-        <video
-          src="/banner-bg.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.25 }}
-        />
+        {/* Background banner — video or image */}
+        {isVideo(bannerUrl) ? (
+          <video
+            src={bannerUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: 0.25 }}
+          />
+        ) : (
+          <img
+            src={bannerUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: 0.38 }}
+          />
+        )}
         {/* Glass overlay */}
         <div
           className="absolute inset-0"
@@ -313,6 +327,7 @@ export default function ProfilePage() {
               "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%)",
           }}
         />
+        <BannerUploadButton toolSlug="profile" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={bannerUploading} />
 
         {/* Status badge */}
         <div className="absolute top-4 right-4 z-10">

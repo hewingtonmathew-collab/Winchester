@@ -25,13 +25,13 @@ const LEGISLATION = [
 ];
 
 export default function HealthSafetyPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("health-safety");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("health-safety");
   return (
     <AuthGuard toolSlug="health-safety">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

@@ -10,13 +10,13 @@ const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
 
 export default function SafeguardingPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("safeguarding");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("safeguarding");
   return (
     <AuthGuard toolSlug="safeguarding">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay

@@ -23,13 +23,13 @@ const RATINGS: [string, string, string][] = [
 ];
 
 export default function AiReadinessPage() {
-  const { bannerUrl, setBannerUrl, uploadBanner, uploading } = useToolBanner("ai-readiness");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-readiness");
   return (
     <AuthGuard toolSlug="ai-readiness">
       <div className="min-h-screen pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {bannerUrl.match(/\.(mp4|webm|mov)$/i) || bannerUrl === "/banner-bg.mp4" ? (
+          {isVideo(bannerUrl) ? (
             <video
               src={bannerUrl}
               autoPlay
