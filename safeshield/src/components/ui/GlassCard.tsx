@@ -12,14 +12,13 @@ export default function GlassCard({ children, className, hover, glow, shimmer }:
   return (
     <div
       className={cn(
-        "glass rounded-2xl p-6",
-        hover && "glass-hover",
-        shimmer && "glass-shimmer",
-        glow && "[box-shadow:var(--liquid-shadow),0_0_48px_var(--accent-glow)]",
+        "glass rounded-2xl p-6 relative overflow-hidden",
+        hover && "glass-hover cursor-default",
+        glow && "shadow-[0_0_32px_rgba(56,189,248,0.12)]",
         className
       )}
     >
-      {shimmer && <span className="shimmer-bar" aria-hidden />}
+      {shimmer && <span className="shimmer-run" aria-hidden />}
       {children}
     </div>
   );

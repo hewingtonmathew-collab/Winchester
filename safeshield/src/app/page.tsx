@@ -1,8 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import { cn } from "@/lib/utils";
+import { Bot, ShieldCheck, ClipboardList, Cpu, FileSearch, Globe, CheckSquare, Monitor, HardHat, ArrowRight, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 type Tool = {
@@ -46,32 +44,54 @@ const sections: { heading: string; sub: string; tools: Tool[] }[] = [
   },
 ];
 
-function ToolCard({ tool, index }: { tool: Tool; index: number }) {
+function ToolCard({ tool, delay }: { tool: Tool; delay: number }) {
   const Icon = tool.icon;
+  const delayClass = ["rise-in", "rise-in-1", "rise-in-2", "rise-in-3", "rise-in-4", "rise-in-5"][Math.min(delay, 5)];
+
   return (
-    <Link href={tool.href}
-      className={cn(
-        "glass glass-hover glass-shimmer rounded-2xl p-6 flex flex-col gap-4 group",
-        "animate-float-in-delay-" + Math.min(index + 1, 3)
-      )}
-      style={{ textDecoration: "none" }}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
-          style={{ background: tool.colorDim, border: `1px solid ${tool.colorBorder}`, boxShadow: `0 0 20px ${tool.color}20` }}>
-          <Icon size={22} style={{ color: tool.color }} strokeWidth={1.5} />
+    <Link href={tool.href} className={`block ${delayClass}`}>
+      <div
+        className="glass glass-hover rounded-2xl p-6 flex flex-col gap-5 h-full cursor-pointer"
+        style={{ "--icon-glow": `${tool.color}40` } as React.CSSProperties}
+      >
+        {/* shimmer bar */}
+        <span className="shimmer-run" aria-hidden />
+
+        {/* header row */}
+        <div className="flex items-start justify-between gap-3 relative z-10">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 icon-pulse"
+            style={{
+              background: tool.colorDim,
+              border: `1px solid ${tool.colorBorder}`,
+              boxShadow: `0 0 18px ${tool.color}30`,
+            }}
+          >
+            <Icon size={22} style={{ color: tool.color }} strokeWidth={1.5} />
+          </div>
+          <span
+            className="text-[0.6rem] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border shrink-0 mt-0.5"
+            style={{ color: tool.color, background: tool.colorDim, borderColor: tool.colorBorder }}
+          >
+            {tool.badge}
+          </span>
         </div>
-        <span className="text-[0.6rem] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border"
-          style={{ color: tool.color, background: tool.colorDim, borderColor: tool.colorBorder }}>
-          {tool.badge}
-        </span>
-      </div>
-      <div className="flex-1">
-        <h3 className="font-bold text-base mb-2 tracking-tight" style={{ color: "var(--text)" }}>{tool.title}</h3>
-        <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{tool.description}</p>
-      </div>
-      <div className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 group-hover:gap-2.5"
-        style={{ color: tool.color }}>
-        Open tool <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" />
+
+        {/* text */}
+        <div className="flex-1 relative z-10">
+          <h3 className="heading-luxury text-base mb-2" style={{ color: "var(--text)" }}>
+            {tool.title}
+          </h3>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            {tool.description}
+          </p>
+        </div>
+
+        {/* cta */}
+        <div className="flex items-center gap-1.5 text-sm font-semibold relative z-10 group/cta" style={{ color: tool.color }}>
+          Open tool
+          <ArrowRight size={14} className="transition-transform duration-200 group-hover/cta:translate-x-1" />
+        </div>
       </div>
     </Link>
   );
@@ -94,60 +114,58 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* Hero */}
-        <div className="pt-14 pb-20 text-center">
-          <div className="animate-float-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8"
-            style={{ border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse-dot" />
-            <span className="text-xs font-semibold tracking-widest uppercase">SafeShield Tool Suite</span>
+        <div className="pt-12 pb-16 text-center rise-in">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-[rgba(56,189,248,0.22)] text-[#38BDF8] text-xs font-semibold mb-8 relative overflow-hidden">
+            <span className="shimmer-run" aria-hidden />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] dot-pulse shrink-0" />
+            SafeShield Tool Suite
           </div>
-          <h1 className="animate-float-in-delay-1 heading-luxury text-4xl sm:text-5xl lg:text-6xl mb-6 leading-[1.1]"
-            style={{ color: "var(--text)" }}>
-            Your School Tools,<br />
-            <span style={{
-              background: "linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #A78BFA 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: "drop-shadow(0 0 30px rgba(56,189,248,0.4))"
-            }}>
-              One Place.
-            </span>
+
+          <h1 className="heading-luxury text-4xl sm:text-5xl lg:text-6xl mb-5">
+            <span style={{ color: "var(--text)" }}>Your School Tools,</span>
+            <br />
+            <span className="gradient-text">One Place.</span>
           </h1>
-          <p className="animate-float-in-delay-2 text-lg max-w-2xl mx-auto leading-relaxed"
-            style={{ color: "var(--text-muted)" }}>
-            Professional tools for safeguarding, governance, AI readiness, digital standards,<br className="hidden sm:block" />
-            data protection, accessibility, and Ofsted preparation.
+
+          <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Professional tools for safeguarding, governance, AI readiness, digital standards, data protection, accessibility, and Ofsted preparation.
           </p>
         </div>
 
         {/* Sections */}
-        <div className="flex flex-col gap-16 animate-float-in-delay-3">
-          {visibleSections.map((section) => (
+        <div className="flex flex-col gap-16">
+          {visibleSections.map((section, si) => (
             <div key={section.heading}>
-              <div className="mb-8 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--accent)" }}>
+              {/* section heading */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={13} className="text-[#38BDF8]" />
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[#38BDF8]">
                     {section.heading}
                   </p>
-                  <p className="text-sm max-w-xl" style={{ color: "var(--text-muted)" }}>{section.sub}</p>
                 </div>
-                <div className="h-px flex-1 max-w-[160px]" style={{
-                  background: "linear-gradient(90deg, var(--glass-border), transparent)"
-                }} />
+                <p className="text-sm leading-relaxed max-w-2xl" style={{ color: "var(--text-muted)" }}>
+                  {section.sub}
+                </p>
+                <div className="mt-3 h-px bg-gradient-to-r from-[rgba(56,189,248,0.3)] via-[rgba(129,140,248,0.2)] to-transparent" />
               </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {section.tools.map((tool, i) => (
-                  <ToolCard key={tool.href} tool={tool} index={i} />
+                {section.tools.map((tool, ti) => (
+                  <ToolCard key={tool.href} tool={tool} delay={si * 3 + ti} />
                 ))}
               </div>
             </div>
           ))}
+
           {visibleSections.length === 0 && (
-            <GlassCard className="text-center py-20">
+            <div className="glass rounded-2xl p-16 text-center rise-in">
+              <ShieldCheck size={32} className="mx-auto mb-4 opacity-30 text-[#38BDF8]" />
+              <p className="font-semibold mb-1" style={{ color: "var(--text)" }}>No tools available</p>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                No tools have been enabled for your account yet. Contact your administrator to request access.
+                Contact your administrator to request access.
               </p>
-            </GlassCard>
+            </div>
           )}
         </div>
 

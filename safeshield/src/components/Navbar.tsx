@@ -54,7 +54,7 @@ export default function Navbar() {
   const allLinks = [...NAV_LINKS, ...toolLinks];
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--liquid-border)" }}>
+    <nav className="fixed top-0 inset-x-0 z-50 glass" style={{ borderBottom: "1px solid var(--glass-stroke)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2 shrink-0 mr-1">
           <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.3)]">
@@ -84,18 +84,22 @@ export default function Navbar() {
           <button onClick={toggleTheme}
             className="glass-btn w-8 h-8 flex items-center justify-center"
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-muted)" }} /> : <Moon size={14} style={{ color: "var(--text-muted)" }} />}
+            {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-dim)" }} /> : <Moon size={14} style={{ color: "var(--text-dim)" }} />}
           </button>
 
           {(isAdmin || isOrgAdmin) && (
-            <Link href="/org" className="glass-btn w-8 h-8 flex items-center justify-center" title="Organisations">
-              <Building2 size={14} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-muted)" }} />
+            <Link href="/org"
+              className={`glass-btn w-8 h-8 flex items-center justify-center ${path.startsWith("/org") ? "border-[rgba(56,189,248,0.4)]!" : ""}`}
+              title="Organisations">
+              <Building2 size={14} style={{ color: path.startsWith("/org") ? "#38BDF8" : "var(--text-dim)" }} />
             </Link>
           )}
 
           {isAdmin && (
-            <Link href="/admin" className="glass-btn w-8 h-8 flex items-center justify-center" title="Admin Panel">
-              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-muted)" }} />
+            <Link href="/admin"
+              className={`glass-btn w-8 h-8 flex items-center justify-center ${path.startsWith("/admin") ? "border-[rgba(56,189,248,0.4)]!" : ""}`}
+              title="Admin Panel">
+              <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "#38BDF8" : "var(--text-dim)" }} />
             </Link>
           )}
 
@@ -113,8 +117,8 @@ export default function Navbar() {
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-white/10 shadow-xl z-50"
-                  style={{ background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-white/10 shadow-xl z-[200]"
+                  style={{ background: "var(--bg2)", backdropFilter: "blur(24px)" }}>
                   <div className="px-3 py-2.5 border-b border-white/5">
                     <p className="text-xs font-medium text-white truncate">{profile?.full_name ?? "User"}</p>
                     <p className="text-[0.65rem] text-[#475569] truncate">{user.email}</p>
