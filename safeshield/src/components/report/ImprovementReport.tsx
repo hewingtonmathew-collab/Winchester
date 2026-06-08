@@ -298,6 +298,93 @@ export default function ImprovementReport({
     window.location.href = `mailto:${recipients}?subject=${subject}&body=${buildEmailBody()}`;
   }
 
+  function handlePrintRecommendations() {
+    if (!consultantNotes.trim()) return;
+    const w = window.open("", "_blank");
+    if (!w) return;
+    const dark = printMode === "dark";
+    const bg = dark ? "linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,rgba(56,189,248,0.08) 100%)" : "#fff";
+    const textColor = dark ? "rgba(255,255,255,0.9)" : "#1E293B";
+    const mutedColor = dark ? "rgba(255,255,255,0.5)" : "#64748B";
+    const panelBg = dark ? "rgba(255,255,255,0.05)" : "#F8FAFC";
+    const panelBorder = dark ? "rgba(255,255,255,0.10)" : "#E2E8F0";
+    const footerColor = dark ? "rgba(255,255,255,0.25)" : "#94A3B8";
+
+    // Format the plain text into paragraphs/sections
+    const formatted = consultantNotes
+      .split("\n")
+      .map(line => {
+        if (!line.trim()) return `<div style="height:8px"></div>`;
+        if (/^[A-Z][A-Z\s&()]+$/.test(line.trim()) && line.trim().length < 80) {
+          return `<p style="font-size:9px;font-weight:800;color:${accentColor};letter-spacing:0.18em;text-transform:uppercase;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid ${accentColor}40">${line.trim()}</p>`;
+        }
+        if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+          return `<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:${accentColor};flex-shrink:0">•</span><span style="font-size:12px;color:${textColor};line-height:1.6">${line.trim().replace(/^[•\-]\s*/, "")}</span></div>`;
+        }
+        if (/^\d+\./.test(line.trim())) {
+          const num = line.trim().match(/^(\d+)\./)?.[1];
+          const text = line.trim().replace(/^\d+\.\s*/, "");
+          return `<div style="display:flex;gap:8px;margin-bottom:4px;align-items:flex-start"><span style="flex-shrink:0;width:18px;height:18px;border-radius:50%;background:${accentColor};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#000">${num}</span><span style="font-size:12px;color:${textColor};line-height:1.6">${text}</span></div>`;
+        }
+        if (line.trim().startsWith("→")) {
+          return `<div style="margin-left:16px;margin-bottom:3px;font-size:11px;color:${mutedColor};line-height:1.5">${line.trim()}</div>`;
+        }
+        return `<p style="font-size:12px;color:${textColor};line-height:1.7;margin-bottom:4px">${line.trim()}</p>`;
+      })
+      .join("");
+
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Recommendations — ${toolName}</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4 portrait;margin:0}
+html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
+.page{width:210mm;min-height:297mm;background:${bg};padding:14mm 16mm 12mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm}
+.title-block p:first-child{font-size:9px;font-weight:700;color:${accentColor};letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.title-block p:last-child{font-size:24px;font-weight:700;color:${dark ? "#fff" : "#0F172A"};letter-spacing:-.3px}
+.right-block{text-align:right}
+.right-block p:first-child{font-size:12px;font-weight:600;color:${dark ? "rgba(255,255,255,0.8)" : "#1E293B"}}
+.right-block p:last-child{font-size:9px;color:${mutedColor};text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.rule{height:2px;border-radius:2px;background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.5),transparent);margin-bottom:6mm}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:3mm 8mm;padding:4mm 5mm;border-radius:12px;background:${panelBg};border:1px solid ${panelBorder};margin-bottom:6mm}
+.meta-field p:first-child{font-size:8px;font-weight:700;color:${mutedColor};text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px}
+.meta-field p:last-child{font-size:12px;color:${dark ? "#fff" : "#1E293B"};font-weight:500}
+.section-label{font-size:9px;font-weight:800;color:${accentColor};letter-spacing:.18em;text-transform:uppercase;margin-bottom:4mm;padding-bottom:3mm;border-bottom:1px solid ${accentColor}30}
+.content{font-size:12px;line-height:1.7}
+.footer{display:flex;justify-content:space-between;align-items:center;padding-top:4mm;margin-top:8mm;border-top:1px solid ${dark ? "rgba(255,255,255,0.07)" : "#E2E8F0"}}
+.footer span{font-size:8px;color:${footerColor};letter-spacing:.1em;text-transform:uppercase}
+</style></head><body>
+<div class="page">
+  <div class="header">
+    <div class="title-block">
+      <p>Consultant Recommendations</p>
+      <p>${toolName}</p>
+    </div>
+    <div class="right-block">
+      <p>${meta.consultantName || "Mathew Hewington"}</p>
+      <p>Education Consultant</p>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">
+    <div class="meta-field"><p>School / Trust</p><p>${meta.schoolName || "—"}</p></div>
+    <div class="meta-field"><p>Score</p><p style="color:${ratingColor};font-weight:700">${score}% — ${rating}</p></div>
+    <div class="meta-field"><p>Completed By</p><p>${meta.staffMember || "—"}</p></div>
+    <div class="meta-field"><p>Date</p><p>${today}</p></div>
+  </div>
+  <p class="section-label">Recommendations & Guidance</p>
+  <div class="content">${formatted}</div>
+  <div class="footer">
+    <span>SafeShield · Consultant Recommendations</span>
+    <span>${today}</span>
+  </div>
+</div>
+</body></html>`);
+    w.document.close();
+    setTimeout(() => w.print(), 400);
+  }
+
   function handlePrint() {
     const w = window.open("", "_blank");
     if (!w) return;
@@ -615,6 +702,15 @@ ${css}
                 background: "rgba(255,255,255,0.04)", border: `1px solid ${consultantNotes ? accentBorder : "rgba(255,255,255,0.10)"}`,
                 outline: "none", resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
             />
+            {consultantNotes.trim() && (
+              <button
+                onClick={handlePrintRecommendations}
+                className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
+              >
+                <Printer size={12} /> Print Recommendations
+              </button>
+            )}
           </div>
 
           {/* Recommended next steps */}
