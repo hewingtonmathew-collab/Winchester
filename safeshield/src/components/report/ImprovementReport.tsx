@@ -497,15 +497,15 @@ ${css}
       <div style={{ padding: "28px 28px 0", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
           <div>
-            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
               School Improvement Report
             </p>
             <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>{today}</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 3 }}>{today}</p>
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
-            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.55)", flexShrink: 0 }}>
+            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.75)", flexShrink: 0 }}>
             {expanded ? <><ChevronUp size={14} /> Collapse</> : <><ChevronDown size={14} /> Expand</>}
           </button>
         </div>
@@ -526,14 +526,14 @@ ${css}
               { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
             ].map((item) => (
               <div key={item.label}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
+                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
                 {item.pill ? (
                   <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
                     fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
                     {score}% — {rating}
                   </span>
                 ) : (
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.78)", fontWeight: 500 }}>{item.value}</p>
+                  <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{item.value}</p>
                 )}
               </div>
             ))}
@@ -541,10 +541,10 @@ ${css}
 
           {/* Executive summary */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
               Executive Summary
             </p>
-            <div style={{ ...glassPanel, padding: "14px 18px", fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.7 }}>
+            <div style={{ ...glassPanel, padding: "14px 18px", fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}>
               Assessment completed for <strong style={{ color: "rgba(255,255,255,0.85)" }}>{meta.schoolName}</strong> on {today}.
               Score: <strong style={{ color: "rgba(255,255,255,0.85)" }}>{score}%</strong> — <strong style={{ color: ratingColor }}>{rating}</strong>.{" "}
               <strong style={{ color: "#ef4444" }}>{highGaps.length} high</strong>,{" "}
@@ -555,14 +555,14 @@ ${css}
 
           {/* Priority actions */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
               Priority Actions ({gaps.length})
             </p>
             {categories.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {categories.map((cat) => (
                   <div key={cat}>
-                    <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.32)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 6 }}>{cat}</p>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 6 }}>{cat}</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                       {gaps.filter(g => g.category === cat).map((g, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px",
@@ -577,7 +577,7 @@ ${css}
                             whiteSpace: "nowrap", marginTop: 1 }}>
                             {priorityText(g.priority)}
                           </span>
-                          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.68)", lineHeight: 1.55, margin: 0 }}>{g.text}</p>
+                          <p style={{ fontSize: 13, color: "#fff", lineHeight: 1.6, margin: 0 }}>{g.text}</p>
                         </div>
                       ))}
                     </div>
@@ -594,8 +594,8 @@ ${css}
           {/* Consultant notes */}
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                Consultant Notes <span style={{ color: "rgba(255,255,255,0.18)", fontWeight: 400 }}>(optional)</span>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                Consultant Notes <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>(optional)</span>
               </p>
               {isSuperAdmin && (
                 <button
@@ -619,7 +619,7 @@ ${css}
 
           {/* Recommended next steps */}
           <div>
-            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
               Recommended Next Steps
             </p>
             <div style={{ ...glassPanel, padding: "14px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
@@ -633,7 +633,7 @@ ${css}
                   <span style={{ flexShrink: 0, width: 20, height: 20, borderRadius: "50%", background: accentColor,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 9, fontWeight: 700, color: "#000", marginTop: 1 }}>{i + 1}</span>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", lineHeight: 1.55, margin: 0 }}>{step}</p>
+                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", lineHeight: 1.6, margin: 0 }}>{step}</p>
                 </div>
               ))}
             </div>
@@ -671,9 +671,9 @@ ${css}
           </div>
 
           {/* Footer ref */}
-          <div style={{ paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.08em" }}>{today}</span>
+          <div style={{ paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.10)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>{today}</span>
           </div>
         </div>
       )}
