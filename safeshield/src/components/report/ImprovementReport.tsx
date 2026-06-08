@@ -468,6 +468,8 @@ html,body{width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-co
 `;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <title>Improvement Report — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -476,9 +478,13 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
 .page{width:210mm;min-height:297mm;padding:12mm 14mm 12mm}
 .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm}
 .report-tag{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
-.report-title{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.report-title{font-size:32px;font-weight:600;line-height:1.05;font-family:'Cormorant Garant',Georgia,serif;letter-spacing:.01em}
 .report-sub{font-size:11px;margin-top:4px}
 .header-right{text-align:right}
+.wordmark{font-size:12px;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:3px}
+.wordmark-safe{font-weight:300}
+.wordmark-shield{font-weight:700}
+.wordmark-tag{font-size:7px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
 .consultant-name{font-size:13px;font-weight:600}
 .consultant-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 .accent-rule{height:2px;border-radius:2px;margin-bottom:7mm}
@@ -512,6 +518,8 @@ ${css}
     <div class="header-right">
       ${displaySchoolLogo ? `<img src="${displaySchoolLogo}" style="height:48px;max-width:120px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
       ${displayOrgLogo ? `<img src="${displayOrgLogo}" style="height:40px;max-width:110px;object-fit:contain;display:block;margin-bottom:6px;margin-left:auto"/>` : ""}
+      <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+      <div class="wordmark-tag">Protect · Comply · Assure</div>
       <p class="consultant-name">${meta.consultantName || "Mathew Hewington"}</p>
       <p class="consultant-role">Education Consultant</p>
     </div>
@@ -611,7 +619,7 @@ ${css}
             <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.75)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
               School Improvement Report
             </p>
-            <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
+            <p style={{ fontSize: 28, fontWeight: 600, color: "#E8EDF2", letterSpacing: "0.01em", lineHeight: 1.1, fontFamily: "'Cormorant Garant', Georgia, serif" }}>{toolName}</p>
             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", marginTop: 3 }}>{today}</p>
           </div>
           {/* Logos */}

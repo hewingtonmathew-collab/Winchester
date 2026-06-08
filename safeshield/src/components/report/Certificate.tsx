@@ -174,22 +174,28 @@ export default function Certificate({ meta, toolName, score, rating, ratingColor
 `;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet">
 <title>Certificate — ${toolName}</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 @page{size:A4 portrait;margin:0}
-html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
+html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:'Cormorant Garant',Georgia,serif}
 .page{width:210mm;height:297mm;display:flex;flex-direction:column;align-items:center;padding:12mm 16mm 10mm;position:relative;overflow:hidden}
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6mm}
-.logo-img{height:52px;object-fit:contain;border-radius:10px;max-width:140px}
-.consultant{text-align:right}
+.logo-img{height:52px;object-fit:contain;max-width:140px}
+.wordmark{font-family:system-ui,-apple-system,sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;line-height:1}
+.wordmark-safe{font-weight:300}
+.wordmark-shield{font-weight:700}
+.wordmark-tag{font-family:system-ui,sans-serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px}
+.consultant{text-align:right;font-family:system-ui,-apple-system,sans-serif}
 .consultant-name{font-size:13px;font-weight:600;letter-spacing:.01em}
 .consultant-role{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
-.tool-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 20px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8mm}
+.tool-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 20px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8mm;font-family:system-ui,sans-serif}
 .pill-dot{width:7px;height:7px;border-radius:50%;background:${accentColor}}
-.certifies-label{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin-bottom:5mm;text-align:center}
-.school-name{font-size:34px;font-weight:700;text-align:center;line-height:1.15;margin-bottom:3mm}
-.completed-sub{font-size:13px;text-align:center;margin-bottom:8mm}
+.certifies-label{font-size:13px;font-style:italic;font-weight:400;letter-spacing:.08em;margin-bottom:5mm;text-align:center;font-family:'Cormorant Garant',Georgia,serif}
+.school-name{font-size:44px;font-weight:600;text-align:center;line-height:1.1;margin-bottom:3mm;font-family:'Cormorant Garant',Georgia,serif;letter-spacing:.02em}
+.completed-sub{font-size:16px;font-style:italic;text-align:center;margin-bottom:8mm;font-family:'Cormorant Garant',Georgia,serif}
 .accent-rule{width:60mm;height:2px;border-radius:2px;margin:0 auto 8mm}
 .gauge-row{display:flex;align-items:center;gap:10mm;margin-bottom:8mm}
 .rating-pill{display:inline-flex;align-items:center;justify-content:center;padding:8px 22px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
@@ -207,8 +213,8 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
 .sig-row{width:140mm;display:flex;justify-content:flex-end;margin-bottom:auto}
 .sig-block{text-align:left}
 .sig-rule{width:46mm;height:1px;margin-bottom:5px}
-.sig-name{font-size:12px;font-style:italic}
-.sig-role{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.sig-name{font-size:16px;font-style:italic;font-family:'Cormorant Garant',Georgia,serif;font-weight:400}
+.sig-role{font-size:8px;text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-family:system-ui,sans-serif}
 .footer{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:4mm;margin-top:4mm}
 ${css}
 </style></head><body>
@@ -216,7 +222,13 @@ ${css}
   <div class="border-ring"></div>
   <div class="border-ring-inner"></div>
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:8px">${logoLeft || '<div style="width:52px"></div>'}</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="border-left:2px solid ${accentColor};padding-left:10px">
+        <div class="wordmark"><span class="wordmark-safe">SAFE</span><span class="wordmark-shield">SHIELD</span></div>
+        <div class="wordmark-tag">Protect · Comply · Assure</div>
+      </div>
+      ${logoLeft ? `<div style="display:flex;align-items:center;gap:8px">${logoLeft}</div>` : ""}
+    </div>
     <div class="consultant">
       <div class="consultant-name">${meta.consultantName || "Mathew Hewington"}</div>
       <div class="consultant-role">Education Consultant</div>
@@ -225,7 +237,7 @@ ${css}
   <span class="tool-pill"><span class="pill-dot"></span>${toolName} · Assessment Certificate</span>
   <p class="certifies-label">This is to certify that</p>
   <p class="school-name">${meta.schoolName || "School Name"}</p>
-  <p class="completed-sub">has successfully completed the <strong>${toolName}</strong></p>
+  <p class="completed-sub">has successfully completed the <span style="font-style:normal;font-weight:600">${toolName}</span></p>
   <div class="accent-rule"></div>
   <div class="gauge-row">
     ${gaugesvg}
@@ -335,7 +347,7 @@ ${css}
         background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 45%, ${accentColor}1A 100%)`,
         boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 24px 80px rgba(0,0,0,0.7), 0 0 60px ${accentColor}22`,
         padding: "32px 36px 28px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
+        fontFamily: "'Cormorant Garant', Georgia, serif",
       }}>
 
         {/* Ambient glow blobs */}
@@ -348,8 +360,11 @@ ${css}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, position: "relative", zIndex: 1 }}>
           {/* SafeShield wordmark + optional school logo */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ borderLeft: `3px solid ${accentColor}`, paddingLeft: 10 }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#C8D8E8", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>SafeShield</span>
+            <div style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: 10 }}>
+              <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase" as const, lineHeight: 1 }}>
+                <span style={{ fontWeight: 300, color: "#8A9BB0" }}>SAFE</span><span style={{ fontWeight: 700, color: "#C8D8E8" }}>SHIELD</span>
+              </div>
+              <div style={{ fontSize: 7, letterSpacing: "0.18em", color: "#6A7E94", textTransform: "uppercase" as const, fontFamily: "system-ui, sans-serif", marginTop: 2 }}>PROTECT · COMPLY · ASSURE</div>
             </div>
             {displaySchoolLogo && (
               <img src={displaySchoolLogo} alt="School logo"
@@ -372,22 +387,22 @@ ${css}
 
         {/* ── Certifies label ─────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 10, position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: "#B8C4D0", letterSpacing: "0.22em", textTransform: "uppercase" as const }}>
+          <span style={{ fontSize: 11, fontWeight: 400, fontStyle: "italic", color: "#B8C4D0", letterSpacing: "0.14em", fontFamily: "'Cormorant Garant', Georgia, serif" }}>
             This is to certify that
           </span>
         </div>
 
         {/* ── School name ─────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 8, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 32, fontWeight: 700, color: "#E8EDF2", lineHeight: 1.15, margin: 0 }}>
+          <p style={{ fontSize: 40, fontWeight: 600, color: "#E8EDF2", lineHeight: 1.1, margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", letterSpacing: "0.02em" }}>
             {meta.schoolName || "School Name"}
           </p>
         </div>
 
         {/* ── Subtitle ────────────────────────────────────────────────── */}
         <div style={{ textAlign: "center", marginBottom: 28, position: "relative", zIndex: 1 }}>
-          <p style={{ fontSize: 13, color: "#9AAABB", margin: 0 }}>
-            has successfully completed the <strong style={{ color: "#C8D8E8", fontWeight: 600 }}>{toolName}</strong>
+          <p style={{ fontSize: 15, color: "#9AAABB", margin: 0, fontFamily: "'Cormorant Garant', Georgia, serif", fontStyle: "italic" }}>
+            has successfully completed the <span style={{ color: "#C8D8E8", fontStyle: "normal", fontWeight: 600 }}>{toolName}</span>
           </p>
         </div>
 
