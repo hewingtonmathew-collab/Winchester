@@ -761,6 +761,7 @@ export default function ProfilePage() {
             }),
             areas: viewing.areas ?? undefined,
             gaps: viewing.recommendations ?? undefined,
+            reportId: viewing.id,
           }}
         />
       )}

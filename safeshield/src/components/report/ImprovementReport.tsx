@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon, Save, Check } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -93,6 +93,7 @@ type Props = {
   accentColor?: string;
   accentDim?: string;
   accentBorder?: string;
+  reportId?: string;
 };
 
 function priorityLabel(p: Gap["priority"]) {
@@ -111,11 +112,14 @@ export default function ImprovementReport({
   accentColor = "#38BDF8",
   accentDim = "rgba(56,189,248,0.12)",
   accentBorder = "rgba(56,189,248,0.25)",
+  reportId,
 }: Props) {
   const [consultantNotes, setConsultantNotes] = useState("");
   const [expanded, setExpanded] = useState(true);
   const [printMode, setPrintMode] = useState<"dark" | "light">("dark");
   const [emailSending, setEmailSending] = useState(false);
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesSaved, setNotesSaved] = useState(false);
   const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
   const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const { enabledTools, user } = useAuth();
@@ -137,6 +141,34 @@ export default function ImprovementReport({
       }
     });
   }, [user]);
+
+  // Load saved notes for this report
+  useEffect(() => {
+    if (!reportId) return;
+    const key = `report_notes_${reportId}`;
+    supabase.from("site_content").select("value").eq("key", key).maybeSingle().then(({ data }) => {
+      if (data?.value) { setConsultantNotes(data.value); return; }
+      const stored = localStorage.getItem(key);
+      if (stored) setConsultantNotes(stored);
+    });
+  }, [reportId]);
+
+  const saveNotes = useCallback(async () => {
+    if (!reportId) return;
+    setNotesSaving(true);
+    const key = `report_notes_${reportId}`;
+    localStorage.setItem(key, consultantNotes);
+    try {
+      await supabase.from("site_content").upsert(
+        { key, value: consultantNotes, updated_at: new Date().toISOString() },
+        { onConflict: "key" }
+      );
+    } catch { /* graceful fallback */ }
+    setNotesSaving(false);
+    setNotesSaved(true);
+    setTimeout(() => setNotesSaved(false), 2500);
+  }, [reportId, consultantNotes]);
+
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const displaySchoolLogo = meta.logoDataUrl || schoolLogoUrl;
   const displayOrgLogo = orgLogoUrl && orgLogoUrl !== displaySchoolLogo ? orgLogoUrl : null;
@@ -609,13 +641,25 @@ ${css}
                 outline: "none", resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
             />
             {consultantNotes.trim() && (
-              <button
-                onClick={handlePrintRecommendations}
-                className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
-                style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
-              >
-                <Printer size={12} /> Print Recommendations
-              </button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {reportId && (
+                  <button
+                    onClick={saveNotes}
+                    disabled={notesSaving}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                    style={{ background: notesSaved ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${notesSaved ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.15)"}`, color: notesSaved ? "#22c55e" : "#CBD5E1", opacity: notesSaving ? 0.6 : 1 }}
+                  >
+                    {notesSaved ? <><Check size={12} /> Saved</> : notesSaving ? "Saving…" : <><Save size={12} /> Save Notes</>}
+                  </button>
+                )}
+                <button
+                  onClick={handlePrintRecommendations}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
+                >
+                  <Printer size={12} /> Print Recommendations
+                </button>
+              </div>
             )}
           </div>
 
