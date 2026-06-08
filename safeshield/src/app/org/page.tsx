@@ -13,13 +13,11 @@ import {
   Loader2,
   X,
   UserPlus,
-  ToggleLeft,
-  ToggleRight,
-  SlidersHorizontal,
+  Upload,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
-import { supabase, ALL_TOOLS } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import type { Organisation, School as SchoolType, OrgMember } from "@/lib/supabase";
 
 type OrgWithDetails = Organisation & {
@@ -55,7 +53,7 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
     onCreated(data as Organisation);
   }
 
-  const inputCls = "input-glass text-sm";
+  const inputCls = "px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -77,22 +75,25 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
-          <div className="flex items-center gap-2">
-            {logo ? (
-              <>
-                <img src={logo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
-                <button type="button" onClick={() => setLogo(null)} aria-label="Remove logo" className="text-xs text-red-400 hover:text-red-300 p-1"><X size={12} /></button>
-              </>
-            ) : (
-              <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
-                <Plus size={12} /> Upload logo
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                  const f = e.target.files?.[0]; if (!f) return;
-                  const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
-                }} />
-              </label>
-            )}
-          </div>
+          {logo ? (
+            <div className="flex flex-col gap-1.5">
+              <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 160 }}>
+                <img src={logo} alt="Logo" style={{ maxHeight: 56, maxWidth: 140, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                  <Upload size={10} /> Replace
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                </label>
+                <button type="button" onClick={() => setLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+              </div>
+            </div>
+          ) : (
+            <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+              <Plus size={12} /> Upload logo
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+            </label>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
@@ -136,7 +137,7 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
     onAdded(data as SchoolType);
   }
 
-  const inputCls = "input-glass text-xs py-1.5";
+  const inputCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end mt-3">
@@ -145,16 +146,19 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
       <div className="flex items-center gap-1.5">
         {logo ? (
           <>
-            <img src={logo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
-            <button type="button" onClick={() => setLogo(null)} aria-label="Remove logo" className="text-red-400 p-1"><X size={10} /></button>
+            <div className="flex items-center justify-center rounded bg-white/5 border border-white/10 p-0.5" style={{ maxWidth: 80 }}>
+              <img src={logo} alt="" style={{ maxHeight: 28, maxWidth: 72, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+            </div>
+            <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
+              <Upload size={9} /> Replace
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+            </label>
+            <button type="button" onClick={() => setLogo(null)} className="text-red-400"><X size={10} /></button>
           </>
         ) : (
           <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
             <Plus size={10} /> Logo
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0]; if (!f) return;
-              const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
-            }} />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
           </label>
         )}
       </div>
@@ -178,11 +182,7 @@ function AddMemberForm({
   schools: SchoolType[];
   onAdded: (member: OrgMember & { email?: string; full_name?: string | null }) => void;
 }) {
-  const [mode, setMode] = useState<"new" | "existing">("new");
   const [userId, setUserId] = useState("");
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [schoolId, setSchoolId] = useState("");
   const [role, setRole] = useState<"admin" | "member">("member");
   const [busy, setBusy] = useState(false);
@@ -196,36 +196,15 @@ function AddMemberForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!userId) return;
     setBusy(true);
     setError("");
 
-    let profile: { id: string; email: string; full_name: string | null } | null = null;
-
-    if (mode === "new") {
-      if (!newName.trim() || !newEmail.trim() || !newPassword.trim()) {
-        setError("Name, email and password are all required."); setBusy(false); return;
-      }
-      if (newPassword.length < 8) {
-        setError("Password must be at least 8 characters."); setBusy(false); return;
-      }
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/create-member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
-        body: JSON.stringify({ name: newName.trim(), email: newEmail.trim(), password: newPassword }),
-      });
-      const json = await res.json();
-      if (!res.ok) { setError(json.error ?? "Could not create account."); setBusy(false); return; }
-      profile = json.user as { id: string; email: string; full_name: string | null };
-    } else {
-      if (!userId) { setError("Please select a user."); setBusy(false); return; }
-      profile = users.find((u) => u.id === userId) ?? null;
-      if (!profile) { setError("User not found."); setBusy(false); return; }
-    }
+    const profile = users.find((u) => u.id === userId);
 
     const { data: member, error: memErr } = await supabase
       .from("org_members")
-      .insert({ user_id: profile.id, org_id: orgId, school_id: schoolId || null, role })
+      .insert({ user_id: userId, org_id: orgId, school_id: schoolId || null, role })
       .select()
       .single();
 
@@ -235,128 +214,56 @@ function AddMemberForm({
       return;
     }
 
-    setUserId(""); setNewName(""); setNewEmail(""); setNewPassword("");
-    setSchoolId(""); setRole("member");
+    setUserId("");
+    setSchoolId("");
+    setRole("member");
     setBusy(false);
-    onAdded({ ...(member as OrgMember), email: profile.email, full_name: profile.full_name ?? null });
+    onAdded({ ...(member as OrgMember), email: profile?.email, full_name: profile?.full_name ?? null });
   }
 
-  const selectCls = "input-glass text-xs py-1.5";
+  const selectCls = "px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]";
 
   return (
-    <div className="border border-white/8 rounded-xl p-3 bg-white/[0.02] mt-3">
-      <div className="flex gap-2 mb-3">
-        <button type="button" onClick={() => setMode("new")}
-          className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-          style={{ background: mode === "new" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "new" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "new" ? "#38BDF8" : "var(--text-dim)" }}>
-          + New person
-        </button>
-        <button type="button" onClick={() => setMode("existing")}
-          className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-          style={{ background: mode === "existing" ? "rgba(56,189,248,0.15)" : "transparent", border: mode === "existing" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: mode === "existing" ? "#38BDF8" : "var(--text-dim)" }}>
-          Existing user
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end">
-        {mode === "new" ? (
-          <>
-            <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Full name" required className={`${selectCls} w-36`} style={{ color: "var(--text)" }} />
-            <input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Email" type="email" required className={`${selectCls} w-40`} style={{ color: "var(--text)" }} />
-            <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Password (min 8)" type="password" required minLength={8} className={`${selectCls} w-36`} style={{ color: "var(--text)" }} />
-          </>
-        ) : (
-          <select value={userId} onChange={(e) => setUserId(e.target.value)} className={`${selectCls} w-52`} style={{ color: userId ? "var(--text)" : "var(--text-dim)" }}>
-            <option value="">{users.length === 0 ? "No users available" : "Select a user..."}</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>{u.full_name ?? u.email} — {u.email}</option>
-            ))}
-          </select>
-        )}
-        {schools.length > 0 && (
-          <select value={schoolId} onChange={(e) => setSchoolId(e.target.value)} className={selectCls} style={{ color: "var(--text)" }}>
-            <option value="">No school assignment</option>
-            {schools.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        )}
-        <select value={role} onChange={(e) => setRole(e.target.value as "admin" | "member")} className={selectCls} style={{ color: "var(--text)" }}>
-          <option value="member">Member</option>
-          <option value="admin">Admin</option>
+    <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end mt-3">
+      <select value={userId} onChange={(e) => setUserId(e.target.value)} required className={`${selectCls} w-52`} style={{ color: userId ? "var(--text)" : "var(--text-dim)" }}>
+        <option value="">Select a user...</option>
+        {users.map((u) => (
+          <option key={u.id} value={u.id}>{u.full_name ?? u.email} — {u.email}</option>
+        ))}
+      </select>
+      {schools.length > 0 && (
+        <select
+          value={schoolId}
+          onChange={(e) => setSchoolId(e.target.value)}
+          className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]"
+          style={{ color: "var(--text)" }}
+        >
+          <option value="">No school assignment</option>
+          {schools.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
         </select>
-        <button type="submit" disabled={busy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-          style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-          {busy ? <Loader2 size={12} className="animate-spin" /> : <UserPlus size={12} />}
-          Add Member
-        </button>
-        {error && <p className="text-xs text-red-400 w-full">{error}</p>}
-      </form>
-    </div>
-  );
-}
-
-// ── Per-member tool toggles ──────────────────────────────────────────────────
-// Controls the user_tools table for one member: which tools they can access.
-// A tool is only visible to the member if it's enabled here AND at org AND
-// school level, so this is the per-person on/off switch.
-
-function MemberToolToggles({ userId }: { userId: string }) {
-  const [tools, setTools] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      const { data } = await supabase
-        .from("user_tools")
-        .select("tool_slug, enabled")
-        .eq("user_id", userId);
-      if (!active) return;
-      const map: Record<string, boolean> = {};
-      for (const r of data ?? []) map[r.tool_slug] = r.enabled;
-      setTools(map);
-      setLoading(false);
-    })();
-    return () => { active = false; };
-  }, [userId]);
-
-  async function toggle(slug: string, next: boolean) {
-    setTools((p) => ({ ...p, [slug]: next })); // optimistic
-    const { error } = await supabase
-      .from("user_tools")
-      .upsert({ user_id: userId, tool_slug: slug, enabled: next }, { onConflict: "user_id,tool_slug" });
-    if (error) {
-      setTools((p) => ({ ...p, [slug]: !next })); // revert
-      alert(`Failed to save tool access: ${error.message}`);
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2">
-        <Loader2 size={12} className="animate-spin text-[#38BDF8]" />
-        <span className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>Loading tools…</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-3 pb-2">
-      {ALL_TOOLS.map((tool) => {
-        const on = tools[tool.slug] ?? false;
-        return (
-          <button key={tool.slug} type="button" onClick={() => toggle(tool.slug, !on)}
-            className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg transition-all hover:bg-white/5">
-            <span className="text-[0.7rem] text-left" style={{ color: "var(--text-muted)" }}>{tool.name}</span>
-            {on
-              ? <ToggleRight size={18} className="shrink-0 text-[#34D399]" />
-              : <ToggleLeft size={18} className="shrink-0" style={{ color: "var(--text-dim)" }} />}
-          </button>
-        );
-      })}
-    </div>
+      )}
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value as "admin" | "member")}
+        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]"
+        style={{ color: "var(--text)" }}
+      >
+        <option value="member">Member</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button
+        type="submit"
+        disabled={busy || !userId}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+        style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}
+      >
+        {busy ? <Loader2 size={12} className="animate-spin" /> : <UserPlus size={12} />}
+        Add Member
+      </button>
+      {error && <p className="text-xs text-red-400 w-full">{error}</p>}
+    </form>
   );
 }
 
@@ -376,7 +283,6 @@ function OrgCard({
   const [members, setMembers] = useState(org.members);
   const [deletingSchool, setDeletingSchool] = useState<string | null>(null);
   const [deletingMember, setDeletingMember] = useState<string | null>(null);
-  const [expandedMemberTools, setExpandedMemberTools] = useState<Record<string, boolean>>({});
 
   async function removeSchool(schoolId: string) {
     setDeletingSchool(schoolId);
@@ -426,8 +332,7 @@ function OrgCard({
           {canDelete && (
             <button
               onClick={() => onDelete(org.id)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all"
-              aria-label="Delete organisation"
+              className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all"
               title="Delete organisation"
             >
               <Trash2 size={13} className="text-red-400" />
@@ -435,9 +340,7 @@ function OrgCard({
           )}
           <button
             onClick={() => setOpen(!open)}
-            aria-label={open ? "Collapse organisation" : "Expand organisation"}
-            aria-expanded={open}
-            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
           >
             {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
           </button>
@@ -479,8 +382,7 @@ function OrgCard({
                       <button
                         onClick={() => removeSchool(school.id)}
                         disabled={deletingSchool === school.id}
-                        aria-label={`Remove ${school.name}`}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                        className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
                       >
                       {deletingSchool === school.id ? (
                         <Loader2 size={10} className="animate-spin text-red-400" />
@@ -508,68 +410,46 @@ function OrgCard({
               <div className="flex flex-col gap-1.5">
                 {members.map((member) => {
                   const assignedSchool = schools.find((s) => s.id === member.school_id);
-                  const roleColor = member.role === "admin" ? "#38BDF8" : "var(--text-dim)";
-                  const toolsOpen = expandedMemberTools[member.id] ?? false;
+                  const roleColor = member.role === "admin" ? "#38BDF8" : "#94A3B8";
                   return (
                     <div
                       key={member.id}
-                      className="rounded-xl bg-white/[0.02] border border-white/5"
+                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5"
                     >
-                      <div className="flex items-center justify-between gap-2 px-3 py-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                            <span className="text-[0.6rem] font-bold" style={{ color: "var(--text-dim)" }}>
-                              {(member.full_name ?? member.email ?? "?")[0].toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>
-                              {member.full_name ?? member.email ?? member.user_id}
-                            </p>
-                            <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
-                              {assignedSchool ? assignedSchool.name : "No school assigned"}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span
-                            className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
-                            style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}
-                          >
-                            {member.role}
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                          <span className="text-[0.6rem] font-bold text-[#94A3B8]">
+                            {(member.full_name ?? member.email ?? "?")[0].toUpperCase()}
                           </span>
-                          <button
-                            onClick={() => setExpandedMemberTools((p) => ({ ...p, [member.id]: !toolsOpen }))}
-                            title="Tool access"
-                            className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/5 transition-all"
-                            style={{ color: toolsOpen ? "#38BDF8" : "var(--text-dim)" }}
-                          >
-                            <SlidersHorizontal size={11} />
-                            <span className="text-[0.6rem] font-medium">Tools</span>
-                            {toolsOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                          </button>
-                          <button
-                            onClick={() => removeMember(member.id)}
-                            disabled={deletingMember === member.id}
-                            aria-label={`Remove ${member.full_name ?? member.email ?? "member"}`}
-                            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
-                          >
-                            {deletingMember === member.id ? (
-                              <Loader2 size={10} className="animate-spin text-red-400" />
-                            ) : (
-                              <X size={10} className="text-red-400" />
-                            )}
-                          </button>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>
+                            {member.full_name ?? member.email ?? member.user_id}
+                          </p>
+                          <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
+                            {assignedSchool ? assignedSchool.name : "No school assigned"}
+                          </p>
                         </div>
                       </div>
-                      {toolsOpen && (
-                        <div className="border-t border-white/5 pt-2">
-                          <p className="text-[0.6rem] font-semibold uppercase tracking-wider px-3 mb-1" style={{ color: "var(--text-faint)" }}>
-                            Tool access for this member
-                          </p>
-                          <MemberToolToggles userId={member.user_id} />
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
+                          style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}
+                        >
+                          {member.role}
+                        </span>
+                        <button
+                          onClick={() => removeMember(member.id)}
+                          disabled={deletingMember === member.id}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                        >
+                          {deletingMember === member.id ? (
+                            <Loader2 size={10} className="animate-spin text-red-400" />
+                          ) : (
+                            <X size={10} className="text-red-400" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
