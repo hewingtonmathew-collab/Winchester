@@ -136,13 +136,8 @@ html,body{width:210mm;height:297mm;-webkit-print-color-adjust:exact;print-color-
   padding:12mm 16mm 10mm;
   position:relative;overflow:hidden;
 }
-/* ambient blobs */
-.blob-tr{position:absolute;top:-50mm;right:-50mm;width:150mm;height:150mm;border-radius:50%;
-  background:radial-gradient(circle,${accentColor}30 0%,transparent 68%);pointer-events:none}
-.blob-bl{position:absolute;bottom:-40mm;left:-40mm;width:120mm;height:120mm;border-radius:50%;
-  background:radial-gradient(circle,rgba(167,139,250,0.20) 0%,transparent 68%);pointer-events:none}
-.blob-br{position:absolute;bottom:20mm;right:-30mm;width:90mm;height:90mm;border-radius:50%;
-  background:radial-gradient(circle,${accentColor}18 0%,transparent 68%);pointer-events:none}
+/* ambient blobs — hidden in print */
+.blob-tr,.blob-bl,.blob-br{display:none}
 
 /* decorative border ring */
 .border-ring{

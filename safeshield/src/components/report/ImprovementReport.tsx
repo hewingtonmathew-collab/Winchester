@@ -328,10 +328,7 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
   padding:12mm 14mm 12mm;
   position:relative;
 }
-.blob-tr{position:fixed;top:-40mm;right:-40mm;width:120mm;height:120mm;border-radius:50%;
-  background:radial-gradient(circle,${accentColor}25 0%,transparent 70%);pointer-events:none}
-.blob-bl{position:fixed;bottom:20mm;left:-30mm;width:90mm;height:90mm;border-radius:50%;
-  background:radial-gradient(circle,rgba(167,139,250,0.18) 0%,transparent 70%);pointer-events:none}
+.blob-tr,.blob-bl{display:none}
 
 /* header */
 .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;position:relative;z-index:1}
