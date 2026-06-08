@@ -23,8 +23,7 @@ export default function OfstedPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ofsted-title", "Ofsted Ready Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ofsted-desc", "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement before inspection.");
   return (
-    <AuthGuard toolSlug="ofsted">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -66,7 +65,8 @@ export default function OfstedPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="ofsted">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <OfstedChecker />
@@ -109,8 +109,8 @@ export default function OfstedPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

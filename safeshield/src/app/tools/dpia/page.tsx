@@ -31,8 +31,7 @@ export default function DpiaPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("dpia-title", "DPIA Wizard");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("dpia-desc", "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.");
   return (
-    <AuthGuard toolSlug="dpia">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -74,7 +73,8 @@ export default function DpiaPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="dpia">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <DpiaWizard />
@@ -123,8 +123,8 @@ export default function DpiaPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

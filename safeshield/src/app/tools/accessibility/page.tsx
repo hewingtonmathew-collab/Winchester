@@ -17,8 +17,7 @@ export default function AccessibilityPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
-    <AuthGuard toolSlug="accessibility">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -60,7 +59,8 @@ export default function AccessibilityPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="accessibility">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <AccessibilityChecker />
@@ -91,8 +91,8 @@ export default function AccessibilityPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

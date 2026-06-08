@@ -55,9 +55,7 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
 
 function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; loggedIn: boolean }) {
   const delayClass = ["rise-in", "rise-in-1", "rise-in-2", "rise-in-3", "rise-in-4", "rise-in-5"][Math.min(delay, 5)];
-  // Unauthenticated users get redirected to /register by AuthGuard on each tool page,
-  // but we can hint them directly for a cleaner UX.
-  const href = loggedIn ? tool.href : "/register";
+  const href = tool.href;  // always go to the tool page; guests see the preview panel
 
   return (
     <Link href={href} className={`block ${delayClass} group`}>

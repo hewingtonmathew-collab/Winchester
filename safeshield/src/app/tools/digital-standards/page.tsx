@@ -30,8 +30,7 @@ export default function DigitalStandardsPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("digital-standards-title", "Digital & Technology Standards");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("digital-standards-desc", "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.");
   return (
-    <AuthGuard toolSlug="digital-standards">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -73,7 +72,8 @@ export default function DigitalStandardsPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="digital-standards">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <DigitalStandardsChecker />
@@ -116,8 +116,8 @@ export default function DigitalStandardsPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

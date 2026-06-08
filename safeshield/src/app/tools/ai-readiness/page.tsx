@@ -30,8 +30,7 @@ export default function AiReadinessPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-readiness-title", "AI Readiness Assessment");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-readiness-desc", "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.");
   return (
-    <AuthGuard toolSlug="ai-readiness">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -73,7 +72,8 @@ export default function AiReadinessPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="ai-readiness">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <AiReadiness />
@@ -114,8 +114,8 @@ export default function AiReadinessPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

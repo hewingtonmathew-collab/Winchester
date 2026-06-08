@@ -24,8 +24,7 @@ export default function AiDetectorPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
-    <AuthGuard toolSlug="ai-detector">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -67,7 +66,8 @@ export default function AiDetectorPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="ai-detector">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <DetectorForm />
@@ -107,8 +107,8 @@ export default function AiDetectorPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

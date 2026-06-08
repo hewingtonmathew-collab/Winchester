@@ -17,8 +17,7 @@ export default function GovernancePage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("governance-title", "Governance Compliance Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("governance-desc", "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.");
   return (
-    <AuthGuard toolSlug="governance">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -60,7 +59,8 @@ export default function GovernancePage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="governance">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <GovernanceChecker />
@@ -91,8 +91,8 @@ export default function GovernancePage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

@@ -32,8 +32,7 @@ export default function HealthSafetyPage() {
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("health-safety-title", "Health & Safety Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("health-safety-desc", "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.");
   return (
-    <AuthGuard toolSlug="health-safety">
-      <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Full-width video banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
           {isVideo(bannerUrl) ? (
@@ -75,7 +74,8 @@ export default function HealthSafetyPage() {
         </div>
 
         {/* Page content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <AuthGuard toolSlug="health-safety">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <HealthSafetyChecker />
@@ -113,8 +113,8 @@ export default function HealthSafetyPage() {
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }
