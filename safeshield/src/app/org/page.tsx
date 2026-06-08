@@ -81,7 +81,7 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
             {logo ? (
               <>
                 <img src={logo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
-                <button type="button" onClick={() => setLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                <button type="button" onClick={() => setLogo(null)} aria-label="Remove logo" className="text-xs text-red-400 hover:text-red-300 p-1"><X size={12} /></button>
               </>
             ) : (
               <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
@@ -146,7 +146,7 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
         {logo ? (
           <>
             <img src={logo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
-            <button type="button" onClick={() => setLogo(null)} className="text-red-400"><X size={10} /></button>
+            <button type="button" onClick={() => setLogo(null)} aria-label="Remove logo" className="text-red-400 p-1"><X size={10} /></button>
           </>
         ) : (
           <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
@@ -426,7 +426,8 @@ function OrgCard({
           {canDelete && (
             <button
               onClick={() => onDelete(org.id)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all"
+              className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all"
+              aria-label="Delete organisation"
               title="Delete organisation"
             >
               <Trash2 size={13} className="text-red-400" />
@@ -434,7 +435,9 @@ function OrgCard({
           )}
           <button
             onClick={() => setOpen(!open)}
-            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
+            aria-label={open ? "Collapse organisation" : "Expand organisation"}
+            aria-expanded={open}
+            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
           >
             {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
           </button>
@@ -476,7 +479,8 @@ function OrgCard({
                       <button
                         onClick={() => removeSchool(school.id)}
                         disabled={deletingSchool === school.id}
-                        className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                        aria-label={`Remove ${school.name}`}
+                        className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
                       >
                       {deletingSchool === school.id ? (
                         <Loader2 size={10} className="animate-spin text-red-400" />
@@ -547,7 +551,8 @@ function OrgCard({
                           <button
                             onClick={() => removeMember(member.id)}
                             disabled={deletingMember === member.id}
-                            className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
+                            aria-label={`Remove ${member.full_name ?? member.email ?? "member"}`}
+                            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50"
                           >
                             {deletingMember === member.id ? (
                               <Loader2 size={10} className="animate-spin text-red-400" />

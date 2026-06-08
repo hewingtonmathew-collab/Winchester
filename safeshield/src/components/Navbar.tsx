@@ -82,19 +82,20 @@ export default function Navbar() {
 
         <div className="flex items-center gap-1 shrink-0">
           <button onClick={toggleTheme}
-            className="glass-btn w-8 h-8 flex items-center justify-center"
+            className="glass-btn w-9 h-9 flex items-center justify-center"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
             {theme === "dark" ? <Sun size={14} style={{ color: "var(--text-muted)" }} /> : <Moon size={14} style={{ color: "var(--text-muted)" }} />}
           </button>
 
           {(isAdmin || isOrgAdmin) && (
-            <Link href="/org" className="glass-btn w-8 h-8 flex items-center justify-center" title="Organisations">
+            <Link href="/org" className="glass-btn w-9 h-9 flex items-center justify-center" title="Organisations" aria-label="Organisations">
               <Building2 size={14} style={{ color: path.startsWith("/org") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
 
           {isAdmin && (
-            <Link href="/admin" className="glass-btn w-8 h-8 flex items-center justify-center" title="Admin Panel">
+            <Link href="/admin" className="glass-btn w-9 h-9 flex items-center justify-center" title="Admin Panel" aria-label="Admin panel">
               <LayoutDashboard size={14} style={{ color: path.startsWith("/admin") ? "var(--accent)" : "var(--text-muted)" }} />
             </Link>
           )}
@@ -102,7 +103,9 @@ export default function Navbar() {
           {user ? (
             <div className="relative" ref={menuRef}>
               <button onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass hover:bg-white/10 transition-all">
+                aria-label="Open user menu"
+                aria-expanded={userMenuOpen}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[36px] rounded-lg glass hover:bg-white/10 transition-all">
                 <div className="w-5 h-5 rounded-full bg-[rgba(56,189,248,0.2)] flex items-center justify-center">
                   <User size={10} className="text-[#38BDF8]" />
                 </div>
@@ -116,8 +119,8 @@ export default function Navbar() {
                 <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-white/10 shadow-xl z-50"
                   style={{ background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
                   <div className="px-3 py-2.5 border-b border-white/5">
-                    <p className="text-xs font-medium text-white truncate">{profile?.full_name ?? "User"}</p>
-                    <p className="text-[0.65rem] text-[#475569] truncate">{user.email}</p>
+                    <p className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>{profile?.full_name ?? "User"}</p>
+                    <p className="text-[0.65rem] truncate" style={{ color: "var(--text-muted)" }}>{user.email}</p>
                     {isAdmin && (
                       <span className="inline-block mt-1 text-[0.6rem] px-1.5 py-0.5 rounded-full bg-[rgba(56,189,248,0.15)] text-[#38BDF8] font-medium">Admin</span>
                     )}

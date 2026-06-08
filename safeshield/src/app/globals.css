@@ -39,10 +39,10 @@
 [data-theme="light"] {
   --bg: #E8EDF4;
   --bg2: #DDE4EE;
-  --text: #0A0C10;
-  --text-muted: #1E2533;
-  --text-dim: #374050;
-  --text-faint: #556070;
+  --text: #080B12;
+  --text-muted: #1A2235;
+  --text-dim: #2E3A4E;
+  --text-faint: #4A5668;
   --accent: #0284C7;
   --accent-glow: rgba(2,132,199,0.45);
   --accent-2: #6366F1;

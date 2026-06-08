@@ -181,8 +181,8 @@ export default function LoginPage() {
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
             <Shield size={24} className="text-[#38BDF8]" strokeWidth={1.5} />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">SafeShield</h1>
-          <p className="text-sm text-[#64748B]">
+          <h1 className="heading-luxury text-2xl mb-1" style={{ color: "var(--text)" }}>SafeShield</h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             {mode === "login"
               ? "Sign in to your account"
               : step === "credentials"
@@ -198,44 +198,44 @@ export default function LoginPage() {
               {mode === "register" && (
                 <>
                   <div>
-                    <label className="text-xs text-[#64748B] mb-1 block">Full name</label>
+                    <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Full name</label>
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Jane Smith"
                       required
-                      className="w-full px-4 py-3 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all"
+                      className="input-glass"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#64748B] mb-1 block">Organisation name</label>
+                    <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Organisation name</label>
                     <input
                       type="text"
                       value={orgName}
                       onChange={(e) => setOrgName(e.target.value)}
                       placeholder="Maple Primary School"
                       required
-                      className="w-full px-4 py-3 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all"
+                      className="input-glass"
                     />
                   </div>
                 </>
               )}
 
               <div>
-                <label className="text-xs text-[#64748B] mb-1 block">Email address</label>
+                <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Email address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@school.org"
                   required
-                  className="w-full px-4 py-3 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all"
+                  className="input-glass"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-[#64748B] mb-1 block">Password</label>
+                <label className="text-xs font-medium mb-1.5 block" style={{ color: "var(--text-muted)" }}>Password</label>
                 <div className="relative">
                   <input
                     type={showPw ? "text" : "password"}
@@ -244,10 +244,14 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     required
                     minLength={8}
-                    className="w-full px-4 py-3 pr-11 rounded-xl text-sm bg-white/5 border border-white/10 text-white placeholder-[#475569] outline-none focus:border-[rgba(56,189,248,0.4)] transition-all"
+                    className="input-glass pr-11"
                   />
-                  <button type="button" onClick={() => setShowPw(!showPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-white transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    aria-label={showPw ? "Hide password" : "Show password"}
+                    className="absolute right-0 top-0 h-full w-11 flex items-center justify-center transition-colors"
+                    style={{ color: "var(--text-dim)" }}>
                     {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                 </div>
