@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Mail, Printer, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 
@@ -472,114 +471,223 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
     setTimeout(() => w.print(), 400);
   }
 
+  const glassPanel: React.CSSProperties = {
+    background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderTopColor: "rgba(255,255,255,0.20)",
+    borderRadius: 16,
+    backdropFilter: "blur(20px) saturate(180%)",
+    WebkitBackdropFilter: "blur(20px) saturate(180%)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 20px rgba(0,0,0,0.3)",
+  };
+
+  const pillStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "5px 14px",
+    borderRadius: 999,
+    background: `linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.04)) padding-box,
+      conic-gradient(from 130deg at 50% 50%,
+        rgba(56,189,248,0.8), rgba(167,139,250,0.7),
+        rgba(52,211,153,0.6), rgba(251,146,60,0.5),
+        rgba(244,114,182,0.6), rgba(56,189,248,0.8)
+      ) border-box`,
+    border: "1.5px solid transparent",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    color: "#fff",
+    textTransform: "uppercase" as const,
+  };
+
+  const priorityColor = (p: string) => p === "high" ? "#ef4444" : p === "medium" ? "#f59e0b" : "#22c55e";
+  const priorityText = (p: string) => p === "high" ? "High Priority" : p === "medium" ? "Medium Priority" : "Lower Priority";
+
   return (
-    <GlassCard>
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between mb-1"
-      >
-        <h3 className="text-white font-semibold text-sm uppercase tracking-wider">
-          Improvement Report
-        </h3>
-        {expanded ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
-      </button>
-      <p className="text-[#475569] text-xs mb-4">Tailored recommendations for {meta.schoolName || "this school"}.</p>
+    <div style={{
+      position: "relative",
+      borderRadius: 24,
+      overflow: "hidden",
+      background: `linear-gradient(145deg, #060A12 0%, #0D0A1A 50%, ${accentColor}18 100%)`,
+      boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.6), 0 0 50px ${accentColor}18`,
+      fontFamily: "system-ui, -apple-system, sans-serif",
+    }}>
+      {/* Ambient glow blobs */}
+      <div style={{ position: "absolute", top: -80, right: -80, width: 280, height: 280, borderRadius: "50%",
+        background: `radial-gradient(circle, ${accentColor}20 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: -60, left: -60, width: 220, height: 220, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+      {/* Header */}
+      <div style={{ padding: "28px 28px 0", position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+          <div>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+              School Improvement Report
+            </p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.4px", lineHeight: 1.15 }}>{toolName}</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>{today}</p>
+          </div>
+          <button
+            onClick={() => setExpanded(v => !v)}
+            style={{ ...glassPanel, padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.55)", flexShrink: 0 }}>
+            {expanded ? <><ChevronUp size={14} /> Collapse</> : <><ChevronDown size={14} /> Expand</>}
+          </button>
+        </div>
+
+        {/* Accent rule */}
+        <div style={{ height: 2, borderRadius: 2, background: `linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent)`, marginBottom: 20 }} />
+      </div>
 
       {expanded && (
-        <div className="flex flex-col gap-4">
-          {/* Meta summary */}
-          <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+        <div style={{ padding: "0 28px 28px", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+
+          {/* Meta grid */}
+          <div style={{ ...glassPanel, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 20px" }}>
             {[
-              { label: "School", value: meta.schoolName || "—" },
-              { label: "Score", value: `${score}% — ${rating}`, color: ratingColor, pill: true },
-              { label: "Staff Member", value: meta.staffMember || "—" },
-              { label: "Consultant", value: meta.consultantName || "—" },
+              { label: "School / Trust", value: meta.schoolName || "—" },
+              { label: "Assessment Score", value: null, pill: true },
+              { label: "Completed By", value: meta.staffMember || "—" },
+              { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
             ].map((item) => (
               <div key={item.label}>
-                <p className="text-[#475569] text-[0.6rem] uppercase tracking-wider mb-0.5">{item.label}</p>
-                {(item as { pill?: boolean }).pill && item.color ? (
-                  <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md"
-                    style={{ color: item.color, background: "#000", border: `2px solid ${item.color}` }}>
-                    {item.value}
+                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
+                {item.pill ? (
+                  <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
+                    fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
+                    {score}% — {rating}
                   </span>
                 ) : (
-                  <p className="text-xs font-medium" style={{ color: item.color ?? "#CBD5E1" }}>{item.value}</p>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.78)", fontWeight: 500 }}>{item.value}</p>
                 )}
               </div>
             ))}
           </div>
 
-          {/* Gaps by category */}
-          {categories.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {categories.map((cat) => (
-                <div key={cat}>
-                  <p className="text-[#475569] text-[0.6rem] uppercase tracking-widest font-semibold mb-2">{cat}</p>
-                  <div className="flex flex-col gap-2">
-                    {gaps.filter((g) => g.category === cat).map((g, i) => {
-                      const p = priorityLabel(g.priority);
-                      return (
-                        <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border ${p.bg} ${p.border}`}>
-                          <span className={`shrink-0 text-[0.6rem] font-bold px-1.5 py-0.5 rounded uppercase ${p.bg} ${p.text} border ${p.border}`}>
-                            {p.label}
-                          </span>
-                          <p className="text-[#94A3B8] text-xs leading-relaxed">{g.text}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+          {/* Executive summary */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              Executive Summary
+            </p>
+            <div style={{ ...glassPanel, padding: "14px 18px", fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.7 }}>
+              Assessment completed for <strong style={{ color: "rgba(255,255,255,0.85)" }}>{meta.schoolName}</strong> on {today}.
+              Score: <strong style={{ color: "rgba(255,255,255,0.85)" }}>{score}%</strong> — <strong style={{ color: ratingColor }}>{rating}</strong>.{" "}
+              <strong style={{ color: "#ef4444" }}>{highGaps.length} high</strong>,{" "}
+              <strong style={{ color: "#f59e0b" }}>{medGaps.length} medium</strong>, and{" "}
+              <strong style={{ color: "#22c55e" }}>{lowGaps.length} lower</strong> priority areas identified.
             </div>
-          ) : (
-            <p className="text-[#34D399] text-sm">No gaps identified — excellent compliance across all areas.</p>
-          )}
+          </div>
+
+          {/* Priority actions */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              Priority Actions ({gaps.length})
+            </p>
+            {categories.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {categories.map((cat) => (
+                  <div key={cat}>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.32)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 6 }}>{cat}</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {gaps.filter(g => g.category === cat).map((g, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px",
+                          borderLeft: `3px solid ${priorityColor(g.priority)}`,
+                          borderRadius: "0 12px 12px 0",
+                          background: `${priorityColor(g.priority)}0A` }}>
+                          <span style={{ flexShrink: 0, fontSize: 8, fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase",
+                            padding: "2px 8px", borderRadius: 999,
+                            color: priorityColor(g.priority),
+                            background: `${priorityColor(g.priority)}18`,
+                            border: `1px solid ${priorityColor(g.priority)}55`,
+                            whiteSpace: "nowrap", marginTop: 1 }}>
+                            {priorityText(g.priority)}
+                          </span>
+                          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.68)", lineHeight: 1.55, margin: 0 }}>{g.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ ...glassPanel, padding: "14px 18px", color: "#22c55e", fontSize: 12 }}>
+                No gaps identified — excellent compliance across all areas.
+              </div>
+            )}
+          </div>
 
           {/* Consultant notes */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-[#CBD5E1] text-sm">Consultant Notes <span className="text-[#475569] font-normal">(optional)</span></label>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                Consultant Notes <span style={{ color: "rgba(255,255,255,0.18)", fontWeight: 400 }}>(optional)</span>
+              </p>
               {isSuperAdmin && (
                 <button
                   onClick={() => setConsultantNotes(generateRecommendations(toolName, meta.schoolName, score, rating, gaps))}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}
-                >
-                  <Sparkles size={12} /> Generate Recommendations
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 10, cursor: "pointer",
+                    background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 11, fontWeight: 600 }}>
+                  <Sparkles size={11} /> Generate Recommendations
                 </button>
               )}
             </div>
-            <p className="text-[#475569] text-xs mb-2">Auto-generate recommendations with guidance links, or write your own notes below.</p>
             <textarea
               value={consultantNotes}
               onChange={(e) => setConsultantNotes(e.target.value)}
-              rows={8}
-              placeholder="Click 'Generate Recommendations' to auto-fill based on the assessment gaps, or type your own consultant notes here..."
-              className="w-full px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none transition-colors resize-none placeholder:text-[#475569]"
-              style={{ borderColor: consultantNotes ? accentBorder : undefined }}
+              rows={6}
+              placeholder="Click 'Generate Recommendations' to auto-fill, or type your own notes here..."
+              style={{ width: "100%", padding: "12px 14px", borderRadius: 12, fontSize: 12, color: "#fff",
+                background: "rgba(255,255,255,0.04)", border: `1px solid ${consultantNotes ? accentBorder : "rgba(255,255,255,0.10)"}`,
+                outline: "none", resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
             />
           </div>
 
+          {/* Recommended next steps */}
+          <div>
+            <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              Recommended Next Steps
+            </p>
+            <div style={{ ...glassPanel, padding: "14px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+              {[
+                "Share this report with the senior leadership team and governing board.",
+                "Assign a named lead for each high-priority action with a clear deadline.",
+                `Schedule a follow-up review in ${score < 55 ? "6–8 weeks" : "one term"} to assess progress.`,
+                "Contact your SafeShield consultant for targeted support on any of the above areas.",
+              ].map((step, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <span style={{ flexShrink: 0, width: 20, height: 20, borderRadius: "50%", background: accentColor,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, fontWeight: 700, color: "#000", marginTop: 1 }}>{i + 1}</span>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", lineHeight: 1.55, margin: 0 }}>{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Actions */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{ background: accentDim, border: `1px solid ${accentBorder}`, color: accentColor }}
-            >
-              <Printer size={14} /> Print / Save Report
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, paddingTop: 4 }}>
+            <button onClick={handlePrint}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
+                background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor, fontSize: 13, fontWeight: 600 }}>
+              <Printer size={14} /> Print / Save PDF
             </button>
             {(meta.schoolEmail || meta.consultantEmail) && (
-              <button
-                onClick={handleEmail}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 border border-white/10 text-[#94A3B8] hover:text-white hover:border-white/20 transition-all"
-              >
+              <button onClick={handleEmail}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 600 }}>
                 <Mail size={14} /> Email Report
               </button>
             )}
           </div>
+
+          {/* Footer ref */}
+          <div style={{ paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}>SafeShield · Verified Assessment Report</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.18)", letterSpacing: "0.08em" }}>{today}</span>
+          </div>
         </div>
       )}
-    </GlassCard>
+    </div>
   );
 }
