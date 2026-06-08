@@ -23,6 +23,10 @@ export function saveSubmission(s: Omit<Submission, "id" | "date">): Submission {
   const all = getSubmissions();
   const entry: Submission = { ...s, id: crypto.randomUUID(), date: new Date().toISOString() };
   localStorage.setItem(KEY, JSON.stringify([entry, ...all]));
+  // Always persist gaps to localStorage by report ID so they survive page reloads
+  if (entry.gaps && entry.gaps.length > 0 && typeof window !== "undefined") {
+    localStorage.setItem(`safeshield_gaps_${entry.id}`, JSON.stringify(entry.gaps));
+  }
   // Fire-and-forget save to Supabase
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session?.user) saveReportToSupabase(entry, session.user.id);
@@ -70,4 +74,14 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     school_id: membership?.school_id || null,
   });
   if (error) console.error("Failed to save report to Supabase:", error);
+
+  // Also persist gaps to site_content as a reliable fallback (recommendations column may not exist yet)
+  if (s.gaps && s.gaps.length > 0) {
+    try {
+      await supabase.from("site_content").upsert(
+        { key: `report_gaps_${s.id}`, value: JSON.stringify(s.gaps), updated_at: new Date().toISOString() },
+        { onConflict: "key" }
+      );
+    } catch { /* ignore */ }
+  }
 }

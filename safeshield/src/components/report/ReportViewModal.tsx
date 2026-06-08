@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { supabase } from "@/lib/supabase";
 import { X, Award, BarChart3, ClipboardList, Printer, Mail, Loader2, Sun, Moon } from "lucide-react";
 import type { Gap } from "@/components/report/ImprovementReport";
 import type { ReportMetaData } from "./ReportMeta";
@@ -25,8 +26,28 @@ export default function ReportViewModal({ data, onClose }: { data: ReportViewDat
   const [tab, setTab] = useState<"certificate" | "report" | "recommendations">("certificate");
   const [reportPrintMode, setReportPrintMode] = useState<"dark" | "light">("dark");
   const [emailSending, setEmailSending] = useState(false);
+  const [loadedGaps, setLoadedGaps] = useState<Gap[]>(data.gaps ?? []);
   const areas = data.areas ?? [];
-  const gaps = data.gaps ?? [];
+  const gaps = loadedGaps;
+
+  // Load gaps from fallback sources if not present in report data
+  useEffect(() => {
+    if ((data.gaps && data.gaps.length > 0) || !data.reportId) return;
+    const id = data.reportId;
+
+    // 1. Try localStorage first (immediate)
+    try {
+      const stored = localStorage.getItem(`safeshield_gaps_${id}`);
+      if (stored) { setLoadedGaps(JSON.parse(stored)); return; }
+    } catch { /* ignore */ }
+
+    // 2. Try site_content table
+    supabase.from("site_content").select("value").eq("key", `report_gaps_${id}`).maybeSingle().then(({ data: row }) => {
+      if (row?.value) {
+        try { setLoadedGaps(JSON.parse(row.value)); } catch { /* ignore */ }
+      }
+    });
+  }, [data.reportId, data.gaps]);
 
   const accentColor = data.accentColor || "#38BDF8";
   const ratingColor = data.ratingColor || "#22c55e";
