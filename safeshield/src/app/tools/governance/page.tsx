@@ -21,18 +21,7 @@ export default function GovernancePage() {
     <div className="min-h-[100dvh] pt-16 pb-20">
         {/* Banner */}
         <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
-            />
-          ) : (
+          {!isVideo(bannerUrl) && (
             <img
               src={bannerUrl}
               alt=""

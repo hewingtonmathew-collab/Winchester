@@ -299,27 +299,15 @@ export default function ProfilePage() {
         style={{ minHeight: 280 }}
       >
         {/* Background banner — video or image */}
-        {isVideo(bannerUrl) ? (
-          <video
-            key={bannerUrl}
-            src={bannerUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full"
-            style={{ objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
-          />
-        ) : (
-          <img
+        {!isVideo(bannerUrl) && (
+            <img
             src={bannerUrl}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full"
             style={{ objectFit: "contain", objectPosition: "center", opacity: 0.6 }}
           />
-        )}
+          )}
         {/* Glass overlay */}
         <div
           className="absolute inset-0"
