@@ -22,7 +22,9 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
+import { SEED_COURSES } from "@/lib/training-courses";
 
 const ACCENT = "#8B5CF6";
 
@@ -92,6 +94,7 @@ export default function TrainingAdminTab() {
   const [form, setForm] = useState<CourseForm>(emptyForm());
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   // Delete confirm
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -182,6 +185,7 @@ export default function TrainingAdminTab() {
     setEditingId(null);
     setForm(emptyForm());
     setFormError(null);
+    setShowTemplates(false);
     setShowForm(true);
   }
 
@@ -681,6 +685,51 @@ export default function TrainingAdminTab() {
             </div>
 
             <div className="flex flex-col gap-4">
+              {/* Template selector — only on new course */}
+              {!editingId && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowTemplates((v) => !v)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
+                    style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.25)", color: "#8B5CF6" }}
+                  >
+                    <span className="flex items-center gap-2"><Sparkles size={14} /> Start from a pre-built template</span>
+                    {showTemplates ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                  {showTemplates && (
+                    <div className="mt-2 flex flex-col gap-1.5">
+                      {SEED_COURSES.map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => {
+                            setForm({
+                              title: t.title,
+                              description: t.description,
+                              category: t.category,
+                              level: t.level,
+                              duration_minutes: t.duration_minutes,
+                              thumbnail_color: t.thumbnail_color,
+                              status: "draft",
+                            });
+                            setShowTemplates(false);
+                          }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all hover:bg-white/5"
+                          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+                        >
+                          <div className="w-3 h-3 rounded-full shrink-0" style={{ background: t.thumbnail_color }} />
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>{t.title}</p>
+                            <p className="text-[10px]" style={{ color: "var(--text-faint)" }}>{t.category} · {t.level}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Title */}
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text-muted)" }}>
