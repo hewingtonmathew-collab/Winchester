@@ -107,6 +107,7 @@ export type TrainingLesson = {
   course_id: string;
   section_id: string;
   title: string;
+  pitch: string | null;
   content: string | null;
   video_url: string | null;
   duration_minutes: number;
@@ -133,6 +134,16 @@ export type TrainingProgress = {
   quiz_score: number | null;
   quiz_passed: boolean;
   completed_at: string | null;
+  retake_allowed: boolean;
+};
+
+export type TrainingCompletionReport = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  report_text: string;
+  created_by: string | null;
+  created_at: string;
 };
 
 export type TrainingAssignment = {

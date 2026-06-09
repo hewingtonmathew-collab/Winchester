@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase, type TrainingCourse } from "@/lib/supabase";
+import { supabase, type TrainingCourse, type TrainingCompletionReport } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import GlassCard from "@/components/ui/GlassCard";
 import { seedCoursesToSupabase } from "@/lib/training-courses";
 import {
@@ -23,6 +24,9 @@ import {
   ChevronUp,
   Sparkles,
   LayoutList,
+  RefreshCw,
+  FileText,
+  Send,
 } from "lucide-react";
 import CourseContentEditor from "@/components/training/CourseContentEditor";
 import { SEED_COURSES } from "@/lib/training-courses";
@@ -50,6 +54,16 @@ const LEVELS = ["beginner", "intermediate", "advanced"] as const;
 
 type LevelType = (typeof LEVELS)[number];
 
+type LessonProgressRow = {
+  lesson_id: string;
+  lesson_title: string;
+  has_quiz: boolean;
+  completed: boolean;
+  quiz_score: number | null;
+  quiz_passed: boolean;
+  retake_allowed: boolean;
+};
+
 type EnrolmentRow = {
   user_id: string;
   email: string | null;
@@ -57,6 +71,7 @@ type EnrolmentRow = {
   lesson_count: number;
   completed_count: number;
   last_activity: string | null;
+  lessons: LessonProgressRow[];
 };
 
 type CourseForm = {
@@ -79,7 +94,11 @@ const emptyForm = (): CourseForm => ({
   status: "draft",
 });
 
+const PASS_MARK = 85;
+
 export default function TrainingAdminTab() {
+  const { profile } = useAuth();
+  const isAdmin = (profile as { role?: string } | null)?.role === "admin";
   const [courses, setCourses] = useState<TrainingCourse[]>([]);
   const [lessonCountMap, setLessonCountMap] = useState<Record<string, number>>({});
   const [enrolmentCountMap, setEnrolmentCountMap] = useState<Record<string, number>>({});
@@ -107,6 +126,11 @@ export default function TrainingAdminTab() {
   const [contentEditorCourseId, setContentEditorCourseId] = useState<string | null>(null);
   const [enrolmentRows, setEnrolmentRows] = useState<EnrolmentRow[]>([]);
   const [enrolmentLoading, setEnrolmentLoading] = useState(false);
+  // Reports
+  const [courseReports, setCourseReports] = useState<TrainingCompletionReport[]>([]);
+  const [reportTargetUserId, setReportTargetUserId] = useState<string | null>(null);
+  const [reportText, setReportText] = useState("");
+  const [savingReport, setSavingReport] = useState(false);
 
   async function loadData() {
     setLoading(true);
@@ -260,55 +284,91 @@ export default function TrainingAdminTab() {
 
   async function loadEnrolments(courseId: string) {
     setEnrolmentLoading(true);
+    setCourseReports([]);
+    setReportTargetUserId(null);
+    setReportText("");
     try {
-      const { data: progressRows } = await supabase
-        .from("training_progress")
-        .select("user_id, lesson_id, completed, completed_at")
-        .eq("course_id", courseId);
+      const [{ data: progressRows }, { data: courseLessons }, { data: rpts }] = await Promise.all([
+        supabase.from("training_progress").select("user_id, lesson_id, completed, completed_at, quiz_score, quiz_passed, retake_allowed").eq("course_id", courseId),
+        supabase.from("training_lessons").select("id, title, has_quiz").eq("course_id", courseId).order("sort_order"),
+        supabase.from("training_completion_reports").select("*").eq("course_id", courseId).order("created_at"),
+      ]);
+
+      setCourseReports(rpts ?? []);
 
       if (!progressRows || progressRows.length === 0) {
         setEnrolmentRows([]);
         return;
       }
 
-      // Group by user
-      const userMap: Record<string, { lesson_count: number; completed_count: number; last_activity: string | null }> = {};
+      const userMap: Record<string, { lesson_count: number; completed_count: number; last_activity: string | null; progressByLesson: Record<string, typeof progressRows[0]> }> = {};
       for (const row of progressRows) {
         if (!userMap[row.user_id]) {
-          userMap[row.user_id] = { lesson_count: 0, completed_count: 0, last_activity: null };
+          userMap[row.user_id] = { lesson_count: 0, completed_count: 0, last_activity: null, progressByLesson: {} };
         }
         userMap[row.user_id].lesson_count++;
+        userMap[row.user_id].progressByLesson[row.lesson_id] = row;
         if (row.completed) userMap[row.user_id].completed_count++;
         if (row.completed_at) {
           const prev = userMap[row.user_id].last_activity;
-          if (!prev || row.completed_at > prev) {
-            userMap[row.user_id].last_activity = row.completed_at;
-          }
+          if (!prev || row.completed_at > prev) userMap[row.user_id].last_activity = row.completed_at;
         }
       }
 
       const userIds = Object.keys(userMap);
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", userIds);
-
+      const { data: profiles } = await supabase.from("profiles").select("id, email, full_name").in("id", userIds);
       const profileMap: Record<string, { email: string | null; full_name: string | null }> = {};
-      for (const p of profiles ?? []) {
-        profileMap[p.id] = { email: p.email, full_name: p.full_name };
-      }
+      for (const p of profiles ?? []) profileMap[p.id] = { email: p.email, full_name: p.full_name };
 
       setEnrolmentRows(
         userIds.map((uid) => ({
           user_id: uid,
           email: profileMap[uid]?.email ?? null,
           full_name: profileMap[uid]?.full_name ?? null,
-          ...userMap[uid],
+          lesson_count: userMap[uid].lesson_count,
+          completed_count: userMap[uid].completed_count,
+          last_activity: userMap[uid].last_activity,
+          lessons: (courseLessons ?? []).map((l) => {
+            const p = userMap[uid].progressByLesson[l.id];
+            return {
+              lesson_id: l.id,
+              lesson_title: l.title,
+              has_quiz: l.has_quiz,
+              completed: p?.completed ?? false,
+              quiz_score: p?.quiz_score ?? null,
+              quiz_passed: p?.quiz_passed ?? false,
+              retake_allowed: p?.retake_allowed ?? false,
+            };
+          }),
         }))
       );
     } finally {
       setEnrolmentLoading(false);
     }
+  }
+
+  async function handleAllowRetake(userId: string, lessonId: string, courseId: string) {
+    await supabase.from("training_progress")
+      .update({ retake_allowed: true })
+      .eq("user_id", userId)
+      .eq("lesson_id", lessonId);
+    loadEnrolments(courseId);
+  }
+
+  async function handleSaveReport(courseId: string) {
+    if (!reportText.trim() || !reportTargetUserId) return;
+    setSavingReport(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from("training_completion_reports").insert({
+      user_id: reportTargetUserId,
+      course_id: courseId,
+      report_text: reportText.trim(),
+      created_by: user?.id ?? null,
+    });
+    setReportText("");
+    setReportTargetUserId(null);
+    loadEnrolments(courseId);
+    setSavingReport(false);
   }
 
   function toggleEnrolments(courseId: string) {
@@ -538,55 +598,137 @@ export default function TrainingAdminTab() {
                       {/* Enrolment panel */}
                       {isExpanded && (
                         <div className="px-5 py-4 border-t" style={{ borderColor: "rgba(255,255,255,0.04)", background: "rgba(255,255,255,0.01)" }}>
-                            {enrolmentLoading ? (
-                              <div className="flex items-center gap-2 py-2">
-                                <Loader2 size={14} className="animate-spin" style={{ color: ACCENT }} />
-                                <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading enrolments…</span>
-                              </div>
-                            ) : enrolmentRows.length === 0 ? (
-                              <p className="text-xs" style={{ color: "var(--text-faint)" }}>
-                                No learners have started this course yet.
+                          {enrolmentLoading ? (
+                            <div className="flex items-center gap-2 py-2">
+                              <Loader2 size={14} className="animate-spin" style={{ color: ACCENT }} />
+                              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading enrolments…</span>
+                            </div>
+                          ) : enrolmentRows.length === 0 ? (
+                            <p className="text-xs" style={{ color: "var(--text-faint)" }}>No learners have started this course yet.</p>
+                          ) : (
+                            <div className="flex flex-col gap-4">
+                              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
+                                Learner Progress · {enrolmentRows.length} enrolled
                               </p>
-                            ) : (
-                              <div className="flex flex-col gap-1.5">
-                                <p className="text-xs font-semibold mb-2 uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                                  Learner Progress · {enrolmentRows.length} enrolled
-                                </p>
-                                {enrolmentRows.map((row) => {
-                                  const pct = row.lesson_count > 0 ? Math.round((row.completed_count / row.lesson_count) * 100) : 0;
-                                  return (
-                                    <div
-                                      key={row.user_id}
-                                      className="flex items-center justify-between gap-4 px-3 py-2 rounded-xl bg-white/[0.02] border"
-                                      style={{ borderColor: "rgba(255,255,255,0.05)" }}
-                                    >
+                              {enrolmentRows.map((row) => {
+                                const quizScores = row.lessons.filter((l) => l.has_quiz && l.quiz_score !== null).map((l) => l.quiz_score as number);
+                                const avgScore = quizScores.length > 0 ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : null;
+                                const pct = row.lesson_count > 0 ? Math.round((row.completed_count / row.lesson_count) * 100) : 0;
+                                const passed = avgScore !== null && avgScore >= PASS_MARK;
+                                const learnerReports = courseReports.filter((r) => r.user_id === row.user_id);
+                                const isReportTarget = reportTargetUserId === row.user_id;
+
+                                return (
+                                  <div key={row.user_id} className="rounded-xl border p-3 flex flex-col gap-3" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.015)" }}>
+                                    {/* Learner header */}
+                                    <div className="flex items-center justify-between gap-2">
                                       <div>
-                                        <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                                          {row.full_name ?? row.email ?? row.user_id.slice(0, 8)}
-                                        </p>
-                                        {row.last_activity && (
-                                          <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>
-                                            Last activity: {new Date(row.last_activity).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                                          </p>
-                                        )}
+                                        <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>{row.full_name ?? row.email ?? row.user_id.slice(0, 8)}</p>
+                                        {row.email && row.full_name && <p className="text-[10px]" style={{ color: "var(--text-faint)" }}>{row.email}</p>}
                                       </div>
-                                      <div className="flex items-center gap-3 shrink-0">
-                                        <div className="w-24 h-1.5 rounded-full bg-white/10 overflow-hidden">
-                                          <div
-                                            className="h-full rounded-full transition-all"
-                                            style={{ width: `${pct}%`, background: ACCENT }}
-                                          />
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        {avgScore !== null && (
+                                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: passed ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: passed ? "#22c55e" : "#ef4444" }}>
+                                            {avgScore}% avg
+                                          </span>
+                                        )}
+                                        <div className="w-16 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: ACCENT }} />
                                         </div>
-                                        <span className="text-xs font-semibold w-8 text-right" style={{ color: ACCENT }}>
-                                          {pct}%
-                                        </span>
+                                        <span className="text-[10px] font-semibold" style={{ color: ACCENT }}>{pct}%</span>
                                       </div>
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
+
+                                    {/* Per-lesson rows */}
+                                    <div className="flex flex-col gap-1">
+                                      {row.lessons.map((l) => (
+                                        <div key={l.lesson_id} className="flex items-center justify-between gap-2 py-1 border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                                          <span className="text-[11px] truncate flex-1" style={{ color: "var(--text-muted)" }}>{l.lesson_title}</span>
+                                          <div className="flex items-center gap-2 shrink-0">
+                                            {l.has_quiz && l.quiz_score !== null ? (
+                                              <span className="text-[10px] font-bold" style={{ color: l.quiz_passed ? "#22c55e" : "#ef4444" }}>
+                                                {l.quiz_score}%
+                                              </span>
+                                            ) : l.completed ? (
+                                              <span className="text-[10px]" style={{ color: "var(--text-faint)" }}>Read</span>
+                                            ) : (
+                                              <span className="text-[10px]" style={{ color: "var(--text-faint)" }}>–</span>
+                                            )}
+                                            {l.has_quiz && !l.quiz_passed && l.completed && !l.retake_allowed && (
+                                              <button
+                                                onClick={() => handleAllowRetake(row.user_id, l.lesson_id, course.id)}
+                                                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all"
+                                                style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)", color: "#F59E0B" }}
+                                                title="Allow this learner to retake the quiz"
+                                              >
+                                                <RefreshCw size={9} /> Retake
+                                              </button>
+                                            )}
+                                            {l.retake_allowed && (
+                                              <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold" style={{ background: "rgba(245,158,11,0.1)", color: "#F59E0B" }}>Retake granted</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Existing reports for this learner */}
+                                    {learnerReports.length > 0 && (
+                                      <div className="flex flex-col gap-1.5 pt-1">
+                                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Learning Reports</p>
+                                        {learnerReports.map((r) => (
+                                          <div key={r.id} className="p-2.5 rounded-lg text-[11px] leading-relaxed" style={{ background: `${ACCENT}08`, border: `1px solid ${ACCENT}1a`, color: "var(--text-muted)" }}>
+                                            <p style={{ whiteSpace: "pre-wrap" }}>{r.report_text}</p>
+                                            <p className="mt-1 text-[9px]" style={{ color: "var(--text-faint)" }}>{new Date(r.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Add report button (super admin only) */}
+                                    {isAdmin && (
+                                      <div>
+                                        {isReportTarget ? (
+                                          <div className="flex flex-col gap-2">
+                                            <textarea
+                                              autoFocus
+                                              rows={3}
+                                              value={reportText}
+                                              onChange={(e) => setReportText(e.target.value)}
+                                              placeholder="Write a personalised learning report for this learner…"
+                                              className="w-full px-3 py-2 rounded-xl text-xs bg-white/5 border outline-none resize-none"
+                                              style={{ borderColor: `${ACCENT}30`, color: "var(--text)" }}
+                                            />
+                                            <div className="flex gap-2">
+                                              <button
+                                                onClick={() => handleSaveReport(course.id)}
+                                                disabled={savingReport || !reportText.trim()}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-40"
+                                                style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}30`, color: ACCENT }}
+                                              >
+                                                {savingReport ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
+                                                Save Report
+                                              </button>
+                                              <button onClick={() => { setReportTargetUserId(null); setReportText(""); }} className="text-xs px-3 py-1.5 rounded-lg" style={{ color: "var(--text-muted)" }}>Cancel</button>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <button
+                                            onClick={() => { setReportTargetUserId(row.user_id); setReportText(""); }}
+                                            className="flex items-center gap-1.5 text-[10px] font-medium transition-all hover:opacity-80"
+                                            style={{ color: ACCENT }}
+                                          >
+                                            <FileText size={11} /> Add Learning Report
+                                          </button>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                         )}
                     </div>
                   );

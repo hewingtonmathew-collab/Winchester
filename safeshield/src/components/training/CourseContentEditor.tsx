@@ -114,7 +114,9 @@ export default function CourseContentEditor({ courseId }: Props) {
         course_id: courseId,
         section_id: sectionId,
         title: "New Lesson",
+        pitch: "",
         content: "",
+        video_url: null,
         duration_minutes: 5,
         has_quiz: false,
         sort_order: sortOrder,
@@ -126,7 +128,7 @@ export default function CourseContentEditor({ courseId }: Props) {
       s.id === sectionId ? { ...s, lessons: [...s.lessons, newLesson] } : s
     ));
     setEditingLesson(data.id);
-    setEditingLessonData({ title: data.title, content: data.content ?? "", duration_minutes: data.duration_minutes, has_quiz: data.has_quiz });
+    setEditingLessonData({ title: data.title, pitch: data.pitch ?? "", content: data.content ?? "", video_url: data.video_url ?? "", duration_minutes: data.duration_minutes, has_quiz: data.has_quiz });
     setSaving(false);
   }
 
@@ -134,7 +136,9 @@ export default function CourseContentEditor({ courseId }: Props) {
     if (!editingLessonData.title?.trim()) return;
     const { error } = await supabase.from("training_lessons").update({
       title: editingLessonData.title?.trim(),
+      pitch: editingLessonData.pitch ?? "",
       content: editingLessonData.content ?? "",
+      video_url: editingLessonData.video_url?.trim() || null,
       duration_minutes: editingLessonData.duration_minutes ?? 5,
       has_quiz: editingLessonData.has_quiz ?? false,
     }).eq("id", lessonId);
@@ -310,14 +314,38 @@ export default function CourseContentEditor({ courseId }: Props) {
                               className={INPUT_CLS}
                               style={INPUT_STYLE}
                             />
-                            <textarea
-                              rows={8}
-                              placeholder="Lesson content (paste your text here — use blank lines to separate paragraphs)…"
-                              value={editingLessonData.content ?? ""}
-                              onChange={(e) => setEditingLessonData((p) => ({ ...p, content: e.target.value }))}
-                              className={`${INPUT_CLS} resize-y min-h-[160px]`}
-                              style={INPUT_STYLE}
-                            />
+                            <div>
+                              <label className="block text-xs mb-1" style={{ color: "var(--text-muted)" }}>Intro / Pitch <span style={{ color: "var(--text-faint)" }}>(short hook shown at the top)</span></label>
+                              <textarea
+                                rows={2}
+                                placeholder="A brief engaging intro or pitch for this lesson…"
+                                value={editingLessonData.pitch ?? ""}
+                                onChange={(e) => setEditingLessonData((p) => ({ ...p, pitch: e.target.value }))}
+                                className={`${INPUT_CLS} resize-none`}
+                                style={INPUT_STYLE}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs mb-1" style={{ color: "var(--text-muted)" }}>Video URL <span style={{ color: "var(--text-faint)" }}>(YouTube, Vimeo or direct embed)</span></label>
+                              <input
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                value={editingLessonData.video_url ?? ""}
+                                onChange={(e) => setEditingLessonData((p) => ({ ...p, video_url: e.target.value }))}
+                                className={INPUT_CLS}
+                                style={INPUT_STYLE}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs mb-1" style={{ color: "var(--text-muted)" }}>Lesson Content</label>
+                              <textarea
+                                rows={8}
+                                placeholder="Full lesson content — use blank lines to separate paragraphs…"
+                                value={editingLessonData.content ?? ""}
+                                onChange={(e) => setEditingLessonData((p) => ({ ...p, content: e.target.value }))}
+                                className={`${INPUT_CLS} resize-y min-h-[160px]`}
+                                style={INPUT_STYLE}
+                              />
+                            </div>
                             <div className="flex items-center gap-4">
                               <div className="flex-1">
                                 <label className="block text-xs mb-1" style={{ color: "var(--text-muted)" }}>Duration (minutes)</label>
@@ -352,13 +380,14 @@ export default function CourseContentEditor({ courseId }: Props) {
                             <div className="flex items-center gap-2">
                               <span className="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.15)", color: "#8B5CF6" }}>{lIdx + 1}</span>
                               <span className="flex-1 text-sm font-medium" style={{ color: "var(--text)" }}>{lesson.title}</span>
+                              {lesson.video_url && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "rgba(59,130,246,0.15)", color: "#3B82F6" }}>Video</span>}
                               <span className="text-xs" style={{ color: "var(--text-faint)" }}>{lesson.duration_minutes}m</span>
                               {lesson.has_quiz && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "rgba(245,158,11,0.15)", color: "#F59E0B" }}>
                                   Quiz · {lesson.quizzes.length}Q
                                 </span>
                               )}
-                              <button onClick={() => { setEditingLesson(lesson.id); setEditingLessonData({ title: lesson.title, content: lesson.content ?? "", duration_minutes: lesson.duration_minutes, has_quiz: lesson.has_quiz }); }}
+                              <button onClick={() => { setEditingLesson(lesson.id); setEditingLessonData({ title: lesson.title, pitch: lesson.pitch ?? "", content: lesson.content ?? "", video_url: lesson.video_url ?? "", duration_minutes: lesson.duration_minutes, has_quiz: lesson.has_quiz }); }}
                                 className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/10 transition-all">
                                 <Edit2 size={11} style={{ color: "var(--text-dim)" }} />
                               </button>
