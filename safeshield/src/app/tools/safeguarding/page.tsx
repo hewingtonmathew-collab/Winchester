@@ -14,33 +14,22 @@ const COLOR = "#34D399";
 const AREAS = ["Online Filtering", "Online Monitoring", "Policy & AUPs", "DSL & Staff Training", "Curriculum Delivery", "Governor Oversight", "Devices & BYOD"];
 
 export default function SafeguardingPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("safeguarding");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("safeguarding");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("safeguarding-title", "Safeguarding Risk Checker");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("safeguarding-desc", "Answer 15 structured questions across key safeguarding areas to receive an instant risk rating and prioritised action list aligned to KCSIE expectations.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
-        <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+        {/* Banner */}
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
+          {!isVideo(bannerUrl) && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="safeguarding" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="safeguarding" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",
@@ -49,7 +38,7 @@ export default function SafeguardingPage() {
               backdropFilter: "blur(2px)",
             }}
           />
-          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
               <ToolIconWrapper slug="safeguarding" Icon={IconSafeguarding} size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Risk Assessment</span>
@@ -68,14 +57,7 @@ export default function SafeguardingPage() {
                 <SafeguardingChecker />
               </div>
               <div className="flex flex-col gap-4">
-                <SidebarVideoCard
-                  toolSlug="safeguarding"
-                  color={COLOR}
-                  defaultTitle="Watch: Safeguarding in Schools"
-                  defaultDescription="An overview of digital safeguarding expectations and KCSIE requirements for school leaders."
-                />
-
-                <GlassCard>
+<GlassCard>
                   <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
                   <ul className="flex flex-col gap-2">
                     {AREAS.map((a) => (
@@ -87,7 +69,14 @@ export default function SafeguardingPage() {
                   </ul>
                 </GlassCard>
 
-                <GlassCard>
+                <SidebarVideoCard
+                  toolSlug="safeguarding"
+                  color={COLOR}
+                  defaultTitle="Watch: Safeguarding in Schools"
+                  defaultDescription="An overview of digital safeguarding expectations and KCSIE requirements for school leaders."
+                />
+
+                                <GlassCard>
                   <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
                   <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Questions are aligned to KCSIE, the UK Council for Internet Safety (UKCIS) framework, and Ofsted inspection expectations.</p>
                 </GlassCard>

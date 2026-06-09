@@ -67,6 +67,7 @@ export default function SafeguardingChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [step, setStep] = useState<"meta" | "questions">("meta");
 
@@ -122,7 +123,7 @@ export default function SafeguardingChecker() {
         </GlassCard>
 
         <Certificate meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} accentColor="#34D399" areas={areas} />
-        <ImprovementReport meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} gaps={gaps} accentColor="#34D399" accentDim="rgba(52,211,153,0.12)" accentBorder="rgba(52,211,153,0.25)" />
+        <ImprovementReport meta={meta} toolName="Safeguarding Risk Checker" score={score} rating={rating} ratingColor={ratingColor} gaps={gaps} accentColor="#34D399" accentDim="rgba(52,211,153,0.12)" accentBorder="rgba(52,211,153,0.25)" reportId={submissionId ?? undefined} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#34D399] text-sm hover:text-white transition-colors">
           ← Start again
@@ -208,7 +209,7 @@ export default function SafeguardingChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Safeguarding Risk Checker", ...meta, score, rating, ratingColor, areas, gaps }); }} disabled={answered < questions.length}
+            <button onClick={() => { const id = crypto.randomUUID(); setSubmissionId(id); setSubmitted(true); saveSubmission({ tool: "Safeguarding Risk Checker", ...meta, score, rating, ratingColor, areas, gaps, id }); }} disabled={answered < questions.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(52,211,153,0.15)] border border-[rgba(52,211,153,0.3)] text-[#34D399] text-sm font-medium hover:bg-[rgba(52,211,153,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>

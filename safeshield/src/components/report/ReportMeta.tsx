@@ -39,6 +39,7 @@ export default function ReportMeta({
     const reader = new FileReader();
     reader.onload = () => onChange({ ...value, logoDataUrl: reader.result as string });
     reader.readAsDataURL(file);
+    e.target.value = "";
   }
 
   const inputClass =
@@ -57,15 +58,30 @@ export default function ReportMeta({
           <label className="block text-[#CBD5E1] text-sm mb-1">School Logo</label>
           <p className="text-[#475569] text-xs mb-2">Optional — appears on the certificate and report.</p>
           {value.logoDataUrl ? (
-            <div className="flex items-center gap-3">
-              <img src={value.logoDataUrl} alt="School logo" className="h-14 w-auto object-contain rounded-lg bg-white/5 p-1" />
-              <button
-                type="button"
-                onClick={() => onChange({ ...value, logoDataUrl: null })}
-                className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 transition-colors"
-              >
-                <X size={12} /> Remove
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="inline-flex items-center justify-center rounded-xl bg-white/5 border border-white/10 p-2" style={{ maxWidth: 200 }}>
+                <img
+                  src={value.logoDataUrl}
+                  alt="School logo"
+                  style={{ maxHeight: 80, maxWidth: 176, width: "auto", height: "auto", objectFit: "contain", display: "block" }}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-[#94A3B8] text-xs hover:text-white hover:border-white/20 transition-all"
+                >
+                  <Upload size={11} /> Replace
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...value, logoDataUrl: null })}
+                  className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 transition-colors"
+                >
+                  <X size={12} /> Remove
+                </button>
+              </div>
             </div>
           ) : (
             <button

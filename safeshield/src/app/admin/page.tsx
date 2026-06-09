@@ -2,9 +2,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Eye } from "lucide-react";
+import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw } from "lucide-react";
+import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
-import ReportViewModal from "@/components/report/ReportViewModal";
 import { useAuth } from "@/context/AuthContext";
 import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember, type Report } from "@/lib/supabase";
 
@@ -18,6 +19,12 @@ const TOOL_COLORS: Record<string, string> = {
   "AI Content Detector": "#38BDF8",
   "Digital Standards Checker": "#818CF8",
   "Health & Safety Checker": "#F97316",
+  "Screen Use & Wellbeing Review": "#06B6D4",
+  "AI Use Risk Assessment": "#F59E0B",
+  "SEND Digital Impact Review": "#8B5CF6",
+  "Filtering & Monitoring Assurance": "#EF4444",
+  "Data Protection & AI Privacy": "#3B82F6",
+  "Governor Digital Dashboard": "#10B981",
 };
 
 // Reusable tool-access toggle grid. Super admin sets these toggles at the
@@ -106,7 +113,7 @@ function GroupedBySchool({ submissions, onDelete, onView }: { submissions: Submi
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <ScoreBadge score={s.score} color={color} />
-                        <button onClick={() => onView(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View certificate">
+                        <button onClick={() => onView(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
                           <Eye size={12} className="text-[#38BDF8]" />
                         </button>
                         {s.schoolEmail && (
@@ -179,20 +186,20 @@ function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
-        <button className="flex items-center gap-3 flex-1 min-w-0 text-left" onClick={() => setEditing((v) => !v)}>
-          <div className="w-12 h-12 rounded-xl bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)] flex items-center justify-center shrink-0">
-            <span className="text-base font-bold" style={{ color: "#38BDF8" }}>{(u.full_name ?? u.email)[0].toUpperCase()}</span>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+            <span className="text-xs font-bold text-[#94A3B8]">{(u.full_name ?? u.email)[0].toUpperCase()}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{u.full_name ?? "—"}</p>
-            <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
+            <p className="text-sm font-semibold text-white truncate">{u.full_name ?? "—"}</p>
+            <p className="text-xs text-[#64748B] truncate">{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
           </div>
-        </button>
+        </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={(e) => { e.stopPropagation(); setEditing((v) => !v); }} title="Edit user"
-            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
-            <Pencil size={13} className="text-[#38BDF8]" />
+          <button onClick={() => setEditing((v) => !v)} title="Edit user"
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            <Pencil size={12} className="text-[#38BDF8]" />
           </button>
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border"
             style={{ color: statusColor, background: `${statusColor}15`, borderColor: `${statusColor}40` }}>
@@ -205,22 +212,22 @@ function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
             <>
               {u.status !== "active" && (
                 <button onClick={() => changeStatus("active")} title="Approve"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-green-500/10 transition-all">
+                  className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-green-500/10 transition-all">
                   <CheckCircle2 size={13} className="text-green-400" />
                 </button>
               )}
               {u.status !== "suspended" && (
                 <button onClick={() => changeStatus("suspended")} title="Suspend"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all">
+                  className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all">
                   <XCircle size={13} className="text-red-400" />
                 </button>
               )}
             </>
           )}
 
-          <button onClick={() => setOpen(!open)} aria-label={open ? "Collapse" : "Expand"}
-            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
-            {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
+          <button onClick={() => setOpen(!open)}
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            {open ? <ChevronUp size={13} className="text-[#64748B]" /> : <ChevronDown size={13} className="text-[#64748B]" />}
           </button>
         </div>
       </div>
@@ -318,20 +325,18 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
     setBusy(true);
 
     try {
-      // Create user via server-side admin endpoint (service-role key).
-      // Avoids client signUp's email validation/confirmation and session swap.
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/create-member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
-        body: JSON.stringify({ name: fullName, email, password }),
+      // Create user via admin API (sign up with temp password)
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } },
       });
-      const created = await res.json();
-      if (!res.ok) throw new Error(created.error ?? "Could not create user.");
-      const userId = created.user.id as string;
+      if (signUpError) throw signUpError;
+      const userId = authData.user?.id;
+      if (!userId) throw new Error("No user ID returned.");
 
-      // Set org_type (account is already active from the endpoint)
-      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
+      // Update profile org_type — admin-created users are active immediately
+      await supabase.from("profiles").update({ org_type: orgType, status: "active" }).eq("id", userId);
 
       let orgId: string;
 
@@ -507,11 +512,6 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [memberError, setMemberError] = useState("");
   const [availableUsers, setAvailableUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  // new member mode: pick existing user or create new
-  const [memberMode, setMemberMode] = useState<"existing" | "new">("new");
-  const [newMemberName, setNewMemberName] = useState("");
-  const [newMemberEmail, setNewMemberEmail] = useState("");
-  const [newMemberPassword, setNewMemberPassword] = useState("");
 
   // Org editing
   const [editingOrg, setEditingOrg] = useState(false);
@@ -709,43 +709,16 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
   async function handleAddMember(e: React.FormEvent) {
     e.preventDefault();
+    if (!memberUserId) return;
     setAddingMember(true);
     setMemberError("");
-
-    let prof: { id: string; email: string; full_name: string | null } | null = null;
-
-    if (memberMode === "new") {
-      if (!newMemberName.trim() || !newMemberEmail.trim() || !newMemberPassword.trim()) {
-        setMemberError("Name, email and password are all required."); setAddingMember(false); return;
-      }
-      if (newMemberPassword.length < 8) {
-        setMemberError("Password must be at least 8 characters."); setAddingMember(false); return;
-      }
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/create-member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
-        body: JSON.stringify({ name: newMemberName.trim(), email: newMemberEmail.trim(), password: newMemberPassword }),
-      });
-      const json = await res.json();
-      if (!res.ok) { setMemberError(json.error ?? "Could not create account."); setAddingMember(false); return; }
-      prof = json.user as { id: string; email: string; full_name: string | null };
-    } else {
-      if (!memberUserId) { setMemberError("Please select a user."); setAddingMember(false); return; }
-      prof = availableUsers.find((u) => u.id === memberUserId) ?? null;
-      if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
-    }
-
-    const { data: mem, error: memErr } = await supabase
-      .from("org_members")
-      .insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole })
-      .select().single();
+    const prof = availableUsers.find((u) => u.id === memberUserId);
+    if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
+    const { data: mem, error: memErr } = await supabase.from("org_members").insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole }).select().single();
     if (memErr) { setMemberError(memErr.message); setAddingMember(false); return; }
-    setMembers((p) => [...p, { ...(mem as OrgMember), email: prof!.email, full_name: prof!.full_name }]);
-    setAvailableUsers((p) => p.filter((u) => u.id !== prof!.id));
-    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member");
-    setNewMemberName(""); setNewMemberEmail(""); setNewMemberPassword("");
-    setAddingMember(false);
+    setMembers((p) => [...p, { ...(mem as OrgMember), email: prof.email, full_name: prof.full_name }]);
+    setAvailableUsers((p) => p.filter((u) => u.id !== prof.id));
+    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
   }
 
   const typeBadgeColor = orgState.type === "mat" ? "#A78BFA" : "#38BDF8";
@@ -753,12 +726,12 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
-        <button className="flex items-center gap-3 flex-1 min-w-0 text-left" onClick={() => setOpen(!open)}>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           {orgState.logo_url ? (
-            <img src={orgState.logo_url} alt="" className="w-12 h-12 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
+            <img src={orgState.logo_url} alt="" className="w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
           ) : (
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-              <Building2 size={22} className="text-[#38BDF8]" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+              <Building2 size={16} className="text-[#38BDF8]" />
             </div>
           )}
           <div className="min-w-0">
@@ -780,13 +753,13 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               {orgState.manager_name ? ` · ${orgState.manager_name}` : ""}
             </p>
           </div>
-        </button>
+        </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={(e) => { e.stopPropagation(); setEditingOrg((v) => !v); setOpen(true); }} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
-            <Pencil size={13} className="text-[#38BDF8]" />
+          <button onClick={() => { setEditingOrg((v) => !v); setOpen(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
+            <Pencil size={12} className="text-[#38BDF8]" />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); toggleOrgStatus(); }} disabled={togglingOrgStatus}
-            className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+          <button onClick={toggleOrgStatus} disabled={togglingOrgStatus}
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
             title={orgState.status === "disabled" ? "Enable organisation" : "Disable organisation"}>
             {togglingOrgStatus
               ? <Loader2 size={12} className="animate-spin text-[#475569]" />
@@ -794,10 +767,10 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 ? <Power size={12} className="text-green-400" />
                 : <PowerOff size={12} className="text-amber-400" />}
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onDelete(org.id); }} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
-            <Trash2 size={13} className="text-red-400" />
+          <button onClick={() => onDelete(org.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
+            <Trash2 size={12} className="text-red-400" />
           </button>
-          <button onClick={() => setOpen(!open)} className="w-9 h-9 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" aria-label={open ? "Collapse" : "Expand"}>
+          <button onClick={() => setOpen(!open)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
             {open ? <ChevronUp size={13} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={13} style={{ color: "var(--text-dim)" }} />}
           </button>
         </div>
@@ -829,16 +802,24 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs" style={{ color: "var(--text-dim)" }}>Logo</label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-1.5">
                     {eLogo ? (
                       <>
-                        <img src={eLogo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
-                        <button type="button" onClick={() => setELogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                        <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 140 }}>
+                          <img src={eLogo} alt="Logo" style={{ maxHeight: 48, maxWidth: 124, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                            <Upload size={10} /> Replace
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) { readFileAsDataUrl(f, setELogo); } e.target.value = ""; }} />
+                          </label>
+                          <button type="button" onClick={() => setELogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                        </div>
                       </>
                     ) : (
                       <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
                         <Plus size={12} /> Upload logo
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setELogo); }} />
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setELogo); e.target.value = ""; }} />
                       </label>
                     )}
                   </div>
@@ -887,14 +868,20 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                         <input value={esEmail} onChange={(e) => setEsEmail(e.target.value)} placeholder="Email" type="email"
                           className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
                         {esLogo ? (
-                          <div className="flex items-center gap-1">
-                            <img src={esLogo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex items-center justify-center rounded bg-white/5 border border-white/10 p-0.5" style={{ maxWidth: 80 }}>
+                              <img src={esLogo} alt="" style={{ maxHeight: 28, maxWidth: 72, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                            </div>
+                            <label className="flex items-center gap-1 px-2 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20" style={{ color: "var(--text-dim)" }}>
+                              <Upload size={9} /> Replace
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); e.target.value = ""; }} />
+                            </label>
                             <button type="button" onClick={() => setEsLogo(null)} className="text-red-400"><X size={11} /></button>
                           </div>
                         ) : (
                           <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20" style={{ color: "var(--text-dim)" }}>
                             <Plus size={11} /> Logo
-                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); }} />
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); e.target.value = ""; }} />
                           </label>
                         )}
                       </div>
@@ -1032,60 +1019,34 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 );
               })}
             </div>
-            <div className="border border-white/8 rounded-xl p-3 bg-white/[0.02]">
-              {/* Mode toggle */}
-              <div className="flex gap-2 mb-3">
-                <button type="button" onClick={() => setMemberMode("new")}
-                  className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-                  style={{ background: memberMode === "new" ? "rgba(56,189,248,0.15)" : "transparent", border: memberMode === "new" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: memberMode === "new" ? "#38BDF8" : "#64748B" }}>
-                  + New person
-                </button>
-                <button type="button" onClick={() => setMemberMode("existing")}
-                  className="px-3 py-1 rounded-lg text-xs font-medium transition-all"
-                  style={{ background: memberMode === "existing" ? "rgba(56,189,248,0.15)" : "transparent", border: memberMode === "existing" ? "1px solid rgba(56,189,248,0.3)" : "1px solid transparent", color: memberMode === "existing" ? "#38BDF8" : "#64748B" }}>
-                  Existing user
-                </button>
-              </div>
-
-              <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
-                {memberMode === "new" ? (
-                  <>
-                    <input value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Full name" required
-                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-36" style={{ color: "var(--text)" }} />
-                    <input value={newMemberEmail} onChange={(e) => setNewMemberEmail(e.target.value)} placeholder="Email" type="email" required
-                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
-                    <input value={newMemberPassword} onChange={(e) => setNewMemberPassword(e.target.value)} placeholder="Password (min 8)" type="password" required minLength={8}
-                      className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-36" style={{ color: "var(--text)" }} />
-                  </>
-                ) : (
-                  <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)} disabled={loadingUsers}
-                    className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
-                    <option value="">{loadingUsers ? "Loading…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
-                    {availableUsers.map((u) => (
-                      <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
-                    ))}
-                  </select>
-                )}
-                {schools.length > 0 && (
-                  <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
-                    <option value="">No school</option>
-                    {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                )}
-                <select value={memberRole} onChange={(e) => setMemberRole(e.target.value as "admin" | "member")}
+            <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
+              <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)}
+                disabled={loadingUsers}
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
+                <option value="">{loadingUsers ? "Loading users…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
+                {availableUsers.map((u) => (
+                  <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
+                ))}
+              </select>
+              {schools.length > 0 && (
+                <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
                   className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
-                  <option value="member">Member</option>
-                  <option value="admin">Admin</option>
+                  <option value="">No school</option>
+                  {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
-                <button type="submit" disabled={addingMember}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-                  style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-                  {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
-                </button>
-                {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
-              </form>
-            </div>
+              )}
+              <select value={memberRole} onChange={(e) => setMemberRole(e.target.value as "admin" | "member")}
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button type="submit" disabled={addingMember || !memberUserId}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
+              </button>
+              {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
+            </form>
           </div>
 
           {(() => {
@@ -1133,17 +1094,91 @@ function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void 
   );
 }
 
-type Tab = "assessments" | "users" | "organisations";
+type Tab = "assessments" | "users" | "organisations" | "site";
 
 export default function AdminPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("assessments");
+  const [viewing, setViewing] = useState<ReportViewData | null>(null);
+
+  function openReport(s: Submission) {
+    setViewing({
+      reportId: s.id,
+      meta: {
+        schoolName: s.schoolName,
+        schoolEmail: s.schoolEmail,
+        consultantName: s.consultantName,
+        consultantEmail: s.consultantEmail,
+        staffMember: s.staffMember,
+        logoDataUrl: s.logoDataUrl,
+      },
+      toolName: s.tool,
+      score: s.score,
+      rating: s.rating,
+      ratingColor: s.ratingColor,
+      accentColor: TOOL_COLORS[s.tool] ?? "#38BDF8",
+      date: new Date(s.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
+      areas: s.areas,
+      gaps: s.gaps,
+    });
+  }
+
+  // Footer links state
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
+  const [newLinkLabel, setNewLinkLabel] = useState("");
+  const [newLinkHref, setNewLinkHref] = useState("");
+  const [savingFooter, setSavingFooter] = useState(false);
+
+  useEffect(() => {
+    if (tab !== "site") return;
+    async function loadFooterLinks() {
+      try {
+        const { data } = await supabase.from("footer_links").select("*").order("sort_order", { ascending: true });
+        if (data) { setFooterLinks(data); return; }
+      } catch { /* ignore */ }
+      try {
+        const stored = localStorage.getItem("safeshield_footer_links");
+        if (stored) setFooterLinks(JSON.parse(stored));
+      } catch { /* ignore */ }
+    }
+    loadFooterLinks();
+  }, [tab]);
+
+  async function addFooterLink() {
+    if (!newLinkLabel.trim() || !newLinkHref.trim()) return;
+    setSavingFooter(true);
+    const newLink: FooterLink = {
+      id: crypto.randomUUID(),
+      label: newLinkLabel.trim(),
+      href: newLinkHref.trim(),
+      sort_order: footerLinks.length,
+    };
+    const updated = [...footerLinks, newLink];
+    try {
+      await supabase.from("footer_links").insert(newLink);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+    setNewLinkLabel("");
+    setNewLinkHref("");
+    setSavingFooter(false);
+  }
+
+  async function deleteFooterLink(id: string) {
+    const updated = footerLinks.filter(l => l.id !== id);
+    try {
+      await supabase.from("footer_links").delete().eq("id", id);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+  }
 
   // Assessments state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncDone, setSyncDone] = useState(false);
   const [view, setView] = useState<"schools" | "all">("schools");
-  const [viewing, setViewing] = useState<Submission | null>(null);
 
   // Users state
   const [users, setUsers] = useState<UserWithTools[]>([]);
@@ -1166,14 +1201,15 @@ export default function AdminPage() {
   }, [loading, profile, router]);
 
   const loadSubmissions = useCallback(async () => {
-    // Load from Supabase first, fall back to localStorage for legacy data
+    const local = getSubmissions();
+
     const { data: remoteReports } = await supabase
       .from("reports")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (remoteReports && remoteReports.length > 0) {
-      // Map Supabase reports to Submission shape
+      const remoteIds = new Set(remoteReports.map((r) => r.id));
       const mapped: Submission[] = remoteReports.map((r) => ({
         id: r.id,
         tool: r.tool_name,
@@ -1190,11 +1226,40 @@ export default function AdminPage() {
         areas: r.areas ?? undefined,
         gaps: r.recommendations ?? undefined,
       }));
-      setSubmissions(mapped);
+      // Include local-only reports not yet in Supabase and back-sync them
+      const localOnly = local.filter((s) => !remoteIds.has(s.id));
+      if (localOnly.length > 0) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            import("@/lib/submissions").then(({ saveReportToSupabase }) => {
+              localOnly.forEach((s) => saveReportToSupabase(s, session.user!.id));
+            });
+          }
+        });
+      }
+      setSubmissions([...mapped, ...localOnly].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     } else {
-      setSubmissions(getSubmissions());
+      setSubmissions(local);
     }
   }, []);
+
+  const syncLocalToSupabase = useCallback(async () => {
+    setSyncing(true);
+    setSyncDone(false);
+    try {
+      const local = getSubmissions();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { saveReportToSupabase } = await import("@/lib/submissions");
+      for (const s of local) {
+        await saveReportToSupabase(s, session.user.id);
+      }
+      setSyncDone(true);
+      await loadSubmissions();
+    } finally {
+      setSyncing(false);
+    }
+  }, [loadSubmissions]);
 
   useEffect(() => {
     if (profile?.role === "admin") loadSubmissions();
@@ -1352,11 +1417,22 @@ export default function AdminPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "organisations" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <Building2 size={14} /> Organisations
           </button>
+          <button onClick={() => setTab("site")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "site" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <Link2 size={14} /> Site
+          </button>
         </div>
 
         {/* ── Assessments tab ── */}
         {tab === "assessments" && (
           <>
+            <div className="flex justify-end mb-4">
+              <button onClick={syncLocalToSupabase} disabled={syncing}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: syncDone ? "rgba(34,197,94,0.12)" : "rgba(56,189,248,0.10)", border: `1px solid ${syncDone ? "rgba(34,197,94,0.3)" : "rgba(56,189,248,0.25)"}`, color: syncDone ? "#22c55e" : "#38BDF8" }}>
+                {syncing ? <><Loader2 size={12} className="animate-spin" /> Syncing…</> : syncDone ? <><CheckCircle2 size={12} /> Synced</> : <><RefreshCw size={12} /> Sync Local Reports</>}
+              </button>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
                 { label: "Schools", value: schools.length },
@@ -1389,7 +1465,7 @@ export default function AdminPage() {
                   ))}
                 </div>
                 {view === "schools" ? (
-                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} onView={setViewing} />
+                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} onView={openReport} />
                 ) : (
                   <div className="flex flex-col gap-3">
                     {submissions.map((s) => {
@@ -1410,7 +1486,7 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <ScoreBadge score={s.score} color={color} />
-                            <button onClick={() => setViewing(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View certificate">
+                            <button onClick={() => openReport(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
                               <Eye size={14} className="text-[#38BDF8]" />
                             </button>
                             {s.schoolEmail && (
@@ -1432,30 +1508,6 @@ export default function AdminPage() {
             <p className="text-xs mt-8 text-center" style={{ color: "var(--text-faint)" }}>
               Assessment records are stored locally in your browser.
             </p>
-
-            {viewing && (
-              <ReportViewModal
-                onClose={() => setViewing(null)}
-                data={{
-                  meta: {
-                    schoolName: viewing.schoolName,
-                    schoolEmail: viewing.schoolEmail,
-                    consultantName: viewing.consultantName,
-                    consultantEmail: viewing.consultantEmail,
-                    staffMember: viewing.staffMember,
-                    logoDataUrl: viewing.logoDataUrl,
-                  },
-                  toolName: viewing.tool,
-                  score: viewing.score,
-                  rating: viewing.rating,
-                  ratingColor: viewing.ratingColor,
-                  accentColor: TOOL_COLORS[viewing.tool] ?? "#38BDF8",
-                  date: new Date(viewing.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
-                  areas: viewing.areas,
-                  gaps: viewing.gaps,
-                }}
-              />
-            )}
           </>
         )}
 
@@ -1553,22 +1605,25 @@ export default function AdminPage() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
-                      <div className="flex items-center gap-2">
-                        {newOrgLogo ? (
-                          <>
-                            <img src={newOrgLogo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+                      {newOrgLogo ? (
+                        <>
+                          <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 140 }}>
+                            <img src={newOrgLogo} alt="Logo" style={{ maxHeight: 48, maxWidth: 124, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                              <Upload size={10} /> Replace
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                            </label>
                             <button type="button" onClick={() => setNewOrgLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
-                          </>
-                        ) : (
-                          <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
-                            <Plus size={12} /> Upload logo
-                            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                              const f = e.target.files?.[0]; if (!f) return;
-                              const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f);
-                            }} />
-                          </label>
-                        )}
-                      </div>
+                          </div>
+                        </>
+                      ) : (
+                        <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                          <Plus size={12} /> Upload logo
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                        </label>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -1608,8 +1663,71 @@ export default function AdminPage() {
           </>
         )}
 
+        {/* ── Site tab ── */}
+        {tab === "site" && (
+          <GlassCard>
+            <h2 className="text-white font-semibold text-lg mb-1 flex items-center gap-2"><Link2 size={16} className="text-[#38BDF8]" /> Footer Links</h2>
+            <p className="text-[#64748B] text-xs mb-5">These links appear in the site footer on every page.</p>
+
+            {/* Existing links */}
+            {footerLinks.length === 0 ? (
+              <p className="text-[#475569] text-sm py-4 text-center">No footer links yet.</p>
+            ) : (
+              <div className="flex flex-col gap-2 mb-5">
+                {footerLinks.map((l) => (
+                  <div key={l.id} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-sm text-white font-medium truncate">{l.label}</span>
+                      <span className="text-xs text-[#475569] truncate">{l.href}</span>
+                    </div>
+                    <button
+                      onClick={() => deleteFooterLink(l.id)}
+                      className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-500/10 transition-colors"
+                      title="Delete link">
+                      <Trash2 size={13} className="text-red-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add new link */}
+            <div className="border-t border-white/10 pt-4">
+              <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-widest mb-3">Add Link</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Label (e.g. Privacy Policy)"
+                  value={newLinkLabel}
+                  onChange={(e) => setNewLinkLabel(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                />
+                <input
+                  type="text"
+                  placeholder="URL (e.g. /privacy or https://...)"
+                  value={newLinkHref}
+                  onChange={(e) => setNewLinkHref(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                  onKeyDown={(e) => e.key === "Enter" && addFooterLink()}
+                />
+                <button
+                  onClick={addFooterLink}
+                  disabled={savingFooter || !newLinkLabel.trim() || !newLinkHref.trim()}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40"
+                  style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
+            </div>
+          </GlassCard>
+        )}
+
       </div>
     </div>
+
+    {viewing && (
+      <ReportViewModal data={viewing} onClose={() => setViewing(null)} />
+    )}
     </>
   );
 }

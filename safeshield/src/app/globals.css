@@ -119,7 +119,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Cormorant Garant', Georgia, serif;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -141,6 +141,10 @@ body::before {
     radial-gradient(ellipse 60% 50% at 92% 92%,  var(--orb2) 0%, transparent 70%),
     radial-gradient(ellipse 48% 42% at 52% 46%,  var(--orb3) 0%, transparent 70%);
   animation: orbDrift 28s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
 }
 
 @keyframes orbDrift {

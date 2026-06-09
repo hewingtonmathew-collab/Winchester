@@ -105,6 +105,7 @@ export default function DigitalStandardsChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [step, setStep] = useState<"meta" | "questions">("meta");
 
@@ -131,8 +132,10 @@ export default function DigitalStandardsChecker() {
   });
 
   function submit() {
+    const id = crypto.randomUUID();
+    setSubmissionId(id);
     setSubmitted(true);
-    saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps });
+    saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps, id });
   }
 
   const tabItems = items.filter((i) => i.tab === activeTab);
@@ -206,7 +209,7 @@ export default function DigitalStandardsChecker() {
 
         <Certificate meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={areas} />
         {gaps.length > 0 && (
-          <ImprovementReport meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
+          <ImprovementReport meta={meta} toolName="Digital Standards Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} reportId={submissionId ?? undefined} />
         )}
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }}
           className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>

@@ -1,11 +1,16 @@
 "use client";
-import { useState } from "react";
-import { X, Award, BarChart3, ClipboardList, Printer, Mail } from "lucide-react";
-import Certificate from "@/components/report/Certificate";
-import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { supabase } from "@/lib/supabase";
+import { X, Award, BarChart3, ClipboardList, Printer, Mail, Loader2, Sun, Moon } from "lucide-react";
+import type { Gap } from "@/components/report/ImprovementReport";
 import type { ReportMetaData } from "./ReportMeta";
 
+const Certificate = dynamic(() => import("@/components/report/Certificate"), { ssr: false, loading: () => <div className="flex items-center justify-center py-20"><Loader2 size={22} className="animate-spin opacity-40" /></div> });
+const ImprovementReport = dynamic(() => import("@/components/report/ImprovementReport"), { ssr: false, loading: () => <div className="flex items-center justify-center py-20"><Loader2 size={22} className="animate-spin opacity-40" /></div> });
+
 export type ReportViewData = {
+  reportId?: string;
   meta: ReportMetaData;
   toolName: string;
   score: number;
@@ -19,25 +24,55 @@ export type ReportViewData = {
 
 export default function ReportViewModal({ data, onClose }: { data: ReportViewData; onClose: () => void }) {
   const [tab, setTab] = useState<"certificate" | "report" | "recommendations">("certificate");
+  const [reportPrintMode, setReportPrintMode] = useState<"dark" | "light">("dark");
   const [emailSending, setEmailSending] = useState(false);
+  const [loadedGaps, setLoadedGaps] = useState<Gap[]>(data.gaps ?? []);
   const areas = data.areas ?? [];
-  const gaps = data.gaps ?? [];
+  const gaps = loadedGaps;
+
+  // Load gaps from fallback sources if not present in report data
+  useEffect(() => {
+    if ((data.gaps && data.gaps.length > 0) || !data.reportId) return;
+    const id = data.reportId;
+
+    // 1. Try localStorage first (immediate)
+    try {
+      const stored = localStorage.getItem(`safeshield_gaps_${id}`);
+      if (stored) { setLoadedGaps(JSON.parse(stored)); return; }
+    } catch { /* ignore */ }
+
+    // 2. Try site_content table
+    supabase.from("site_content").select("value").eq("key", `report_gaps_${id}`).maybeSingle().then(({ data: row }) => {
+      if (row?.value) {
+        try { setLoadedGaps(JSON.parse(row.value)); } catch { /* ignore */ }
+      }
+    });
+  }, [data.reportId, data.gaps]);
 
   const accentColor = data.accentColor || "#38BDF8";
   const ratingColor = data.ratingColor || "#22c55e";
 
-  function buildReportDetailsHtml() {
+  function buildReportDetailsHtml(dark: boolean) {
+    const bg = dark ? "linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,rgba(56,189,248,0.08) 100%)" : "#ffffff";
+    const textColor = dark ? "#E8EDF2" : "#0F172A";
+    const mutedColor = dark ? "#8A9BB0" : "#64748B";
+    const areaNameColor = dark ? "#C8D8E8" : "#334155";
+    const panelBg = dark ? "rgba(255,255,255,0.05)" : "#F8FAFC";
+    const panelBorder = dark ? "rgba(255,255,255,0.12)" : "#E2E8F0";
+    const trackBg = dark ? "rgba(255,255,255,0.07)" : "#E2E8F0";
+    const footerBorder = dark ? "rgba(255,255,255,0.10)" : "#E2E8F0";
+
     const barSection = areas.map(a => {
       const pct = a.score ?? 0;
       const barColor = pct >= 80 ? "#22c55e" : pct >= 50 ? "#f59e0b" : "#ef4444";
       return `
         <div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-            <span style="font-size:13px;color:#C8D8E8">${a.name}</span>
+            <span style="font-size:13px;color:${areaNameColor}">${a.name}</span>
             ${a.score !== undefined ? `<span style="font-size:13px;font-weight:700;color:${barColor}">${pct}%</span>` : ""}
           </div>
           ${a.score !== undefined ? `
-          <div style="height:8px;border-radius:999px;background:rgba(255,255,255,0.07);overflow:hidden">
+          <div style="height:8px;border-radius:999px;background:${trackBg};overflow:hidden">
             <div style="height:100%;border-radius:999px;width:${pct}%;background:${barColor}"></div>
           </div>` : ""}
         </div>`;
@@ -49,14 +84,14 @@ export default function ReportViewModal({ data, onClose }: { data: ReportViewDat
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 @page{size:A4 portrait;margin:0}
 html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:system-ui,-apple-system,sans-serif}
-.page{width:210mm;min-height:297mm;padding:14mm 16mm;background:linear-gradient(160deg,#060A12 0%,#0C0A1C 60%,${accentColor}12 100%)}
+.page{width:210mm;min-height:297mm;padding:14mm 16mm;background:${bg}}
 </style></head><body>
 <div class="page">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10mm">
     <div>
       <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:${accentColor};margin-bottom:4px">Report Details</p>
-      <p style="font-size:26px;font-weight:700;color:#E8EDF2;letter-spacing:-.5px;line-height:1.1">${data.toolName}</p>
-      <p style="font-size:11px;color:#8A9BB0;margin-top:4px">${data.date}${data.meta.staffMember ? ` · ${data.meta.staffMember}` : ""}</p>
+      <p style="font-size:26px;font-weight:700;color:${textColor};letter-spacing:-.5px;line-height:1.1">${data.toolName}</p>
+      <p style="font-size:11px;color:${mutedColor};margin-top:4px">${data.date}${data.meta.staffMember ? ` · ${data.meta.staffMember}` : ""}</p>
     </div>
     <div style="text-align:right">
       <p style="font-size:38px;font-weight:700;color:${accentColor};line-height:1">${data.score}%</p>
@@ -64,18 +99,18 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
     </div>
   </div>
   <div style="height:2px;border-radius:2px;background:linear-gradient(90deg,${accentColor},rgba(167,139,250,0.6),transparent);margin-bottom:9mm"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:5mm 6mm;margin-bottom:9mm">
-    <div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#8A9BB0;display:block;margin-bottom:3px">School / Trust</label><span style="font-size:12px;color:#D8E4F0;font-weight:500">${data.meta.schoolName || "—"}</span></div>
-    <div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#8A9BB0;display:block;margin-bottom:3px">Consultant</label><span style="font-size:12px;color:#D8E4F0;font-weight:500">${data.meta.consultantName || "Mathew Hewington"}</span></div>
-    ${data.meta.staffMember ? `<div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#8A9BB0;display:block;margin-bottom:3px">Completed By</label><span style="font-size:12px;color:#D8E4F0;font-weight:500">${data.meta.staffMember}</span></div>` : ""}
-    ${data.meta.schoolEmail ? `<div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#8A9BB0;display:block;margin-bottom:3px">School Email</label><span style="font-size:12px;color:#D8E4F0;font-weight:500">${data.meta.schoolEmail}</span></div>` : ""}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm;background:${panelBg};border:1px solid ${panelBorder};border-radius:14px;padding:5mm 6mm;margin-bottom:9mm">
+    <div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:${mutedColor};display:block;margin-bottom:3px">School / Trust</label><span style="font-size:12px;color:${textColor};font-weight:500">${data.meta.schoolName || "—"}</span></div>
+    <div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:${mutedColor};display:block;margin-bottom:3px">Consultant</label><span style="font-size:12px;color:${textColor};font-weight:500">${data.meta.consultantName || "Mathew Hewington"}</span></div>
+    ${data.meta.staffMember ? `<div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:${mutedColor};display:block;margin-bottom:3px">Completed By</label><span style="font-size:12px;color:${textColor};font-weight:500">${data.meta.staffMember}</span></div>` : ""}
+    ${data.meta.schoolEmail ? `<div><label style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:${mutedColor};display:block;margin-bottom:3px">School Email</label><span style="font-size:12px;color:${textColor};font-weight:500">${data.meta.schoolEmail}</span></div>` : ""}
   </div>
   ${areas.length > 0 ? `
-  <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8A9BB0;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid rgba(255,255,255,0.10)">Areas Assessed</p>
+  <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:${mutedColor};margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid ${footerBorder}">Areas Assessed</p>
   ${barSection}` : ""}
-  <div style="margin-top:12mm;padding-top:4mm;border-top:1px solid rgba(255,255,255,0.10);display:flex;justify-content:space-between">
-    <span style="font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#8A9BB0">SafeShield · Verified Assessment Report</span>
-    <span style="font-size:8px;color:#8A9BB0;letter-spacing:.08em">${data.date}</span>
+  <div style="margin-top:12mm;padding-top:4mm;border-top:1px solid ${footerBorder};display:flex;justify-content:space-between">
+    <span style="font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${mutedColor}">SafeShield · Verified Assessment Report</span>
+    <span style="font-size:8px;color:${mutedColor};letter-spacing:.08em">${data.date}</span>
   </div>
 </div>
 </body></html>`;
@@ -84,7 +119,7 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
   function handlePrintReportDetails() {
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(buildReportDetailsHtml());
+    w.document.write(buildReportDetailsHtml(reportPrintMode === "dark"));
     w.document.close();
     setTimeout(() => w.print(), 400);
   }
@@ -103,7 +138,7 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
         body: JSON.stringify({
           to: recipients,
           subject: `${data.toolName} Report Details — ${data.meta.schoolName}`,
-          html: buildReportDetailsHtml(),
+          html: buildReportDetailsHtml(reportPrintMode === "dark"),
           type: "report",
         }),
       });
@@ -149,22 +184,16 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
             areas={areas}
           />
         ) : tab === "recommendations" ? (
-          gaps.length > 0 ? (
-            <ImprovementReport
-              meta={data.meta}
-              toolName={data.toolName}
-              score={data.score}
-              rating={data.rating}
-              ratingColor={data.ratingColor}
-              gaps={gaps}
-              accentColor={data.accentColor}
-            />
-          ) : (
-            <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-8 text-center">
-              <p className="text-sm text-[#64748B]">No improvement recommendations were saved for this assessment.</p>
-              <p className="text-xs text-[#475569] mt-2">Recommendations are captured on assessments completed after this feature was added.</p>
-            </div>
-          )
+          <ImprovementReport
+            meta={data.meta}
+            toolName={data.toolName}
+            score={data.score}
+            rating={data.rating}
+            ratingColor={data.ratingColor}
+            gaps={gaps}
+            accentColor={data.accentColor}
+            reportId={data.reportId}
+          />
         ) : (
           <div className="rounded-2xl bg-[#0B1220] border border-white/10 p-6 sm:p-8">
             {/* Header */}
@@ -222,6 +251,19 @@ html,body{width:210mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;
 
             {/* Action buttons */}
             <div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap gap-3 items-center">
+              {/* Dark / Light toggle */}
+              <div style={{ display: "flex", borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.10)", flexShrink: 0 }}>
+                <button onClick={() => setReportPrintMode("dark")}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+                  style={{ background: reportPrintMode === "dark" ? "rgba(255,255,255,0.12)" : "transparent", color: reportPrintMode === "dark" ? "#fff" : "#64748B", border: "none", cursor: "pointer" }}>
+                  <Moon size={11} /> Dark
+                </button>
+                <button onClick={() => setReportPrintMode("light")}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+                  style={{ background: reportPrintMode === "light" ? "rgba(255,255,255,0.12)" : "transparent", color: reportPrintMode === "light" ? "#fff" : "#64748B", border: "none", cursor: "pointer" }}>
+                  <Sun size={11} /> Light
+                </button>
+              </div>
               <button onClick={handlePrintReportDetails}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
                 style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}40`, color: accentColor }}>

@@ -26,6 +26,13 @@ export const ALL_TOOLS = [
   { slug: "ai-detector", name: "AI Content Detector" },
   { slug: "digital-standards", name: "Digital Standards Checker" },
   { slug: "health-safety", name: "Health & Safety Checker" },
+  // Screen Use, AI, SEND & Digital Safety Suite
+  { slug: "screen-use", name: "Screen Use & Wellbeing Review" },
+  { slug: "ai-risk", name: "AI Use Risk Assessment" },
+  { slug: "send-digital", name: "SEND Digital Impact Review" },
+  { slug: "filtering-monitoring", name: "Filtering & Monitoring Assurance" },
+  { slug: "data-privacy", name: "Data Protection & AI Privacy" },
+  { slug: "governor-dashboard", name: "Governor Digital Dashboard" },
 ];
 
 export type Organisation = {

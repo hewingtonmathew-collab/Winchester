@@ -27,33 +27,22 @@ const RATINGS: [string, string, string][] = [
 ];
 
 export default function AiReadinessPage() {
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading } = useToolBanner("ai-readiness");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("ai-readiness");
   const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-readiness-title", "AI Readiness Assessment");
   const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-readiness-desc", "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.");
   return (
     <div className="min-h-[100dvh] pt-16 pb-20">
-        {/* Full-width video banner */}
-        <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
-          {isVideo(bannerUrl) ? (
-            <video
-              key={bannerUrl}
-              src={bannerUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
-            />
-          ) : (
+        {/* Banner */}
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
+          {!isVideo(bannerUrl) && (
             <img
               src={bannerUrl}
               alt=""
               aria-hidden="true"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
             />
           )}
-          <BannerUploadButton toolSlug="ai-readiness" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={uploading} />
+          <BannerUploadButton toolSlug="ai-readiness" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
           <div
             style={{
               position: "absolute",
@@ -62,7 +51,7 @@ export default function AiReadinessPage() {
               backdropFilter: "blur(2px)",
             }}
           />
-          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "relative", zIndex: 1, paddingTop: 48, paddingBottom: 48 }}>
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
             <div className="flex items-center gap-3 mb-4">
               <ToolIconWrapper slug="ai-readiness" Icon={IconAIReadiness} size={64} />
               <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Readiness</span>
@@ -88,7 +77,7 @@ export default function AiReadinessPage() {
                 defaultDescription="A short overview of AI adoption in UK education and what responsible readiness looks like."
               />
 
-              <GlassCard>
+<GlassCard>
                 <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Dimensions Assessed</h2>
                 <ul className="flex flex-col gap-2">
                   {AREAS.map((a) => (

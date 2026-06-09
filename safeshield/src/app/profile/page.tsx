@@ -56,7 +56,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
-  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, uploading: bannerUploading } = useToolBanner("profile");
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading: bannerUploading } = useToolBanner("profile");
   const [reports, setReports] = useState<Report[]>([]);
   const [org, setOrg] = useState<Organisation | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -296,30 +296,17 @@ export default function ProfilePage() {
       {/* ─── Banner ──────────────────────────────────────────────────── */}
       <div
         className="relative overflow-hidden w-full"
-        style={{ minHeight: 280 }}
+        style={{ paddingTop: "clamp(280px, calc(400 / 1920 * 100%), 400px)" }}
       >
         {/* Background banner — video or image */}
-        {isVideo(bannerUrl) ? (
-          <video
-            key={bannerUrl}
-              src={bannerUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ opacity: 0.25 }}
-          />
-        ) : (
-          <img
+        {!isVideo(bannerUrl) && (
+            <img
             src={bannerUrl}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ opacity: 0.38 }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
           />
-        )}
+          )}
         {/* Glass overlay */}
         <div
           className="absolute inset-0"
@@ -328,7 +315,7 @@ export default function ProfilePage() {
               "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%)",
           }}
         />
-        <BannerUploadButton toolSlug="profile" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} uploading={bannerUploading} />
+        <BannerUploadButton toolSlug="profile" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={bannerUploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
 
         {/* Status badge */}
         <div className="absolute top-4 right-4 z-10">
@@ -353,7 +340,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-10 flex flex-col items-start gap-4">
+        <div className="absolute inset-0 z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-10 flex flex-col items-start gap-4">
           {/* Avatar */}
           <div className="relative">
             <div
@@ -774,6 +761,7 @@ export default function ProfilePage() {
             }),
             areas: viewing.areas ?? undefined,
             gaps: viewing.recommendations ?? undefined,
+            reportId: viewing.id,
           }}
         />
       )}
