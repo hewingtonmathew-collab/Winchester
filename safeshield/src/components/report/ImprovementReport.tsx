@@ -687,40 +687,29 @@ ${gaps.map(g => `- [${g.priority.toUpperCase()}] ${g.category}: ${g.text}`).join
                         : `NOTE: Specific gap data was not recorded for this assessment (completed before gap tracking was enabled).
 Based on the score of ${score}% (${rating}), generate realistic improvement recommendations covering the typical weak areas for this tool at this score level. The typical assessment areas for ${toolName} include: ${tf.areas}`;
 
-                      const prompt = `You are ${consultantName}, a specialist SafeShield education compliance consultant. Write a formal, detailed school improvement report for the headteacher of ${meta.schoolName || "this school"} based on their ${toolName} results.
+                      const prompt = `Prepare a formal compliance improvement report for the headteacher of ${meta.schoolName || "this school"} following their ${toolName} assessment completed on ${date}.
 
-ASSESSMENT DETAILS:
-- School: ${meta.schoolName || "School"}
-- Assessment: ${toolName}
-- Score: ${score}% — ${rating}
-- Staff member: ${meta.staffMember || "N/A"}
-- Date: ${date}
-- Priority breakdown: ${high.length} HIGH, ${med.length} MEDIUM, ${low.length} lower priority gaps
+ASSESSMENT RESULTS
+School: ${meta.schoolName || "—"} | Staff: ${meta.staffMember || "—"} | Score: ${score}% (${rating}) | Gaps: ${high.length} high, ${med.length} medium, ${low.length} lower priority
 
 ${gapSection}
 
-RELEVANT UK FRAMEWORKS & OFFICIAL GUIDANCE:
+APPLICABLE STANDARDS
 ${tf.frameworks}
 
-Write the full report using EXACTLY this structure. Be highly specific — reference the actual gaps or likely weak areas directly. Do not be generic.
+Write the report in formal consultant prose under these four headings only. Each section must be substantive and specific to the actual gaps and school context — no generic filler.
 
-EXECUTIVE SUMMARY
-Write 3-4 sentences: state the score, rating, overall compliance level, and urgency. Be direct about risk to the school if gaps are not addressed.
+Executive Summary
+Two to three sentences. State the score, compliance standing, and the principal risk to the school if the identified gaps are not remedied. Name the most critical gap directly.
 
-PRIORITY ACTIONS — IMMEDIATE (0–30 DAYS)
-For each HIGH priority gap (or the top 3 most critical areas if no gaps recorded): write a subsection with the gap name as a heading, specific actions the school must take, the exact UK legislation or standard breached with its URL, and a clear deadline.
+Priority Recommendations
+Address each high-priority gap first, then medium. For each: state the specific action required, cite the exact statutory provision or standard breached (with URL), and give a clear implementation timeframe. Write in firm, directive language — "The school must…", "Governors are required to…". Do not use sub-bullets; write in short paragraphs.
 
-PRIORITY ACTIONS — MEDIUM TERM (1–3 TERMS)
-For each MEDIUM priority gap (or next 3 areas): concise actions with relevant standard/guidance URLs.
+Key Compliance References
+List the five most directly relevant official resources as: [Title](URL) — one sentence explaining its relevance to this school's gaps. Nothing generic.
 
-KEY COMPLIANCE RESOURCES
-List 5–7 official URLs the school must review, with a one-line description of each. Match them directly to the gaps or weak areas identified.
-
-RECOMMENDED NEXT STEPS
-Numbered list of 5 concrete actions for the next 30 days. Be specific to this school and this assessment.
-
-BOOK A CONSULTANCY APPOINTMENT
-Write a compelling, professional paragraph. Explain that SafeShield provides hands-on consultancy to UK schools — including on-site compliance reviews, staff training workshops, policy audits, and Ofsted preparation support. State that ${consultantName} can work directly with the school to implement these improvements. Invite the headteacher to contact ${consultantEmail} to arrange a free 30-minute discovery call. End with: "Consultancy packages are tailored to your school's size, budget, and compliance priorities."`;
+Next Steps & Consultancy
+Write two short paragraphs. The first: a numbered action plan of four concrete steps the school should take within the next 30 days, written as prose. The second: advise the headteacher that ${consultantName} at SafeShield is available to provide hands-on support — including on-site compliance reviews, policy audits, staff training, and Ofsted preparation. Invite them to contact ${consultantEmail} for a complimentary 30-minute discovery call. Close with one sentence on tailored consultancy packages.`;
 
                       const res = await fetch("/api/chat", {
                         method: "POST",
@@ -739,7 +728,7 @@ Write a compelling, professional paragraph. Explain that SafeShield provides han
                       }
                     } catch (err) {
                       console.error("Generate recommendations failed:", err);
-                      alert(`Could not generate recommendations: ${err instanceof Error ? err.message : "Unknown error"}. Please check ANTHROPIC_API_KEY is set in Vercel environment variables.`);
+                      alert(`Could not generate recommendations: ${err instanceof Error ? err.message : "Unknown error"}. Please check SAFE_SHILED_APP_CHAT_GPT is set in Vercel environment variables.`);
                     } finally {
                       setGenerating(false);
                     }
