@@ -6,13 +6,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "AI Use Risk Assessment | SafeShield",
-  description: "Formally assess the risks of AI products used in your school against DfE Generative AI Guidance, KCSIE requirements and data protection obligations. Produce a governance-ready approval record.",
+  description: "Evaluate your school's governance, data protection practices, and safeguarding controls around the use of artificial intelligence tools by staff and pupils.",
 };
 
 export default function AiRiskPage() {
   return (
     <AuthGuard toolSlug="ai-risk">
-      <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.2)]">
@@ -22,7 +22,7 @@ export default function AiRiskPage() {
               <p className="text-[#F59E0B] text-xs font-medium uppercase tracking-widest mb-1">AI Governance</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>AI Use Risk Assessment</h1>
               <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                Formally assess the risks of AI products used in your school against DfE Generative AI Guidance, KCSIE requirements and data protection obligations. Produce a governance-ready approval record.
+                Evaluate your school's governance, data protection practices, and safeguarding controls around the use of artificial intelligence tools by staff and pupils.
               </p>
             </div>
           </div>
@@ -33,30 +33,46 @@ export default function AiRiskPage() {
             </div>
             <div className="flex flex-col gap-4">
               <GlassCard>
-                <h2 className="font-semibold text-sm uppercase tracking-wider mb-3" style={{ color: "var(--text)" }}>Areas Covered</h2>
+                <h2 className="font-semibold text-sm uppercase tracking-wider mb-3" style={{ color: "var(--text)" }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">
                   {[
-                    "AI Product Vetting",
-                    "Supplier Compliance",
-                    "Age Restrictions",
-                    "Human Oversight",
-                    "Data Protection",
-                    "Safeguarding",
+                    "AI Governance & Policy",
+                    "Pupil Data & Privacy",
                     "Staff Training",
-                    "Policy Alignment",
+                    "Curriculum Integration",
+                    "Safeguarding & Ethics",
                   ].map((area) => (
                     <li key={area} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-dim)" }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] shrink-0" />
-                      {area}
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#F59E0B" }} />{area}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
               <GlassCard>
-                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Framework Alignment</h2>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-faint)" }}>
-                  Aligned to DfE Generative AI in Education guidance, KCSIE 2024, UK GDPR, and ICO guidance on AI and children&apos;s data.
-                </p>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Key Frameworks</h2>
+                <ul className="flex flex-col gap-1.5">
+                  {[
+                    "DfE Generative AI in Education Guidance 2023",
+                    "ICO Guidance on AI and Data Protection",
+                    "UK GDPR / DPA 2018",
+                    "DfE KCSIE 2024",
+                    "Alan Turing Institute AI Ethics Guidelines",
+                    "DfE Acceptable Use Policies",
+                  ].map((l) => (
+                    <li key={l} className="text-xs" style={{ color: "var(--text-faint)" }}>· {l}</li>
+                  ))}
+                </ul>
+              </GlassCard>
+              <GlassCard>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Rating Scale</h2>
+                <div className="flex flex-col gap-1.5">
+                  {[["Approved", "#22c55e"], ["Conditional", "#f59e0b"], ["Not Approved", "#ef4444"]].map(([l, c]) => (
+                    <div key={l} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c }} />
+                      <span className="text-xs" style={{ color: "var(--text-faint)" }}>{l}</span>
+                    </div>
+                  ))}
+                </div>
               </GlassCard>
             </div>
           </div>

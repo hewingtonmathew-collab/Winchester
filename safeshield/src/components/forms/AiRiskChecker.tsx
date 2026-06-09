@@ -1,158 +1,110 @@
 "use client";
 import { useState } from "react";
-import { CheckCircle2, XCircle, AlertTriangle, ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
 import Certificate from "@/components/report/Certificate";
 import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
 import { saveSubmission } from "@/lib/submissions";
 
-const COLOR = "#F59E0B";
-const DIM = "rgba(245,158,11,0.12)";
-const BORDER = "rgba(245,158,11,0.25)";
-const TOOL_NAME = "AI Use Risk Assessment";
+type Answer = "yes" | "partial" | "no" | null;
+type Item = { id: string; tab: string; text: string; weight: number };
 
-type Answer = "yes" | "no" | "partial" | null;
+const items: Item[] = [
+  // AI Governance & Policy
+  { id: "ag1", tab: "AI Governance & Policy", text: "Does the school have a written AI use policy covering both staff and pupil use of AI tools?", weight: 10 },
+  { id: "ag2", tab: "AI Governance & Policy", text: "Does the policy specify which AI tools are approved for use and under what conditions?", weight: 9 },
+  { id: "ag3", tab: "AI Governance & Policy", text: "Has the policy been reviewed by the governing board and approved within the last 12 months?", weight: 8 },
+  { id: "ag4", tab: "AI Governance & Policy", text: "Is there a named AI lead or coordinator responsible for governance and staff guidance?", weight: 8 },
 
-type Question = {
-  id: string;
-  category: string;
-  text: string;
-  weight: number;
-};
+  // Pupil Data & Privacy
+  { id: "dp1", tab: "Pupil Data & Privacy", text: "Has a Data Protection Impact Assessment (DPIA) been completed for each AI tool used with pupil data?", weight: 10 },
+  { id: "dp2", tab: "Pupil Data & Privacy", text: "Are staff prohibited from inputting identifiable pupil data into unapproved AI tools or consumer AI platforms?", weight: 10 },
+  { id: "dp3", tab: "Pupil Data & Privacy", text: "Does the school's privacy notice inform parents about the use of AI tools that may process pupil data?", weight: 9 },
+  { id: "dp4", tab: "Pupil Data & Privacy", text: "Are data processing agreements in place with all AI tool providers used in school?", weight: 9 },
 
-const questions: Question[] = [
-  // AI Product & Supplier
-  { id: "q1",  category: "AI Product & Supplier",       text: "Has the school obtained and reviewed the supplier's privacy policy and data processing agreement?",                                          weight: 10 },
-  { id: "q2",  category: "AI Product & Supplier",       text: "Is the AI product from a reputable supplier with a verifiable UK/EU data protection compliance record?",                                   weight: 9  },
-  { id: "q3",  category: "AI Product & Supplier",       text: "Has the supplier confirmed whether pupil data is used to train or improve the AI model?",                                                   weight: 10 },
-  { id: "q4",  category: "AI Product & Supplier",       text: "Is the AI product on an approved DfE or LA recommended list, or has it undergone equivalent vetting?",                                     weight: 8  },
-  // Intended Users & Age Restrictions
-  { id: "q5",  category: "Intended Users & Age Restrictions", text: "Is the AI product used only with age groups for which it is designed and approved?",                                                  weight: 10 },
-  { id: "q6",  category: "Intended Users & Age Restrictions", text: "Are staff who use the AI product trained on its appropriate and inappropriate uses?",                                                 weight: 9  },
-  { id: "q7",  category: "Intended Users & Age Restrictions", text: "Is there a clear record of which staff and pupils have access to each AI product?",                                                   weight: 8  },
-  { id: "q8",  category: "Intended Users & Age Restrictions", text: "Are pupils supervised when using AI tools, with appropriate human oversight maintained?",                                             weight: 9  },
-  // Data Protection
-  { id: "q9",  category: "Data Protection",             text: "Has a Data Protection Impact Assessment (DPIA) been completed or initiated for this AI product?",                                          weight: 10 },
-  { id: "q10", category: "Data Protection",             text: "Does the AI product process any special category data (health, SEN, behaviour)?",                                                          weight: 10 },
-  { id: "q11", category: "Data Protection",             text: "Are personal data transfers to countries outside the UK or EEA assessed and documented?",                                                  weight: 9  },
-  { id: "q12", category: "Data Protection",             text: "Is the AI product covered in the school's privacy notice and data retention schedule?",                                                    weight: 8  },
-  // Safeguarding & Content
-  { id: "q13", category: "Safeguarding & Content",      text: "Has the school assessed whether the AI product could generate harmful, biased or inappropriate content?",                                  weight: 10 },
-  { id: "q14", category: "Safeguarding & Content",      text: "Is there a clear process for pupils or staff to report concerns about AI-generated content?",                                              weight: 9  },
-  { id: "q15", category: "Safeguarding & Content",      text: "Does the school's safeguarding policy reference the use of AI tools and associated risks?",                                                weight: 9  },
-  { id: "q16", category: "Safeguarding & Content",      text: "Are AI tools prevented from accessing or storing pupil images, voice recordings or sensitive documents without explicit consent?",        weight: 10 },
-  // Policy & Governance
-  { id: "q17", category: "Policy & Governance",         text: "Does the school have an AI Use Policy (or equivalent section in its online safety policy)?",                                               weight: 9  },
-  { id: "q18", category: "Policy & Governance",         text: "Has the governing board been informed of AI tools in use and associated risks?",                                                           weight: 8  },
-  { id: "q19", category: "Policy & Governance",         text: "Is there an annual review process for all AI products in use at the school?",                                                              weight: 8  },
-  { id: "q20", category: "Policy & Governance",         text: "Are AI products assessed against KCSIE requirements before deployment?",                                                                   weight: 9  },
+  // Staff Training
+  { id: "st1", tab: "Staff Training", text: "Have all staff who use AI tools received training on safe, ethical, and effective use within the last 12 months?", weight: 9 },
+  { id: "st2", tab: "Staff Training", text: "Are staff trained to critically evaluate AI outputs and understand the risk of hallucination or bias?", weight: 9 },
+  { id: "st3", tab: "Staff Training", text: "Do staff understand their professional responsibility when using AI to assist with communications, reports, or assessments?", weight: 8 },
+  { id: "st4", tab: "Staff Training", text: "Is there a process for staff to report concerns or incidents related to AI tool use?", weight: 8 },
+
+  // Curriculum Integration
+  { id: "ci1", tab: "Curriculum Integration", text: "Does the school teach pupils about AI literacy, including how AI works, its benefits, and its risks?", weight: 9 },
+  { id: "ci2", tab: "Curriculum Integration", text: "Are pupils taught to critically evaluate AI-generated content and understand concepts like bias and hallucination?", weight: 9 },
+  { id: "ci3", tab: "Curriculum Integration", text: "Does the school have clear academic integrity guidance covering pupil use of AI for schoolwork?", weight: 9 },
+  { id: "ci4", tab: "Curriculum Integration", text: "Is AI education embedded within the computing or PSHE curriculum in a structured way?", weight: 8 },
+
+  // Safeguarding & Ethics
+  { id: "se1", tab: "Safeguarding & Ethics", text: "Has the school assessed whether any approved AI tools could generate inappropriate, harmful, or biased content?", weight: 10 },
+  { id: "se2", tab: "Safeguarding & Ethics", text: "Are content filtering or moderation controls in place for AI tools accessible to pupils?", weight: 10 },
+  { id: "se3", tab: "Safeguarding & Ethics", text: "Does the school monitor and review AI tool usage to identify any safeguarding concerns?", weight: 9 },
+  { id: "se4", tab: "Safeguarding & Ethics", text: "Is there an escalation process if an AI tool produces content that raises a safeguarding concern?", weight: 9 },
 ];
 
-const categories = [...new Set(questions.map((q) => q.category))];
+const TABS = ["AI Governance & Policy", "Pupil Data & Privacy", "Staff Training", "Curriculum Integration", "Safeguarding & Ethics"];
 
 const defaultMeta: ReportMetaData = {
   schoolName: "", schoolEmail: "", consultantName: "", consultantEmail: "", staffMember: "", logoDataUrl: null,
 };
 
-function scoreValue(ans: Answer): number {
-  return ans === "yes" ? 1 : ans === "partial" ? 0.5 : 0;
-}
+const LEVELS: { value: Answer; label: string; color: string; bg: string }[] = [
+  { value: "yes", label: "Yes — In Place", color: "text-green-400", bg: "bg-green-500/15 border-green-500/30" },
+  { value: "partial", label: "Partially in Place", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
+  { value: "no", label: "Not in Place", color: "text-red-400", bg: "bg-red-500/15 border-red-500/30" },
+];
+
+const scoreMap: Record<NonNullable<Answer>, number> = { yes: 2, partial: 1, no: 0 };
 
 function calcScore(answers: Record<string, Answer>): number {
-  const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
-  const earned = questions.reduce((sum, q) => sum + scoreValue(answers[q.id] ?? null) * q.weight, 0);
-  return Math.round((earned / totalWeight) * 100);
+  const total = items.reduce((s, i) => s + i.weight * 2, 0);
+  const earned = items.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+  return Math.round((earned / total) * 100);
 }
 
-function getRating(score: number): { label: string; color: string } {
-  if (score >= 75) return { label: "Approved",     color: "#22c55e" };
-  if (score >= 50) return { label: "Conditional",  color: "#f59e0b" };
-  return             { label: "Not Approved",  color: "#ef4444" };
-}
+const COLOR = "#F59E0B";
+const DIM = "rgba(245,158,11,0.12)";
+const BORDER = "rgba(245,158,11,0.25)";
 
-function RatingBadge({ score }: { score: number }) {
-  const { label } = getRating(score);
-  if (score >= 75) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-green-500/10 border border-green-500/25 text-green-400"><CheckCircle2 size={13} />{label}</span>;
-  if (score >= 50) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-amber-500/10 border border-amber-500/25 text-amber-400"><AlertTriangle size={13} />{label}</span>;
-  return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-red-500/10 border border-red-500/25 text-red-400"><XCircle size={13} />{label}</span>;
-}
+const TAB_COLORS: Record<string, string> = {
+  "AI Governance & Policy": "#F59E0B",
+  "Pupil Data & Privacy": "#FBBF24",
+  "Staff Training": "#FCD34D",
+  "Curriculum Integration": "#D97706",
+  "Safeguarding & Ethics": "#B45309",
+};
 
 export default function AiRiskChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [activeTab, setActiveTab] = useState(TABS[0]);
   const [step, setStep] = useState<"meta" | "questions">("meta");
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
-  const answered = Object.values(answers).filter(Boolean).length;
+  const answered = Object.keys(answers).filter((k) => answers[k] !== null).length;
   const score = calcScore(answers);
-  const { label: rating, color: ratingColor } = getRating(score);
-
-  const gaps: Gap[] = questions
-    .filter((q) => (answers[q.id] ?? null) !== "yes")
-    .sort((a, b) => b.weight - a.weight)
-    .map((q) => ({
-      category: q.category,
-      text: q.text,
-      priority: q.weight >= 9 ? "high" : q.weight >= 7 ? "medium" : "low",
-    }));
-
-  const areas = categories.map((cat) => {
-    const cqs = questions.filter((q) => q.category === cat);
-    const tot = cqs.reduce((s, q) => s + q.weight, 0);
-    const earn = cqs.reduce((s, q) => s + scoreValue(answers[q.id] ?? null) * q.weight, 0);
-    return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
-  });
-
   const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
 
-  function handleAnswer(id: string, val: Answer) {
-    setAnswers((prev) => ({ ...prev, [id]: val }));
-  }
+  const rating = score >= 75 ? "Approved" : score >= 50 ? "Conditional" : "Not Approved";
+  const ringColor = score >= 75 ? "#22c55e" : score >= 50 ? "#f59e0b" : "#ef4444";
 
-  if (submitted) {
-    return (
-      <div className="flex flex-col gap-5">
-        <GlassCard glow className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="flex flex-col items-center gap-1">
-            <div className="relative w-28 h-28">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke={ratingColor} strokeWidth="10" strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - score / 100)}`}
-                  style={{ transition: "stroke-dashoffset 1s ease" }} />
-              </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">{score}%</span>
-            </div>
-            <span className="text-[#64748B] text-xs">compliance score</span>
-          </div>
-          <div className="flex flex-col gap-3">
-            <RatingBadge score={score} />
-            <p className="text-[#94A3B8] text-sm leading-relaxed max-w-md">
-              {score >= 75
-                ? "This AI product meets the school's governance threshold. Maintain records, review annually, and ensure all staff remain trained on appropriate use."
-                : score >= 50
-                ? "Conditional approval only — significant gaps remain in supplier vetting, data protection or safeguarding controls. Address priority items before wider deployment."
-                : "This AI product cannot be approved for school use in its current state. Significant risks across data protection, safeguarding or governance require immediate resolution."}
-            </p>
-          </div>
-        </GlassCard>
+  const gaps: Gap[] = items
+    .filter((i) => i.weight >= 9 && answers[i.id] !== "yes")
+    .map((i) => ({
+      category: i.tab,
+      text: i.text,
+      priority: i.weight >= 9 ? "high" : i.weight >= 7 ? "medium" : "low",
+    }));
 
-        <Certificate meta={meta} toolName={TOOL_NAME} score={score} rating={rating} ratingColor={ratingColor} accentColor={COLOR} areas={areas} />
-        <ImprovementReport meta={meta} toolName={TOOL_NAME} score={score} rating={rating} ratingColor={ratingColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
-
-        <button
-          onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); setSubmissionId(null); }}
-          className="self-start text-sm hover:text-white transition-colors"
-          style={{ color: COLOR }}
-        >
-          ← Start again
-        </button>
-      </div>
-    );
+  function submit() {
+    setSubmitted(true);
+    const areas = TABS.map((tab) => {
+      const ti = items.filter((i) => i.tab === tab);
+      const tot = ti.reduce((s, i) => s + i.weight * 2, 0);
+      const earn = ti.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+      return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+    });
+    saveSubmission({ tool: "AI Use Risk Assessment", ...meta, score, rating, ratingColor: ringColor, areas });
   }
 
   if (step === "meta") {
@@ -160,12 +112,9 @@ export default function AiRiskChecker() {
       <div className="flex flex-col gap-5">
         <ReportMeta value={meta} onChange={setMeta} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
         <div className="flex justify-end">
-          <button
-            onClick={() => setStep("questions")}
-            disabled={!metaValid}
+          <button onClick={() => setStep("questions")} disabled={!metaValid}
             className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}
-          >
+            style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
             Start Assessment <ChevronRight size={14} />
           </button>
         </div>
@@ -173,86 +122,142 @@ export default function AiRiskChecker() {
     );
   }
 
-  const catQuestions = questions.filter((q) => q.category === activeCategory);
+  if (submitted) {
+    return (
+      <div className="flex flex-col gap-5">
+        <GlassCard>
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex flex-col items-center gap-1.5">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="45" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+                <circle cx="55" cy="55" r="45" fill="none" stroke={ringColor} strokeWidth="10" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 - (score / 100) * 2 * Math.PI * 45}
+                  style={{ transform: "rotate(-90deg)", transformOrigin: "55px 55px", transition: "stroke-dashoffset 0.8s ease" }} />
+                <text x="55" y="55" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="22" fontWeight="bold">{score}</text>
+              </svg>
+              <span className="text-[#64748B] text-xs">out of 100</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold"
+                style={{ background: "#000", border: `2px solid ${ringColor}`, color: ringColor }}>
+                <CheckCircle2 size={13} /> {rating}
+              </span>
+              <p className="text-[#94A3B8] text-sm leading-relaxed max-w-xs">
+                {score >= 75 ? "The school's AI governance and safeguarding controls meet the standard for approved use." : score >= 50 ? "Some controls are in place but important gaps must be addressed before full approval." : "Significant AI governance gaps identified — use of AI tools should be reviewed urgently."}
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Per-tab breakdown */}
+        <GlassCard>
+          <h3 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Results by Area</h3>
+          <div className="flex flex-col gap-3">
+            {TABS.map((tab) => {
+              const tabItems = items.filter((i) => i.tab === tab);
+              const tabTotal = tabItems.reduce((s, i) => s + i.weight * 2, 0);
+              const tabEarned = tabItems.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+              const tabScore = Math.round((tabEarned / tabTotal) * 100);
+              const tc = TAB_COLORS[tab];
+              return (
+                <div key={tab}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-white text-xs font-medium">{tab}</span>
+                    <span className="text-xs font-semibold" style={{ color: tc }}>{tabScore}%</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${tabScore}%`, background: tc }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
+
+        <Certificate meta={meta} toolName="AI Use Risk Assessment" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={TABS.map((tab) => {
+          const ti = items.filter((i) => i.tab === tab);
+          const tot = ti.reduce((s, i) => s + i.weight * 2, 0);
+          const earn = ti.reduce((s, i) => s + (scoreMap[answers[i.id] ?? "no"] ?? 0) * i.weight, 0);
+          return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
+        })} />
+        {gaps.length > 0 && (
+          <ImprovementReport meta={meta} toolName="AI Use Risk Assessment" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
+        )}
+        <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }}
+          className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>
+          ← Start again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between text-xs text-[#475569] mb-1">
-        <span>{answered}/{questions.length} answered</span>
-        <span>{Math.round((answered / questions.length) * 100)}% complete</span>
-      </div>
-      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${(answered / questions.length) * 100}%`, background: COLOR }} />
-      </div>
-
+      {/* Tab navigation */}
       <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => {
-          const catQs = questions.filter((q) => q.category === cat);
-          const complete = catQs.every((q) => answers[q.id]);
+        {TABS.map((tab) => {
+          const tc = TAB_COLORS[tab];
+          const tabItems = items.filter((i) => i.tab === tab);
+          const answeredInTab = tabItems.filter((i) => answers[i.id] !== undefined && answers[i.id] !== null).length;
+          const complete = answeredInTab === tabItems.length;
           return (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${activeCategory === cat ? "" : "glass text-[#64748B] hover:text-white"}`}
-              style={activeCategory === cat ? { background: DIM, border: `1px solid ${BORDER}`, color: COLOR } : undefined}>
-              {complete && <CheckCircle2 size={10} style={{ color: COLOR }} />}
-              {cat}
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              style={activeTab === tab
+                ? { background: `${tc}20`, border: `1px solid ${tc}60`, color: tc }
+                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: complete ? tc : "#64748B" }}>
+              {complete && <CheckCircle2 size={11} />}
+              {tab}
+              <span className="opacity-60 text-[10px]">{answeredInTab}/{tabItems.length}</span>
             </button>
           );
         })}
       </div>
 
+      {/* Questions */}
       <GlassCard>
-        <h2 className="text-white font-semibold text-sm mb-5">{activeCategory}</h2>
-        <div className="flex flex-col gap-5">
-          {catQuestions.map((q) => (
-            <div key={q.id}>
-              <p className="text-[#CBD5E1] text-sm leading-relaxed mb-2.5">{q.text}</p>
-              <div className="flex gap-2">
-                {(["yes", "partial", "no"] as const).map((val) => {
-                  const active = answers[q.id] === val;
-                  const styles = {
-                    yes:     active ? "bg-green-500/20 border-green-500/40 text-green-400"   : "glass text-[#64748B] hover:border-green-500/30 hover:text-green-400",
-                    partial: active ? "bg-amber-500/20 border-amber-500/40 text-amber-400"   : "glass text-[#64748B] hover:border-amber-500/30 hover:text-amber-400",
-                    no:      active ? "bg-red-500/20 border-red-500/40 text-red-400"         : "glass text-[#64748B] hover:border-red-500/30 hover:text-red-400",
-                  };
-                  return (
-                    <button key={val} onClick={() => handleAnswer(q.id, val)}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 capitalize ${styles[val]}`}>
-                      {val === "partial" ? "Partial" : val === "yes" ? "Yes" : "No"}
-                    </button>
-                  );
-                })}
+        <h3 className="text-white font-semibold text-sm mb-1 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ background: TAB_COLORS[activeTab] }} />
+          {activeTab}
+        </h3>
+        <p className="text-[#64748B] text-xs mb-5">Rate each area based on your current provision.</p>
+        <div className="flex flex-col divide-y divide-white/5">
+          {items.filter((i) => i.tab === activeTab).map((item) => (
+            <div key={item.id} className="py-4">
+              <p className="text-[#CBD5E1] text-sm leading-relaxed mb-3">{item.text}</p>
+              <div className="flex flex-wrap gap-2">
+                {LEVELS.map(({ value, label, color, bg }) => (
+                  <button key={value} onClick={() => setAnswers((a) => ({ ...a, [item.id]: value }))}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${answers[item.id] === value ? `${bg} ${color}` : "bg-white/3 border-white/8 text-[#475569] hover:border-white/15"}`}>
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
           ))}
         </div>
+      </GlassCard>
 
-        <div className="flex items-center gap-3 mt-6 pt-5 border-t border-white/5">
-          {activeCategory !== categories[categories.length - 1] ? (
+      {/* Navigation + submit */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-[#475569]">{answered} of {items.length} questions answered</span>
+        <div className="flex gap-2">
+          {TABS.indexOf(activeTab) < TABS.length - 1 ? (
             <button
-              onClick={() => setActiveCategory(categories[categories.indexOf(activeCategory) + 1])}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium hover:opacity-80 transition-all"
+              onClick={() => setActiveTab(TABS[TABS.indexOf(activeTab) + 1])}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
-              Next section <ChevronRight size={14} />
+              Next Section <ChevronRight size={14} />
             </button>
           ) : (
-            <button
-              onClick={() => {
-                const id = crypto.randomUUID();
-                setSubmissionId(id);
-                setSubmitted(true);
-                saveSubmission({ tool: TOOL_NAME, ...meta, score, rating, ratingColor, areas });
-              }}
-              disabled={answered < questions.length}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium hover:opacity-80 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            <button onClick={submit} disabled={answered < items.length}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
-              <CheckCircle2 size={14} /> View Results
+              Generate Report <ChevronRight size={14} />
             </button>
           )}
-          {answered < questions.length && (
-            <span className="text-[#475569] text-xs">{questions.length - answered} unanswered</span>
-          )}
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 }

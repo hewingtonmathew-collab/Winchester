@@ -22,7 +22,7 @@ export default function FilteringMonitoringPage() {
               <p className="text-[#EF4444] text-xs font-medium uppercase tracking-widest mb-1">Online Safety</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Filtering &amp; Monitoring Assurance Review</h1>
               <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                Assess whether your school's filtering and monitoring arrangements meet KCSIE 2024 requirements and provide effective safeguarding protection for all pupils.
+                Assess whether your school&apos;s filtering and monitoring arrangements meet KCSIE 2024 requirements and provide effective safeguarding protection for all pupils.
               </p>
             </div>
           </div>

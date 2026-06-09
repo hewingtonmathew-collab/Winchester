@@ -137,7 +137,7 @@ export default function FilteringMonitoringChecker() {
                 <CheckCircle2 size={13} /> {rating}
               </span>
               <p className="text-[#94A3B8] text-sm leading-relaxed max-w-xs">
-                {score >= 75 ? "The school's filtering and monitoring arrangements are assured and meeting requirements." : score >= 50 ? "Partial assurance — some important gaps in filtering or monitoring need addressing." : "Not assured — significant gaps in filtering and monitoring require urgent action."}
+                {score >= 75 ? "The school's filtering and monitoring arrangements are assured and meet required standards." : score >= 50 ? "Some filtering and monitoring controls are in place but gaps require attention." : "Significant gaps in filtering and monitoring — urgent action is required."}
               </p>
             </div>
           </div>

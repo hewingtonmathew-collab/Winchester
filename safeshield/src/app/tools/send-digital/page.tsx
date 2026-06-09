@@ -6,38 +6,23 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "SEND Digital Impact Review | SafeShield",
-  description: "Assess whether digital technology supports inclusion and removes barriers for SEND pupils, aligned to the SEND Code of Practice, Equality Act 2010 and DfE SEND guidance.",
+  description: "Review the effectiveness of your school's use of assistive technology and digital tools to support pupils with special educational needs and disabilities.",
 };
-
-const COLOR = "#8B5CF6";
-
-const AREAS = [
-  "Accessibility",
-  "Learning Support",
-  "Communication Support",
-  "EHCP Alignment",
-  "Independence",
-  "Sensory Considerations",
-  "Cognitive Load",
-  "Pupil Voice",
-  "Parent Engagement",
-  "SENCO Review",
-];
 
 export default function SendDigitalPage() {
   return (
     <AuthGuard toolSlug="send-digital">
-      <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)" }}>
-              <Accessibility size={22} style={{ color: COLOR }} strokeWidth={1.5} />
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)]">
+              <Accessibility size={22} className="text-[#8B5CF6]" strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest mb-1" style={{ color: COLOR }}>SEND & Inclusion</p>
+              <p className="text-[#8B5CF6] text-xs font-medium uppercase tracking-widest mb-1">SEND & Inclusion</p>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>SEND Digital Impact Review</h1>
               <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                Assess whether digital technology supports inclusion and removes barriers for SEND pupils, aligned to the SEND Code of Practice, Equality Act 2010 and DfE SEND guidance.
+                Review the effectiveness of your school's use of assistive technology and digital tools to support pupils with special educational needs and disabilities.
               </p>
             </div>
           </div>
@@ -48,21 +33,46 @@ export default function SendDigitalPage() {
             </div>
             <div className="flex flex-col gap-4">
               <GlassCard>
-                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
+                <h2 className="font-semibold text-sm uppercase tracking-wider mb-3" style={{ color: "var(--text)" }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">
-                  {AREAS.map((a) => (
-                    <li key={a} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR }} />
-                      {a}
+                  {[
+                    "Assistive Technology",
+                    "EHCP & Digital Access",
+                    "Staff CPD",
+                    "Parental Involvement",
+                    "Monitoring & Outcomes",
+                  ].map((area) => (
+                    <li key={area} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-dim)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#8B5CF6" }} />{area}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
               <GlassCard>
-                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                  Aligned to the SEND Code of Practice 2015, Equality Act 2010, DfE SEND guidance and the Assistive Technology Good Practice Guide.
-                </p>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Key Frameworks</h2>
+                <ul className="flex flex-col gap-1.5">
+                  {[
+                    "SEND Code of Practice 2015",
+                    "Equality Act 2010",
+                    "Children & Families Act 2014",
+                    "DfE SEND Review 2023",
+                    "AbilityNet Digital Accessibility",
+                    "Web Content Accessibility Guidelines (WCAG) 2.2",
+                  ].map((l) => (
+                    <li key={l} className="text-xs" style={{ color: "var(--text-faint)" }}>· {l}</li>
+                  ))}
+                </ul>
+              </GlassCard>
+              <GlassCard>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Rating Scale</h2>
+                <div className="flex flex-col gap-1.5">
+                  {[["Inclusive", "#22c55e"], ["Developing", "#f59e0b"], ["Requires Improvement", "#ef4444"]].map(([l, c]) => (
+                    <div key={l} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c }} />
+                      <span className="text-xs" style={{ color: "var(--text-faint)" }}>{l}</span>
+                    </div>
+                  ))}
+                </div>
               </GlassCard>
             </div>
           </div>
