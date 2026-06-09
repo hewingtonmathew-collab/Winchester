@@ -1218,8 +1218,17 @@ export default function AdminPage() {
         areas: r.areas ?? undefined,
         gaps: r.recommendations ?? undefined,
       }));
-      // Also include any local-only reports not yet synced to Supabase
+      // Include local-only reports not yet in Supabase and back-sync them
       const localOnly = local.filter((s) => !remoteIds.has(s.id));
+      if (localOnly.length > 0) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            import("@/lib/submissions").then(({ saveReportToSupabase }) => {
+              localOnly.forEach((s) => saveReportToSupabase(s, session.user!.id));
+            });
+          }
+        });
+      }
       setSubmissions([...mapped, ...localOnly].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     } else {
       setSubmissions(local);
