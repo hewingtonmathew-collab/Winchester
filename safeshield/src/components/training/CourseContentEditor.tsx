@@ -287,7 +287,7 @@ export default function CourseContentEditor({ courseId }: Props) {
 
               {/* Lessons */}
               {isOpen && (
-                <div className="flex flex-col divide-y" style={{ divideColor: "rgba(255,255,255,0.04)" }}>
+                <div className="flex flex-col divide-y divide-white/5">
                   {section.lessons.map((lesson, lIdx) => {
                     const isEditingThis = editingLesson === lesson.id;
                     const quizOpen = openQuiz.has(lesson.id);
