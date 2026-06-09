@@ -97,6 +97,7 @@ export default function AccessibilityChecker() {
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [step, setStep] = useState<Step>("scan");
 
@@ -398,14 +399,23 @@ export default function AccessibilityChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={async () => { const s = await saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps }); setSubmitted(true); setSubmissionId(s.id); }}
-              disabled={answered < items.length}
+            <button onClick={async () => {
+                setSubmitting(true);
+                try {
+                  const s = await saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps });
+                  setSubmissionId(s.id);
+                  setSubmitted(true);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              disabled={submitting}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed border"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
-              <CheckCircle2 size={14} /> View Results
+              {submitting ? <><Loader2 size={14} className="animate-spin" /> Saving…</> : <><CheckCircle2 size={14} /> View Results</>}
             </button>
+            {answered < items.length && <span className="text-[#475569] text-xs">{items.length - answered} unanswered</span>}
           )}
-          {answered < items.length && <span className="text-[#475569] text-xs">{items.length - answered} unanswered</span>}
         </div>
       </GlassCard>
     </div>
