@@ -11,7 +11,6 @@ import {
   Edit2,
   Trash2,
   Eye,
-  EyeOff,
   Download,
   Loader2,
   CheckCircle2,
@@ -23,7 +22,9 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  LayoutList,
 } from "lucide-react";
+import CourseContentEditor from "@/components/training/CourseContentEditor";
 import { SEED_COURSES } from "@/lib/training-courses";
 
 const ACCENT = "#8B5CF6";
@@ -102,6 +103,8 @@ export default function TrainingAdminTab() {
 
   // Enrolment panel
   const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
+  // Content editor panel
+  const [contentEditorCourseId, setContentEditorCourseId] = useState<string | null>(null);
   const [enrolmentRows, setEnrolmentRows] = useState<EnrolmentRow[]>([]);
   const [enrolmentLoading, setEnrolmentLoading] = useState(false);
 
@@ -473,6 +476,9 @@ export default function TrainingAdminTab() {
                   <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
                     Enrolments
                   </th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
+                    Content
+                  </th>
                   <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
                     Actions
                   </th>
@@ -583,6 +589,23 @@ export default function TrainingAdminTab() {
                           </button>
                         </td>
 
+                        {/* Content editor toggle */}
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => setContentEditorCourseId(contentEditorCourseId === course.id ? null : course.id)}
+                            className="flex items-center gap-1 mx-auto transition-all hover:opacity-70"
+                            title="Manage course content"
+                          >
+                            <LayoutList size={13} style={{ color: contentEditorCourseId === course.id ? "#8B5CF6" : "var(--text-dim)" }} />
+                            <span className="text-[0.65rem] font-medium" style={{ color: contentEditorCourseId === course.id ? "#8B5CF6" : "var(--text-dim)" }}>
+                              Edit
+                            </span>
+                            {contentEditorCourseId === course.id
+                              ? <ChevronUp size={11} style={{ color: "#8B5CF6" }} />
+                              : <ChevronDown size={11} style={{ color: "var(--text-dim)" }} />}
+                          </button>
+                        </td>
+
                         {/* Actions */}
                         <td className="px-5 py-3">
                           <div className="flex items-center justify-end gap-1.5">
@@ -604,10 +627,27 @@ export default function TrainingAdminTab() {
                         </td>
                       </tr>
 
+                      {/* Content editor expansion panel */}
+                      {contentEditorCourseId === course.id && (
+                        <tr key={`${course.id}-content`} style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                          <td colSpan={8} className="bg-white/[0.01]" style={{ borderBottom: "1px solid rgba(139,92,246,0.15)" }}>
+                            <div className="px-2 py-1">
+                              <div className="flex items-center gap-2 px-4 pt-3 pb-1">
+                                <LayoutList size={13} style={{ color: "#8B5CF6" }} />
+                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>
+                                  Course Content — {course.title}
+                                </span>
+                              </div>
+                              <CourseContentEditor courseId={course.id} />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+
                       {/* Enrolment expansion panel */}
                       {isExpanded && (
                         <tr key={`${course.id}-enrol`} style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                          <td colSpan={7} className="px-5 py-4 bg-white/[0.015]">
+                          <td colSpan={8} className="px-5 py-4 bg-white/[0.015]">
                             {enrolmentLoading ? (
                               <div className="flex items-center gap-2 py-2">
                                 <Loader2 size={14} className="animate-spin" style={{ color: ACCENT }} />
