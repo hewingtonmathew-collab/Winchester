@@ -6,7 +6,38 @@ import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta"
 import Certificate from "@/components/report/Certificate";
 import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
 import { saveSubmission } from "@/lib/submissions";
-import type { ScanResult } from "@/app/api/accessibility-scan/route";
+import type { ScanResult, LighthouseCategories } from "@/app/api/accessibility-scan/route";
+
+function ScoreRing({ label, score }: { label: string; score: number }) {
+  const color = score >= 90 ? "#22c55e" : score >= 50 ? "#f59e0b" : "#ef4444";
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-16 h-16">
+        <svg viewBox="0 0 72 72" className="w-full h-full -rotate-90">
+          <circle cx="36" cy="36" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="7" />
+          <circle cx="36" cy="36" r={r} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
+            strokeDasharray={circ} strokeDashoffset={circ * (1 - score / 100)}
+            style={{ transition: "stroke-dashoffset 1s ease" }} />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">{score}</span>
+      </div>
+      <span className="text-[10px] text-center leading-tight" style={{ color: "rgba(255,255,255,0.5)", maxWidth: 64 }}>{label}</span>
+    </div>
+  );
+}
+
+function CategoryRings({ cats }: { cats: LighthouseCategories }) {
+  return (
+    <div className="flex items-center justify-around mt-3 pt-3 border-t border-white/5">
+      <ScoreRing label="Accessibility" score={cats.accessibility} />
+      <ScoreRing label="Performance" score={cats.performance} />
+      <ScoreRing label="SEO" score={cats.seo} />
+      <ScoreRing label="Best Practices" score={cats.bestPractices} />
+    </div>
+  );
+}
 
 type Answer = "yes" | "no" | "partial" | null;
 type Item = { id: string; category: string; text: string; weight: number; wcag?: string };
@@ -152,11 +183,11 @@ export default function AccessibilityChecker() {
           <div className="flex flex-col gap-2">
             <span className="text-xl font-bold" style={{ color: ringColor }}>{rating}</span>
             {scanResult?.lighthouse && (
-              <div className="flex items-center gap-2 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-                <span>Lighthouse score: <strong style={{ color: ringColor }}>{scanResult.lighthouse.score}</strong>/100</span>
+              <div className="flex flex-col gap-2">
+                <CategoryRings cats={scanResult.lighthouse.categories} />
                 <a href={`https://pagespeed.web.dev/report?url=${encodeURIComponent(scanResult.url)}`} target="_blank" rel="noopener noreferrer"
-                  className="underline flex items-center gap-0.5 hover:opacity-80" style={{ color: COLOR }}>
-                  Full report <ExternalLink size={10} />
+                  className="text-xs underline flex items-center gap-0.5 hover:opacity-80 self-start" style={{ color: COLOR }}>
+                  View full PageSpeed report <ExternalLink size={10} />
                 </a>
               </div>
             )}
@@ -213,42 +244,60 @@ export default function AccessibilityChecker() {
 
           {scanResult && (
             <div className="mt-4 flex flex-col gap-3">
+              {/* Lighthouse score rings */}
               {scanResult.lighthouse ? (
                 <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-white">Lighthouse Accessibility</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold" style={{ color: scanResult.lighthouse.score >= 90 ? "#22c55e" : scanResult.lighthouse.score >= 70 ? "#f59e0b" : "#ef4444" }}>
-                        {scanResult.lighthouse.score}/100
-                      </span>
-                      <a href={`https://pagespeed.web.dev/report?url=${encodeURIComponent(scanResult.url)}`} target="_blank" rel="noopener noreferrer"
-                        className="text-xs underline flex items-center gap-0.5 hover:opacity-80" style={{ color: COLOR }}>
-                        Full report <ExternalLink size={10} />
-                      </a>
-                    </div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-white">Lighthouse Scores</span>
+                    <a href={`https://pagespeed.web.dev/report?url=${encodeURIComponent(scanResult.url)}`} target="_blank" rel="noopener noreferrer"
+                      className="text-xs underline flex items-center gap-0.5 hover:opacity-80" style={{ color: COLOR }}>
+                      Full report <ExternalLink size={10} />
+                    </a>
                   </div>
-                  {scanResult.lighthouse.violations.length > 0 ? (
-                    <div className="flex flex-col gap-1.5">
-                      <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{scanResult.lighthouse.violations.length} issue{scanResult.lighthouse.violations.length !== 1 ? "s" : ""} detected:</p>
+                  <CategoryRings cats={scanResult.lighthouse.categories} />
+                  {scanResult.lighthouse.violations.length > 0 && (
+                    <div className="mt-4 flex flex-col gap-1.5">
+                      <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>
+                        {scanResult.lighthouse.violations.length} accessibility issue{scanResult.lighthouse.violations.length !== 1 ? "s" : ""} detected:
+                      </p>
                       {scanResult.lighthouse.violations.slice(0, 8).map((v, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs">
-                          <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${v.impact === "critical" ? "bg-red-400" : v.impact === "serious" ? "bg-amber-400" : "bg-yellow-400"}`} />
+                          <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${v.impact === "critical" ? "bg-red-400" : "bg-amber-400"}`} />
                           <span style={{ color: "rgba(255,255,255,0.7)" }}>{v.description}</span>
                         </div>
                       ))}
                       {scanResult.lighthouse.violations.length > 8 && (
                         <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>+{scanResult.lighthouse.violations.length - 8} more in full report</p>
                       )}
-                      <p className="text-xs mt-2" style={{ color: COLOR }}>✓ Questionnaire answers pre-filled based on scan results.</p>
                     </div>
-                  ) : (
-                    <p className="text-xs text-green-400">No accessibility violations detected by Lighthouse.</p>
                   )}
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-xs text-amber-400">
                   <AlertTriangle size={12} /> {scanResult.lighthouseError ?? "Lighthouse scan unavailable — complete the questionnaire manually."}
                 </div>
+              )}
+
+              {/* HTML analysis */}
+              {scanResult.htmlFindings.length > 0 && (
+                <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <p className="text-xs font-semibold text-white mb-3">HTML Analysis</p>
+                  <div className="flex flex-col gap-2">
+                    {scanResult.htmlFindings.map((f, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs">
+                        <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${f.type === "pass" ? "bg-green-400" : f.type === "error" ? "bg-red-400" : "bg-amber-400"}`} />
+                        <div>
+                          <span className="font-medium" style={{ color: f.type === "pass" ? "#4ade80" : f.type === "error" ? "#f87171" : "#fbbf24" }}>{f.check}</span>
+                          <span className="ml-1" style={{ color: "rgba(255,255,255,0.5)" }}>— {f.detail}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {Object.keys(scanResult.suggestedAnswers).length > 0 && (
+                <p className="text-xs" style={{ color: COLOR }}>✓ {Object.keys(scanResult.suggestedAnswers).length} questionnaire answers pre-filled from scan results.</p>
               )}
             </div>
           )}

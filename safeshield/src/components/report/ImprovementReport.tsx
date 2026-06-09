@@ -754,16 +754,15 @@ Write two short paragraphs. The first: a numbered action plan of four concrete s
             />
             {consultantNotes.trim() && (
               <div className="flex flex-wrap gap-2 mt-2">
-                {reportId && (
-                  <button
-                    onClick={saveNotes}
-                    disabled={notesSaving}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
-                    style={{ background: notesSaved ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${notesSaved ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.15)"}`, color: notesSaved ? "#22c55e" : "#CBD5E1", opacity: notesSaving ? 0.6 : 1 }}
-                  >
-                    {notesSaved ? <><Check size={12} /> Saved</> : notesSaving ? "Saving…" : <><Save size={12} /> Save Notes</>}
-                  </button>
-                )}
+                <button
+                  onClick={saveNotes}
+                  disabled={notesSaving || !reportId}
+                  title={!reportId ? "Complete the assessment to enable saving" : ""}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={{ background: notesSaved ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", border: `1px solid ${notesSaved ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.15)"}`, color: notesSaved ? "#22c55e" : "#CBD5E1", opacity: (notesSaving || !reportId) ? 0.5 : 1 }}
+                >
+                  {notesSaved ? <><Check size={12} /> Saved</> : notesSaving ? "Saving…" : <><Save size={12} /> Save Notes</>}
+                </button>
                 <button
                   onClick={handlePrintRecommendations}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
