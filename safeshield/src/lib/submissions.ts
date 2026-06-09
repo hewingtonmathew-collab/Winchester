@@ -19,9 +19,9 @@ export type Submission = {
 
 const KEY = "safeshield_submissions";
 
-export async function saveSubmission(s: Omit<Submission, "id" | "date">): Promise<Submission> {
+export async function saveSubmission(s: Omit<Submission, "id" | "date"> & { id?: string }): Promise<Submission> {
   const all = getSubmissions();
-  const entry: Submission = { ...s, id: crypto.randomUUID(), date: new Date().toISOString() };
+  const entry: Submission = { ...s, id: s.id ?? crypto.randomUUID(), date: new Date().toISOString() };
 
   // Always save to localStorage as immediate fallback
   localStorage.setItem(KEY, JSON.stringify([entry, ...all]));

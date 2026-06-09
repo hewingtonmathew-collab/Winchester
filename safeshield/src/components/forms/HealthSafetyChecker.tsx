@@ -129,10 +129,11 @@ export default function HealthSafetyChecker() {
     return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
   });
 
-  async function submit() {
-    const s = await saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps });
+  function submit() {
+    const id = crypto.randomUUID();
+    setSubmissionId(id);
     setSubmitted(true);
-    setSubmissionId(s.id);
+    saveSubmission({ tool: "Health & Safety Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps, id });
   }
 
   if (step === "meta") {

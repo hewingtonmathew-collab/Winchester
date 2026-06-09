@@ -226,7 +226,7 @@ export default function GovernanceChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={async () => { const lbl = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement"; const rc = score >= 80 ? "#22c55e" : score >= 55 ? "#f59e0b" : "#ef4444"; const s = await saveSubmission({ tool: "Governance Compliance Checker", ...meta, score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }); setSubmitted(true); setSubmissionId(s.id); }} disabled={answered < items.length}
+            <button onClick={() => { const lbl = score >= 80 ? "Strong" : score >= 55 ? "Developing" : "Requires Improvement"; const rc = score >= 80 ? "#22c55e" : score >= 55 ? "#f59e0b" : "#ef4444"; const id = crypto.randomUUID(); setSubmissionId(id); setSubmitted(true); saveSubmission({ tool: "Governance Compliance Checker", ...meta, score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps, id }); }} disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[rgba(167,139,250,0.15)] border border-[rgba(167,139,250,0.3)] text-[#A78BFA] text-sm font-medium hover:bg-[rgba(167,139,250,0.25)] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
               <CheckCircle2 size={14} /> View Results
             </button>

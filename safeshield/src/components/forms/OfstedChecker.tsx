@@ -219,7 +219,7 @@ export default function OfstedChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={async () => { const s = await saveSubmission({ tool: "Ofsted Ready Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps }); setSubmitted(true); setSubmissionId(s.id); }}
+            <button onClick={() => { const id = crypto.randomUUID(); setSubmissionId(id); setSubmitted(true); saveSubmission({ tool: "Ofsted Ready Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps, id }); }}
               disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium border transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
