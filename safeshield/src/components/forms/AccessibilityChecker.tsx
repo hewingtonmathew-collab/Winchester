@@ -403,7 +403,7 @@ export default function AccessibilityChecker() {
                 const id = crypto.randomUUID();
                 setSubmissionId(id);
                 setSubmitted(true);
-                saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps });
+                saveSubmission({ id, tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps });
               }}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
