@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
 import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw } from "lucide-react";
 import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -1170,6 +1170,8 @@ export default function AdminPage() {
 
   // Assessments state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncDone, setSyncDone] = useState(false);
   const [view, setView] = useState<"schools" | "all">("schools");
 
   // Users state
@@ -1234,6 +1236,24 @@ export default function AdminPage() {
       setSubmissions(local);
     }
   }, []);
+
+  const syncLocalToSupabase = useCallback(async () => {
+    setSyncing(true);
+    setSyncDone(false);
+    try {
+      const local = getSubmissions();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { saveReportToSupabase } = await import("@/lib/submissions");
+      for (const s of local) {
+        await saveReportToSupabase(s, session.user.id);
+      }
+      setSyncDone(true);
+      await loadSubmissions();
+    } finally {
+      setSyncing(false);
+    }
+  }, [loadSubmissions]);
 
   useEffect(() => {
     if (profile?.role === "admin") loadSubmissions();
@@ -1400,6 +1420,13 @@ export default function AdminPage() {
         {/* ── Assessments tab ── */}
         {tab === "assessments" && (
           <>
+            <div className="flex justify-end mb-4">
+              <button onClick={syncLocalToSupabase} disabled={syncing}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: syncDone ? "rgba(34,197,94,0.12)" : "rgba(56,189,248,0.10)", border: `1px solid ${syncDone ? "rgba(34,197,94,0.3)" : "rgba(56,189,248,0.25)"}`, color: syncDone ? "#22c55e" : "#38BDF8" }}>
+                {syncing ? <><Loader2 size={12} className="animate-spin" /> Syncing…</> : syncDone ? <><CheckCircle2 size={12} /> Synced</> : <><RefreshCw size={12} /> Sync Local Reports</>}
+              </button>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
                 { label: "Schools", value: schools.length },
