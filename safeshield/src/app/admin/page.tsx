@@ -1193,14 +1193,15 @@ export default function AdminPage() {
   }, [loading, profile, router]);
 
   const loadSubmissions = useCallback(async () => {
-    // Load from Supabase first, fall back to localStorage for legacy data
+    const local = getSubmissions();
+
     const { data: remoteReports } = await supabase
       .from("reports")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (remoteReports && remoteReports.length > 0) {
-      // Map Supabase reports to Submission shape
+      const remoteIds = new Set(remoteReports.map((r) => r.id));
       const mapped: Submission[] = remoteReports.map((r) => ({
         id: r.id,
         tool: r.tool_name,
@@ -1217,9 +1218,11 @@ export default function AdminPage() {
         areas: r.areas ?? undefined,
         gaps: r.recommendations ?? undefined,
       }));
-      setSubmissions(mapped);
+      // Also include any local-only reports not yet synced to Supabase
+      const localOnly = local.filter((s) => !remoteIds.has(s.id));
+      setSubmissions([...mapped, ...localOnly].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     } else {
-      setSubmissions(getSubmissions());
+      setSubmissions(local);
     }
   }, []);
 
