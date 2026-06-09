@@ -1034,7 +1034,7 @@ export async function seedCoursesToSupabase(supabase: SupabaseClient): Promise<v
   for (const course of SEED_COURSES) {
     const { sections, ...courseData } = course;
 
-    // Upsert course
+    // Upsert course — course IDs are valid hex UUIDs
     const { error: courseErr } = await supabase
       .from("training_courses")
       .upsert(
@@ -1050,75 +1050,63 @@ export async function seedCoursesToSupabase(supabase: SupabaseClient): Promise<v
         },
         { onConflict: "id" }
       );
-
     if (courseErr) throw new Error(`Course upsert failed (${courseData.title}): ${courseErr.message}`);
+
+    // Skip sections/lessons if already seeded for this course (idempotent)
+    const { data: existing } = await supabase
+      .from("training_sections")
+      .select("id")
+      .eq("course_id", courseData.id)
+      .limit(1);
+    if (existing && existing.length > 0) continue;
 
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const section = sections[sIdx];
-      const { lessons, ...sectionData } = section;
+      const { lessons } = section;
 
-      // Upsert section
-      const { error: sectionErr } = await supabase
+      // Insert section — let DB generate a valid UUID
+      const { data: newSection, error: sectionErr } = await supabase
         .from("training_sections")
-        .upsert(
-          {
-            id: sectionData.id,
-            course_id: courseData.id,
-            title: sectionData.title,
-            sort_order: sIdx,
-          },
-          { onConflict: "id" }
-        );
-
-      if (sectionErr) throw new Error(`Section upsert failed (${sectionData.title}): ${sectionErr.message}`);
+        .insert({ course_id: courseData.id, title: section.title, sort_order: sIdx })
+        .select("id")
+        .single();
+      if (sectionErr) throw new Error(`Section insert failed (${section.title}): ${sectionErr.message}`);
 
       for (let lIdx = 0; lIdx < lessons.length; lIdx++) {
         const lesson = lessons[lIdx];
-        const { quiz, ...lessonData } = lesson;
+        const { quiz } = lesson;
 
-        // Upsert lesson
-        const { error: lessonErr } = await supabase
+        // Insert lesson — let DB generate a valid UUID
+        const { data: newLesson, error: lessonErr } = await supabase
           .from("training_lessons")
-          .upsert(
-            {
-              id: lessonData.id,
-              course_id: courseData.id,
-              section_id: sectionData.id,
-              title: lessonData.title,
-              content: lessonData.content,
-              duration_minutes: lessonData.duration_minutes,
-              has_quiz: lessonData.has_quiz,
-              sort_order: lIdx,
-            },
-            { onConflict: "id" }
-          );
+          .insert({
+            course_id: courseData.id,
+            section_id: newSection!.id,
+            title: lesson.title,
+            content: lesson.content,
+            duration_minutes: lesson.duration_minutes,
+            has_quiz: lesson.has_quiz,
+            sort_order: lIdx,
+          })
+          .select("id")
+          .single();
+        if (lessonErr) throw new Error(`Lesson insert failed (${lesson.title}): ${lessonErr.message}`);
 
-        if (lessonErr) throw new Error(`Lesson upsert failed (${lessonData.title}): ${lessonErr.message}`);
-
-        // Upsert quiz questions
+        // Insert quiz questions in bulk
         if (quiz && quiz.length > 0) {
-          for (let qIdx = 0; qIdx < quiz.length; qIdx++) {
-            const q = quiz[qIdx];
-            // Derive a stable ID from lesson id + question index
-            const quizId = `${lessonData.id.slice(0, -1)}${qIdx + 1}`;
-
-            const { error: quizErr } = await supabase
-              .from("training_quizzes")
-              .upsert(
-                {
-                  id: quizId,
-                  lesson_id: lessonData.id,
-                  question: q.question,
-                  options: q.options,
-                  correct_answer: q.correct_answer,
-                  explanation: q.explanation,
-                  sort_order: qIdx,
-                },
-                { onConflict: "id" }
-              );
-
-            if (quizErr) throw new Error(`Quiz upsert failed (lesson ${lessonData.title}, q${qIdx}): ${quizErr.message}`);
-          }
+          const { error: quizErr } = await supabase
+            .from("training_quizzes")
+            .insert(
+              quiz.map((q, qIdx) => ({
+                lesson_id: newLesson!.id,
+                question: q.question,
+                options: q.options,
+                correct_answer: q.correct_answer,
+                explanation: q.explanation,
+                sort_order: qIdx,
+              }))
+            );
+          if (quizErr) throw new Error(`Quiz insert failed (${lesson.title}): ${quizErr.message}`);
         }
       }
     }
