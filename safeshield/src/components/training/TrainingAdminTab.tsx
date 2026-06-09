@@ -454,190 +454,90 @@ export default function TrainingAdminTab() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Course
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Category
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Level
-                  </th>
-                  <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Lessons
-                  </th>
-                  <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Status
-                  </th>
-                  <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Enrolments
-                  </th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {courses.map((course) => {
+          <div className="flex flex-col divide-y divide-white/[0.04]">
+            {courses.map((course) => {
                   const catColor = CATEGORY_COLORS[course.category] ?? "#94A3B8";
                   const lvlColor = LEVEL_COLORS[course.level] ?? "#94A3B8";
                   const lessonCount = lessonCountMap[course.id] ?? 0;
                   const enrolCount = enrolmentCountMap[course.id] ?? 0;
                   const isExpanded = expandedCourseId === course.id;
+                  const isContentOpen = contentEditorCourseId === course.id;
 
                   return (
-                    <>
-                      <tr
-                        key={course.id}
-                        className="border-b transition-colors hover:bg-white/[0.015]"
-                        style={{ borderColor: "rgba(255,255,255,0.04)" }}
-                      >
-                        {/* Title */}
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-8 h-8 rounded-lg shrink-0"
-                              style={{ background: course.thumbnail_color ?? ACCENT, opacity: 0.85 }}
-                            />
-                            <div>
-                              <p className="font-medium text-xs" style={{ color: "var(--text)" }}>
-                                {course.title}
-                              </p>
-                              {course.description && (
-                                <p
-                                  className="text-[0.65rem] mt-0.5 max-w-xs truncate"
-                                  style={{ color: "var(--text-faint)" }}
-                                >
-                                  {course.description}
-                                </p>
-                              )}
-                            </div>
+                    <div key={course.id}>
+                      {/* Course row */}
+                      <div className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors">
+                        {/* Colour swatch */}
+                        <div className="w-8 h-8 rounded-lg shrink-0" style={{ background: course.thumbnail_color ?? ACCENT, opacity: 0.85 }} />
+
+                        {/* Title + description */}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate" style={{ color: "var(--text)" }}>{course.title}</p>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className="text-[0.65rem] font-semibold px-1.5 py-0.5 rounded" style={{ background: `${catColor}18`, color: catColor }}>{course.category}</span>
+                            <span className="text-[0.65rem] font-semibold px-1.5 py-0.5 rounded capitalize" style={{ background: `${lvlColor}18`, color: lvlColor }}>{course.level}</span>
+                            <span className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{lessonCount} lesson{lessonCount !== 1 ? "s" : ""}</span>
                           </div>
-                        </td>
-
-                        {/* Category */}
-                        <td className="px-4 py-3">
-                          <span
-                            className="inline-flex items-center px-2 py-0.5 rounded-md text-[0.65rem] font-semibold"
-                            style={{ background: `${catColor}18`, color: catColor }}
-                          >
-                            {course.category}
-                          </span>
-                        </td>
-
-                        {/* Level */}
-                        <td className="px-4 py-3">
-                          <span
-                            className="inline-flex items-center px-2 py-0.5 rounded-md text-[0.65rem] font-semibold capitalize"
-                            style={{ background: `${lvlColor}18`, color: lvlColor }}
-                          >
-                            {course.level}
-                          </span>
-                        </td>
-
-                        {/* Lessons */}
-                        <td className="px-4 py-3 text-center">
-                          <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                            {lessonCount}
-                          </span>
-                        </td>
+                        </div>
 
                         {/* Status toggle */}
-                        <td className="px-4 py-3 text-center">
-                          <button
-                            onClick={() => handleToggleStatus(course)}
-                            className="flex items-center gap-1.5 mx-auto transition-all"
-                            title={course.status === "published" ? "Click to unpublish" : "Click to publish"}
-                          >
-                            {course.status === "published" ? (
-                              <>
-                                <ToggleRight size={18} className="text-[#34D399]" />
-                                <span className="text-[0.65rem] text-[#34D399] font-medium">Published</span>
-                              </>
-                            ) : (
-                              <>
-                                <ToggleLeft size={18} className="text-[#475569]" />
-                                <span className="text-[0.65rem] text-[#475569] font-medium">Draft</span>
-                              </>
-                            )}
-                          </button>
-                        </td>
+                        <button
+                          onClick={() => handleToggleStatus(course)}
+                          className="flex items-center gap-1 shrink-0 transition-all"
+                          title={course.status === "published" ? "Click to unpublish" : "Click to publish"}
+                        >
+                          {course.status === "published" ? (
+                            <><ToggleRight size={18} className="text-[#34D399]" /><span className="text-[0.65rem] text-[#34D399] font-medium hidden sm:block">Published</span></>
+                          ) : (
+                            <><ToggleLeft size={18} className="text-[#475569]" /><span className="text-[0.65rem] text-[#475569] font-medium hidden sm:block">Draft</span></>
+                          )}
+                        </button>
 
                         {/* Enrolments */}
-                        <td className="px-4 py-3 text-center">
+                        <button onClick={() => toggleEnrolments(course.id)} className="flex items-center gap-1 shrink-0 hover:opacity-70 transition-all" title="View enrolments">
+                          <Users size={12} style={{ color: "var(--text-dim)" }} />
+                          <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{enrolCount}</span>
+                          {isExpanded ? <ChevronUp size={11} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={11} style={{ color: "var(--text-dim)" }} />}
+                        </button>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-1.5 shrink-0">
                           <button
-                            onClick={() => toggleEnrolments(course.id)}
-                            className="flex items-center gap-1 mx-auto transition-all hover:opacity-70"
-                            title="View enrolments"
+                            onClick={() => setContentEditorCourseId(isContentOpen ? null : course.id)}
+                            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
+                            title="Add / edit lessons"
+                            style={isContentOpen
+                              ? { background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.4)", color: "#8B5CF6" }
+                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
                           >
-                            <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-                              {enrolCount}
-                            </span>
-                            <BarChart3 size={12} style={{ color: "var(--text-dim)" }} />
-                            {isExpanded ? (
-                              <ChevronUp size={11} style={{ color: "var(--text-dim)" }} />
-                            ) : (
-                              <ChevronDown size={11} style={{ color: "var(--text-dim)" }} />
-                            )}
+                            <LayoutList size={12} />
+                            <span className="hidden sm:block">Content</span>
                           </button>
-                        </td>
+                          <button onClick={() => openEdit(course)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit course details">
+                            <Edit2 size={12} style={{ color: "var(--text-muted)" }} />
+                          </button>
+                          <button onClick={() => setDeletingId(course.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete course">
+                            <Trash2 size={12} className="text-red-400" />
+                          </button>
+                        </div>
+                      </div>
 
-                        {/* Actions */}
-                        <td className="px-5 py-3">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => setContentEditorCourseId(contentEditorCourseId === course.id ? null : course.id)}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
-                              title="Manage course content"
-                              style={contentEditorCourseId === course.id
-                                ? { background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)" }
-                                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                            >
-                              <LayoutList size={12} style={{ color: contentEditorCourseId === course.id ? "#8B5CF6" : "var(--text-muted)" }} />
-                            </button>
-                            <button
-                              onClick={() => openEdit(course)}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all"
-                              title="Edit course details"
-                            >
-                              <Edit2 size={12} style={{ color: "var(--text-muted)" }} />
-                            </button>
-                            <button
-                              onClick={() => setDeletingId(course.id)}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all"
-                              title="Delete course"
-                            >
-                              <Trash2 size={12} className="text-red-400" />
-                            </button>
+                      {/* Content editor panel */}
+                      {isContentOpen && (
+                        <div className="border-t border-b" style={{ borderColor: "rgba(139,92,246,0.15)", background: "rgba(139,92,246,0.03)" }}>
+                          <div className="flex items-center gap-2 px-5 pt-3 pb-1">
+                            <LayoutList size={13} style={{ color: "#8B5CF6" }} />
+                            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>
+                              Course Content — {course.title}
+                            </span>
                           </div>
-                        </td>
-                      </tr>
-
-                      {/* Content editor expansion panel */}
-                      {contentEditorCourseId === course.id && (
-                        <tr key={`${course.id}-content`} style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                          <td colSpan={7} className="bg-white/[0.01]" style={{ borderBottom: "1px solid rgba(139,92,246,0.15)" }}>
-                            <div className="px-2 py-1">
-                              <div className="flex items-center gap-2 px-4 pt-3 pb-1">
-                                <LayoutList size={13} style={{ color: "#8B5CF6" }} />
-                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>
-                                  Course Content — {course.title}
-                                </span>
-                              </div>
-                              <CourseContentEditor courseId={course.id} />
-                            </div>
-                          </td>
-                        </tr>
+                          <CourseContentEditor courseId={course.id} />
+                        </div>
                       )}
 
-                      {/* Enrolment expansion panel */}
+                      {/* Enrolment panel */}
                       {isExpanded && (
-                        <tr key={`${course.id}-enrol`} style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                          <td colSpan={7} className="px-5 py-4 bg-white/[0.015]">
+                        <div className="px-5 py-4 border-t" style={{ borderColor: "rgba(255,255,255,0.04)", background: "rgba(255,255,255,0.01)" }}>
                             {enrolmentLoading ? (
                               <div className="flex items-center gap-2 py-2">
                                 <Loader2 size={14} className="animate-spin" style={{ color: ACCENT }} />
@@ -686,14 +586,11 @@ export default function TrainingAdminTab() {
                                 })}
                               </div>
                             )}
-                          </td>
-                        </tr>
-                      )}
-                    </>
+                          </div>
+                        )}
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
           </div>
         )}
       </GlassCard>
