@@ -137,6 +137,17 @@ export type TrainingProgress = {
   retake_allowed: boolean;
 };
 
+export type SchoolTrainingProfile = {
+  id: string;
+  school_id: string;
+  head_teacher: string | null;
+  dsl_name: string | null;
+  dpo_name: string | null;
+  chair_of_governors: string | null;
+  updated_at: string;
+  updated_by: string | null;
+};
+
 export type TrainingCompletionReport = {
   id: string;
   user_id: string;

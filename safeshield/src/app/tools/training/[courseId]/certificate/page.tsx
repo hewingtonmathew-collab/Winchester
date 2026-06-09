@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import AuthGuard from "@/components/ui/AuthGuard";
 import GlassCard from "@/components/ui/GlassCard";
 import Certificate from "@/components/report/Certificate";
-import { supabase, type TrainingCourse, type TrainingLesson, type TrainingProgress, type TrainingCompletionReport } from "@/lib/supabase";
+import { supabase, type TrainingCourse, type TrainingLesson, type TrainingProgress, type TrainingCompletionReport, type SchoolTrainingProfile } from "@/lib/supabase";
 import { Award, ArrowLeft, Loader2, BookOpen, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -20,6 +20,7 @@ export default function TrainingCertificatePage() {
   const [lessons, setLessons] = useState<TrainingLesson[]>([]);
   const [progress, setProgress] = useState<TrainingProgress[]>([]);
   const [reports, setReports] = useState<TrainingCompletionReport[]>([]);
+  const [schoolProfile, setSchoolProfile] = useState<SchoolTrainingProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,12 +37,21 @@ export default function TrainingCertificatePage() {
 
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (authUser) {
-          const [{ data: prog }, { data: rpts }] = await Promise.all([
+          const [{ data: prog }, { data: rpts }, { data: membership }] = await Promise.all([
             supabase.from("training_progress").select("*").eq("user_id", authUser.id).eq("course_id", courseId),
             supabase.from("training_completion_reports").select("*").eq("user_id", authUser.id).eq("course_id", courseId).order("created_at"),
+            supabase.from("org_members").select("school_id").eq("user_id", authUser.id).maybeSingle(),
           ]);
           setProgress(prog ?? []);
           setReports(rpts ?? []);
+          if (membership?.school_id) {
+            const { data: sp } = await supabase
+              .from("school_training_profiles")
+              .select("*")
+              .eq("school_id", membership.school_id)
+              .maybeSingle();
+            setSchoolProfile(sp ?? null);
+          }
         }
       } finally {
         setLoading(false);
@@ -173,6 +183,26 @@ export default function TrainingCertificatePage() {
                     <p className="text-[10px] mt-2" style={{ color: "var(--text-faint)" }}>
                       {new Date(r.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                     </p>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          )}
+
+          {/* School personnel panel */}
+          {schoolProfile && (schoolProfile.dsl_name || schoolProfile.dpo_name || schoolProfile.head_teacher || schoolProfile.chair_of_governors) && (
+            <GlassCard className="mb-6">
+              <h2 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-dim)" }}>School Safeguarding &amp; Data Protection</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { label: "Head Teacher",   value: schoolProfile.head_teacher },
+                  { label: "DSL",            value: schoolProfile.dsl_name },
+                  { label: "DPO",            value: schoolProfile.dpo_name },
+                  { label: "Chair of Governors", value: schoolProfile.chair_of_governors },
+                ].filter((f) => f.value).map(({ label, value }) => (
+                  <div key={label}>
+                    <p className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--text-faint)" }}>{label}</p>
+                    <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>{value}</p>
                   </div>
                 ))}
               </div>

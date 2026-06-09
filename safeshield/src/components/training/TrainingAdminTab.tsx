@@ -27,8 +27,10 @@ import {
   RefreshCw,
   FileText,
   Send,
+  ShieldCheck,
 } from "lucide-react";
 import CourseContentEditor from "@/components/training/CourseContentEditor";
+import SchoolTrainingProfileManager from "@/components/training/SchoolTrainingProfileManager";
 import { SEED_COURSES } from "@/lib/training-courses";
 
 const ACCENT = "#8B5CF6";
@@ -96,9 +98,12 @@ const emptyForm = (): CourseForm => ({
 
 const PASS_MARK = 85;
 
+type AdminSubTab = "courses" | "schools";
+
 export default function TrainingAdminTab() {
   const { profile } = useAuth();
   const isAdmin = (profile as { role?: string } | null)?.role === "admin";
+  const [subTab, setSubTab] = useState<AdminSubTab>("courses");
   const [courses, setCourses] = useState<TrainingCourse[]>([]);
   const [lessonCountMap, setLessonCountMap] = useState<Record<string, number>>({});
   const [enrolmentCountMap, setEnrolmentCountMap] = useState<Record<string, number>>({});
@@ -393,6 +398,33 @@ export default function TrainingAdminTab() {
 
   return (
     <div className="flex flex-col gap-6">
+
+      {/* Sub-tab switcher */}
+      <div className="flex gap-2 flex-wrap">
+        {([
+          { id: "courses", label: "Course Management", icon: BookOpen },
+          { id: "schools", label: "School Profiles", icon: ShieldCheck },
+        ] as const).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setSubTab(id)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border"
+            style={subTab === id
+              ? { background: "rgba(139,92,246,0.15)", borderColor: "rgba(139,92,246,0.4)", color: ACCENT }
+              : { background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
+          >
+            <Icon size={14} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* School Profiles tab */}
+      {subTab === "schools" && <SchoolTrainingProfileManager />}
+
+      {/* Courses tab */}
+      {subTab === "courses" && <>
+
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <GlassCard className="p-4">
@@ -453,7 +485,7 @@ export default function TrainingAdminTab() {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          {courses.length === 0 && (
+          {isAdmin && courses.length === 0 && (
             <button
               onClick={handleSeed}
               disabled={seeding}
@@ -469,14 +501,16 @@ export default function TrainingAdminTab() {
               Load Pre-Built Courses
             </button>
           )}
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border glass hover:bg-white/5"
-            style={{ borderColor: "rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
-          >
-            <Plus size={14} />
-            New Course
-          </button>
+          {isAdmin && (
+            <button
+              onClick={openCreate}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border glass hover:bg-white/5"
+              style={{ borderColor: "rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
+            >
+              <Plus size={14} />
+              New Course
+            </button>
+          )}
         </div>
       </div>
 
@@ -560,30 +594,32 @@ export default function TrainingAdminTab() {
                           {isExpanded ? <ChevronUp size={11} style={{ color: "var(--text-dim)" }} /> : <ChevronDown size={11} style={{ color: "var(--text-dim)" }} />}
                         </button>
 
-                        {/* Action buttons */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => setContentEditorCourseId(isContentOpen ? null : course.id)}
-                            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
-                            title="Add / edit lessons"
-                            style={isContentOpen
-                              ? { background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.4)", color: "#8B5CF6" }
-                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
-                          >
-                            <LayoutList size={12} />
-                            <span className="hidden sm:block">Content</span>
-                          </button>
-                          <button onClick={() => openEdit(course)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit course details">
-                            <Edit2 size={12} style={{ color: "var(--text-muted)" }} />
-                          </button>
-                          <button onClick={() => setDeletingId(course.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete course">
-                            <Trash2 size={12} className="text-red-400" />
-                          </button>
-                        </div>
+                        {/* Action buttons — super admin only */}
+                        {isAdmin && (
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => setContentEditorCourseId(isContentOpen ? null : course.id)}
+                              className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
+                              title="Add / edit lessons"
+                              style={isContentOpen
+                                ? { background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.4)", color: "#8B5CF6" }
+                                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-muted)" }}
+                            >
+                              <LayoutList size={12} />
+                              <span className="hidden sm:block">Content</span>
+                            </button>
+                            <button onClick={() => openEdit(course)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit course details">
+                              <Edit2 size={12} style={{ color: "var(--text-muted)" }} />
+                            </button>
+                            <button onClick={() => setDeletingId(course.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete course">
+                              <Trash2 size={12} className="text-red-400" />
+                            </button>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Content editor panel */}
-                      {isContentOpen && (
+                      {/* Content editor panel — super admin only */}
+                      {isAdmin && isContentOpen && (
                         <div className="border-t border-b" style={{ borderColor: "rgba(139,92,246,0.15)", background: "rgba(139,92,246,0.03)" }}>
                           <div className="flex items-center gap-2 px-5 pt-3 pb-1">
                             <LayoutList size={13} style={{ color: "#8B5CF6" }} />
@@ -737,7 +773,10 @@ export default function TrainingAdminTab() {
         )}
       </GlassCard>
 
-      {/* Create / Edit Modal */}
+      {/* End courses tab */}
+      </>}
+
+      {/* Create / Edit Modal — super admin only */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="glass rounded-2xl p-6 w-full max-w-lg border" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
