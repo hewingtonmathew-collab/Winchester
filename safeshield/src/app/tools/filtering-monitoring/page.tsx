@@ -5,39 +5,24 @@ import { ShieldAlert } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Filtering & Monitoring Assurance | SafeShield",
-  description: "Evidence that your school's filtering and monitoring arrangements meet KCSIE requirements and DfE Filtering and Monitoring Standards. Generate a formal assurance report for governors.",
+  title: "Filtering & Monitoring Assurance Review | SafeShield",
+  description: "Assess whether your school's filtering and monitoring arrangements meet KCSIE 2024 requirements and provide effective safeguarding protection for all pupils.",
 };
-
-const COLOR = "#EF4444";
-
-const AREAS = [
-  "Filtering Controls",
-  "Monitoring Controls",
-  "Alert Management",
-  "DSL Oversight",
-  "AI Tool Monitoring",
-  "BYOD Risks",
-  "Annual Review",
-  "Vulnerable Pupils",
-  "SEND Considerations",
-  "Governor Assurance",
-];
 
 export default function FilteringMonitoringPage() {
   return (
     <AuthGuard toolSlug="filtering-monitoring">
-      <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pt-24 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
-              <ShieldAlert size={22} style={{ color: COLOR }} strokeWidth={1.5} />
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)]">
+              <ShieldAlert size={22} className="text-[#EF4444]" strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest mb-1" style={{ color: COLOR }}>Online Safety</p>
-              <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Filtering &amp; Monitoring Assurance</h1>
+              <p className="text-[#EF4444] text-xs font-medium uppercase tracking-widest mb-1">Online Safety</p>
+              <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Filtering &amp; Monitoring Assurance Review</h1>
               <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                Evidence that your school&apos;s filtering and monitoring arrangements meet KCSIE requirements and DfE Filtering and Monitoring Standards. Generate a formal assurance report for governors.
+                Assess whether your school's filtering and monitoring arrangements meet KCSIE 2024 requirements and provide effective safeguarding protection for all pupils.
               </p>
             </div>
           </div>
@@ -48,21 +33,39 @@ export default function FilteringMonitoringPage() {
             </div>
             <div className="flex flex-col gap-4">
               <GlassCard>
-                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
+                <h2 className="font-semibold text-sm uppercase tracking-wider mb-3" style={{ color: "var(--text)" }}>Assessment Areas</h2>
                 <ul className="flex flex-col gap-2">
-                  {AREAS.map((a) => (
-                    <li key={a} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR }} />
-                      {a}
+                  {[
+                    "Filtering Controls",
+                    "Monitoring Systems",
+                    "Incident Response",
+                    "Staff Responsibilities",
+                    "Review & Compliance",
+                  ].map((area) => (
+                    <li key={area} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-dim)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#EF4444" }} />{area}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
               <GlassCard>
-                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                  Aligned to KCSIE 2024, DfE Filtering and Monitoring Standards for Schools and Colleges, and the UK Council for Internet Safety (UKCIS) framework.
-                </p>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Key Standards</h2>
+                <ul className="flex flex-col gap-1.5">
+                  {["KCSIE 2024 Part 5", "DfE Filtering Standards 2023", "DfE Monitoring Standards 2023", "UK Safer Internet Centre Guidance", "UKCIS Online Safety Frameworks", "ICO Guidance on Monitoring"].map((l) => (
+                    <li key={l} className="text-xs" style={{ color: "var(--text-faint)" }}>· {l}</li>
+                  ))}
+                </ul>
+              </GlassCard>
+              <GlassCard>
+                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Rating Scale</h2>
+                <div className="flex flex-col gap-1.5">
+                  {[["Assured", "#22c55e"], ["Partially Assured", "#f59e0b"], ["Not Assured", "#ef4444"]].map(([l, c]) => (
+                    <div key={l} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c }} />
+                      <span className="text-xs" style={{ color: "var(--text-faint)" }}>{l}</span>
+                    </div>
+                  ))}
+                </div>
               </GlassCard>
             </div>
           </div>
