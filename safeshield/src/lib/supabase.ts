@@ -33,6 +33,8 @@ export const ALL_TOOLS = [
   { slug: "filtering-monitoring", name: "Filtering & Monitoring Assurance" },
   { slug: "data-privacy", name: "Data Protection & AI Privacy" },
   { slug: "governor-dashboard", name: "Governor Digital Dashboard" },
+  // Training & Certification Module
+  { slug: "training", name: "Training & Certification" },
 ];
 
 export type Organisation = {
@@ -78,6 +80,72 @@ export type OrgMember = {
   role: "admin" | "member";
   created_at: string;
 };
+
+// ── Training & Certification types ───────────────────────────────────────────
+export type TrainingCourse = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  level: "beginner" | "intermediate" | "advanced";
+  duration_minutes: number;
+  status: "draft" | "published";
+  thumbnail_color: string | null;
+  created_by: string | null;
+  created_at: string;
+};
+
+export type TrainingSection = {
+  id: string;
+  course_id: string;
+  title: string;
+  sort_order: number;
+};
+
+export type TrainingLesson = {
+  id: string;
+  course_id: string;
+  section_id: string;
+  title: string;
+  content: string | null;
+  video_url: string | null;
+  duration_minutes: number;
+  sort_order: number;
+  has_quiz: boolean;
+};
+
+export type TrainingQuiz = {
+  id: string;
+  lesson_id: string;
+  question: string;
+  options: string[];
+  correct_answer: number;
+  explanation: string | null;
+  sort_order: number;
+};
+
+export type TrainingProgress = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  lesson_id: string;
+  completed: boolean;
+  quiz_score: number | null;
+  quiz_passed: boolean;
+  completed_at: string | null;
+};
+
+export type TrainingAssignment = {
+  id: string;
+  course_id: string;
+  user_id: string | null;
+  org_id: string | null;
+  school_id: string | null;
+  assigned_by: string | null;
+  due_date: string | null;
+  created_at: string;
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 export type Report = {
   id: string;

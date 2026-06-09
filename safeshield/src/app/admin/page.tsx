@@ -3,7 +3,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
 import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw } from "lucide-react";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw, BookOpen } from "lucide-react";
+import TrainingAdminTab from "@/components/training/TrainingAdminTab";
 import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -1094,7 +1095,7 @@ function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void 
   );
 }
 
-type Tab = "assessments" | "users" | "organisations" | "site";
+type Tab = "assessments" | "users" | "organisations" | "site" | "training";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -1421,6 +1422,10 @@ export default function AdminPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "site" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <Link2 size={14} /> Site
           </button>
+          <button onClick={() => setTab("training")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "training" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <BookOpen size={14} /> Training
+          </button>
         </div>
 
         {/* ── Assessments tab ── */}
@@ -1662,6 +1667,9 @@ export default function AdminPage() {
             )}
           </>
         )}
+
+        {/* ── Training tab ── */}
+        {tab === "training" && <TrainingAdminTab />}
 
         {/* ── Site tab ── */}
         {tab === "site" && (
