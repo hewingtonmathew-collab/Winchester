@@ -19,6 +19,12 @@ const TOOL_COLORS: Record<string, string> = {
   "AI Content Detector": "#38BDF8",
   "Digital Standards Checker": "#818CF8",
   "Health & Safety Checker": "#F97316",
+  "Screen Use & Wellbeing Review": "#06B6D4",
+  "AI Use Risk Assessment": "#F59E0B",
+  "SEND Digital Impact Review": "#8B5CF6",
+  "Filtering & Monitoring Assurance": "#EF4444",
+  "Data Protection & AI Privacy": "#3B82F6",
+  "Governor Digital Dashboard": "#10B981",
 };
 
 // Reusable tool-access toggle grid. Super admin sets these toggles at the
