@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
-import { CheckCircle2, ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight, Search, AlertTriangle, Loader2, ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ReportMeta, { type ReportMetaData } from "@/components/report/ReportMeta";
 import Certificate from "@/components/report/Certificate";
 import ImprovementReport, { type Gap } from "@/components/report/ImprovementReport";
 import { saveSubmission } from "@/lib/submissions";
+import type { ScanResult } from "@/app/api/accessibility-scan/route";
 
 type Answer = "yes" | "no" | "partial" | null;
 type Item = { id: string; category: string; text: string; weight: number; wcag?: string };
@@ -58,13 +59,21 @@ const COLOR = "#F472B6";
 const DIM = "rgba(244,114,182,0.12)";
 const BORDER = "rgba(244,114,182,0.25)";
 
+type Step = "scan" | "meta" | "questions";
+
 export default function AccessibilityChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
-  const [step, setStep] = useState<"meta" | "questions">("meta");
+  const [step, setStep] = useState<Step>("scan");
+
+  // Scan state
+  const [scanUrl, setScanUrl] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [scanError, setScanError] = useState("");
 
   const answered = Object.values(answers).filter(Boolean).length;
   const score = calcScore(answers);
@@ -82,6 +91,16 @@ export default function AccessibilityChecker() {
       priority: i.weight >= 9 ? "high" : i.weight >= 7 ? "medium" : "low",
     }));
 
+  // Merge Lighthouse violations as additional gaps (deduplicated)
+  const lighthouseGaps: Gap[] = scanResult?.lighthouse?.violations.map(v => ({
+    category: "Lighthouse Scan",
+    text: `${v.description} — detected automatically via Lighthouse scan`,
+    priority: (v.impact === "critical" ? "high" : v.impact === "serious" ? "medium" : "low") as Gap["priority"],
+  })) ?? [];
+  const allGaps = [...gaps, ...lighthouseGaps.filter(lg =>
+    !gaps.some(g => g.text.toLowerCase().includes(lg.text.toLowerCase().slice(0, 20)))
+  )];
+
   const areas = categories.map(cat => {
     const ci = items.filter(i => i.category === cat);
     const tot = ci.reduce((s, i) => s + i.weight, 0);
@@ -89,6 +108,30 @@ export default function AccessibilityChecker() {
     return { name: cat, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
   });
 
+  async function runScan() {
+    if (!scanUrl.trim()) return;
+    setScanning(true);
+    setScanError("");
+    setScanResult(null);
+    try {
+      const res = await fetch("/api/accessibility-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: scanUrl.trim() }),
+      });
+      const data: ScanResult = await res.json();
+      setScanResult(data);
+      if (Object.keys(data.suggestedAnswers).length > 0) {
+        setAnswers(prev => ({ ...prev, ...data.suggestedAnswers }));
+      }
+    } catch {
+      setScanError("Scan failed — check the URL and try again.");
+    } finally {
+      setScanning(false);
+    }
+  }
+
+  // ── Results ─────────────────────────────────────────────────────────────────
   if (submitted) {
     return (
       <div className="flex flex-col gap-5">
@@ -108,6 +151,15 @@ export default function AccessibilityChecker() {
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-xl font-bold" style={{ color: ringColor }}>{rating}</span>
+            {scanResult?.lighthouse && (
+              <div className="flex items-center gap-2 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <span>Lighthouse score: <strong style={{ color: ringColor }}>{scanResult.lighthouse.score}</strong>/100</span>
+                <a href={`https://pagespeed.web.dev/report?url=${encodeURIComponent(scanResult.url)}`} target="_blank" rel="noopener noreferrer"
+                  className="underline flex items-center gap-0.5 hover:opacity-80" style={{ color: COLOR }}>
+                  Full report <ExternalLink size={10} />
+                </a>
+              </div>
+            )}
             <p className="text-[#94A3B8] text-sm leading-relaxed max-w-md">
               {score >= 80 ? "Strong accessibility compliance. Continue reviewing annually and monitoring for new WCAG updates." : score >= 55 ? "Partial compliance — several barriers exist that may prevent disabled users from accessing your website. Address high-priority items immediately." : "Significant accessibility failures identified. The school may be in breach of the Public Sector Bodies Accessibility Regulations 2018."}
             </p>
@@ -115,15 +167,107 @@ export default function AccessibilityChecker() {
         </GlassCard>
 
         <Certificate meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={areas} />
-        <ImprovementReport meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} reportId={submissionId ?? undefined} />
+        <ImprovementReport meta={meta} toolName="Web Accessibility Checker" score={score} rating={rating} ratingColor={ringColor} gaps={allGaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} reportId={submissionId ?? undefined} />
 
-        <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>
+        <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("scan"); setMeta(defaultMeta); setScanResult(null); setScanUrl(""); }}
+          className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>
           ← Start again
         </button>
       </div>
     );
   }
 
+  // ── Step: URL Scan ──────────────────────────────────────────────────────────
+  if (step === "scan") {
+    return (
+      <div className="flex flex-col gap-5">
+        <GlassCard>
+          <h2 className="text-white font-semibold text-sm mb-1">Automated Accessibility Scan</h2>
+          <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>
+            Enter your school website URL to run a Lighthouse accessibility audit. Results will pre-fill the questionnaire automatically.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={scanUrl}
+              onChange={e => setScanUrl(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && runScan()}
+              placeholder="https://www.yourschool.org.uk"
+              className="flex-1 px-3 py-2 rounded-xl text-sm text-white placeholder-[#475569] outline-none"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            />
+            <button
+              onClick={runScan}
+              disabled={scanning || !scanUrl.trim()}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40"
+              style={{ background: DIM, border: `1px solid ${BORDER}`, color: COLOR }}>
+              {scanning ? <><Loader2 size={13} className="animate-spin" /> Scanning…</> : <><Search size={13} /> Scan</>}
+            </button>
+          </div>
+
+          {scanError && (
+            <div className="mt-3 flex items-center gap-2 text-xs text-red-400">
+              <AlertTriangle size={12} /> {scanError}
+            </div>
+          )}
+
+          {scanResult && (
+            <div className="mt-4 flex flex-col gap-3">
+              {scanResult.lighthouse ? (
+                <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold text-white">Lighthouse Accessibility</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold" style={{ color: scanResult.lighthouse.score >= 90 ? "#22c55e" : scanResult.lighthouse.score >= 70 ? "#f59e0b" : "#ef4444" }}>
+                        {scanResult.lighthouse.score}/100
+                      </span>
+                      <a href={`https://pagespeed.web.dev/report?url=${encodeURIComponent(scanResult.url)}`} target="_blank" rel="noopener noreferrer"
+                        className="text-xs underline flex items-center gap-0.5 hover:opacity-80" style={{ color: COLOR }}>
+                        Full report <ExternalLink size={10} />
+                      </a>
+                    </div>
+                  </div>
+                  {scanResult.lighthouse.violations.length > 0 ? (
+                    <div className="flex flex-col gap-1.5">
+                      <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{scanResult.lighthouse.violations.length} issue{scanResult.lighthouse.violations.length !== 1 ? "s" : ""} detected:</p>
+                      {scanResult.lighthouse.violations.slice(0, 8).map((v, i) => (
+                        <div key={i} className="flex items-start gap-2 text-xs">
+                          <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${v.impact === "critical" ? "bg-red-400" : v.impact === "serious" ? "bg-amber-400" : "bg-yellow-400"}`} />
+                          <span style={{ color: "rgba(255,255,255,0.7)" }}>{v.description}</span>
+                        </div>
+                      ))}
+                      {scanResult.lighthouse.violations.length > 8 && (
+                        <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>+{scanResult.lighthouse.violations.length - 8} more in full report</p>
+                      )}
+                      <p className="text-xs mt-2" style={{ color: COLOR }}>✓ Questionnaire answers pre-filled based on scan results.</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-green-400">No accessibility violations detected by Lighthouse.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-amber-400">
+                  <AlertTriangle size={12} /> {scanResult.lighthouseError ?? "Lighthouse scan unavailable — complete the questionnaire manually."}
+                </div>
+              )}
+            </div>
+          )}
+        </GlassCard>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setStep("meta")}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border"
+            style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
+            {scanResult ? "Continue to Assessment" : "Skip — Go to Assessment"} <ChevronRight size={14} />
+          </button>
+          {!scanResult && <span className="text-xs" style={{ color: "var(--text-muted)" }}>You can complete the questionnaire manually without scanning.</span>}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step: Meta ──────────────────────────────────────────────────────────────
   if (step === "meta") {
     return (
       <div className="flex flex-col gap-5">
@@ -139,6 +283,7 @@ export default function AccessibilityChecker() {
     );
   }
 
+  // ── Step: Questions ─────────────────────────────────────────────────────────
   const catItems = items.filter((i) => i.category === activeCategory);
 
   return (
@@ -172,6 +317,11 @@ export default function AccessibilityChecker() {
             <div key={item.id}>
               <p className="text-[#CBD5E1] text-sm leading-relaxed mb-1">{item.text}</p>
               {item.wcag && <p className="text-[#475569] text-xs mb-2">WCAG {item.wcag}</p>}
+              {answers[item.id] && scanResult?.suggestedAnswers[item.id] === answers[item.id] && (
+                <p className="text-xs mb-1.5 flex items-center gap-1" style={{ color: COLOR }}>
+                  <Search size={9} /> Pre-filled by Lighthouse scan
+                </p>
+              )}
               <div className="flex gap-2">
                 {(["yes", "partial", "no"] as const).map((val) => {
                   const active = answers[item.id] === val;
@@ -199,7 +349,7 @@ export default function AccessibilityChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); setSubmissionId(saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps }).id); }}
+            <button onClick={() => { setSubmitted(true); setSubmissionId(saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps }).id); }}
               disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed border"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
