@@ -19,18 +19,26 @@ export type Submission = {
 
 const KEY = "safeshield_submissions";
 
-export function saveSubmission(s: Omit<Submission, "id" | "date">): Submission {
+export async function saveSubmission(s: Omit<Submission, "id" | "date">): Promise<Submission> {
   const all = getSubmissions();
   const entry: Submission = { ...s, id: crypto.randomUUID(), date: new Date().toISOString() };
+
+  // Always save to localStorage as immediate fallback
   localStorage.setItem(KEY, JSON.stringify([entry, ...all]));
-  // Always persist gaps to localStorage by report ID so they survive page reloads
-  if (entry.gaps && entry.gaps.length > 0 && typeof window !== "undefined") {
+  if (entry.gaps && entry.gaps.length > 0) {
     localStorage.setItem(`safeshield_gaps_${entry.id}`, JSON.stringify(entry.gaps));
   }
-  // Fire-and-forget save to Supabase
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session?.user) saveReportToSupabase(entry, session.user.id);
-  });
+
+  // Save to Supabase immediately and await it
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await saveReportToSupabase(entry, session.user.id);
+    }
+  } catch (e) {
+    console.error("Supabase save failed:", e);
+  }
+
   return entry;
 }
 
@@ -46,7 +54,6 @@ export function deleteSubmission(id: string) {
 }
 
 export async function saveReportToSupabase(s: Submission, userId: string) {
-  // Look up the user's org and school membership
   const { data: membership } = await supabase
     .from("org_members")
     .select("org_id, school_id")
@@ -54,7 +61,7 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     .limit(1)
     .maybeSingle();
 
-  const { error } = await supabase.from("reports").insert({
+  const { error } = await supabase.from("reports").upsert({
     id: s.id,
     tool_slug: s.tool.toLowerCase().replace(/\s+/g, "-"),
     tool_name: s.tool,
@@ -72,16 +79,7 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     created_by: userId,
     org_id: membership?.org_id || null,
     school_id: membership?.school_id || null,
-  });
-  if (error) console.error("Failed to save report to Supabase:", error);
+  }, { onConflict: "id" });
 
-  // Also persist gaps to site_content as a reliable fallback (recommendations column may not exist yet)
-  if (s.gaps && s.gaps.length > 0) {
-    try {
-      await supabase.from("site_content").upsert(
-        { key: `report_gaps_${s.id}`, value: JSON.stringify(s.gaps), updated_at: new Date().toISOString() },
-        { onConflict: "key" }
-      );
-    } catch { /* ignore */ }
-  }
+  if (error) console.error("Failed to save report to Supabase:", error);
 }

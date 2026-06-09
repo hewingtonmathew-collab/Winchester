@@ -78,7 +78,7 @@ export default function DetectorForm() {
     { name: "Naturalness Signals" },
   ];
 
-  function analyse() {
+  async function analyse() {
     setError("");
     if (!text.trim()) { setError("Please paste some text to analyse."); return; }
     if (wordCount < 50) { setError(`Please provide at least 50 words. You have ${wordCount}.`); return; }
@@ -86,7 +86,7 @@ export default function DetectorForm() {
     setResult(res);
     const lbl = res.label;
     const rc = res.score > 65 ? "#ef4444" : res.score > 35 ? "#f59e0b" : "#22c55e";
-    setSubmissionId(saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }).id);
+    const saved = await saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }); setSubmissionId(saved.id);
   }
 
   if (step === "meta") {

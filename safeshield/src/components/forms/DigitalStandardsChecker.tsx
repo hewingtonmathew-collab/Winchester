@@ -131,9 +131,10 @@ export default function DigitalStandardsChecker() {
     return { name: tab, score: tot > 0 ? Math.round((earn / tot) * 100) : 0 };
   });
 
-  function submit() {
+  async function submit() {
+    const s = await saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps });
     setSubmitted(true);
-    setSubmissionId(saveSubmission({ tool: "Digital Standards Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps }).id);
+    setSubmissionId(s.id);
   }
 
   const tabItems = items.filter((i) => i.tab === activeTab);

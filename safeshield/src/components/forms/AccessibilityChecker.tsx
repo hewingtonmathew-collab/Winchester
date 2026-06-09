@@ -398,7 +398,7 @@ export default function AccessibilityChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); setSubmissionId(saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps }).id); }}
+            <button onClick={async () => { const s = await saveSubmission({ tool: "Web Accessibility Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps: allGaps }); setSubmitted(true); setSubmissionId(s.id); }}
               disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed border"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>
