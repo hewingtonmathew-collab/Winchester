@@ -56,8 +56,9 @@ export default function GovernorDashboard() {
 
       let query = supabase.from("reports").select("id, tool_slug, tool_name, school_name, score, rating, rating_color, created_at").order("created_at", { ascending: false }).limit(50);
 
-      if (member?.org_id) query = query.eq("org_id", member.org_id);
-      else if (member?.school_id) query = query.eq("school_id", member.school_id);
+      // Filter to the user's specific school first; fall back to org only if no school assigned
+      if (member?.school_id) query = query.eq("school_id", member.school_id);
+      else if (member?.org_id) query = query.eq("org_id", member.org_id);
 
       const { data } = await query;
       setReports(data ?? []);
