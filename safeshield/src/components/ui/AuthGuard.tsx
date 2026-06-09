@@ -15,6 +15,12 @@ const TOOL_COLORS: Record<string, string> = {
   accessibility: "#F472B6",
   "ai-readiness": "#FB923C",
   "ai-detector": "#38BDF8",
+  "screen-use": "#06B6D4",
+  "ai-risk": "#F59E0B",
+  "send-digital": "#8B5CF6",
+  "filtering-monitoring": "#EF4444",
+  "data-privacy": "#3B82F6",
+  "governor-dashboard": "#10B981",
 };
 
 const TOOL_NAMES: Record<string, string> = {
@@ -27,6 +33,12 @@ const TOOL_NAMES: Record<string, string> = {
   accessibility: "Web Accessibility Checker",
   "ai-readiness": "AI Readiness Assessment",
   "ai-detector": "AI Content Detector",
+  "screen-use": "Screen Use & Wellbeing Review",
+  "ai-risk": "AI Use Risk Assessment",
+  "send-digital": "SEND Digital Impact Review",
+  "filtering-monitoring": "Filtering & Monitoring Assurance",
+  "data-privacy": "Data Protection & AI Privacy",
+  "governor-dashboard": "Governor Digital Dashboard",
 };
 
 type Props = {
