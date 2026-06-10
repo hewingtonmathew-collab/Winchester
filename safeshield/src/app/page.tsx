@@ -134,7 +134,7 @@ export default function HomePage() {
             aria-hidden="true"
             style={{
               position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover", opacity: 0.22,
+              objectFit: "cover", opacity: 0.5,
             }}
           />
         ) : (
@@ -144,7 +144,7 @@ export default function HomePage() {
             aria-hidden="true"
             style={{
               position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover", opacity: 0.32,
+              objectFit: "cover", opacity: 0.5,
             }}
           />
         )}
