@@ -126,11 +126,12 @@ export default function HomePage() {
         {isVideo(bannerUrl) ? (
           <video
             key={bannerUrl}
-              src={bannerUrl}
+            src={bannerUrl}
             autoPlay
             muted
             loop
             playsInline
+            preload="none"
             aria-hidden="true"
             style={{
               position: "absolute", inset: 0, width: "100%", height: "100%",
