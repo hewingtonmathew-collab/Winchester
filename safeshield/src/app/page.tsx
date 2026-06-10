@@ -149,13 +149,6 @@ export default function HomePage() {
           />
         )}
 
-        {/* Subtle gradient overlay so text stays readable */}
-        <div
-          style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.38) 100%)",
-          }}
-        />
 
         {/* Admin upload button */}
         {isAdmin && (
