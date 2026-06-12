@@ -5,6 +5,7 @@ import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submiss
 import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
 import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw, BookOpen } from "lucide-react";
 import TrainingAdminTab from "@/components/training/TrainingAdminTab";
+import ReferenceDocManager from "@/components/policy/ReferenceDocManager";
 import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -1095,7 +1096,15 @@ function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void 
   );
 }
 
-type Tab = "assessments" | "users" | "organisations" | "site" | "training";
+function PolicyDocsTab() {
+  return (
+    <GlassCard>
+      <ReferenceDocManager />
+    </GlassCard>
+  );
+}
+
+type Tab = "assessments" | "users" | "organisations" | "site" | "training" | "policy-docs";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -1426,6 +1435,10 @@ export default function AdminPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "training" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <BookOpen size={14} /> Training
           </button>
+          <button onClick={() => setTab("policy-docs")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "policy-docs" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <FileText size={14} /> Policy Docs
+          </button>
         </div>
 
         {/* ── Assessments tab ── */}
@@ -1670,6 +1683,9 @@ export default function AdminPage() {
 
         {/* ── Training tab ── */}
         {tab === "training" && <TrainingAdminTab />}
+
+        {/* ── Policy Docs tab ── */}
+        {tab === "policy-docs" && <PolicyDocsTab />}
 
         {/* ── Site tab ── */}
         {tab === "site" && (

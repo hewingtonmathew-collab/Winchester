@@ -191,3 +191,38 @@ export type Report = {
   created_by: string | null;
   created_at: string;
 };
+
+// ── Policy Analyzer ───────────────────────────────────────────────────────────
+export type PolicyReferenceDoc = {
+  id: string;
+  title: string;
+  category: "legislation" | "guidance" | "framework" | "template";
+  description: string | null;
+  content: string;
+  source_url: string | null;
+  is_active: boolean;
+  uploaded_by: string | null;
+  created_at: string;
+};
+
+export type PolicyRegisterEntry = {
+  id: string;
+  created_by: string | null;
+  school_id: string | null;
+  org_id: string | null;
+  policy_title: string;
+  policy_type: string;
+  overall_status: "compliant" | "needs_update" | "non_compliant";
+  summary: string | null;
+  stats: { critical: number; high: number; medium: number; low: number };
+  findings: object[];
+  accepted_ids: string[];
+  changes: object[];
+  revised_policy: string | null;
+  school_profile: object;
+  review_cycle: string | null;
+  review_due_at: string | null;
+  ref_doc_ids: string[];
+  created_at: string;
+  updated_at: string;
+};
