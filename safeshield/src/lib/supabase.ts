@@ -35,6 +35,8 @@ export const ALL_TOOLS = [
   { slug: "governor-dashboard", name: "Governor Digital Dashboard" },
   // Training & Certification Module
   { slug: "training", name: "Training & Certification" },
+  // Policy Review
+  { slug: "policy-analyzer", name: "Policy Analyzer" },
 ];
 
 export type Organisation = {

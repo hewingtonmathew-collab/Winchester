@@ -10,6 +10,7 @@ import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
+  IconPolicyAnalyzer,
 } from "@/components/ui/ToolIcons";
 
 type Tool = {
@@ -32,6 +33,7 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
       { slug: "governance",       Icon: IconGovernance,      title: "Governance Compliance Checker",  description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",       color: "#A78BFA", badge: "Compliance" },
       { slug: "ofsted",           Icon: IconOfsted,          title: "Ofsted Ready Checker",           description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",           color: "#4ADE80", badge: "Inspection" },
       { slug: "health-safety",    Icon: IconHealthSafety,    title: "Health & Safety Checker",        description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",    color: "#F97316", badge: "H&S" },
+      { slug: "policy-analyzer",  Icon: IconPolicyAnalyzer,  title: "Policy Analyzer",                description: "Upload any school policy (.docx) for an AI-powered compliance review against current UK legislation. Accept findings and download a revised document.", href: "/tools/policy-analyzer", color: "#A78BFA", badge: "Policy" },
     ],
   },
   {

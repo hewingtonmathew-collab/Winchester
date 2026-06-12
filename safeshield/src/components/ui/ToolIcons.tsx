@@ -255,3 +255,29 @@ export function IconHealthSafety({ size = 64 }: IconProps) {
     </GlassContainer>
   );
 }
+
+/* ─── Policy Analyzer ───────────────────────────────────────────────────── */
+export function IconPolicyAnalyzer({ size = 64 }: IconProps) {
+  return (
+    <GlassContainer size={size} accentR={167} accentG={139} accentB={250}>
+      {/* document body */}
+      <rect x="14" y="10" width="36" height="44" rx="4"
+        fill="var(--icon-fill-a)" stroke="var(--icon-stroke-a)" strokeWidth="1.5" />
+      <rect x="14" y="10" width="36" height="16" rx="4"
+        fill="var(--icon-fill-b)" opacity="0.4" />
+      {/* lines of text */}
+      <line x1="20" y1="32" x2="44" y2="32" stroke="var(--icon-stroke-b)" strokeWidth="1.4" strokeLinecap="round" />
+      <line x1="20" y1="37" x2="40" y2="37" stroke="var(--icon-stroke-b)" strokeWidth="1.4" strokeLinecap="round" />
+      <line x1="20" y1="42" x2="36" y2="42" stroke="var(--icon-stroke-b)" strokeWidth="1.4" strokeLinecap="round" />
+      {/* magnifier */}
+      <circle cx="40" cy="44" r="8"
+        fill="var(--icon-fill-c)" stroke="var(--icon-stroke-c)" strokeWidth="1.5" />
+      <circle cx="40" cy="44" r="5"
+        fill="none" stroke="var(--icon-stroke-a)" strokeWidth="1.3" />
+      <line x1="44.5" y1="48.5" x2="48" y2="52"
+        stroke="var(--icon-stroke-c)" strokeWidth="2" strokeLinecap="round" />
+      {/* shine */}
+      <path d="M18 14 Q22 12 28 14" stroke="var(--icon-top-shine)" strokeWidth="1" opacity="0.5" fill="none" />
+    </GlassContainer>
+  );
+}
