@@ -205,6 +205,20 @@ export type PolicyReferenceDoc = {
   created_at: string;
 };
 
+export type PolicyTemplate = {
+  id: string;
+  title: string;
+  policy_type: string;
+  description: string | null;
+  content: string;
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type PolicyRegisterEntry = {
   id: string;
   created_by: string | null;

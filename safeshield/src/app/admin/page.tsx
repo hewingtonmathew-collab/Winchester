@@ -6,6 +6,7 @@ import ReportViewModal, { type ReportViewData } from "@/components/report/Report
 import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw, BookOpen } from "lucide-react";
 import TrainingAdminTab from "@/components/training/TrainingAdminTab";
 import ReferenceDocManager from "@/components/policy/ReferenceDocManager";
+import TemplateAdmin from "@/components/policy/TemplateAdmin";
 import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -1097,10 +1098,23 @@ function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void 
 }
 
 function PolicyDocsTab() {
+  const [subTab, setSubTab] = useState<"templates" | "ref-docs">("templates");
   return (
-    <GlassCard>
-      <ReferenceDocManager />
-    </GlassCard>
+    <div className="flex flex-col gap-5">
+      <div className="flex gap-2">
+        {([
+          { key: "templates" as const, label: "Policy Templates" },
+          { key: "ref-docs" as const,  label: "Reference Documents" },
+        ]).map(({ key, label }) => (
+          <button key={key} type="button" onClick={() => setSubTab(key)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${subTab === key ? "bg-[rgba(167,139,250,0.15)] border-[rgba(167,139,250,0.3)] text-[#A78BFA]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {subTab === "templates" && <GlassCard><TemplateAdmin /></GlassCard>}
+      {subTab === "ref-docs"  && <GlassCard><ReferenceDocManager /></GlassCard>}
+    </div>
   );
 }
 

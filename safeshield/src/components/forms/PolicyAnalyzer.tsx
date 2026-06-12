@@ -192,9 +192,25 @@ function DiffCard({ change }: { change: Change }) {
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function PolicyAnalyzer() {
+interface PolicyAnalyzerProps {
+  injectedText?: string | null;
+  onInjectedTextConsumed?: () => void;
+}
+
+export default function PolicyAnalyzer({ injectedText, onInjectedTextConsumed }: PolicyAnalyzerProps = {}) {
   const { user, profile } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // When a template is sent from the library, load it as the policy text
+  useEffect(() => {
+    if (injectedText) {
+      setPolicyText(injectedText);
+      setFile(null);
+      setStep("upload");
+      setMainTab("analyse");
+      onInjectedTextConsumed?.();
+    }
+  }, [injectedText]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [mainTab, setMainTab] = useState<MainTab>("analyse");
   const [step, setStep] = useState<Step>("upload");
