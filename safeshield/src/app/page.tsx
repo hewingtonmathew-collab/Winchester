@@ -159,6 +159,15 @@ type Identity = {
   isMat: boolean;
 };
 
+function StatCard({ accent, children }: { accent: string; children: React.ReactNode }) {
+  return (
+    <div className="glass rounded-2xl p-5 stat-accent-top relative overflow-hidden"
+      style={{ "--stat-accent": accent } as React.CSSProperties}>
+      {children}
+    </div>
+  );
+}
+
 function scoreColor(score: number): string {
   if (score >= 80) return "#34D399";
   if (score >= 55) return "#FBBF24";
@@ -363,7 +372,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24">
 
           {/* 1. IDENTITY HEADER */}
-          <div className="glass rounded-2xl p-6 sm:p-8 mb-6 rise-in" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+          <div className="glass rounded-2xl p-6 sm:p-8 mb-6 rise-in glass-grain" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
             <div className="flex flex-col lg:flex-row lg:items-center gap-6">
               {/* Logos + school info */}
               <div className="flex items-center gap-5 flex-1 min-w-0">
@@ -445,48 +454,48 @@ export default function HomePage() {
           {/* 2. STATS ROW */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Avg Compliance Score */}
-            <div className="glass rounded-2xl p-5">
+            <StatCard accent={avgScore !== null ? scoreColor(avgScore) : "#334155"}>
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp size={14} style={{ color: avgScore !== null ? scoreColor(avgScore) : "#475569" }} />
-                <p className="text-xs font-medium text-[#475569] uppercase tracking-wide">Avg Score</p>
+                <TrendingUp size={13} style={{ color: avgScore !== null ? scoreColor(avgScore) : "#475569" }} />
+                <p className="text-[0.65rem] font-bold text-[#475569] uppercase tracking-widest">Avg Score</p>
               </div>
               {avgScore !== null ? (
-                <p className="text-3xl font-bold" style={{ color: scoreColor(avgScore) }}>{avgScore}<span className="text-lg">%</span></p>
+                <p className="text-3xl font-bold count-glow" style={{ color: scoreColor(avgScore) }}>{avgScore}<span className="text-base font-medium opacity-70">%</span></p>
               ) : (
                 <p className="text-3xl font-bold text-[#334155]">—</p>
               )}
-              <p className="text-xs text-[#334155] mt-1">Compliance score</p>
-            </div>
+              <p className="text-[0.65rem] text-[#3a4a5a] mt-1.5 uppercase tracking-wide">Compliance</p>
+            </StatCard>
 
             {/* Open Actions */}
-            <div className="glass rounded-2xl p-5">
+            <StatCard accent="#FBBF24">
               <div className="flex items-center gap-2 mb-3">
-                <AlertCircle size={14} className="text-[#FBBF24]" />
-                <p className="text-xs font-medium text-[#475569] uppercase tracking-wide">Open Actions</p>
+                <AlertCircle size={13} className="text-[#FBBF24]" />
+                <p className="text-[0.65rem] font-bold text-[#475569] uppercase tracking-widest">Open Actions</p>
               </div>
-              <p className="text-3xl font-bold text-[#FBBF24]">{actionCounts.open}</p>
-              <p className="text-xs text-[#334155] mt-1">Awaiting action</p>
-            </div>
+              <p className="text-3xl font-bold count-glow text-[#FBBF24]">{actionCounts.open}</p>
+              <p className="text-[0.65rem] text-[#3a4a5a] mt-1.5 uppercase tracking-wide">Awaiting action</p>
+            </StatCard>
 
             {/* Total Assessments */}
-            <div className="glass rounded-2xl p-5">
+            <StatCard accent="#818CF8">
               <div className="flex items-center gap-2 mb-3">
-                <Clock size={14} className="text-[#818CF8]" />
-                <p className="text-xs font-medium text-[#475569] uppercase tracking-wide">Assessments</p>
+                <Clock size={13} className="text-[#818CF8]" />
+                <p className="text-[0.65rem] font-bold text-[#475569] uppercase tracking-widest">Assessments</p>
               </div>
-              <p className="text-3xl font-bold text-white">{reports.length}</p>
-              <p className="text-xs text-[#334155] mt-1">Total completed</p>
-            </div>
+              <p className="text-3xl font-bold count-glow text-white">{reports.length}</p>
+              <p className="text-[0.65rem] text-[#3a4a5a] mt-1.5 uppercase tracking-wide">Completed</p>
+            </StatCard>
 
             {/* Tools Available */}
-            <div className="glass rounded-2xl p-5">
+            <StatCard accent="#38BDF8">
               <div className="flex items-center gap-2 mb-3">
-                <Info size={14} className="text-[#38BDF8]" />
-                <p className="text-xs font-medium text-[#475569] uppercase tracking-wide">Tools</p>
+                <Info size={13} className="text-[#38BDF8]" />
+                <p className="text-[0.65rem] font-bold text-[#475569] uppercase tracking-widest">Tools</p>
               </div>
-              <p className="text-3xl font-bold text-white">{toolsAvailable}</p>
-              <p className="text-xs text-[#334155] mt-1">Available to you</p>
-            </div>
+              <p className="text-3xl font-bold count-glow text-white">{toolsAvailable}</p>
+              <p className="text-[0.65rem] text-[#3a4a5a] mt-1.5 uppercase tracking-wide">Available</p>
+            </StatCard>
           </div>
 
           {/* 3. TWO COLUMN LAYOUT */}
@@ -570,14 +579,16 @@ export default function HomePage() {
           </div>
 
           {/* 4. TOOL CATALOGUE */}
-          <div className="flex items-center gap-3 mb-8">
-            <h2 className="heading-luxury text-2xl sm:text-3xl">
+          <div className="flex items-center gap-4 mb-6">
+            <h2 className="heading-luxury text-2xl sm:text-3xl shrink-0">
               <span style={{ color: "var(--text)" }}>Available </span>
               <span className="gradient-text">Tools</span>
             </h2>
-            <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-              {visibleSections.reduce((a, s) => a + s.tools.length, 0)}
+            <span className="text-[0.62rem] px-2.5 py-1 rounded-full font-black uppercase tracking-widest shrink-0"
+              style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.22)", color: "#38BDF8" }}>
+              {visibleSections.reduce((a, s) => a + s.tools.length, 0)} tools
             </span>
+            <div className="flex-1 section-rule" />
           </div>
         </div>
       )}
@@ -638,11 +649,13 @@ function CompactToolCatalogue({ sections }: { sections: { heading: string; headi
 
   return (
     <div className="pb-8">
-      <div className="flex items-center justify-between mb-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#475569]">
-          {totalTools} tools available
+      <div className="flex items-center justify-between mb-6">
+        <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#3a4a5a]">
+          {totalTools} tools
         </p>
-        <button onClick={toggleAll} className="text-xs text-[#475569] hover:text-[#94A3B8] transition-colors">
+        <button onClick={toggleAll}
+          className="text-[0.65rem] font-semibold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-all hover:bg-white/5"
+          style={{ color: "#475569" }}>
           {allCollapsed ? "Expand all" : "Collapse all"}
         </button>
       </div>
@@ -655,26 +668,24 @@ function CompactToolCatalogue({ sections }: { sections: { heading: string; headi
               {/* Section header — collapsible toggle bar */}
               <button
                 onClick={() => toggle(key)}
-                className="w-full flex items-center justify-between gap-3 mb-4 group"
+                className="w-full flex items-center gap-3 mb-4 group"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <ChevronRight
-                    size={14}
-                    className="text-[#475569] group-hover:text-[#94A3B8] transition-all duration-200 shrink-0"
-                    style={{ transform: isCollapsed ? "" : "rotate(90deg)" }}
-                  />
-                  <h2 className="heading-luxury text-xl sm:text-2xl">
-                    <span style={{ color: "var(--text)" }}>{section.heading} </span>
-                    <span className="gradient-text">{section.headingAccent}</span>
-                  </h2>
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0"
-                    style={{ background: "rgba(56,189,248,0.08)", color: "#38BDF8", border: "1px solid rgba(56,189,248,0.2)" }}
-                  >
-                    {section.tools.length}
-                  </span>
-                </div>
-                <div className="flex-1 h-px ml-3" style={{ background: "rgba(56,189,248,0.15)" }} />
+                <ChevronRight
+                  size={13}
+                  className="text-[#3a4a5a] group-hover:text-[#64748B] transition-all duration-200 shrink-0"
+                  style={{ transform: isCollapsed ? "" : "rotate(90deg)" }}
+                />
+                <h2 className="heading-luxury text-lg sm:text-xl shrink-0">
+                  <span style={{ color: "var(--text)" }}>{section.heading} </span>
+                  <span className="gradient-text">{section.headingAccent}</span>
+                </h2>
+                <span
+                  className="text-[0.58rem] px-2 py-0.5 rounded-full font-black uppercase tracking-widest shrink-0"
+                  style={{ background: "rgba(56,189,248,0.07)", color: "#38BDF8", border: "1px solid rgba(56,189,248,0.18)" }}
+                >
+                  {section.tools.length}
+                </span>
+                <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
               </button>
 
               {/* Full glass cards — shown when not collapsed */}
