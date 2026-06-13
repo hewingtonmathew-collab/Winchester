@@ -1,57 +1,89 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import AccessibilityChecker from "@/components/forms/AccessibilityChecker";
 import GlassCard from "@/components/ui/GlassCard";
-import { Globe } from "lucide-react";
-import type { Metadata } from "next";
+import { IconAccessibility } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 
-export const metadata: Metadata = {
-  title: "Web Accessibility Checker | SafeShield",
-  description: "Check your school website against WCAG 2.1 and Public Sector Accessibility Regulations. Free tool for schools.",
-};
+const COLOR = "#F472B6";
+const AREAS = ["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"];
 
 export default function AccessibilityPage() {
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("accessibility");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("accessibility-title", "Web Accessibility Checker");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("accessibility-desc", "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.");
   return (
-    <AuthGuard toolSlug="accessibility">
-    <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(244,114,182,0.1)] border border-[rgba(244,114,182,0.2)]">
-              <Globe size={22} className="text-[#F472B6]" strokeWidth={1.5} />
+    <div className="min-h-[100dvh] pt-16 pb-20">
+        {/* Banner */}
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
+          {!isVideo(bannerUrl) && (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="accessibility" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.52) 100%)",
+              backdropFilter: "blur(2px)",
+            }}
+          />
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
+            <div className="flex items-center gap-3 mb-4">
+              <ToolIconWrapper slug="accessibility" Icon={IconAccessibility} size={64} />
+              <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Accessibility</span>
             </div>
-            <div>
-              <p className="text-[#F472B6] text-xs font-medium uppercase tracking-widest mb-1">Accessibility</p>
-              <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text)" }}>Web Accessibility Checker</h1>
-              <p className="text-sm max-w-xl leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                Assess your school website against WCAG 2.1 AA and the Public Sector Bodies Accessibility Regulations 2018. Identify barriers and generate a prioritised action plan with certificate.
-              </p>
-            </div>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
+            <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
-  
+        </div>
+
+        {/* Page content */}
+        <AuthGuard toolSlug="accessibility">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <AccessibilityChecker />
             </div>
             <div className="flex flex-col gap-4">
-              <GlassCard>
-                <h2 className="font-semibold text-sm uppercase tracking-wider mb-3" style={{ color: "var(--text)" }}>Areas Covered</h2>
+              <SidebarVideoCard
+                toolSlug="accessibility"
+                color={COLOR}
+                defaultTitle="Watch: Website Accessibility"
+                defaultDescription="What the Public Sector Bodies Accessibility Regulations require from schools and how to comply."
+              />
+
+<GlassCard>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>Areas Covered</h2>
                 <ul className="flex flex-col gap-2">
-                  {["Perceivable (WCAG P)", "Operable (WCAG O)", "Understandable (WCAG U)", "Robust (WCAG R)", "Legal & Compliance"].map((a) => (
-                    <li key={a} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-dim)" }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#F472B6] shrink-0" />{a}
+                  {AREAS.map((a) => (
+                    <li key={a} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR }} />
+                      {a}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
+
               <GlassCard>
-                <h2 className="font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: "var(--text)" }}>Legal Requirement</h2>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-faint)" }}>
-                  Under the Public Sector Bodies Accessibility Regulations 2018, all school websites must meet WCAG 2.1 AA and publish an Accessibility Statement. Non-compliance can result in enforcement action by the Equality and Human Rights Commission.
-                </p>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Legal Requirement</h2>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Under the Public Sector Bodies Accessibility Regulations 2018, all school websites must meet WCAG 2.1 AA and publish an Accessibility Statement. Non-compliance can result in enforcement action by the EHRC.</p>
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

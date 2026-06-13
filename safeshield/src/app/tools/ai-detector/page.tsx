@@ -2,70 +2,104 @@
 import AuthGuard from "@/components/ui/AuthGuard";
 import DetectorForm from "@/components/forms/DetectorForm";
 import GlassCard from "@/components/ui/GlassCard";
-import { Bot } from "lucide-react";
+import { IconAIDetector } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 
-const signals = [
-  { name: "AI Phrase Patterns", desc: "Detects common AI transition phrases, filler openers, and over-hedging language." },
-  { name: "Sentence Burstiness", desc: "AI text has low variance in sentence length — human writing is more varied." },
-  { name: "Lexical Diversity", desc: "Measures unique-word ratio (TTR). AI typically lands in a predictable 55–70% range." },
-  { name: "Passive Voice", desc: "AI-generated text uses passive voice more frequently than human writers." },
-  { name: "Personal Pronouns", desc: "AI rarely uses first-person voice. Very few 'I', 'my', or 'we' is an AI signal." },
-  { name: "Sentence Uniformity", desc: "High concentration of 20–30 word sentences is characteristic of AI output." },
+const COLOR = "#38BDF8";
+const SIGNALS: [string, string][] = [
+  ["AI Phrase Patterns", "Detects common AI transition phrases, filler openers, and over-hedging language."],
+  ["Sentence Burstiness", "AI text has low variance in sentence length — human writing is more varied."],
+  ["Lexical Diversity", "Measures unique-word ratio (TTR). AI typically lands in a predictable 55–70% range."],
+  ["Passive Voice", "AI-generated text uses passive voice more frequently than human writers."],
+  ["Personal Pronouns", "AI rarely uses first-person voice. Very few ‘I’, ‘my’, or ‘we’ is an AI signal."],
+  ["Sentence Uniformity", "High concentration of 20–30 word sentences is characteristic of AI output."],
 ];
 
 export default function AiDetectorPage() {
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("ai-detector");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("ai-detector-title", "AI Content Detector");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("ai-detector-desc", "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.");
   return (
-    <AuthGuard toolSlug="ai-detector">
-    <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Header */}
-          <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-              <Bot size={22} className="text-[#38BDF8]" strokeWidth={1.5} />
+    <div className="min-h-[100dvh] pt-16 pb-20">
+        {/* Banner */}
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
+          {!isVideo(bannerUrl) && (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="ai-detector" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.52) 100%)",
+              backdropFilter: "blur(2px)",
+            }}
+          />
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
+            <div className="flex items-center gap-3 mb-4">
+              <ToolIconWrapper slug="ai-detector" Icon={IconAIDetector} size={64} />
+              <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Detection</span>
             </div>
-            <div>
-              <p className="text-[#38BDF8] text-xs font-medium uppercase tracking-widest mb-1">Detection Tool</p>
-              <h1 className="text-white text-3xl font-bold mb-2">AI Content Detector</h1>
-              <p className="text-[#94A3B8] text-sm max-w-xl leading-relaxed">
-                Paste any text to detect whether it was written by AI or a human. Uses six statistical signals — results are indicative only.
-              </p>
-            </div>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
+            <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
-  
+        </div>
+
+        {/* Page content */}
+        <AuthGuard toolSlug="ai-detector">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <DetectorForm />
             </div>
             <div className="flex flex-col gap-4">
-              <GlassCard>
-                <h2 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">How It Works</h2>
-                <p className="text-[#64748B] text-xs leading-relaxed mb-4">
-                  Six statistical signals are scored and combined into a 0–100 AI likelihood score.
-                </p>
+              <SidebarVideoCard
+                toolSlug="ai-detector"
+                color={COLOR}
+                defaultTitle="Watch: AI Detection Explained"
+                defaultDescription="How statistical signals can indicate AI-generated content and the limitations of automated detection."
+              />
+
+<GlassCard>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>How It Works</h2>
+                <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-muted)" }}>Six statistical signals are scored and combined into a 0&ndash;100 AI likelihood score.</p>
                 <ol className="flex flex-col gap-3">
-                  {signals.map((s, i) => (
-                    <li key={s.name} className="flex gap-3">
-                      <span className="shrink-0 w-5 h-5 rounded-full bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)] text-[#38BDF8] text-[0.6rem] font-bold flex items-center justify-center mt-0.5">
+                  {SIGNALS.map(([label, desc], i) => (
+                    <li key={label} className="flex items-start gap-2 text-xs">
+                      <span
+                        className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold shrink-0 mt-0.5"
+                        style={{ background: COLOR, color: "#000" }}
+                      >
                         {i + 1}
                       </span>
-                      <div>
-                        <p className="text-white text-xs font-semibold mb-0.5">{s.name}</p>
-                        <p className="text-[#64748B] text-xs leading-relaxed">{s.desc}</p>
-                      </div>
+                      <span>
+                        <span className="font-bold block" style={{ color: "var(--text-primary)" }}>{label}</span>
+                        <span style={{ color: "var(--text-muted)" }}>{desc}</span>
+                      </span>
                     </li>
                   ))}
                 </ol>
               </GlassCard>
+
               <GlassCard>
-                <h2 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Note</h2>
-                <p className="text-[#475569] text-xs leading-relaxed">
-                  All analysis runs locally in your browser. No text is sent to any server.
-                </p>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Privacy Note</h2>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>All analysis runs locally in your browser. No text is sent to any server.</p>
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

@@ -1,9 +1,45 @@
 "use client";
-import { useEffect, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { type ReactNode } from "react";
 import { Lock, Clock, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import GlassCard from "@/components/ui/GlassCard";
+import ToolPreviewPanel from "@/components/ui/ToolPreviewPanel";
+
+const TOOL_COLORS: Record<string, string> = {
+  safeguarding: "#34D399",
+  governance: "#A78BFA",
+  ofsted: "#4ADE80",
+  "health-safety": "#F97316",
+  "digital-standards": "#818CF8",
+  dpia: "#FCD34D",
+  accessibility: "#F472B6",
+  "ai-readiness": "#FB923C",
+  "ai-detector": "#38BDF8",
+  "screen-use": "#06B6D4",
+  "ai-risk": "#F59E0B",
+  "send-digital": "#8B5CF6",
+  "filtering-monitoring": "#EF4444",
+  "data-privacy": "#3B82F6",
+  "governor-dashboard": "#10B981",
+};
+
+const TOOL_NAMES: Record<string, string> = {
+  safeguarding: "Safeguarding Risk Checker",
+  governance: "Governance Compliance Checker",
+  ofsted: "Ofsted Ready Checker",
+  "health-safety": "Health & Safety Checker",
+  "digital-standards": "Digital & Technology Standards",
+  dpia: "DPIA Wizard",
+  accessibility: "Web Accessibility Checker",
+  "ai-readiness": "AI Readiness Assessment",
+  "ai-detector": "AI Content Detector",
+  "screen-use": "Screen Use & Wellbeing Review",
+  "ai-risk": "AI Use Risk Assessment",
+  "send-digital": "SEND Digital Impact Review",
+  "filtering-monitoring": "Filtering & Monitoring Assurance",
+  "data-privacy": "Data Protection & AI Privacy",
+  "governor-dashboard": "Governor Digital Dashboard",
+};
 
 type Props = {
   toolSlug: string;
@@ -12,11 +48,6 @@ type Props = {
 
 export default function AuthGuard({ toolSlug, children }: Props) {
   const { user, profile, loading, enabledTools } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) router.replace("/login");
-  }, [loading, user, router]);
 
   if (loading) {
     return (
@@ -26,7 +57,17 @@ export default function AuthGuard({ toolSlug, children }: Props) {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-20">
+        <ToolPreviewPanel
+          toolSlug={toolSlug}
+          color={TOOL_COLORS[toolSlug] ?? "#38BDF8"}
+          toolName={TOOL_NAMES[toolSlug] ?? toolSlug}
+        />
+      </div>
+    );
+  }
 
   if (profile?.status === "pending") {
     return (

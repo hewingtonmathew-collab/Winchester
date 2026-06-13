@@ -51,6 +51,7 @@ export default function DetectorForm() {
   const [text, setText] = useState("");
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [error, setError] = useState("");
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   const metaValid = meta.schoolName.trim() && meta.staffMember.trim() && meta.consultantName.trim();
   const wordCount = text.replace(/[^a-z0-9'\s]/gi, " ").split(/\s+/).filter(Boolean).length;
@@ -69,7 +70,15 @@ export default function DetectorForm() {
         }))
     : [];
 
-  function analyse() {
+  const areas = [
+    { name: "Linguistic Patterns" },
+    { name: "Structural Analysis" },
+    { name: "Vocabulary & Phrasing" },
+    { name: "Sentence Variation" },
+    { name: "Naturalness Signals" },
+  ];
+
+  async function analyse() {
     setError("");
     if (!text.trim()) { setError("Please paste some text to analyse."); return; }
     if (wordCount < 50) { setError(`Please provide at least 50 words. You have ${wordCount}.`); return; }
@@ -77,7 +86,7 @@ export default function DetectorForm() {
     setResult(res);
     const lbl = res.label;
     const rc = res.score > 65 ? "#ef4444" : res.score > 35 ? "#f59e0b" : "#22c55e";
-    saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc });
+    const saved = await saveSubmission({ tool: "AI Content Detector", ...meta, score: 100 - res.score, rating: lbl, ratingColor: rc, areas, gaps: reportGaps }); setSubmissionId(saved.id);
   }
 
   if (step === "meta") {
@@ -183,16 +192,8 @@ export default function DetectorForm() {
             </GlassCard>
           )}
 
-          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" areas={[
-            { name: "Linguistic Patterns" },
-            { name: "Structural Analysis" },
-            { name: "Vocabulary & Phrasing" },
-            { name: "Sentence Variation" },
-            { name: "Naturalness Signals" },
-          ]} />
-          {reportGaps.length > 0 && (
-            <ImprovementReport meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} gaps={reportGaps} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" />
-          )}
+          <Certificate meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} accentColor="#38BDF8" areas={areas} />
+          <ImprovementReport meta={meta} toolName="AI Content Detector" score={scoreAsPercent} rating={rating} ratingColor={ratingColor} gaps={reportGaps} accentColor="#38BDF8" accentDim="rgba(56,189,248,0.12)" accentBorder="rgba(56,189,248,0.25)" reportId={submissionId ?? undefined} />
 
           <button onClick={() => { setResult(null); setText(""); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-[#38BDF8] text-sm hover:text-white transition-colors">
             ← Start again

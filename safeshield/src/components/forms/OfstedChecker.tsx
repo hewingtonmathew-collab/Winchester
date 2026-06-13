@@ -67,6 +67,7 @@ export default function OfstedChecker() {
   const [meta, setMeta] = useState<ReportMetaData>(defaultMeta);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [step, setStep] = useState<"meta" | "questions">("meta");
 
@@ -85,6 +86,11 @@ export default function OfstedChecker() {
       text: i.text,
       priority: (answers[i.id] === "inadequate" || i.weight >= 9) ? "high" : i.weight >= 7 ? "medium" : "low",
     }));
+
+  const areas = categories.map(cat => {
+    const ci = items.filter(i => i.category === cat);
+    return { name: cat, score: calcScore(Object.fromEntries(ci.map(i => [i.id, answers[i.id] ?? null]))) };
+  });
 
   if (submitted) {
     return (
@@ -133,11 +139,8 @@ export default function OfstedChecker() {
           </div>
         </GlassCard>
 
-        <Certificate meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={categories.map(cat => {
-          const ci = items.filter(i => i.category === cat);
-          return { name: cat, score: calcScore(Object.fromEntries(ci.map(i => [i.id, answers[i.id] ?? null]))) };
-        })} />
-        <ImprovementReport meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} />
+        <Certificate meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} accentColor={COLOR} areas={areas} />
+        <ImprovementReport meta={meta} toolName="Ofsted Ready Checker" score={score} rating={rating} ratingColor={ringColor} gaps={gaps} accentColor={COLOR} accentDim={DIM} accentBorder={BORDER} reportId={submissionId ?? undefined} />
 
         <button onClick={() => { setSubmitted(false); setAnswers({}); setStep("meta"); setMeta(defaultMeta); }} className="self-start text-sm hover:text-white transition-colors" style={{ color: COLOR }}>
           ← Start again
@@ -216,7 +219,7 @@ export default function OfstedChecker() {
               Next section <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={() => { setSubmitted(true); saveSubmission({ tool: "Ofsted Ready Checker", ...meta, score, rating, ratingColor: ringColor }); }}
+            <button onClick={() => { const id = crypto.randomUUID(); setSubmissionId(id); setSubmitted(true); saveSubmission({ tool: "Ofsted Ready Checker", ...meta, score, rating, ratingColor: ringColor, areas, gaps, id }); }}
               disabled={answered < items.length}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium border transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: DIM, borderColor: BORDER, color: COLOR }}>

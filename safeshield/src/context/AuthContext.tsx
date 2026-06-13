@@ -54,7 +54,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select("tool_slug")
         .eq("user_id", userId)
         .eq("enabled", true);
-      setEnabledTools(tools?.map((t: { tool_slug: string }) => t.tool_slug) ?? []);
+      const userEnabled = tools?.map((t: { tool_slug: string }) => t.tool_slug) ?? [];
+
+      // Effective tools = user_tools AND org entitlement AND school entitlement.
+      // Defensive: if any org/school query fails, fall back to userEnabled so
+      // existing users are never broken.
+      try {
+        const { data: membership } = await supabase
+          .from("org_members")
+          .select("org_id, school_id")
+          .eq("user_id", userId)
+          .limit(1)
+          .maybeSingle();
+
+        if (!membership) {
+          // No org membership — nothing to intersect against.
+          setEnabledTools(userEnabled);
+        } else {
+          const { org_id, school_id } = membership as { org_id: string | null; school_id: string | null };
+
+          // If the org or school is disabled, the user loses all access.
+          let disabled = false;
+          if (org_id) {
+            const { data: orgRow } = await supabase
+              .from("organisations").select("status").eq("id", org_id).maybeSingle();
+            if (orgRow?.status === "disabled") disabled = true;
+          }
+          if (!disabled && school_id) {
+            const { data: schoolRow } = await supabase
+              .from("schools").select("status").eq("id", school_id).maybeSingle();
+            if (schoolRow?.status === "disabled") disabled = true;
+          }
+
+          if (disabled) {
+            setEnabledTools([]);
+          } else {
+            // org_tools: if no rows configured, no org restriction.
+            const orgAllows = (slug: string, rows: { tool_slug: string; enabled: boolean }[] | null) => {
+              if (!rows || rows.length === 0) return true;
+              const row = rows.find((r) => r.tool_slug === slug);
+              return row ? row.enabled : false;
+            };
+
+            const [orgToolsRes, schoolToolsRes] = await Promise.all([
+              org_id
+                ? supabase.from("org_tools").select("tool_slug, enabled").eq("org_id", org_id)
+                : Promise.resolve({ data: null }),
+              school_id
+                ? supabase.from("school_tools").select("tool_slug, enabled").eq("school_id", school_id)
+                : Promise.resolve({ data: null }),
+            ]);
+
+            const orgRows = (orgToolsRes.data ?? null) as { tool_slug: string; enabled: boolean }[] | null;
+            const schoolRows = (schoolToolsRes.data ?? null) as { tool_slug: string; enabled: boolean }[] | null;
+
+            setEnabledTools(
+              userEnabled.filter((slug) => orgAllows(slug, orgRows) && orgAllows(slug, schoolRows))
+            );
+          }
+        }
+      } catch (err) {
+        console.error("[AuthContext] org/school entitlement calc failed, falling back to user_tools:", err);
+        setEnabledTools(userEnabled);
+      }
     } else {
       setEnabledTools([]);
     }
@@ -74,14 +136,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Force a token refresh on load so the JWT always carries the latest
+    // app_metadata (e.g. role: "admin"). Without this, a session that was
+    // issued before the admin role was granted keeps a stale token, and
+    // RLS policies that check `auth.jwt() -> app_metadata ->> role`
+    // (e.g. reports_admin_all) never activate — admins see no reports.
+    async function init() {
+      let session = (await supabase.auth.getSession()).data.session;
+      if (session) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        if (refreshed.session) session = refreshed.session;
+      }
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id, session.user.app_metadata).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
+        await loadProfile(session.user.id, session.user.app_metadata);
       }
-    });
+      setLoading(false);
+    }
+    init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);

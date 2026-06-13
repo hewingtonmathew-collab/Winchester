@@ -2,10 +2,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submissions";
-import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network } from "lucide-react";
+import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
+import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw, BookOpen } from "lucide-react";
+import TrainingAdminTab from "@/components/training/TrainingAdminTab";
+import ThemeManager from "@/components/admin/ThemeManager";
+import ReferenceDocManager from "@/components/policy/ReferenceDocManager";
+import TemplateAdmin from "@/components/policy/TemplateAdmin";
+import { type FooterLink } from "@/components/Footer";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
-import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember } from "@/lib/supabase";
+import { supabase, ALL_TOOLS, type Profile, type Organisation, type School as SchoolType, type OrgMember, type Report } from "@/lib/supabase";
 
 const TOOL_COLORS: Record<string, string> = {
   "Safeguarding Risk Checker": "#34D399",
@@ -17,7 +23,37 @@ const TOOL_COLORS: Record<string, string> = {
   "AI Content Detector": "#38BDF8",
   "Digital Standards Checker": "#818CF8",
   "Health & Safety Checker": "#F97316",
+  "Screen Use & Wellbeing Review": "#06B6D4",
+  "AI Use Risk Assessment": "#F59E0B",
+  "SEND Digital Impact Review": "#8B5CF6",
+  "Filtering & Monitoring Assurance": "#EF4444",
+  "Data Protection & AI Privacy": "#3B82F6",
+  "Governor Digital Dashboard": "#10B981",
 };
+
+// Reusable tool-access toggle grid. Super admin sets these toggles at the
+// user, org, and school level. `enabled` maps tool_slug -> boolean (absent = off).
+function ToolAccessGrid({ enabled, onToggle }: {
+  enabled: Record<string, boolean>;
+  onToggle: (slug: string, next: boolean) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {ALL_TOOLS.map((tool) => {
+        const on = enabled[tool.slug] ?? false;
+        return (
+          <button key={tool.slug} type="button" onClick={() => onToggle(tool.slug, !on)}
+            className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
+            <span className="text-xs text-[#94A3B8] text-left">{tool.name}</span>
+            {on
+              ? <ToggleRight size={20} className="shrink-0" style={{ color: TOOL_COLORS[tool.name] ?? "#38BDF8" }} />
+              : <ToggleLeft size={20} className="text-[#334155] shrink-0" />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 // ── Assessments tab ──────────────────────────────────────────────────────────
 
@@ -39,7 +75,7 @@ function sendCertificateEmail(s: Submission) {
   window.location.href = `mailto:${s.schoolEmail}?subject=${subject}&body=${body}`;
 }
 
-function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[]; onDelete: (id: string) => void }) {
+function GroupedBySchool({ submissions, onDelete, onView }: { submissions: Submission[]; onDelete: (id: string) => void; onView: (s: Submission) => void }) {
   const schools = [...new Set(submissions.map((s) => s.schoolName))];
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   return (
@@ -81,6 +117,9 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <ScoreBadge score={s.score} color={color} />
+                        <button onClick={() => onView(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
+                          <Eye size={12} className="text-[#38BDF8]" />
+                        </button>
                         {s.schoolEmail && (
                           <button onClick={() => sendCertificateEmail(s)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Send certificate">
                             <Mail size={12} className="text-[#38BDF8]" />
@@ -106,13 +145,33 @@ function GroupedBySchool({ submissions, onDelete }: { submissions: Submission[];
 
 type UserWithTools = Profile & { tools: Record<string, boolean> };
 
-function UserCard({ u, onStatusChange, onToolToggle }: {
+type OrgType = "la_school" | "single_school" | "mat";
+
+function UserCard({ u, onStatusChange, onToolToggle, onProfileSave }: {
   u: UserWithTools;
   onStatusChange: (id: string, status: "active" | "suspended" | "pending") => Promise<void>;
   onToolToggle: (userId: string, slug: string, enabled: boolean) => Promise<void>;
+  onProfileSave: (userId: string, fields: { full_name: string | null; org_type: OrgType | null }) => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(u.full_name ?? "");
+  const [editOrgType, setEditOrgType] = useState<OrgType | "">(u.org_type ?? "");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  async function saveProfile() {
+    setSavingProfile(true);
+    await onProfileSave(u.id, { full_name: editName.trim() || null, org_type: editOrgType || null });
+    setSavingProfile(false);
+    setEditing(false);
+  }
+
+  function cancelEdit() {
+    setEditName(u.full_name ?? "");
+    setEditOrgType(u.org_type ?? "");
+    setEditing(false);
+  }
 
   const statusColor = u.status === "active" ? "#22c55e" : u.status === "pending" ? "#f59e0b" : "#ef4444";
   const statusLabel = u.status === "active" ? "Active" : u.status === "pending" ? "Pending" : "Suspended";
@@ -137,11 +196,15 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{u.full_name ?? "—"}</p>
-            <p className="text-xs text-[#64748B] truncate">{u.email}</p>
+            <p className="text-xs text-[#64748B] truncate">{u.email}{u.org_type ? ` · ${u.org_type}` : ""}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => setEditing((v) => !v)} title="Edit user"
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
+            <Pencil size={12} className="text-[#38BDF8]" />
+          </button>
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border"
             style={{ color: statusColor, background: `${statusColor}15`, borderColor: `${statusColor}40` }}>
             {statusLabel}
@@ -173,6 +236,39 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
         </div>
       </div>
 
+      {editing && (
+        <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
+          <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider">Edit User</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-[#64748B]">Full name</label>
+              <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Full name"
+                className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-[#64748B]">Organisation type</label>
+              <select value={editOrgType} onChange={(e) => setEditOrgType(e.target.value as OrgType | "")}
+                className="px-3 py-2 rounded-xl text-sm bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                <option value="">— None —</option>
+                <option value="la_school">Local Authority School</option>
+                <option value="single_school">Independent / Single School</option>
+                <option value="mat">Multi-Academy Trust (MAT)</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={saveProfile} disabled={savingProfile}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+              style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+              {savingProfile ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Save
+            </button>
+            <button onClick={cancelEdit} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10 transition-all" style={{ color: "var(--text-dim)" }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {open && (
         <div className="mt-4 pt-4 border-t border-white/5">
           <p className="text-xs font-medium text-[#64748B] uppercase tracking-wider mb-3">Tool Access</p>
@@ -197,8 +293,6 @@ function UserCard({ u, onStatusChange, onToolToggle }: {
 }
 
 // ── Add User Modal ───────────────────────────────────────────────────────────
-
-type OrgType = "la_school" | "single_school" | "mat";
 
 const ORG_TYPE_OPTIONS: { value: OrgType; label: string; description: string; color: string; icon: React.ReactNode }[] = [
   { value: "la_school", label: "Local Authority School", description: "Single school, managed by the LA", color: "#38BDF8", icon: <School size={16} strokeWidth={1.5} /> },
@@ -245,8 +339,8 @@ function AddUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
       const userId = authData.user?.id;
       if (!userId) throw new Error("No user ID returned.");
 
-      // Update profile org_type
-      await supabase.from("profiles").update({ org_type: orgType }).eq("id", userId);
+      // Update profile org_type — admin-created users are active immediately
+      await supabase.from("profiles").update({ org_type: orgType, status: "active" }).eq("id", userId);
 
       let orgId: string;
 
@@ -399,20 +493,203 @@ type OrgWithDetails = Organisation & {
   members: (OrgMember & { email?: string; full_name?: string | null })[];
 };
 
+function readFileAsDataUrl(f: File, cb: (url: string) => void) {
+  const r = new FileReader();
+  r.onload = () => cb(r.result as string);
+  r.readAsDataURL(f);
+}
+
 function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [orgState, setOrgState] = useState<Organisation>(org);
   const [schools, setSchools] = useState<SchoolType[]>(org.schools);
   const [members, setMembers] = useState(org.members);
   const [deletingSchool, setDeletingSchool] = useState<string | null>(null);
   const [deletingMember, setDeletingMember] = useState<string | null>(null);
   const [schoolName, setSchoolName] = useState("");
   const [schoolEmail, setSchoolEmail] = useState("");
+  const [schoolEthos, setSchoolEthos] = useState("");
   const [addingSchool, setAddingSchool] = useState(false);
-  const [memberEmail, setMemberEmail] = useState("");
+  const [memberUserId, setMemberUserId] = useState("");
   const [memberSchoolId, setMemberSchoolId] = useState("");
   const [memberRole, setMemberRole] = useState<"admin" | "member">("member");
   const [addingMember, setAddingMember] = useState(false);
   const [memberError, setMemberError] = useState("");
+  const [availableUsers, setAvailableUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  // Org editing
+  const [editingOrg, setEditingOrg] = useState(false);
+  const [eName, setEName] = useState(org.name);
+  const [eType, setEType] = useState<"school" | "mat">(org.type);
+  const [eManager, setEManager] = useState(org.manager_name ?? "");
+  const [eNotes, setENotes] = useState(org.notes ?? "");
+  const [eEthos, setEEthos] = useState(org.ethos ?? "");
+  const [eLogo, setELogo] = useState<string | null>(org.logo_url);
+  const [savingOrg, setSavingOrg] = useState(false);
+
+  // School editing
+  const [editingSchoolId, setEditingSchoolId] = useState<string | null>(null);
+  const [esName, setEsName] = useState("");
+  const [esEmail, setEsEmail] = useState("");
+  const [esLogo, setEsLogo] = useState<string | null>(null);
+  const [esEthos, setEsEthos] = useState("");
+  const [savingSchool, setSavingSchool] = useState(false);
+
+  // Reports
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportsLoaded, setReportsLoaded] = useState(false);
+  const [expandedSchoolReports, setExpandedSchoolReports] = useState<Record<string, boolean>>({});
+
+  // Org-level tool entitlements (org_tools): tool_slug -> enabled
+  const [orgTools, setOrgTools] = useState<Record<string, boolean>>({});
+  const [orgToolsLoaded, setOrgToolsLoaded] = useState(false);
+  // School-level tool entitlements (school_tools): school_id -> tool_slug -> enabled
+  const [schoolTools, setSchoolTools] = useState<Record<string, Record<string, boolean>>>({});
+  // Which school's Tool Access grid is expanded
+  const [expandedSchoolTools, setExpandedSchoolTools] = useState<Record<string, boolean>>({});
+  // Org enable/disable busy flag
+  const [togglingOrgStatus, setTogglingOrgStatus] = useState(false);
+  const [togglingSchoolStatus, setTogglingSchoolStatus] = useState<string | null>(null);
+
+  // Load available users (active, non-admin) when the card is first opened.
+  useEffect(() => {
+    if (!open || availableUsers.length > 0 || loadingUsers) return;
+    setLoadingUsers(true);
+    (async () => {
+      const existingIds = members.map((m) => m.user_id);
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .eq("status", "active")
+        .neq("role", "admin")
+        .order("full_name");
+      const filtered = (data ?? []).filter((u: { id: string }) => !existingIds.includes(u.id));
+      setAvailableUsers(filtered);
+      setLoadingUsers(false);
+    })();
+  }, [open, availableUsers.length, loadingUsers, members]);
+
+  // Load org_tools + school_tools when the card is first opened.
+  useEffect(() => {
+    if (!open || orgToolsLoaded) return;
+    (async () => {
+      const { data: orgRows, error: orgErr } = await supabase
+        .from("org_tools").select("tool_slug, enabled").eq("org_id", org.id);
+      if (orgErr) { console.error("loadOrgTools:", orgErr); }
+      else {
+        const map: Record<string, boolean> = {};
+        for (const r of orgRows ?? []) map[r.tool_slug] = r.enabled;
+        setOrgTools(map);
+      }
+      const schoolIds = schools.map((s) => s.id);
+      if (schoolIds.length) {
+        const { data: stRows, error: stErr } = await supabase
+          .from("school_tools").select("school_id, tool_slug, enabled").in("school_id", schoolIds);
+        if (stErr) { console.error("loadSchoolTools:", stErr); }
+        else {
+          const map: Record<string, Record<string, boolean>> = {};
+          for (const r of stRows ?? []) {
+            if (!map[r.school_id]) map[r.school_id] = {};
+            map[r.school_id][r.tool_slug] = r.enabled;
+          }
+          setSchoolTools(map);
+        }
+      }
+      setOrgToolsLoaded(true);
+    })();
+  }, [open, orgToolsLoaded, schools, org.id]);
+
+  async function toggleOrgTool(slug: string, enabled: boolean) {
+    const { error } = await supabase.from("org_tools").upsert(
+      { org_id: org.id, tool_slug: slug, enabled },
+      { onConflict: "org_id,tool_slug" }
+    );
+    if (error) { alert(`Failed to save tool access: ${error.message}`); return; }
+    setOrgTools((p) => ({ ...p, [slug]: enabled }));
+  }
+
+  async function toggleSchoolTool(schoolId: string, slug: string, enabled: boolean) {
+    const { error } = await supabase.from("school_tools").upsert(
+      { school_id: schoolId, tool_slug: slug, enabled },
+      { onConflict: "school_id,tool_slug" }
+    );
+    if (error) { alert(`Failed to save tool access: ${error.message}`); return; }
+    setSchoolTools((p) => ({ ...p, [schoolId]: { ...(p[schoolId] ?? {}), [slug]: enabled } }));
+  }
+
+  async function toggleOrgStatus() {
+    const next = orgState.status === "disabled" ? "active" : "disabled";
+    setTogglingOrgStatus(true);
+    const { error } = await supabase.from("organisations").update({ status: next }).eq("id", org.id);
+    setTogglingOrgStatus(false);
+    if (error) { alert(`Failed to update status: ${error.message}`); return; }
+    setOrgState((p) => ({ ...p, status: next }));
+  }
+
+  async function toggleSchoolStatus(s: SchoolType) {
+    const next = s.status === "disabled" ? "active" : "disabled";
+    setTogglingSchoolStatus(s.id);
+    const { error } = await supabase.from("schools").update({ status: next }).eq("id", s.id);
+    setTogglingSchoolStatus(null);
+    if (error) { alert(`Failed to update status: ${error.message}`); return; }
+    setSchools((p) => p.map((x) => x.id === s.id ? { ...x, status: next } : x));
+  }
+
+  useEffect(() => {
+    if (!open || reportsLoaded) return;
+    (async () => {
+      const schoolIds = schools.map((s) => s.id);
+      const orParts: string[] = [`org_id.eq.${org.id}`];
+      if (schoolIds.length) orParts.push(`school_id.in.(${schoolIds.join(",")})`);
+      const { data, error } = await supabase.from("reports").select("*").or(orParts.join(","));
+      if (error) { console.error("loadReports:", error); return; }
+      setReports((data ?? []) as Report[]);
+      setReportsLoaded(true);
+    })();
+  }, [open, reportsLoaded, schools, org.id]);
+
+  async function deleteReport(id: string) {
+    if (!confirm("Delete this report? This cannot be undone.")) return;
+    const { error } = await supabase.from("reports").delete().eq("id", id);
+    if (error) { alert(`Failed to delete: ${error.message}`); return; }
+    setReports((p) => p.filter((r) => r.id !== id));
+  }
+
+  async function saveOrg() {
+    setSavingOrg(true);
+    const fields = { name: eName.trim(), type: eType, manager_name: eManager.trim() || null, notes: eNotes.trim() || null, ethos: eEthos.trim() || null, logo_url: eLogo };
+    const { error } = await supabase.from("organisations").update(fields).eq("id", org.id);
+    setSavingOrg(false);
+    if (error) { alert(`Failed to save: ${error.message}`); return; }
+    setOrgState((p) => ({ ...p, ...fields }));
+    setEditingOrg(false);
+  }
+
+  function cancelOrgEdit() {
+    setEName(orgState.name); setEType(orgState.type); setEManager(orgState.manager_name ?? "");
+    setENotes(orgState.notes ?? ""); setEEthos(orgState.ethos ?? ""); setELogo(orgState.logo_url); setEditingOrg(false);
+  }
+
+  function startSchoolEdit(s: SchoolType) {
+    setEditingSchoolId(s.id); setEsName(s.name); setEsEmail(s.email ?? ""); setEsLogo(s.logo_url); setEsEthos(s.ethos ?? "");
+  }
+
+  async function saveSchool(id: string) {
+    setSavingSchool(true);
+    const fields = { name: esName.trim(), email: esEmail.trim() || null, logo_url: esLogo, ethos: esEthos.trim() || null };
+    const { error } = await supabase.from("schools").update(fields).eq("id", id);
+    setSavingSchool(false);
+    if (error) { alert(`Failed to save: ${error.message}`); return; }
+    setSchools((p) => p.map((s) => s.id === id ? { ...s, ...fields } : s));
+    setEditingSchoolId(null);
+  }
+
+  async function updateMember(id: string, fields: { role?: "admin" | "member"; school_id?: string | null }) {
+    const { error } = await supabase.from("org_members").update(fields).eq("id", id);
+    if (error) { alert(`Failed to update: ${error.message}`); return; }
+    setMembers((p) => p.map((m) => m.id === id ? { ...m, ...fields } : m));
+  }
 
   async function removeSchool(id: string) {
     setDeletingSchool(id);
@@ -432,47 +709,71 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
     e.preventDefault();
     if (!schoolName.trim()) return;
     setAddingSchool(true);
-    const { data, error } = await supabase.from("schools").insert({ org_id: org.id, name: schoolName.trim(), email: schoolEmail.trim() || null }).select().single();
-    if (!error) { setSchools((p) => [...p, data as SchoolType]); setSchoolName(""); setSchoolEmail(""); }
+    const { data, error } = await supabase.from("schools").insert({ org_id: org.id, name: schoolName.trim(), email: schoolEmail.trim() || null, ethos: schoolEthos.trim() || null }).select().single();
+    if (!error) { setSchools((p) => [...p, data as SchoolType]); setSchoolName(""); setSchoolEmail(""); setSchoolEthos(""); }
     setAddingSchool(false);
   }
 
   async function handleAddMember(e: React.FormEvent) {
     e.preventDefault();
-    if (!memberEmail.trim()) return;
+    if (!memberUserId) return;
     setAddingMember(true);
     setMemberError("");
-    const { data: prof, error: profErr } = await supabase.from("profiles").select("id, email, full_name").eq("email", memberEmail.trim().toLowerCase()).single();
-    if (profErr || !prof) { setMemberError("No user found with that email."); setAddingMember(false); return; }
+    const prof = availableUsers.find((u) => u.id === memberUserId);
+    if (!prof) { setMemberError("User not found."); setAddingMember(false); return; }
     const { data: mem, error: memErr } = await supabase.from("org_members").insert({ user_id: prof.id, org_id: org.id, school_id: memberSchoolId || null, role: memberRole }).select().single();
     if (memErr) { setMemberError(memErr.message); setAddingMember(false); return; }
     setMembers((p) => [...p, { ...(mem as OrgMember), email: prof.email, full_name: prof.full_name }]);
-    setMemberEmail(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
+    setAvailableUsers((p) => p.filter((u) => u.id !== prof.id));
+    setMemberUserId(""); setMemberSchoolId(""); setMemberRole("member"); setAddingMember(false);
   }
 
-  const typeBadgeColor = org.type === "mat" ? "#A78BFA" : "#38BDF8";
+  const typeBadgeColor = orgState.type === "mat" ? "#A78BFA" : "#38BDF8";
 
   return (
     <GlassCard>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
-            <Building2 size={16} className="text-[#38BDF8]" />
-          </div>
+          {orgState.logo_url ? (
+            <img src={orgState.logo_url} alt="" className="w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shrink-0" />
+          ) : (
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.2)]">
+              <Building2 size={16} className="text-[#38BDF8]" />
+            </div>
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{org.name}</p>
+              <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{orgState.name}</p>
               <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
                 style={{ color: typeBadgeColor, background: `${typeBadgeColor}18`, borderColor: `${typeBadgeColor}40` }}>
-                {org.type === "mat" ? "MAT" : "School"}
+                {orgState.type === "mat" ? "MAT" : "School"}
               </span>
+              {orgState.status === "disabled" && (
+                <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
+                  style={{ color: "#ef4444", background: "#ef444418", borderColor: "#ef444440" }}>
+                  Disabled
+                </span>
+              )}
             </div>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               {schools.length} school{schools.length !== 1 ? "s" : ""} · {members.length} member{members.length !== 1 ? "s" : ""}
+              {orgState.manager_name ? ` · ${orgState.manager_name}` : ""}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => { setEditingOrg((v) => !v); setOpen(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit organisation">
+            <Pencil size={12} className="text-[#38BDF8]" />
+          </button>
+          <button onClick={toggleOrgStatus} disabled={togglingOrgStatus}
+            className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+            title={orgState.status === "disabled" ? "Enable organisation" : "Disable organisation"}>
+            {togglingOrgStatus
+              ? <Loader2 size={12} className="animate-spin text-[#475569]" />
+              : orgState.status === "disabled"
+                ? <Power size={12} className="text-green-400" />
+                : <PowerOff size={12} className="text-amber-400" />}
+          </button>
           <button onClick={() => onDelete(org.id)} className="w-7 h-7 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete">
             <Trash2 size={12} className="text-red-400" />
           </button>
@@ -484,33 +785,221 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
       {open && (
         <div className="mt-5 space-y-5">
+          {editingOrg && (
+            <div className="rounded-xl border border-[rgba(56,189,248,0.2)] bg-[rgba(56,189,248,0.04)] p-4 flex flex-col gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Edit Organisation</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Name</label>
+                  <input value={eName} onChange={(e) => setEName(e.target.value)}
+                    className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Type</label>
+                  <select value={eType} onChange={(e) => setEType(e.target.value as "school" | "mat")}
+                    className="px-3 py-2 rounded-xl text-sm bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
+                    <option value="school">Single School</option>
+                    <option value="mat">MAT</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Manager Name</label>
+                  <input value={eManager} onChange={(e) => setEManager(e.target.value)}
+                    className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs" style={{ color: "var(--text-dim)" }}>Logo</label>
+                  <div className="flex flex-col gap-1.5">
+                    {eLogo ? (
+                      <>
+                        <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 140 }}>
+                          <img src={eLogo} alt="Logo" style={{ maxHeight: 48, maxWidth: 124, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                            <Upload size={10} /> Replace
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) { readFileAsDataUrl(f, setELogo); } e.target.value = ""; }} />
+                          </label>
+                          <button type="button" onClick={() => setELogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
+                        </div>
+                      </>
+                    ) : (
+                      <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                        <Plus size={12} /> Upload logo
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setELogo); e.target.value = ""; }} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs" style={{ color: "var(--text-dim)" }}>Notes</label>
+                <textarea value={eNotes} onChange={(e) => setENotes(e.target.value)} rows={2}
+                  className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] resize-none" style={{ color: "var(--text)" }} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs" style={{ color: "var(--text-dim)" }}>Ethos / Motto</label>
+                <input value={eEthos} onChange={(e) => setEEthos(e.target.value)}
+                  placeholder="e.g. Inspiring every child to achieve their potential"
+                  className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={saveOrg} disabled={savingOrg || !eName.trim()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                  {savingOrg ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Save
+                </button>
+                <button onClick={cancelOrgEdit} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10 transition-all" style={{ color: "var(--text-dim)" }}>Cancel</button>
+              </div>
+            </div>
+          )}
+
+          {/* Org-level tool entitlements. Effective access = user_tools AND
+              org_tools AND school_tools (see comment in lib/supabase.ts). */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Tool Access (Organisation)</p>
+            <p className="text-[0.65rem] mb-3" style={{ color: "var(--text-faint)" }}>
+              Tools this organisation is allowed to use. A user sees a tool only if it is enabled for them AND here AND for their school.
+            </p>
+            <ToolAccessGrid enabled={orgTools} onToggle={toggleOrgTool} />
+          </div>
+
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Schools</p>
             {schools.length === 0 && <p className="text-xs mb-2" style={{ color: "var(--text-faint)" }}>No schools yet.</p>}
             <div className="flex flex-col gap-1.5 mb-2">
-              {schools.map((s) => (
-                <div key={s.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
-                  <div>
-                    <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.name}</p>
-                    {s.email && <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>{s.email}</p>}
-                  </div>
-                  <button onClick={() => removeSchool(s.id)} disabled={deletingSchool === s.id}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
-                    {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
-                  </button>
+              {schools.map((s) => {
+                const schoolReports = reports.filter((r) => r.school_id === s.id);
+                const reportsOpen = expandedSchoolReports[s.id];
+                return (
+                <div key={s.id} className="rounded-xl bg-white/[0.02] border border-white/5">
+                  {editingSchoolId === s.id ? (
+                    <div className="p-3 flex flex-col gap-2">
+                      <div className="flex flex-wrap gap-2 items-end">
+                        <input value={esName} onChange={(e) => setEsName(e.target.value)} placeholder="School name"
+                          className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+                        <input value={esEmail} onChange={(e) => setEsEmail(e.target.value)} placeholder="Email" type="email"
+                          className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+                      </div>
+                      <input value={esEthos} onChange={(e) => setEsEthos(e.target.value)} placeholder="School ethos (e.g. Inspiring every child to achieve their potential)"
+                        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-full" style={{ color: "var(--text)" }} />
+                      <div className="flex flex-wrap gap-2 items-end">
+                        {esLogo ? (
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex items-center justify-center rounded bg-white/5 border border-white/10 p-0.5" style={{ maxWidth: 80 }}>
+                              <img src={esLogo} alt="" style={{ maxHeight: 28, maxWidth: 72, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                            </div>
+                            <label className="flex items-center gap-1 px-2 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20" style={{ color: "var(--text-dim)" }}>
+                              <Upload size={9} /> Replace
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); e.target.value = ""; }} />
+                            </label>
+                            <button type="button" onClick={() => setEsLogo(null)} className="text-red-400"><X size={11} /></button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20" style={{ color: "var(--text-dim)" }}>
+                            <Plus size={11} /> Logo
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) readFileAsDataUrl(f, setEsLogo); e.target.value = ""; }} />
+                          </label>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => saveSchool(s.id)} disabled={savingSchool || !esName.trim()}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                          style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                          {savingSchool ? <Loader2 size={11} className="animate-spin" /> : <CheckCircle2 size={11} />} Save
+                        </button>
+                        <button onClick={() => setEditingSchoolId(null)} className="px-3 py-1.5 rounded-xl text-xs font-medium glass border border-white/10" style={{ color: "var(--text-dim)" }}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2 px-3 py-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {s.logo_url ? (
+                          <img src={s.logo_url} alt="" className="w-6 h-6 object-contain rounded bg-white/10 p-0.5 shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                            <School size={11} className="text-[#38BDF8]" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{s.name}</p>
+                          {s.email && <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>{s.email}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {s.status === "disabled" && (
+                          <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide border"
+                            style={{ color: "#ef4444", background: "#ef444418", borderColor: "#ef444440" }}>
+                            Disabled
+                          </span>
+                        )}
+                        <button onClick={() => setExpandedSchoolReports((p) => ({ ...p, [s.id]: !p[s.id] }))}
+                          className="flex items-center gap-1 px-2 h-6 rounded-lg glass hover:bg-white/10 transition-all text-[0.65rem]" style={{ color: "var(--text-dim)" }} title="Reports">
+                          <FileText size={10} className="text-[#38BDF8]" /> {schoolReports.length}
+                        </button>
+                        <button onClick={() => setExpandedSchoolTools((p) => ({ ...p, [s.id]: !p[s.id] }))}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Tool access">
+                          <ToggleRight size={11} className="text-[#38BDF8]" />
+                        </button>
+                        <button onClick={() => toggleSchoolStatus(s)} disabled={togglingSchoolStatus === s.id}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all disabled:opacity-50"
+                          title={s.status === "disabled" ? "Enable school" : "Disable school"}>
+                          {togglingSchoolStatus === s.id
+                            ? <Loader2 size={10} className="animate-spin text-[#475569]" />
+                            : s.status === "disabled"
+                              ? <Power size={10} className="text-green-400" />
+                              : <PowerOff size={10} className="text-amber-400" />}
+                        </button>
+                        <button onClick={() => startSchoolEdit(s)} className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="Edit">
+                          <Pencil size={10} className="text-[#38BDF8]" />
+                        </button>
+                        <button onClick={() => removeSchool(s.id)} disabled={deletingSchool === s.id}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
+                          {deletingSchool === s.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {expandedSchoolTools[s.id] && (
+                    <div className="px-3 pb-3 pt-0">
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>Tool Access (School)</p>
+                      <ToolAccessGrid
+                        enabled={schoolTools[s.id] ?? {}}
+                        onToggle={(slug, next) => toggleSchoolTool(s.id, slug, next)}
+                      />
+                    </div>
+                  )}
+                  {reportsOpen && (
+                    <div className="px-3 pb-3 pt-0">
+                      {schoolReports.length === 0 ? (
+                        <p className="text-[0.65rem]" style={{ color: "var(--text-faint)" }}>No reports for this school.</p>
+                      ) : (
+                        <div className="flex flex-col gap-1.5">
+                          {schoolReports.map((r) => <ReportRow key={r.id} r={r} onDelete={deleteReport} />)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
-            <form onSubmit={handleAddSchool} className="flex flex-wrap gap-2 items-end">
-              <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
-              <input value={schoolEmail} onChange={(e) => setSchoolEmail(e.target.value)} placeholder="Email (optional)" type="email"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
-              <button type="submit" disabled={addingSchool || !schoolName.trim()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-                {addingSchool ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Add School
-              </button>
+            <form onSubmit={handleAddSchool} className="flex flex-col gap-2">
+              <div className="flex flex-wrap gap-2 items-end">
+                <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+                <input value={schoolEmail} onChange={(e) => setSchoolEmail(e.target.value)} placeholder="Email (optional)" type="email"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+              </div>
+              <div className="flex flex-wrap gap-2 items-end">
+                <input value={schoolEthos} onChange={(e) => setSchoolEthos(e.target.value)} placeholder="School ethos (optional)"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] flex-1 min-w-[200px]" style={{ color: "var(--text)" }} />
+                <button type="submit" disabled={addingSchool || !schoolName.trim()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                  {addingSchool ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Add School
+                </button>
+              </div>
             </form>
           </div>
 
@@ -533,8 +1022,17 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-semibold border"
-                        style={{ color: roleColor, background: `${roleColor}15`, borderColor: `${roleColor}40` }}>{m.role}</span>
+                      <select value={m.school_id ?? ""} onChange={(e) => updateMember(m.id, { school_id: e.target.value || null })}
+                        className="px-2 py-1 rounded-lg text-[0.65rem] bg-[#0F172A] border border-white/10 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text-dim)" }} title="School">
+                        <option value="">No school</option>
+                        {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                      <select value={m.role} onChange={(e) => updateMember(m.id, { role: e.target.value as "admin" | "member" })}
+                        className="px-2 py-1 rounded-lg text-[0.65rem] bg-[#0F172A] border outline-none focus:border-[rgba(56,189,248,0.4)]"
+                        style={{ color: roleColor, borderColor: `${roleColor}40` }} title="Role">
+                        <option value="member">member</option>
+                        <option value="admin">admin</option>
+                      </select>
                       <button onClick={() => removeMember(m.id)} disabled={deletingMember === m.id}
                         className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all disabled:opacity-50">
                         {deletingMember === m.id ? <Loader2 size={10} className="animate-spin text-red-400" /> : <X size={10} className="text-red-400" />}
@@ -545,8 +1043,14 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               })}
             </div>
             <form onSubmit={handleAddMember} className="flex flex-wrap gap-2 items-end">
-              <input value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} placeholder="User email" type="email"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-48" style={{ color: "var(--text)" }} />
+              <select value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)}
+                disabled={loadingUsers}
+                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-52" style={{ color: "var(--text)" }}>
+                <option value="">{loadingUsers ? "Loading users…" : availableUsers.length === 0 ? "No users available" : "Select user…"}</option>
+                {availableUsers.map((u) => (
+                  <option key={u.id} value={u.id}>{u.full_name ? `${u.full_name} (${u.email})` : u.email}</option>
+                ))}
+              </select>
               {schools.length > 0 && (
                 <select value={memberSchoolId} onChange={(e) => setMemberSchoolId(e.target.value)}
                   className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }}>
@@ -559,7 +1063,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
               </select>
-              <button type="submit" disabled={addingMember || !memberEmail.trim()}
+              <button type="submit" disabled={addingMember || !memberUserId}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
                 style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
                 {addingMember ? <Loader2 size={11} className="animate-spin" /> : <UserPlus size={11} />} Add Member
@@ -567,21 +1071,157 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
               {memberError && <p className="text-xs text-red-400 w-full">{memberError}</p>}
             </form>
           </div>
+
+          {(() => {
+            const orgOnlyReports = reports.filter((r) => !r.school_id);
+            if (orgOnlyReports.length === 0) return null;
+            return (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>
+                  Org Reports (no school) · {orgOnlyReports.length}
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {orgOnlyReports.map((r) => <ReportRow key={r.id} r={r} onDelete={deleteReport} />)}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </GlassCard>
   );
 }
 
-type Tab = "assessments" | "users" | "organisations";
+function ReportRow({ r, onDelete }: { r: Report; onDelete: (id: string) => void }) {
+  const color = TOOL_COLORS[r.tool_name] ?? "#38BDF8";
+  const date = new Date(r.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  return (
+    <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="shrink-0 w-2 h-2 rounded-full" style={{ background: color }} />
+        <div className="min-w-0">
+          <p className="text-xs font-medium truncate" style={{ color: "var(--text-muted)" }}>{r.tool_name}</p>
+          <p className="text-[0.65rem] truncate" style={{ color: "var(--text-faint)" }}>
+            {date}{r.staff_member ? ` · ${r.staff_member}` : ""}{r.rating ? ` · ${r.rating}` : ""}
+            {r.areas?.length ? ` · ${r.areas.map((a) => a.name).join(", ")}` : ""}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <ScoreBadge score={r.score} color={color} />
+        <button onClick={() => onDelete(r.id)} className="w-6 h-6 rounded-lg flex items-center justify-center glass hover:bg-red-500/10 transition-all" title="Delete report">
+          <Trash2 size={10} className="text-red-400" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PolicyDocsTab() {
+  const [subTab, setSubTab] = useState<"templates" | "ref-docs">("templates");
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex gap-2">
+        {([
+          { key: "templates" as const, label: "Policy Templates" },
+          { key: "ref-docs" as const,  label: "Reference Documents" },
+        ]).map(({ key, label }) => (
+          <button key={key} type="button" onClick={() => setSubTab(key)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${subTab === key ? "bg-[rgba(167,139,250,0.15)] border-[rgba(167,139,250,0.3)] text-[#A78BFA]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {subTab === "templates" && <GlassCard><TemplateAdmin /></GlassCard>}
+      {subTab === "ref-docs"  && <GlassCard><ReferenceDocManager /></GlassCard>}
+    </div>
+  );
+}
+
+type Tab = "assessments" | "users" | "organisations" | "site" | "training" | "policy-docs" | "themes";
 
 export default function AdminPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("assessments");
+  const [viewing, setViewing] = useState<ReportViewData | null>(null);
+
+  function openReport(s: Submission) {
+    setViewing({
+      reportId: s.id,
+      meta: {
+        schoolName: s.schoolName,
+        schoolEmail: s.schoolEmail,
+        consultantName: s.consultantName,
+        consultantEmail: s.consultantEmail,
+        staffMember: s.staffMember,
+        logoDataUrl: s.logoDataUrl,
+      },
+      toolName: s.tool,
+      score: s.score,
+      rating: s.rating,
+      ratingColor: s.ratingColor,
+      accentColor: TOOL_COLORS[s.tool] ?? "#38BDF8",
+      date: new Date(s.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
+      areas: s.areas,
+      gaps: s.gaps,
+    });
+  }
+
+  // Footer links state
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
+  const [newLinkLabel, setNewLinkLabel] = useState("");
+  const [newLinkHref, setNewLinkHref] = useState("");
+  const [savingFooter, setSavingFooter] = useState(false);
+
+  useEffect(() => {
+    if (tab !== "site") return;
+    async function loadFooterLinks() {
+      try {
+        const { data } = await supabase.from("footer_links").select("*").order("sort_order", { ascending: true });
+        if (data) { setFooterLinks(data); return; }
+      } catch { /* ignore */ }
+      try {
+        const stored = localStorage.getItem("safeshield_footer_links");
+        if (stored) setFooterLinks(JSON.parse(stored));
+      } catch { /* ignore */ }
+    }
+    loadFooterLinks();
+  }, [tab]);
+
+  async function addFooterLink() {
+    if (!newLinkLabel.trim() || !newLinkHref.trim()) return;
+    setSavingFooter(true);
+    const newLink: FooterLink = {
+      id: crypto.randomUUID(),
+      label: newLinkLabel.trim(),
+      href: newLinkHref.trim(),
+      sort_order: footerLinks.length,
+    };
+    const updated = [...footerLinks, newLink];
+    try {
+      await supabase.from("footer_links").insert(newLink);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+    setNewLinkLabel("");
+    setNewLinkHref("");
+    setSavingFooter(false);
+  }
+
+  async function deleteFooterLink(id: string) {
+    const updated = footerLinks.filter(l => l.id !== id);
+    try {
+      await supabase.from("footer_links").delete().eq("id", id);
+    } catch { /* ignore */ }
+    localStorage.setItem("safeshield_footer_links", JSON.stringify(updated));
+    setFooterLinks(updated);
+  }
 
   // Assessments state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncDone, setSyncDone] = useState(false);
   const [view, setView] = useState<"schools" | "all">("schools");
 
   // Users state
@@ -605,14 +1245,15 @@ export default function AdminPage() {
   }, [loading, profile, router]);
 
   const loadSubmissions = useCallback(async () => {
-    // Load from Supabase first, fall back to localStorage for legacy data
+    const local = getSubmissions();
+
     const { data: remoteReports } = await supabase
       .from("reports")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (remoteReports && remoteReports.length > 0) {
-      // Map Supabase reports to Submission shape
+      const remoteIds = new Set(remoteReports.map((r) => r.id));
       const mapped: Submission[] = remoteReports.map((r) => ({
         id: r.id,
         tool: r.tool_name,
@@ -627,12 +1268,42 @@ export default function AdminPage() {
         ratingColor: r.rating_color,
         date: r.created_at,
         areas: r.areas ?? undefined,
+        gaps: r.recommendations ?? undefined,
       }));
-      setSubmissions(mapped);
+      // Include local-only reports not yet in Supabase and back-sync them
+      const localOnly = local.filter((s) => !remoteIds.has(s.id));
+      if (localOnly.length > 0) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            import("@/lib/submissions").then(({ saveReportToSupabase }) => {
+              localOnly.forEach((s) => saveReportToSupabase(s, session.user!.id));
+            });
+          }
+        });
+      }
+      setSubmissions([...mapped, ...localOnly].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     } else {
-      setSubmissions(getSubmissions());
+      setSubmissions(local);
     }
   }, []);
+
+  const syncLocalToSupabase = useCallback(async () => {
+    setSyncing(true);
+    setSyncDone(false);
+    try {
+      const local = getSubmissions();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { saveReportToSupabase } = await import("@/lib/submissions");
+      for (const s of local) {
+        await saveReportToSupabase(s, session.user.id);
+      }
+      setSyncDone(true);
+      await loadSubmissions();
+    } finally {
+      setSyncing(false);
+    }
+  }, [loadSubmissions]);
 
   useEffect(() => {
     if (profile?.role === "admin") loadSubmissions();
@@ -719,6 +1390,12 @@ export default function AdminPage() {
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, status } : u));
   }
 
+  async function handleProfileSave(userId: string, fields: { full_name: string | null; org_type: OrgType | null }) {
+    const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
+    if (error) { console.error("profile update failed:", error); alert(`Failed to save: ${error.message}`); return; }
+    setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, ...fields } : u));
+  }
+
   async function handleToolToggle(userId: string, slug: string, enabled: boolean) {
     const { error } = await supabase.from("user_tools").upsert(
       { user_id: userId, tool_slug: slug, enabled },
@@ -784,11 +1461,34 @@ export default function AdminPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "organisations" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <Building2 size={14} /> Organisations
           </button>
+          <button onClick={() => setTab("site")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "site" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <Link2 size={14} /> Site
+          </button>
+          <button onClick={() => setTab("training")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "training" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <BookOpen size={14} /> Training
+          </button>
+          <button onClick={() => setTab("policy-docs")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "policy-docs" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            <FileText size={14} /> Policy Docs
+          </button>
+          <button onClick={() => setTab("themes")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "themes" ? "bg-[rgba(167,139,250,0.15)] border-[rgba(167,139,250,0.35)] text-[#A78BFA]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            🎨 Themes
+          </button>
         </div>
 
         {/* ── Assessments tab ── */}
         {tab === "assessments" && (
           <>
+            <div className="flex justify-end mb-4">
+              <button onClick={syncLocalToSupabase} disabled={syncing}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                style={{ background: syncDone ? "rgba(34,197,94,0.12)" : "rgba(56,189,248,0.10)", border: `1px solid ${syncDone ? "rgba(34,197,94,0.3)" : "rgba(56,189,248,0.25)"}`, color: syncDone ? "#22c55e" : "#38BDF8" }}>
+                {syncing ? <><Loader2 size={12} className="animate-spin" /> Syncing…</> : syncDone ? <><CheckCircle2 size={12} /> Synced</> : <><RefreshCw size={12} /> Sync Local Reports</>}
+              </button>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
                 { label: "Schools", value: schools.length },
@@ -821,7 +1521,7 @@ export default function AdminPage() {
                   ))}
                 </div>
                 {view === "schools" ? (
-                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} />
+                  <GroupedBySchool submissions={submissions} onDelete={handleDelete} onView={openReport} />
                 ) : (
                   <div className="flex flex-col gap-3">
                     {submissions.map((s) => {
@@ -842,6 +1542,9 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <ScoreBadge score={s.score} color={color} />
+                            <button onClick={() => openReport(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all" title="View report">
+                              <Eye size={14} className="text-[#38BDF8]" />
+                            </button>
                             {s.schoolEmail && (
                               <button onClick={() => sendCertificateEmail(s)} className="w-8 h-8 rounded-lg flex items-center justify-center glass hover:bg-white/10 transition-all">
                                 <Mail size={14} className="text-[#38BDF8]" />
@@ -899,7 +1602,7 @@ export default function AdminPage() {
                 )}
                 <div className="flex flex-col gap-3">
                   {users.map((u) => (
-                    <UserCard key={u.id} u={u} onStatusChange={handleStatusChange} onToolToggle={handleToolToggle} />
+                    <UserCard key={u.id} u={u} onStatusChange={handleStatusChange} onToolToggle={handleToolToggle} onProfileSave={handleProfileSave} />
                   ))}
                 </div>
               </>
@@ -958,22 +1661,25 @@ export default function AdminPage() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
-                      <div className="flex items-center gap-2">
-                        {newOrgLogo ? (
-                          <>
-                            <img src={newOrgLogo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+                      {newOrgLogo ? (
+                        <>
+                          <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 140 }}>
+                            <img src={newOrgLogo} alt="Logo" style={{ maxHeight: 48, maxWidth: 124, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                              <Upload size={10} /> Replace
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                            </label>
                             <button type="button" onClick={() => setNewOrgLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
-                          </>
-                        ) : (
-                          <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
-                            <Plus size={12} /> Upload logo
-                            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                              const f = e.target.files?.[0]; if (!f) return;
-                              const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f);
-                            }} />
-                          </label>
-                        )}
-                      </div>
+                          </div>
+                        </>
+                      ) : (
+                        <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                          <Plus size={12} /> Upload logo
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setNewOrgLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                        </label>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -1013,8 +1719,80 @@ export default function AdminPage() {
           </>
         )}
 
+        {/* ── Training tab ── */}
+        {tab === "training" && <TrainingAdminTab />}
+
+        {/* ── Policy Docs tab ── */}
+        {tab === "policy-docs" && <PolicyDocsTab />}
+
+        {/* ── Themes tab ── */}
+        {tab === "themes" && <GlassCard><ThemeManager /></GlassCard>}
+
+        {/* ── Site tab ── */}
+        {tab === "site" && (
+          <GlassCard>
+            <h2 className="text-white font-semibold text-lg mb-1 flex items-center gap-2"><Link2 size={16} className="text-[#38BDF8]" /> Footer Links</h2>
+            <p className="text-[#64748B] text-xs mb-5">These links appear in the site footer on every page.</p>
+
+            {/* Existing links */}
+            {footerLinks.length === 0 ? (
+              <p className="text-[#475569] text-sm py-4 text-center">No footer links yet.</p>
+            ) : (
+              <div className="flex flex-col gap-2 mb-5">
+                {footerLinks.map((l) => (
+                  <div key={l.id} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-sm text-white font-medium truncate">{l.label}</span>
+                      <span className="text-xs text-[#475569] truncate">{l.href}</span>
+                    </div>
+                    <button
+                      onClick={() => deleteFooterLink(l.id)}
+                      className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-500/10 transition-colors"
+                      title="Delete link">
+                      <Trash2 size={13} className="text-red-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add new link */}
+            <div className="border-t border-white/10 pt-4">
+              <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-widest mb-3">Add Link</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Label (e.g. Privacy Policy)"
+                  value={newLinkLabel}
+                  onChange={(e) => setNewLinkLabel(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                />
+                <input
+                  type="text"
+                  placeholder="URL (e.g. /privacy or https://...)"
+                  value={newLinkHref}
+                  onChange={(e) => setNewLinkHref(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl text-sm text-white bg-white/[0.04] border border-white/10 focus:outline-none placeholder:text-[#475569]"
+                  onKeyDown={(e) => e.key === "Enter" && addFooterLink()}
+                />
+                <button
+                  onClick={addFooterLink}
+                  disabled={savingFooter || !newLinkLabel.trim() || !newLinkHref.trim()}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40"
+                  style={{ background: "rgba(56,189,248,0.15)", border: "1px solid rgba(56,189,248,0.3)", color: "#38BDF8" }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
+            </div>
+          </GlassCard>
+        )}
+
       </div>
     </div>
+
+    {viewing && (
+      <ReportViewModal data={viewing} onClose={() => setViewing(null)} />
+    )}
     </>
   );
 }

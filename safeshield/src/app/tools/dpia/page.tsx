@@ -1,88 +1,121 @@
+"use client";
 import AuthGuard from "@/components/ui/AuthGuard";
 import DpiaWizard from "@/components/forms/DpiaWizard";
 import GlassCard from "@/components/ui/GlassCard";
-import { FileSearch } from "lucide-react";
-import type { Metadata } from "next";
+import { IconDPIA } from "@/components/ui/ToolIcons";
+import { useToolBanner } from "@/hooks/useToolBanner";
+import SidebarVideoCard from "@/components/ui/SidebarVideoCard";
+import EditableText from "@/components/ui/EditableText";
+import { useEditableContent } from "@/hooks/useEditableContent";
+import BannerUploadButton from "@/components/ui/BannerUploadButton";
+import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 
-export const metadata: Metadata = {
-  title: "DPIA Wizard | SafeShield",
-  description:
-    "Step-by-step Data Protection Impact Assessment wizard aligned to UK GDPR Article 35. Free tool for schools and trusts.",
-};
+const COLOR = "#FCD34D";
+const STEPS = [
+  "Processing Overview",
+  "Necessity & Lawful Basis",
+  "Proportionality & Data Minimisation",
+  "Risk Identification",
+  "Risk Mitigations",
+  "Consultation & Sign-off",
+];
+const TRIGGERS = [
+  "Systematic monitoring of pupils",
+  "Processing special category data at scale",
+  "Using new AI or EdTech tools",
+  "Biometric data processing",
+  "Profiling or automated decision-making",
+];
 
 export default function DpiaPage() {
+  const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("dpia");
+  const { value: bannerTitle, save: saveBannerTitle } = useEditableContent("dpia-title", "DPIA Wizard");
+  const { value: bannerDesc, save: saveBannerDesc } = useEditableContent("dpia-desc", "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.");
   return (
-    <AuthGuard toolSlug="dpia">
-    <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="pt-10 pb-10 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.2)]">
-              <FileSearch size={22} className="text-amber-400" strokeWidth={1.5} />
+    <div className="min-h-[100dvh] pt-16 pb-20">
+        {/* Banner */}
+        <div style={{ position: "relative", paddingTop: "clamp(260px, calc(400 / 1920 * 100%), 400px)", overflow: "hidden" }}>
+          {!isVideo(bannerUrl) && (
+            <img
+              src={bannerUrl}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
+            />
+          )}
+          <BannerUploadButton toolSlug="dpia" onUploaded={(url) => setBannerUrl(url)} uploadBanner={uploadBanner} clearBanner={clearBanner} uploading={uploading} hasCustomBanner={bannerUrl !== "/banner-bg.mp4"} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.52) 100%)",
+              backdropFilter: "blur(2px)",
+            }}
+          />
+          <div className="rise-in max-w-6xl mx-auto px-4 sm:px-6" style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: 48, paddingBottom: 48 }}>
+            <div className="flex items-center gap-3 mb-4">
+              <ToolIconWrapper slug="dpia" Icon={IconDPIA} size={64} />
+              <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>Data Protection</span>
             </div>
-            <div>
-              <p className="text-amber-400 text-xs font-medium uppercase tracking-widest mb-1">Data Protection</p>
-              <h1 className="text-white text-3xl font-bold mb-2">DPIA Wizard</h1>
-              <p className="text-[#94A3B8] text-sm max-w-xl leading-relaxed">
-                Complete a Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35 obligations. Produces a risk-rated summary you can save or print.
-              </p>
-            </div>
+            <h1 className="heading-luxury text-3xl sm:text-4xl mb-3 text-white drop-shadow-lg"><EditableText value={bannerTitle} onSave={saveBannerTitle} style={{ color: "white" }} /></h1>
+            <div className="w-12 h-0.5 mb-4 rounded-full" style={{ background: COLOR }} />
+            <p className="text-sm leading-relaxed max-w-xl drop-shadow" style={{ color: "rgba(255,255,255,0.82)" }}><EditableText value={bannerDesc} onSave={saveBannerDesc} multiline style={{ color: "rgba(255,255,255,0.82)" }} /></p>
           </div>
-  
+        </div>
+
+        {/* Page content */}
+        <AuthGuard toolSlug="dpia">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2">
               <DpiaWizard />
             </div>
             <div className="flex flex-col gap-4">
-              <GlassCard>
-                <h2 className="text-white font-semibold text-sm uppercase tracking-wider mb-3">6 Guided Steps</h2>
-                <ul className="flex flex-col gap-2">
-                  {[
-                    "Processing Overview",
-                    "Necessity & Lawful Basis",
-                    "Proportionality & Data Minimisation",
-                    "Risk Identification",
-                    "Risk Mitigations",
-                    "Consultation & Sign-off",
-                  ].map((step, i) => (
-                    <li key={step} className="flex items-center gap-2 text-[#64748B] text-xs">
-                      <span className="w-4 h-4 rounded-full bg-[rgba(251,191,36,0.1)] border border-[rgba(251,191,36,0.2)] text-amber-400 text-[0.6rem] font-bold flex items-center justify-center shrink-0">
+              <SidebarVideoCard
+                toolSlug="dpia"
+                color={COLOR}
+                defaultTitle="Watch: What is a DPIA?"
+                defaultDescription="When a DPIA is legally required, how to complete one, and what the ICO expects from schools."
+              />
+
+<GlassCard>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: COLOR }}>6 Guided Steps</h2>
+                <ol className="flex flex-col gap-2">
+                  {STEPS.map((step, i) => (
+                    <li key={step} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span
+                        className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold shrink-0"
+                        style={{ background: COLOR, color: "#000" }}
+                      >
                         {i + 1}
                       </span>
                       {step}
                     </li>
                   ))}
-                </ul>
+                </ol>
               </GlassCard>
+
               <GlassCard>
-                <h2 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">When is a DPIA required?</h2>
-                <p className="text-[#475569] text-xs leading-relaxed mb-3">
-                  Under UK GDPR Article 35, a DPIA is mandatory when processing is likely to result in high risk — including:
-                </p>
-                <ul className="flex flex-col gap-1.5">
-                  {[
-                    "Systematic monitoring of pupils",
-                    "Processing special category data at scale",
-                    "Using new AI or EdTech tools",
-                    "Biometric data processing",
-                    "Profiling or automated decision-making",
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-[#475569] text-xs">
-                      <span className="mt-1.5 w-1 h-1 rounded-full bg-amber-400 shrink-0" />
-                      {item}
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>When is a DPIA required?</h2>
+                <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-muted)" }}>Under UK GDPR Article 35, a DPIA is mandatory when processing is likely to result in high risk &mdash; including:</p>
+                <ul className="flex flex-col gap-2">
+                  {TRIGGERS.map((t) => (
+                    <li key={t} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR }} />
+                      {t}
                     </li>
                   ))}
                 </ul>
               </GlassCard>
+
               <GlassCard>
-                <h2 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Framework Alignment</h2>
-                <p className="text-[#475569] text-xs leading-relaxed">
-                  Structured against UK GDPR Article 35, ICO DPIA guidance, and the DfE Data Protection toolkit for schools.
-                </p>
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: COLOR }}>Framework Alignment</h2>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>Structured against UK GDPR Article 35, ICO DPIA guidance, and the DfE Data Protection toolkit for schools.</p>
               </GlassCard>
             </div>
           </div>
-        </div>
-      </div>
-    </AuthGuard>
+          </div>
+        </AuthGuard>
+    </div>
   );
 }

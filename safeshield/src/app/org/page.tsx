@@ -13,6 +13,7 @@ import {
   Loader2,
   X,
   UserPlus,
+  Upload,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useAuth } from "@/context/AuthContext";
@@ -74,22 +75,25 @@ function CreateOrgForm({ onCreated }: { onCreated: (org: Organisation) => void }
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>Logo</label>
-          <div className="flex items-center gap-2">
-            {logo ? (
-              <>
-                <img src={logo} alt="Logo" className="h-9 w-auto object-contain rounded bg-white/10 p-0.5" />
+          {logo ? (
+            <div className="flex flex-col gap-1.5">
+              <div className="inline-flex items-center justify-center rounded-lg bg-white/5 border border-white/10 p-1.5" style={{ maxWidth: 160 }}>
+                <img src={logo} alt="Logo" style={{ maxHeight: 56, maxWidth: 140, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1 px-2.5 py-1 rounded-lg glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+                  <Upload size={10} /> Replace
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+                </label>
                 <button type="button" onClick={() => setLogo(null)} className="text-xs text-red-400 hover:text-red-300"><X size={12} /></button>
-              </>
-            ) : (
-              <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
-                <Plus size={12} /> Upload logo
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                  const f = e.target.files?.[0]; if (!f) return;
-                  const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
-                }} />
-              </label>
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <label className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-white/10 text-xs cursor-pointer hover:border-white/20 transition-all" style={{ color: "var(--text-dim)" }}>
+              <Plus size={12} /> Upload logo
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+            </label>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
@@ -142,16 +146,19 @@ function AddSchoolForm({ orgId, onAdded }: { orgId: string; onAdded: (school: Sc
       <div className="flex items-center gap-1.5">
         {logo ? (
           <>
-            <img src={logo} alt="" className="h-7 w-auto object-contain rounded bg-white/10 p-0.5" />
+            <div className="flex items-center justify-center rounded bg-white/5 border border-white/10 p-0.5" style={{ maxWidth: 80 }}>
+              <img src={logo} alt="" style={{ maxHeight: 28, maxWidth: 72, width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+            </div>
+            <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
+              <Upload size={9} /> Replace
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
+            </label>
             <button type="button" onClick={() => setLogo(null)} className="text-red-400"><X size={10} /></button>
           </>
         ) : (
           <label className={`${inputCls} flex items-center gap-1 cursor-pointer`} style={{ color: "var(--text-dim)" }}>
             <Plus size={10} /> Logo
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0]; if (!f) return;
-              const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f);
-            }} />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => setLogo(r.result as string); r.readAsDataURL(f); e.target.value = ""; }} />
           </label>
         )}
       </div>
