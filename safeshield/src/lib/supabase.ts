@@ -37,6 +37,13 @@ export const ALL_TOOLS = [
   { slug: "training", name: "Training & Certification" },
   // Policy Review
   { slug: "policy-analyzer", name: "Policy Analyzer" },
+  // New tools
+  { slug: "cyber-security", name: "Cyber Security Checker" },
+  { slug: "prevent", name: "Prevent & Radicalisation Self-Assessment" },
+  { slug: "sar-tracker", name: "Subject Access Request Tracker" },
+  { slug: "safer-recruitment", name: "Safer Recruitment Audit" },
+  { slug: "mental-health", name: "Mental Health & Wellbeing Audit" },
+  { slug: "parental-engagement", name: "Parental Engagement Tracker" },
 ];
 
 export type Organisation = {
