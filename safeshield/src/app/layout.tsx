@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
+import { SeasonalThemeProvider } from "@/context/SeasonalThemeContext";
 
 export const metadata: Metadata = {
   title: "SafeShield Tools",
@@ -39,9 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="relative z-[1] flex flex-col min-h-screen">
         <AuthProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SeasonalThemeProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </SeasonalThemeProvider>
         </AuthProvider>
       </body>
     </html>

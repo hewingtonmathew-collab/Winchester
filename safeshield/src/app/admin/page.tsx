@@ -5,6 +5,7 @@ import { getSubmissions, deleteSubmission, type Submission } from "@/lib/submiss
 import ReportViewModal, { type ReportViewData } from "@/components/report/ReportViewModal";
 import { Trash2, Mail, ShieldCheck, LayoutDashboard, ChevronDown, ChevronUp, Users, CheckCircle2, XCircle, Loader2, ToggleLeft, ToggleRight, AlertCircle, UserPlus, X, Building2, Plus, School, Network, Pencil, FileText, PowerOff, Power, Upload, Link2, Eye, RefreshCw, BookOpen } from "lucide-react";
 import TrainingAdminTab from "@/components/training/TrainingAdminTab";
+import ThemeManager from "@/components/admin/ThemeManager";
 import ReferenceDocManager from "@/components/policy/ReferenceDocManager";
 import TemplateAdmin from "@/components/policy/TemplateAdmin";
 import { type FooterLink } from "@/components/Footer";
@@ -1137,7 +1138,7 @@ function PolicyDocsTab() {
   );
 }
 
-type Tab = "assessments" | "users" | "organisations" | "site" | "training" | "policy-docs";
+type Tab = "assessments" | "users" | "organisations" | "site" | "training" | "policy-docs" | "themes";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -1472,6 +1473,10 @@ export default function AdminPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "policy-docs" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <FileText size={14} /> Policy Docs
           </button>
+          <button onClick={() => setTab("themes")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "themes" ? "bg-[rgba(167,139,250,0.15)] border-[rgba(167,139,250,0.35)] text-[#A78BFA]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
+            🎨 Themes
+          </button>
         </div>
 
         {/* ── Assessments tab ── */}
@@ -1719,6 +1724,9 @@ export default function AdminPage() {
 
         {/* ── Policy Docs tab ── */}
         {tab === "policy-docs" && <PolicyDocsTab />}
+
+        {/* ── Themes tab ── */}
+        {tab === "themes" && <GlassCard><ThemeManager /></GlassCard>}
 
         {/* ── Site tab ── */}
         {tab === "site" && (

@@ -9,6 +9,7 @@ import BannerUploadButton from "@/components/ui/BannerUploadButton";
 import EditableText from "@/components/ui/EditableText";
 import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
 import { supabase } from "@/lib/supabase";
+import SeasonalBanner from "@/components/ui/SeasonalBanner";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
@@ -194,6 +195,18 @@ export default function HomePage() {
 
   return (
     <div className="min-h-[100dvh] pt-16 pb-24">
+
+      {/* ── Seasonal theme banner ────────────────────────────────────── */}
+      {loggedIn && (
+        <SeasonalBanner
+          schoolName={identity?.schoolName}
+          schoolLogo={identity?.schoolLogo}
+          orgName={identity?.orgName}
+          orgLogo={identity?.orgLogo}
+          ethos={identity?.schoolEthos ?? identity?.orgEthos}
+          isMat={identity?.isMat}
+        />
+      )}
 
       {/* ── Hero banner ─────────────────────────────────────────────── */}
       <div style={{ position: "relative", overflow: "hidden", paddingTop: "clamp(320px, calc(400 / 1920 * 100%), 500px)" }}>
