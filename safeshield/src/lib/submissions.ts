@@ -9,6 +9,11 @@ export type Submission = {
   consultantEmail: string;
   staffMember: string;
   logoDataUrl: string | null;
+  // Explicit attribution — set when the user picks a specific school (MAT/super
+  // admins). When present, these override the creator's membership so the report
+  // is recorded against the correct school for data compartmentalisation.
+  schoolId?: string | null;
+  orgId?: string | null;
   score: number;
   rating: string;
   ratingColor: string;
@@ -61,6 +66,12 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     .limit(1)
     .maybeSingle();
 
+  // Prefer the explicitly chosen school/org (set by the school picker for MAT
+  // and super admins) so the report is attributed to the correct school. Fall
+  // back to the creator's own membership for school-scoped and basic users.
+  const orgId = s.orgId ?? membership?.org_id ?? null;
+  const schoolId = s.schoolId ?? membership?.school_id ?? null;
+
   const { error } = await supabase.from("reports").upsert({
     id: s.id,
     tool_slug: s.tool.toLowerCase().replace(/\s+/g, "-"),
@@ -77,8 +88,8 @@ export async function saveReportToSupabase(s: Submission, userId: string) {
     areas: s.areas || null,
     recommendations: s.gaps || null,
     created_by: userId,
-    org_id: membership?.org_id || null,
-    school_id: membership?.school_id || null,
+    org_id: orgId,
+    school_id: schoolId,
   }, { onConflict: "id" });
 
   if (error) console.error("Failed to save report to Supabase:", error);

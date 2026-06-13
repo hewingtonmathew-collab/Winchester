@@ -1,7 +1,9 @@
 "use client";
-import { useRef } from "react";
-import { Upload, X } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { Upload, X, Building2, Lock } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 export type ReportMetaData = {
   schoolName: string;
@@ -10,7 +12,14 @@ export type ReportMetaData = {
   consultantEmail: string;
   staffMember: string;
   logoDataUrl: string | null;
+  // Attribution — set by the school picker so the saved report is recorded
+  // against the correct school. Optional so existing checker meta initialisers
+  // (which omit these) continue to compile.
+  schoolId?: string | null;
+  orgId?: string | null;
 };
+
+type SchoolOption = { id: string; name: string; org_id: string; email: string | null };
 
 type Props = {
   value: ReportMetaData;
@@ -28,10 +37,93 @@ export default function ReportMeta({
   accentBorder = "rgba(56,189,248,0.25)",
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const { user, enabledTools } = useAuth();
+  const isSuperAdmin = enabledTools.includes("*");
+  const [schools, setSchools] = useState<SchoolOption[]>([]);
+  const [lockedToSchool, setLockedToSchool] = useState(false);
+  const [manualEntry, setManualEntry] = useState(false);
+  const autoSetRef = useRef(false);
 
   function set(field: keyof ReportMetaData, val: string) {
     onChange({ ...value, [field]: val });
   }
+
+  // Load the schools this user may attribute an assessment to.
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: membership } = await supabase
+        .from("org_members")
+        .select("org_id, school_id, role")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      // Super admin: every school across all orgs.
+      if (isSuperAdmin) {
+        const { data } = await supabase
+          .from("schools")
+          .select("id, name, org_id, email")
+          .order("name");
+        setSchools((data as SchoolOption[]) ?? []);
+        return;
+      }
+
+      if (!membership) return; // basic user — free-text only
+
+      const m = membership as { org_id: string | null; school_id: string | null; role: string };
+
+      // School-scoped user: locked to their own school.
+      if (m.school_id) {
+        const { data } = await supabase
+          .from("schools")
+          .select("id, name, org_id, email")
+          .eq("id", m.school_id)
+          .maybeSingle();
+        if (data) {
+          const s = data as SchoolOption;
+          setSchools([s]);
+          setLockedToSchool(true);
+        }
+        return;
+      }
+
+      // Org/MAT admin: all schools in their org.
+      if (m.org_id) {
+        const { data } = await supabase
+          .from("schools")
+          .select("id, name, org_id, email")
+          .eq("org_id", m.org_id)
+          .order("name");
+        setSchools((data as SchoolOption[]) ?? []);
+      }
+    })();
+  }, [user, isSuperAdmin]);
+
+  // Auto-select when the user is locked to a single school, so attribution is
+  // captured even if they never touch the picker.
+  useEffect(() => {
+    if (autoSetRef.current) return;
+    if (lockedToSchool && schools.length === 1 && !value.schoolId) {
+      const s = schools[0];
+      autoSetRef.current = true;
+      onChange({ ...value, schoolName: s.name, schoolId: s.id, orgId: s.org_id, schoolEmail: value.schoolEmail || s.email || "" });
+    }
+  }, [lockedToSchool, schools, value, onChange]);
+
+  function selectSchool(id: string) {
+    if (id === "__manual__") {
+      setManualEntry(true);
+      onChange({ ...value, schoolId: null, orgId: null });
+      return;
+    }
+    const s = schools.find((x) => x.id === id);
+    if (!s) return;
+    setManualEntry(false);
+    onChange({ ...value, schoolName: s.name, schoolId: s.id, orgId: s.org_id, schoolEmail: value.schoolEmail || s.email || "" });
+  }
+
+  const showPicker = schools.length > 0 && !manualEntry;
 
   function handleLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -98,17 +190,57 @@ export default function ReportMeta({
         {/* School */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-[#CBD5E1] text-sm mb-1">
+            <label className="block text-[#CBD5E1] text-sm mb-1 flex items-center gap-1.5">
               School / Trust Name <span style={{ color: accentColor }}>*</span>
+              {lockedToSchool && <Lock size={11} className="text-[#64748B]" />}
             </label>
-            <input
-              type="text"
-              value={value.schoolName}
-              onChange={(e) => set("schoolName", e.target.value)}
-              className={inputClass}
-              style={{ borderColor: value.schoolName ? accentBorder : undefined }}
-              placeholder="e.g. Oakfield Academy"
-            />
+
+            {showPicker ? (
+              <>
+                <div className="relative">
+                  <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
+                  <select
+                    value={value.schoolId ?? ""}
+                    onChange={(e) => selectSchool(e.target.value)}
+                    disabled={lockedToSchool}
+                    className={inputClass + " pl-9 appearance-none disabled:opacity-70"}
+                    style={{ borderColor: value.schoolId ? accentBorder : undefined }}
+                  >
+                    <option value="" disabled>Select a school…</option>
+                    {schools.map((s) => (
+                      <option key={s.id} value={s.id} style={{ background: "#0f172a" }}>{s.name}</option>
+                    ))}
+                    {!lockedToSchool && (
+                      <option value="__manual__" style={{ background: "#0f172a" }}>Other — enter manually…</option>
+                    )}
+                  </select>
+                </div>
+                {lockedToSchool && (
+                  <p className="text-[#475569] text-xs mt-1">This assessment is recorded against your school.</p>
+                )}
+              </>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  value={value.schoolName}
+                  onChange={(e) => set("schoolName", e.target.value)}
+                  className={inputClass}
+                  style={{ borderColor: value.schoolName ? accentBorder : undefined }}
+                  placeholder="e.g. Oakfield Academy"
+                />
+                {schools.length > 0 && manualEntry && (
+                  <button
+                    type="button"
+                    onClick={() => { setManualEntry(false); }}
+                    className="text-xs mt-1 transition-colors"
+                    style={{ color: accentColor }}
+                  >
+                    ← Choose from my schools instead
+                  </button>
+                )}
+              </>
+            )}
           </div>
           <div>
             <label className="block text-[#CBD5E1] text-sm mb-1">School Email</label>
