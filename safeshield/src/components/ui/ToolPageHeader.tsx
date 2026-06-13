@@ -2,7 +2,8 @@ import ToolIconWrapper from "./ToolIconWrapper";
 
 interface ToolPageHeaderProps {
   slug: string;
-  icon: React.ComponentType<{ size?: number }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: React.ComponentType<any>;
   badge: string;
   title: string;
   description: string;
