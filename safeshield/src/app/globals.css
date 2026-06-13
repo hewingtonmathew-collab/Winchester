@@ -328,8 +328,9 @@ body::before {
 }
 .input-glass::placeholder { color: var(--text-dim); }
 .input-glass:focus {
-  border-color: var(--accent);
-  background: rgba(128,128,128,0.12);
+  border-color: rgba(56,189,248,0.6);
+  background: rgba(56,189,248,0.04);
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.12), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 /* ══════════════════════════════════════════
@@ -409,6 +410,72 @@ body::before {
 
 /* Forced high-contrast text regardless of background */
 .text-contrast-max { color: var(--text) !important; }
+
+/* ══════════════════════════════════════════
+   ELITE DETAIL — fine finish utilities
+══════════════════════════════════════════ */
+
+/* Stat card top accent line */
+.stat-accent-top {
+  position: relative;
+}
+.stat-accent-top::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1px;
+  background: var(--stat-accent, #38BDF8);
+  opacity: 0.55;
+  border-radius: 0 0 1px 1px;
+}
+
+/* Refined section divider */
+.section-rule {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(56,189,248,0.25) 20%,
+    rgba(129,140,248,0.15) 60%,
+    transparent 100%
+  );
+}
+
+/* Premium badge pill */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+}
+
+/* Subtle grain texture on glass cards for depth */
+.glass-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Number/count glow */
+.count-glow {
+  text-shadow: 0 0 20px currentColor;
+}
+
+/* Smooth page transitions */
+main { animation: pageFade 0.3s ease both; }
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ══════════════════════════════════════════
    MOBILE / iOS SAFE AREA
