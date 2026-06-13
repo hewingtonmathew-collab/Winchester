@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2, Camera, Menu, X, Wrench, Gauge } from "lucide-react";
+import { Shield, Sun, Moon, LayoutDashboard, LogOut, User, ChevronDown, Building2, Camera, Menu, X, Wrench, Gauge, ListChecks } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getTheme, setTheme, applyTheme, type Theme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
@@ -69,7 +69,11 @@ export default function Navbar() {
   );
 
   const allLinks = useMemo(
-    () => [...NAV_LINKS, ...(user ? [{ label: "Command Centre", href: "/command-centre" }] : []), ...toolLinks],
+    () => [
+      ...NAV_LINKS,
+      ...(user ? [{ label: "Command Centre", href: "/command-centre" }, { label: "Actions", href: "/action-tracker" }] : []),
+      ...toolLinks,
+    ],
     [toolLinks, user]
   );
 
@@ -134,6 +138,18 @@ export default function Navbar() {
                 style={{ color: path.startsWith("/command-centre") ? "#38BDF8" : "var(--text-dim)" }}>
                 <Gauge size={11} />
                 Command Centre
+              </Link>
+            )}
+
+            {/* Action Tracker */}
+            {user && (
+              <Link href="/action-tracker"
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
+                  path.startsWith("/action-tracker") ? "bg-[rgba(56,189,248,0.15)] border border-[rgba(56,189,248,0.25)]" : "hover:bg-white/5"
+                }`}
+                style={{ color: path.startsWith("/action-tracker") ? "#38BDF8" : "var(--text-dim)" }}>
+                <ListChecks size={11} />
+                Actions
               </Link>
             )}
 
