@@ -51,7 +51,7 @@ export default function PolicyAnalyzerPage() {
           </div>
 
           {/* Tab bar */}
-          <div className="flex gap-2 mb-8">
+          <div className="flex flex-wrap gap-2 mb-8">
             {TABS.map(({ key, label, Icon }) => (
               <button
                 key={key}

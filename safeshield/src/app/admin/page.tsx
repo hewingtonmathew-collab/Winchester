@@ -1445,7 +1445,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-2 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8">
           <button onClick={() => setTab("assessments")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2 ${tab === "assessments" ? "bg-[rgba(56,189,248,0.15)] border-[rgba(56,189,248,0.3)] text-[#38BDF8]" : "glass border-transparent text-[#64748B] hover:text-white"}`}>
             <ShieldCheck size={14} /> Assessments
