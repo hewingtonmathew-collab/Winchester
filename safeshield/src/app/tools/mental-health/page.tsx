@@ -1,26 +1,21 @@
 "use client";
 import { Heart } from "lucide-react";
 import ToolPageHeader from "@/components/ui/ToolPageHeader";
-import GlassCard from "@/components/ui/GlassCard";
-
-const COLOR = "#F472B6";
-const DESC = "Evaluate your school's mental health provision against the DfE Senior Mental Health Lead guidance. Assess whole-school approach, staff training, and pupil support structures.";
+import MentalHealthChecker from "@/components/forms/MentalHealthChecker";
 
 export default function MentalHealthPage() {
   return (
     <div className="min-h-screen pt-20 pb-16" style={{ background: "var(--bg)" }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <ToolPageHeader slug="mental-health" icon={Heart} badge="Wellbeing" title="Mental Health & Wellbeing Audit" description={DESC} color={COLOR} />
-        <GlassCard>
-          <div className="text-center py-12">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: COLOR + "18", border: `1px solid ${COLOR}35` }}>
-              <Heart size={28} style={{ color: COLOR }} />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Coming Soon</h2>
-            <p className="text-[#64748B] text-sm max-w-md mx-auto leading-relaxed">{DESC}</p>
-            <p className="text-xs text-[#334155] mt-4">This tool is currently in development and will be available soon.</p>
-          </div>
-        </GlassCard>
+        <ToolPageHeader
+          slug="mental-health"
+          icon={Heart}
+          badge="Wellbeing"
+          title="Mental Health & Wellbeing Audit"
+          description="Evaluate your school's approach to mental health and wellbeing against DfE Senior Mental Health Lead guidance and the Whole School Approach framework."
+          color="#F472B6"
+        />
+        <MentalHealthChecker />
       </div>
     </div>
   );
