@@ -30,6 +30,7 @@ export default function ThemeManager() {
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -58,28 +59,44 @@ export default function ThemeManager() {
     e.target.value = "";
   }
 
+  function showToast(type: "ok" | "err", msg: string) {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 4000);
+  }
+
   async function handleSave() {
     if (!targetId) return;
     setSaving(true);
-    let bannerUrl: string | null = null;
-    // Upload banner to a temporary key — we use targetType+targetId as the key
-    if (bannerFile) {
-      const ext = bannerFile.name.split(".").pop();
-      const path = `theme-banners/${targetType}-${targetId}.${ext}`;
-      await supabase.storage.from("theme-assets").upload(path, bannerFile, { upsert: true });
-      const { data } = supabase.storage.from("theme-assets").getPublicUrl(path);
-      bannerUrl = data.publicUrl;
+    try {
+      let bannerUrl: string | null = null;
+      if (bannerFile) {
+        const ext = bannerFile.name.split(".").pop();
+        const path = `theme-banners/${targetType}-${targetId}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("theme-assets").upload(path, bannerFile, { upsert: true });
+        if (upErr) throw upErr;
+        const { data } = supabase.storage.from("theme-assets").getPublicUrl(path);
+        bannerUrl = data.publicUrl;
+      }
+      await saveAssignment({ themeSlug, targetType, targetId, bannerUrl });
+      setTargetId(""); setBannerFile(null); setBannerPreview(null);
+      showToast("ok", "Theme assigned successfully.");
+    } catch (e: unknown) {
+      showToast("err", (e as Error)?.message ?? "Failed to save theme. Check the theme_assignments table exists.");
+    } finally {
+      setSaving(false);
     }
-    await saveAssignment({ themeSlug, targetType, targetId, bannerUrl });
-    setTargetId(""); setBannerFile(null); setBannerPreview(null);
-    setSaving(false);
   }
 
   async function handleRemove(id: string) {
     setDeleting(id);
-    await removeAssignment(id);
-    refresh();
-    setDeleting(null);
+    try {
+      await removeAssignment(id);
+      refresh();
+    } catch (e: unknown) {
+      showToast("err", (e as Error)?.message ?? "Failed to remove theme.");
+    } finally {
+      setDeleting(null);
+    }
   }
 
   function targetLabel(a: typeof allAssignments[0]) {
@@ -98,6 +115,11 @@ export default function ThemeManager() {
 
   return (
     <div className="flex flex-col gap-6">
+      {toast && (
+        <div className={`px-4 py-3 rounded-xl text-sm font-medium border ${toast.type === "ok" ? "bg-green-500/10 border-green-500/30 text-green-400" : "bg-red-500/10 border-red-500/30 text-red-400"}`}>
+          {toast.type === "ok" ? "✓ " : "✗ "}{toast.msg}
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <Palette size={18} className="text-[#A78BFA]" />
         <h2 className="text-white font-semibold text-lg">Seasonal Theme Manager</h2>

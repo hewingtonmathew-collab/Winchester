@@ -102,18 +102,20 @@ export function SeasonalThemeProvider({ children }: { children: React.ReactNode 
   }) {
     const { data: session } = await supabase.auth.getSession();
     const userId = session.session?.user.id ?? null;
-    await supabase.from("theme_assignments").upsert({
+    const { error } = await supabase.from("theme_assignments").upsert({
       theme_slug: themeSlug,
       target_type: targetType,
       target_id: targetId,
       banner_url: bannerUrl ?? null,
       assigned_by: userId,
     }, { onConflict: "target_type,target_id" });
+    if (error) throw error;
     refresh();
   }
 
   async function removeAssignment(id: string) {
-    await supabase.from("theme_assignments").delete().eq("id", id);
+    const { error } = await supabase.from("theme_assignments").delete().eq("id", id);
+    if (error) throw error;
     refresh();
   }
 
