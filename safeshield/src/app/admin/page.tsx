@@ -507,6 +507,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [deletingMember, setDeletingMember] = useState<string | null>(null);
   const [schoolName, setSchoolName] = useState("");
   const [schoolEmail, setSchoolEmail] = useState("");
+  const [schoolEthos, setSchoolEthos] = useState("");
   const [addingSchool, setAddingSchool] = useState(false);
   const [memberUserId, setMemberUserId] = useState("");
   const [memberSchoolId, setMemberSchoolId] = useState("");
@@ -522,6 +523,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [eType, setEType] = useState<"school" | "mat">(org.type);
   const [eManager, setEManager] = useState(org.manager_name ?? "");
   const [eNotes, setENotes] = useState(org.notes ?? "");
+  const [eEthos, setEEthos] = useState(org.ethos ?? "");
   const [eLogo, setELogo] = useState<string | null>(org.logo_url);
   const [savingOrg, setSavingOrg] = useState(false);
 
@@ -530,6 +532,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
   const [esName, setEsName] = useState("");
   const [esEmail, setEsEmail] = useState("");
   const [esLogo, setEsLogo] = useState<string | null>(null);
+  const [esEthos, setEsEthos] = useState("");
   const [savingSchool, setSavingSchool] = useState(false);
 
   // Reports
@@ -654,7 +657,7 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
   async function saveOrg() {
     setSavingOrg(true);
-    const fields = { name: eName.trim(), type: eType, manager_name: eManager.trim() || null, notes: eNotes.trim() || null, logo_url: eLogo };
+    const fields = { name: eName.trim(), type: eType, manager_name: eManager.trim() || null, notes: eNotes.trim() || null, ethos: eEthos.trim() || null, logo_url: eLogo };
     const { error } = await supabase.from("organisations").update(fields).eq("id", org.id);
     setSavingOrg(false);
     if (error) { alert(`Failed to save: ${error.message}`); return; }
@@ -664,16 +667,16 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
 
   function cancelOrgEdit() {
     setEName(orgState.name); setEType(orgState.type); setEManager(orgState.manager_name ?? "");
-    setENotes(orgState.notes ?? ""); setELogo(orgState.logo_url); setEditingOrg(false);
+    setENotes(orgState.notes ?? ""); setEEthos(orgState.ethos ?? ""); setELogo(orgState.logo_url); setEditingOrg(false);
   }
 
   function startSchoolEdit(s: SchoolType) {
-    setEditingSchoolId(s.id); setEsName(s.name); setEsEmail(s.email ?? ""); setEsLogo(s.logo_url);
+    setEditingSchoolId(s.id); setEsName(s.name); setEsEmail(s.email ?? ""); setEsLogo(s.logo_url); setEsEthos(s.ethos ?? "");
   }
 
   async function saveSchool(id: string) {
     setSavingSchool(true);
-    const fields = { name: esName.trim(), email: esEmail.trim() || null, logo_url: esLogo };
+    const fields = { name: esName.trim(), email: esEmail.trim() || null, logo_url: esLogo, ethos: esEthos.trim() || null };
     const { error } = await supabase.from("schools").update(fields).eq("id", id);
     setSavingSchool(false);
     if (error) { alert(`Failed to save: ${error.message}`); return; }
@@ -705,8 +708,8 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
     e.preventDefault();
     if (!schoolName.trim()) return;
     setAddingSchool(true);
-    const { data, error } = await supabase.from("schools").insert({ org_id: org.id, name: schoolName.trim(), email: schoolEmail.trim() || null }).select().single();
-    if (!error) { setSchools((p) => [...p, data as SchoolType]); setSchoolName(""); setSchoolEmail(""); }
+    const { data, error } = await supabase.from("schools").insert({ org_id: org.id, name: schoolName.trim(), email: schoolEmail.trim() || null, ethos: schoolEthos.trim() || null }).select().single();
+    if (!error) { setSchools((p) => [...p, data as SchoolType]); setSchoolName(""); setSchoolEmail(""); setSchoolEthos(""); }
     setAddingSchool(false);
   }
 
@@ -833,6 +836,12 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 <textarea value={eNotes} onChange={(e) => setENotes(e.target.value)} rows={2}
                   className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] resize-none" style={{ color: "var(--text)" }} />
               </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs" style={{ color: "var(--text-dim)" }}>Ethos / Motto</label>
+                <input value={eEthos} onChange={(e) => setEEthos(e.target.value)}
+                  placeholder="e.g. Inspiring every child to achieve their potential"
+                  className="px-3 py-2 rounded-xl text-sm glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)]" style={{ color: "var(--text)" }} />
+              </div>
               <div className="flex gap-2">
                 <button onClick={saveOrg} disabled={savingOrg || !eName.trim()}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
@@ -870,6 +879,10 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                           className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
                         <input value={esEmail} onChange={(e) => setEsEmail(e.target.value)} placeholder="Email" type="email"
                           className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+                      </div>
+                      <input value={esEthos} onChange={(e) => setEsEthos(e.target.value)} placeholder="School ethos (e.g. Inspiring every child to achieve their potential)"
+                        className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-full" style={{ color: "var(--text)" }} />
+                      <div className="flex flex-wrap gap-2 items-end">
                         {esLogo ? (
                           <div className="flex items-center gap-1.5">
                             <div className="flex items-center justify-center rounded bg-white/5 border border-white/10 p-0.5" style={{ maxWidth: 80 }}>
@@ -970,16 +983,22 @@ function AdminOrgCard({ org, onDelete }: { org: OrgWithDetails; onDelete: (id: s
                 );
               })}
             </div>
-            <form onSubmit={handleAddSchool} className="flex flex-wrap gap-2 items-end">
-              <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
-              <input value={schoolEmail} onChange={(e) => setSchoolEmail(e.target.value)} placeholder="Email (optional)" type="email"
-                className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
-              <button type="submit" disabled={addingSchool || !schoolName.trim()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
-                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
-                {addingSchool ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Add School
-              </button>
+            <form onSubmit={handleAddSchool} className="flex flex-col gap-2">
+              <div className="flex flex-wrap gap-2 items-end">
+                <input value={schoolName} onChange={(e) => setSchoolName(e.target.value)} placeholder="School name"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-40" style={{ color: "var(--text)" }} />
+                <input value={schoolEmail} onChange={(e) => setSchoolEmail(e.target.value)} placeholder="Email (optional)" type="email"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] w-44" style={{ color: "var(--text)" }} />
+              </div>
+              <div className="flex flex-wrap gap-2 items-end">
+                <input value={schoolEthos} onChange={(e) => setSchoolEthos(e.target.value)} placeholder="School ethos (optional)"
+                  className="px-3 py-1.5 rounded-xl text-xs glass border border-white/10 bg-white/5 outline-none focus:border-[rgba(56,189,248,0.4)] flex-1 min-w-[200px]" style={{ color: "var(--text)" }} />
+                <button type="submit" disabled={addingSchool || !schoolName.trim()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                  style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                  {addingSchool ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Add School
+                </button>
+              </div>
             </form>
           </div>
 

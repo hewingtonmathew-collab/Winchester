@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Gauge, ListChecks, Building2, GraduationCap, Monitor, Brain, Accessibility, Filter, Database, LayoutDashboard, GraduationCap as TrainingIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToolBanner } from "@/hooks/useToolBanner";
 import { useEditableContent } from "@/hooks/useEditableContent";
 import BannerUploadButton from "@/components/ui/BannerUploadButton";
 import EditableText from "@/components/ui/EditableText";
 import ToolIconWrapper from "@/components/ui/ToolIconWrapper";
+import { supabase } from "@/lib/supabase";
 import {
   IconSafeguarding, IconGovernance, IconAIReadiness, IconAIDetector,
   IconDPIA, IconAccessibility, IconDigitalStandards, IconOfsted, IconHealthSafety,
@@ -15,7 +17,8 @@ import {
 
 type Tool = {
   slug: string;
-  Icon: React.ComponentType<{ size?: number }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Icon: React.ComponentType<any>;
   title: string;
   description: string;
   href: string;
@@ -29,11 +32,11 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "& Compliance",
     sub: "Assess and evidence your school's safeguarding, governance, and statutory compliance obligations.",
     tools: [
-      { slug: "safeguarding",     Icon: IconSafeguarding,    title: "Safeguarding Risk Checker",      description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding",     color: "#34D399", badge: "Assessment" },
-      { slug: "governance",       Icon: IconGovernance,      title: "Governance Compliance Checker",  description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",       color: "#A78BFA", badge: "Compliance" },
-      { slug: "ofsted",           Icon: IconOfsted,          title: "Ofsted Ready Checker",           description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",           color: "#4ADE80", badge: "Inspection" },
-      { slug: "health-safety",    Icon: IconHealthSafety,    title: "Health & Safety Checker",        description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",    color: "#F97316", badge: "H&S" },
-      { slug: "policy-analyzer",  Icon: IconPolicyAnalyzer,  title: "Policy Analyzer",                description: "Upload any school policy (.docx) for an AI-powered compliance review against current UK legislation. Accept findings and download a revised document.", href: "/tools/policy-analyzer", color: "#A78BFA", badge: "Policy" },
+      { slug: "safeguarding",    Icon: IconSafeguarding,   title: "Safeguarding Risk Checker",     description: "Structured questions across your digital safeguarding provision — instant risk rating and priority actions aligned to KCSIE.", href: "/tools/safeguarding",    color: "#34D399", badge: "Assessment" },
+      { slug: "governance",      Icon: IconGovernance,     title: "Governance Compliance Checker", description: "Check your governance against the DfE Governance Handbook. Identify gaps across committee structure, skills, policies, and accountability.", href: "/tools/governance",      color: "#A78BFA", badge: "Compliance" },
+      { slug: "ofsted",          Icon: IconOfsted,         title: "Ofsted Ready Checker",          description: "Self-evaluate across all four Ofsted EIF judgement areas plus SEND. Identify strengths, risks, and areas for improvement.", href: "/tools/ofsted",          color: "#4ADE80", badge: "Inspection" },
+      { slug: "health-safety",   Icon: IconHealthSafety,   title: "Health & Safety Checker",       description: "Assess compliance across fire safety, COSHH, premises, policies, staff welfare, and contractor management.", href: "/tools/health-safety",   color: "#F97316", badge: "H&S" },
+      { slug: "policy-analyzer", Icon: IconPolicyAnalyzer, title: "Policy Analyzer",               description: "Upload any school policy (.docx) for an AI-powered compliance review against current UK legislation. Accept findings and download a revised document.", href: "/tools/policy-analyzer", color: "#A78BFA", badge: "Policy" },
     ],
   },
   {
@@ -41,9 +44,11 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "& Technology",
     sub: "Measure compliance with DfE digital standards, data protection requirements, and accessibility obligations.",
     tools: [
-      { slug: "digital-standards",  Icon: IconDigitalStandards, title: "Digital & Technology Standards", description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
-      { slug: "dpia",               Icon: IconDPIA,             title: "DPIA Wizard",                    description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia",             color: "#FCD34D", badge: "Data Protection" },
-      { slug: "accessibility",      Icon: IconAccessibility,    title: "Web Accessibility Checker",      description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility",    color: "#F472B6", badge: "Accessibility" },
+      { slug: "digital-standards", Icon: IconDigitalStandards, title: "Digital & Technology Standards",  description: "Compliance across safeguarding, cyber security, data protection, Ofsted readiness, accessibility, and infrastructure.", href: "/tools/digital-standards", color: "#818CF8", badge: "Standards" },
+      { slug: "dpia",              Icon: IconDPIA,             title: "DPIA Wizard",                     description: "Data Protection Impact Assessment in six guided steps, aligned to UK GDPR Article 35. Produces a risk-rated summary.", href: "/tools/dpia",              color: "#FCD34D", badge: "Data Protection" },
+      { slug: "accessibility",     Icon: IconAccessibility,    title: "Web Accessibility Checker",       description: "Assess your school website against WCAG 2.1 and public sector accessibility obligations. Generate a prioritised action plan.", href: "/tools/accessibility",     color: "#F472B6", badge: "Accessibility" },
+      { slug: "data-privacy",      Icon: Database,             title: "Data Protection & AI Privacy",    description: "Evaluate your data protection practices and AI-related privacy obligations under UK GDPR.", href: "/tools/data-privacy",      color: "#FCD34D", badge: "Data & Privacy" },
+      { slug: "filtering-monitoring", Icon: Filter,            title: "Filtering & Monitoring Assurance", description: "Assess your filtering and monitoring provision against the DfE statutory requirements for online safety.", href: "/tools/filtering-monitoring", color: "#38BDF8", badge: "Online Safety" },
     ],
   },
   {
@@ -51,8 +56,34 @@ const sections: { heading: string; headingAccent: string; sub: string; tools: To
     headingAccent: "Intelligence",
     sub: "Evaluate AI use in your school and detect AI-generated content with confidence.",
     tools: [
-      { slug: "ai-readiness",  Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
-      { slug: "ai-detector",   Icon: IconAIDetector,  title: "AI Content Detector",    description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector", color: "#38BDF8", badge: "Detection" },
+      { slug: "ai-readiness", Icon: IconAIReadiness, title: "AI Readiness Assessment", description: "Score your school's readiness to adopt AI responsibly — policy, procurement, staff capability, data protection, and safeguarding.", href: "/tools/ai-readiness", color: "#FB923C", badge: "Readiness" },
+      { slug: "ai-detector",  Icon: IconAIDetector,  title: "AI Content Detector",     description: "Detect whether text was written by AI or a human using six statistical signals. Indicative 0–100 confidence score.", href: "/tools/ai-detector",  color: "#38BDF8", badge: "Detection" },
+      { slug: "ai-risk",      Icon: Brain,           title: "AI Use Risk Assessment",  description: "Identify and mitigate risks from AI use across teaching, assessment, and administration.", href: "/tools/ai-risk",      color: "#F87171", badge: "Risk" },
+    ],
+  },
+  {
+    heading: "Digital",
+    headingAccent: "Safety Suite",
+    sub: "Dedicated tools for screen use, SEND digital inclusion, and online safety assurance.",
+    tools: [
+      { slug: "screen-use",   Icon: Monitor,      title: "Screen Use & Wellbeing Review",  description: "Assess your school's approach to screen time, digital wellbeing, and device policies aligned to DfE guidance.", href: "/tools/screen-use",   color: "#34D399", badge: "Wellbeing" },
+      { slug: "send-digital", Icon: Accessibility, title: "SEND Digital Impact Review",    description: "Evaluate how technology supports SEND pupils — access, inclusion, assistive tech, and digital equality.", href: "/tools/send-digital", color: "#F472B6", badge: "SEND" },
+    ],
+  },
+  {
+    heading: "Leadership",
+    headingAccent: "& Governance",
+    sub: "Tools designed specifically for governors and senior leaders to gain oversight at a glance.",
+    tools: [
+      { slug: "governor-dashboard", Icon: LayoutDashboard, title: "Governor Digital Dashboard", description: "A governor-facing summary of your school's digital maturity, compliance scores, and strategic priorities.", href: "/tools/governor-dashboard", color: "#A78BFA", badge: "Governance" },
+    ],
+  },
+  {
+    heading: "Training",
+    headingAccent: "& Certification",
+    sub: "CPD-aligned online training for staff across safeguarding, data protection, and digital safety.",
+    tools: [
+      { slug: "training", Icon: TrainingIcon, title: "Training & Certification", description: "Structured CPD courses with assessments, progress tracking, and certificates of completion for safeguarding and digital safety.", href: "/tools/training", color: "#FBBF24", badge: "CPD" },
     ],
   },
 ];
@@ -97,15 +128,57 @@ function ToolCard({ tool, delay, loggedIn }: { tool: Tool; delay: number; logged
   );
 }
 
+type Identity = {
+  schoolName: string | null;
+  schoolLogo: string | null;
+  schoolEthos: string | null;
+  orgName: string | null;
+  orgLogo: string | null;
+  orgEthos: string | null;
+  orgType: "mat" | "school" | null;
+  isMat: boolean;
+};
+
 export default function HomePage() {
   const { user, enabledTools, profile } = useAuth();
   const { bannerUrl, setBannerUrl, isVideo, uploadBanner, clearBanner, uploading } = useToolBanner("home");
   const { value: heroLine1, save: saveHeroLine1 } = useEditableContent("home-hero-line1", "Your School Tools,");
   const { value: heroLine2, save: saveHeroLine2 } = useEditableContent("home-hero-line2", "One Place.");
   const { value: heroSub, save: saveHeroSub } = useEditableContent("home-hero-sub", "Professional compliance tools for safeguarding, governance, AI, digital standards, data protection, accessibility, and Ofsted.");
+  const [identity, setIdentity] = useState<Identity | null>(null);
 
   const isAdmin = profile?.role === "admin" || enabledTools.includes("*");
   const loggedIn = !!user;
+
+  useEffect(() => {
+    if (!user) { setIdentity(null); return; }
+    (async () => {
+      const { data: membership } = await supabase
+        .from("org_members").select("org_id, school_id")
+        .eq("user_id", user.id).limit(1).maybeSingle();
+      if (!membership) { setIdentity(null); return; }
+      const m = membership as { org_id: string | null; school_id: string | null };
+
+      let schoolName: string | null = null;
+      let schoolLogo: string | null = null;
+      let schoolEthos: string | null = null;
+      let orgName: string | null = null;
+      let orgLogo: string | null = null;
+      let orgEthos: string | null = null;
+      let orgType: "mat" | "school" | null = null;
+
+      if (m.school_id) {
+        const { data: s } = await supabase.from("schools").select("name,logo_url,ethos").eq("id", m.school_id).maybeSingle();
+        if (s) { schoolName = (s as { name: string; logo_url: string | null; ethos: string | null }).name; schoolLogo = (s as { logo_url: string | null }).logo_url; schoolEthos = (s as { ethos: string | null }).ethos; }
+      }
+      if (m.org_id) {
+        const { data: o } = await supabase.from("organisations").select("name,logo_url,ethos,type").eq("id", m.org_id).maybeSingle();
+        if (o) { orgName = (o as { name: string }).name; orgLogo = (o as { logo_url: string | null }).logo_url; orgEthos = (o as { ethos: string | null }).ethos; orgType = (o as { type: "mat" | "school" }).type; }
+      }
+
+      setIdentity({ schoolName, schoolLogo, schoolEthos, orgName, orgLogo, orgEthos, orgType, isMat: orgType === "mat" });
+    })();
+  }, [user]);
 
   // Show all tools to unauthenticated visitors; filter by entitlement when logged in
   const allAccess = !loggedIn || enabledTools.includes("*");
@@ -230,6 +303,92 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Logged-in identity banner + dashboard shortcuts ─────────── */}
+      {loggedIn && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-2">
+          {/* Identity card */}
+          {identity && (
+            <div className="glass rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center gap-5">
+              {/* MAT logo + school logo stack */}
+              <div className="flex items-center gap-3 shrink-0">
+                {identity.isMat && (identity.orgLogo ? (
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0">
+                    <img src={identity.orgLogo} alt={identity.orgName ?? ""} className="w-full h-full object-contain" />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-[rgba(167,139,250,0.1)] border border-[rgba(167,139,250,0.25)] flex items-center justify-center shrink-0">
+                    <Building2 size={20} className="text-[#A78BFA]" />
+                  </div>
+                ))}
+                {identity.schoolLogo ? (
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0">
+                    <img src={identity.schoolLogo} alt={identity.schoolName ?? ""} className="w-full h-full object-contain" />
+                  </div>
+                ) : (identity.orgLogo && !identity.isMat) ? (
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0">
+                    <img src={identity.orgLogo} alt={identity.orgName ?? ""} className="w-full h-full object-contain" />
+                  </div>
+                ) : !identity.isMat ? (
+                  <div className="w-14 h-14 rounded-2xl bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.25)] flex items-center justify-center shrink-0">
+                    <GraduationCap size={24} className="text-[#38BDF8]" />
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Name + ethos */}
+              <div className="flex-1 min-w-0">
+                {identity.isMat && identity.orgName && (
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-widest mb-0.5" style={{ color: "#A78BFA" }}>
+                    {identity.orgName}
+                  </p>
+                )}
+                <h2 className="text-lg font-bold text-white truncate">
+                  {identity.schoolName ?? identity.orgName ?? "Your Dashboard"}
+                </h2>
+                {(identity.schoolEthos ?? identity.orgEthos) && (
+                  <p className="text-sm italic mt-0.5 truncate" style={{ color: "var(--text-dim)" }}>
+                    &ldquo;{identity.schoolEthos ?? identity.orgEthos}&rdquo;
+                  </p>
+                )}
+                <p className="text-xs mt-1" style={{ color: "var(--text-faint)" }}>
+                  Welcome back, {profile?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0]}
+                </p>
+              </div>
+
+              {/* Dashboard shortcuts */}
+              <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end shrink-0">
+                <Link href="/command-centre"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all hover:opacity-90"
+                  style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                  <Gauge size={12} /> Command Centre
+                </Link>
+                <Link href="/action-tracker"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all hover:opacity-90"
+                  style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.25)", color: "#34D399" }}>
+                  <ListChecks size={12} /> Action Tracker
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* No org membership — just dashboard shortcuts */}
+          {!identity && (
+            <div className="flex flex-wrap gap-3 mb-6">
+              <Link href="/command-centre"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-90"
+                style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", color: "#38BDF8" }}>
+                <Gauge size={14} /> Command Centre
+              </Link>
+              <Link href="/action-tracker"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-90"
+                style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.25)", color: "#34D399" }}>
+                <ListChecks size={14} /> Action Tracker
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Tool sections ────────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16">

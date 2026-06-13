@@ -46,6 +46,7 @@ export type Organisation = {
   manager_name: string | null;
   notes: string | null;
   logo_url: string | null;
+  ethos: string | null;
   status: "active" | "disabled";
   created_by: string | null;
   created_at: string;
@@ -57,6 +58,7 @@ export type School = {
   name: string;
   email: string | null;
   logo_url: string | null;
+  ethos: string | null;
   status: "active" | "disabled";
   created_at: string;
 };
