@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon, Save, Check } from "lucide-react";
+import { Mail, Printer, ChevronDown, ChevronUp, Sparkles, Sun, Moon, Save, Check, Download, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import type { ReportMetaData } from "./ReportMeta";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -121,6 +121,7 @@ export default function ImprovementReport({
   const [notesSaving, setNotesSaving] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [previousScore, setPreviousScore] = useState<number | null>(null);
   const [schoolLogoUrl, setSchoolLogoUrl] = useState<string | null>(null);
   const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const { enabledTools, user } = useAuth();
@@ -142,6 +143,23 @@ export default function ImprovementReport({
       }
     });
   }, [user]);
+
+  // Load previous score for this tool from reports table
+  useEffect(() => {
+    if (!user || !toolName) return;
+    supabase
+      .from("reports")
+      .select("score, created_at")
+      .eq("tool_name", toolName)
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => {
+        if (data && data.length >= 2) {
+          // Second most recent = previous run (most recent is the current)
+          setPreviousScore(data[1].score);
+        }
+      });
+  }, [user, toolName]);
 
   // Load saved notes for this report
   useEffect(() => {
@@ -179,6 +197,59 @@ export default function ImprovementReport({
   const lowGaps = gaps.filter((g) => g.priority === "low");
 
   const categories = [...new Set(gaps.map((g) => g.category))];
+
+  function downloadActionPlan() {
+    const ownerMap: Record<string, string> = {
+      "Safeguarding": "Designated Safeguarding Lead (DSL)",
+      "Online Safety": "DSL / IT Lead",
+      "Data Protection": "Data Protection Officer (DPO)",
+      "Data Privacy": "Data Protection Officer (DPO)",
+      "GDPR": "Data Protection Officer (DPO)",
+      "Governance": "Headteacher / Governors",
+      "Leadership": "Headteacher / Governors",
+      "Finance": "Business Manager",
+      "SEND": "SENCO",
+      "Curriculum": "Deputy Head / Curriculum Lead",
+      "Teaching": "Deputy Head / Curriculum Lead",
+      "Health": "Site Manager / H&S Lead",
+      "Safety": "Site Manager / H&S Lead",
+      "Infrastructure": "IT Manager",
+      "Digital": "IT Lead / Digital Champion",
+      "Accessibility": "Web Manager / IT Lead",
+      "AI": "Headteacher / Curriculum Lead",
+    };
+    const timeframeMap: Record<Gap["priority"], string> = {
+      high: "Within 30 days",
+      medium: "Within 1 term",
+      low: "Within 6 months",
+    };
+    const guessOwner = (category: string) => {
+      for (const key of Object.keys(ownerMap)) {
+        if (category.toLowerCase().includes(key.toLowerCase())) return ownerMap[key];
+      }
+      return "Headteacher";
+    };
+
+    const rows = [
+      ["Priority", "Category", "Action Required", "Suggested Owner", "Target Timeframe", "Status"],
+      ...gaps.map(g => [
+        g.priority === "high" ? "HIGH" : g.priority === "medium" ? "MEDIUM" : "LOW",
+        g.category,
+        g.text.replace(/"/g, '""'),
+        guessOwner(g.category),
+        timeframeMap[g.priority],
+        "Not Started",
+      ]),
+    ];
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${toolName.replace(/\s+/g, "_")}_Action_Plan_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
 async function handleEmail() {
     const recipients = [meta.schoolEmail, meta.consultantEmail].filter(Boolean) as string[];
@@ -545,24 +616,38 @@ ${css}
 
           {/* Meta grid */}
           <div style={{ ...glassPanel, padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 20px" }}>
-            {[
-              { label: "School / Trust", value: meta.schoolName || "—" },
-              { label: "Assessment Score", value: null, pill: true },
-              { label: "Completed By", value: meta.staffMember || "—" },
-              { label: "Consultant", value: meta.consultantName || "Mathew Hewington" },
-            ].map((item) => (
-              <div key={item.label}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>{item.label}</p>
-                {item.pill ? (
-                  <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
-                    fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
-                    {score}% — {rating}
-                  </span>
-                ) : (
-                  <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{item.value}</p>
-                )}
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>School / Trust</p>
+              <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{meta.schoolName || "—"}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>Assessment Score</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999,
+                  fontSize: 11, fontWeight: 700, color: ratingColor, background: `${ratingColor}18`, border: `1.5px solid ${ratingColor}88` }}>
+                  {score}% — {rating}
+                </span>
+                {previousScore !== null && (() => {
+                  const delta = score - previousScore;
+                  const color = delta > 0 ? "#22c55e" : delta < 0 ? "#ef4444" : "#94a3b8";
+                  const Icon = delta > 0 ? TrendingUp : delta < 0 ? TrendingDown : Minus;
+                  return (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 600, color }}>
+                      <Icon size={11} />
+                      {delta > 0 ? "+" : ""}{delta}% vs last
+                    </span>
+                  );
+                })()}
               </div>
-            ))}
+            </div>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>Completed By</p>
+              <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{meta.staffMember || "—"}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 4 }}>Consultant</p>
+              <p style={{ fontSize: 12, color: "#fff", fontWeight: 500 }}>{meta.consultantName || "Mathew Hewington"}</p>
+            </div>
           </div>
 
           {/* Executive summary */}
@@ -824,6 +909,13 @@ Write two short paragraphs. The first: a numbered action plan of four concrete s
                 background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 600 }}>
               <Mail size={14} /> {emailSending ? "Sending…" : "Email Report"}
             </button>
+            {gaps.length > 0 && (
+              <button onClick={downloadActionPlan}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, cursor: "pointer",
+                  background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.30)", color: "#22c55e", fontSize: 13, fontWeight: 600 }}>
+                <Download size={14} /> Action Plan (.csv)
+              </button>
+            )}
           </div>
 
           {/* Footer ref */}
