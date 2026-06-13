@@ -616,7 +616,7 @@ export default function HomePage() {
   );
 }
 
-// ── Compact tool catalogue (logged-in view) ───────────────────────────────────
+// ── Collapsible tool catalogue with full glass cards (logged-in view) ────────
 
 function CompactToolCatalogue({ sections }: { sections: { heading: string; headingAccent: string; sub: string; tools: Tool[] }[] }) {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -638,54 +638,70 @@ function CompactToolCatalogue({ sections }: { sections: { heading: string; headi
 
   return (
     <div className="pb-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#475569]">
-          {totalTools} Tools Available
+          {totalTools} tools available
         </p>
         <button onClick={toggleAll} className="text-xs text-[#475569] hover:text-[#94A3B8] transition-colors">
           {allCollapsed ? "Expand all" : "Collapse all"}
         </button>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-5">
         {sections.map(section => {
           const key = section.heading + section.headingAccent;
           const isCollapsed = collapsed[key] ?? false;
           return (
-            <div key={key} className="glass rounded-2xl overflow-hidden">
-              {/* Section header — always visible */}
+            <div key={key}>
+              {/* Section header — collapsible toggle bar */}
               <button
                 onClick={() => toggle(key)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                className="w-full flex items-center justify-between gap-3 mb-4 group"
               >
-                <div className="flex items-center gap-2">
-                  <ChevronRight size={13} className="text-[#475569] transition-transform duration-200 shrink-0" style={{ transform: isCollapsed ? "" : "rotate(90deg)" }} />
-                  <span className="text-sm font-semibold text-white">
-                    {section.heading} <span className="gradient-text">{section.headingAccent}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <ChevronRight
+                    size={14}
+                    className="text-[#475569] group-hover:text-[#94A3B8] transition-all duration-200 shrink-0"
+                    style={{ transform: isCollapsed ? "" : "rotate(90deg)" }}
+                  />
+                  <h2 className="heading-luxury text-xl sm:text-2xl">
+                    <span style={{ color: "var(--text)" }}>{section.heading} </span>
+                    <span className="gradient-text">{section.headingAccent}</span>
+                  </h2>
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0"
+                    style={{ background: "rgba(56,189,248,0.08)", color: "#38BDF8", border: "1px solid rgba(56,189,248,0.2)" }}
+                  >
+                    {section.tools.length}
                   </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full shrink-0" style={{ background: "rgba(56,189,248,0.08)", color: "#38BDF8", border: "1px solid rgba(56,189,248,0.2)" }}>
-                  {section.tools.length}
-                </span>
+                <div className="flex-1 h-px ml-3" style={{ background: "rgba(56,189,248,0.15)" }} />
               </button>
 
-              {/* Tool pills */}
+              {/* Full glass cards — shown when not collapsed */}
               {!isCollapsed && (
-                <div className="border-t border-white/[0.06] px-2 py-2 flex flex-col gap-0.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {section.tools.map((tool, ti) => (
+                    <ToolCard key={tool.href} tool={tool} delay={ti} loggedIn={true} />
+                  ))}
+                </div>
+              )}
+
+              {/* Collapsed summary row */}
+              {isCollapsed && (
+                <div className="flex flex-wrap gap-2 pl-6">
                   {section.tools.map(tool => (
                     <Link
                       key={tool.href}
                       href={tool.href}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors group"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all hover:opacity-80"
+                      style={{
+                        background: tool.color + "10",
+                        border: `1px solid ${tool.color}28`,
+                        color: tool.color,
+                      }}
                     >
-                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: tool.color }} />
-                      <span className="flex-1 text-sm font-medium text-[#CBD5E1] group-hover:text-white transition-colors truncate">
-                        {tool.title}
-                      </span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide shrink-0 hidden sm:block"
-                        style={{ background: tool.color + "14", color: tool.color, border: `1px solid ${tool.color}30` }}>
-                        {tool.badge}
-                      </span>
-                      <ArrowRight size={12} className="text-[#334155] group-hover:text-[#94A3B8] transition-colors shrink-0 group-hover:translate-x-0.5 duration-200" />
+                      <div className="w-1 h-1 rounded-full" style={{ background: tool.color }} />
+                      {tool.title.replace(" Checker", "").replace(" Assessment", "").replace(" Wizard", "").replace(" Audit", "").replace(" Review", "").replace(" Tracker", "")}
                     </Link>
                   ))}
                 </div>
